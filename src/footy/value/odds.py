@@ -24,6 +24,8 @@ def overround(odds_list: list[float]) -> float:
 
 def remove_vig_proportional(odds_list: list[float]) -> list[float]:
     """按比例去 vig，回傳各結果的公平機率（加總為 1）。"""
+    if any((o is None) or (o <= 1.0) for o in odds_list):
+        raise ValueError(f"無效賠率（須 > 1）：{odds_list}")
     implied = np.array([1.0 / o for o in odds_list])
     return (implied / implied.sum()).tolist()
 

@@ -149,6 +149,10 @@ def normalize_consolidated(raw: pd.DataFrame, division: str | None = None) -> pd
     for c in (S.ODDS_HOME, S.ODDS_DRAW, S.ODDS_AWAY, S.HOME_ELO, S.AWAY_ELO):
         if c in df.columns:
             df[c] = pd.to_numeric(df[c], errors="coerce")
+    # 小數賠率必須 > 1；0 或 <=1 視為缺值（彙整檔偶有 0 佔位）。
+    for c in (S.ODDS_HOME, S.ODDS_DRAW, S.ODDS_AWAY):
+        if c in df.columns:
+            df.loc[df[c] <= 1.0, c] = float("nan")
     # 紅牌（選用，走地/分析可用）
     if "HomeRed" in raw.columns:
         df["home_red"] = pd.to_numeric(raw["HomeRed"].values, errors="coerce")
@@ -178,12 +182,23 @@ def fetch_github(division: str, out_path: str | Path | None = None,
     return df
 
 
+def _sanitize_odds(df: pd.DataFrame) -> pd.DataFrame:
+    """小數賠率必須 > 1；把 0/<=1/非數值轉成 NaN，避免後續除以零。"""
+    for c in (S.ODDS_HOME, S.ODDS_DRAW, S.ODDS_AWAY,
+              S.ODDS_HOME_OPEN, S.ODDS_DRAW_OPEN, S.ODDS_AWAY_OPEN):
+        if c in df.columns:
+            df[c] = pd.to_numeric(df[c], errors="coerce")
+            df.loc[df[c] <= 1.0, c] = float("nan")
+    return df
+
+
 def load_csv(path: str | Path) -> pd.DataFrame:
     """載入已標準化（或原始）的 CSV。自動偵測格式。"""
     df = pd.read_csv(path, low_memory=False)
     # 已是內部格式？
     if set(S.REQUIRED_INTERNAL).issubset(df.columns):
         df[S.DATE] = pd.to_datetime(df[S.DATE], errors="coerce")
+        df = _sanitize_odds(df)
         return df.dropna(subset=[S.DATE]).sort_values(S.DATE).reset_index(drop=True)
     # 彙整檔格式？
     if {"Division", "MatchDate", "FTHome", "OddHome"}.issubset(df.columns):
