@@ -22,6 +22,10 @@ class ModelConfig:
     max_goals: int = 10
     # 低比分相關性參數 rho 的初始值（由 MLE 估計，這只是起點）。
     rho_init: float = -0.05
+    # xG 混合權重（0~1）：擬合時用 (1-w)*實際進球 + w*xG 當建模目標。
+    # 0 = 純用實際進球；0.5 = 各半；1 = 純用 xG（若資料含 xG 欄位）。
+    # xG 通常比實際進球更穩定、更能反映實力，但需資料提供 xG。
+    xg_weight: float = 0.0
 
 
 @dataclass
@@ -81,6 +85,17 @@ class LiveConfig:
     inplay_rate_scale: float = 1.0
     # 走地額外的安全邊際（比 pre-match 更嚴格，因為盤變快、流動性風險高）。
     extra_edge: float = 0.02
+
+    # ---- 少打多（紅牌）即時調整 ----
+    # 每多一名球員（對方被紅牌），己方剩餘時間預期進球的乘數加成。
+    # 例如 0.30 表示多一人時己方進球率 ×1.30。文獻上紅牌影響顯著但非線性，
+    # 這是穩健的一階近似。
+    red_card_attack_boost: float = 0.30
+    # 對應地，少一人的一方剩餘進球率乘數折減。
+    red_card_defense_penalty: float = 0.25
+
+    # 走地賠率/延遲安全：只接受報價時間在此秒數內的盤口（過舊視為失效）。
+    max_quote_age_s: float = 30.0
 
 
 @dataclass

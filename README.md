@@ -58,20 +58,60 @@ src/footy/
 │   ├── edge.py        # 價值偵測（+EV）
 │   └── staking.py     # 凱利下注
 ├── live/
-│   ├── inplay.py      # 走地模型（依比分+剩餘時間重算）
+│   ├── inplay.py      # 走地模型（依比分+剩餘時間+紅牌人數差重算）
 │   ├── feed.py        # 盤口 feed 抽象介面 + 模擬 feed
+│   ├── providers.py   # 真實賠率來源（The Odds API：初盤+走地+比分）
 │   └── monitor.py     # 實時盯盤迴圈 + 提示
 ├── risk/
 │   └── manager.py     # 資金管理 / 曝險上限 / 停損 / 熔斷
+├── context.py         # 傷停/輪休情境調整（手動 CSV + api-football）
+├── evaluation.py      # 模型校準（Brier/LogLoss/可靠度）+ CLV 分析
+├── prematch.py        # 初盤價值掃描
 ├── backtest/
-│   └── engine.py      # 回測引擎
+│   └── engine.py      # walk-forward 回測引擎
 └── cli.py             # 命令列入口
 ```
 
-## 接真實實時數據
+## 進階功能
 
-`live/feed.py` 定義了 `OddsFeed` 抽象介面。內建 `SimulatedFeed` 讓你無需任何 API key 就能跑通整條流程。
-要接真實數據，實作一個子類別（例如 `TheOddsApiFeed`、`BetfairFeed`），回傳相同格式的 `MatchState` 與盤口即可，其餘邏輯（模型、價值、風控、提示）完全複用。
+### 1) 接真實實時賠率（The Odds API）
+`live/providers.py` 內建 `TheOddsApiFeed`，接 [the-odds-api.com](https://the-odds-api.com)
+（免費方案即可），自動把 h2h / totals / spreads 對應成 1X2 / 大小球 / 亞洲讓盤，
+並用 scores 端點取即時比分。
+```bash
+export ODDS_API_KEY=你的key
+footy live --model models/E0.pkl --feed theoddsapi --sport soccer_epl --bookmaker pinnacle
+```
+解析邏輯（`parse_odds` / `parse_scores`）與網路請求分離、可單元測試。
+要接別家（Betfair、api-football…）只要照樣寫一個 `OddsFeed` 子類別即可，其餘邏輯全部複用。
+
+### 2) xG 建模
+若歷史資料含 `home_xg` / `away_xg` 欄位（可從 understat / fbref / api-football 併入），
+可用 xG 取代或混合實際進球來估強度（xG 雜訊更低、更能反映實力）：
+```bash
+footy train --data data/E0.csv --xg-weight 0.6   # 0=純進球, 1=純xG
+```
+
+### 3) 走地紅牌 / 少打多即時調整
+走地模型會依紅牌造成的人數差，即時調整雙方剩餘時間的進球率
+（`live/inplay.py` 的 `man_advantage_factors`，係數可在 config 調整與校準）。
+`MatchState.home_red/away_red` 由 feed 提供即可自動生效。
+
+### 4) 傷停 / 輪休情境調整
+`context.py` 支援把賽前情境（主力傷缺、輪休）轉成對攻防的乘數修正：
+- 手動 CSV：`footy scan-prematch ... --adjustments adjustments.csv`
+  （欄位：`home,away,home_attack_mult,away_attack_mult`）
+- 自動：api-football 傷停 API（`fetch_injuries`，需 `API_FOOTBALL_KEY`）。
+
+### 5) 模型校準與 CLV 分析（最重要的驗證）
+比回測 ROI 更基本的「值不值得用真錢」檢驗：
+```bash
+footy evaluate --data data/E0.csv --refit-every 20
+```
+輸出：
+- **Brier / LogLoss**，並與市場收盤盤比較 —— 模型若沒贏過市場，代表沒有資訊優勢。
+- **可靠度表**（reliability）—— 模型說「30%」的事是否真的約 30% 發生。
+- **CLV（closing line value）**—— 你的下注價 vs 收盤價；長期正 CLV 是最可靠的 +EV 指標。
 
 ## 免責
 

@@ -40,16 +40,26 @@ def _row_to_quotes(row) -> list[MarketQuote]:
 
 
 def scan(model: DixonColesModel, fixtures: pd.DataFrame, cfg: Config,
-         risk: RiskManager | None = None) -> list[dict]:
-    """回傳所有 value 下注建議（dict 清單，方便印表/匯出）。"""
+         risk: RiskManager | None = None,
+         adjustments: dict | None = None) -> list[dict]:
+    """回傳所有 value 下注建議（dict 清單，方便印表/匯出）。
+
+    adjustments：選用的 {(home, away): ContextAdjustment}，
+    用來把傷停/輪休等情境疊加到模型的預期進球上（見 context 模組）。
+    """
     risk = risk or RiskManager(cfg.risk)
+    adjustments = adjustments or {}
     out: list[dict] = []
     for _, row in fixtures.iterrows():
         home, away = str(row["home"]), str(row["away"])
         if home not in model.attack or away not in model.attack:
             print(f"[skip] 模型未包含：{home} 或 {away}")
             continue
-        mat = model.score_matrix(home, away)
+        lam, mu = model.expected_goals(home, away)
+        adj = adjustments.get((home, away))
+        if adj is not None:
+            lam, mu = adj.apply(lam, mu)
+        mat = model.score_matrix(home, away, lam=lam, mu=mu)
         quotes = _row_to_quotes(row)
         for vb in scanner.value_bets(mat, quotes, cfg.value):
             req = staking.stake(risk.bankroll, vb.ev, vb.odds, cfg.staking)

@@ -5,6 +5,7 @@ model:
   half_life_days: 180      # 時間衰減半衰期（天），越小越看重近期
   max_goals: 10
   rho_init: -0.05
+  xg_weight: 0.0           # xG 混合權重 0~1（需資料含 home_xg/away_xg）
 
 value:
   min_edge: 0.03           # 模型機率至少要比公平機率高 3% 才算 value
@@ -29,4 +30,7 @@ risk:
 live:
   poll_interval_s: 10
   inplay_rate_scale: 1.0
-  extra_edge: 0.02         # 走地比初盤更嚴格（多 2% 邊際）
+  extra_edge: 0.02            # 走地比初盤更嚴格（多 2% 邊際）
+  red_card_attack_boost: 0.30 # 對方每多吃一張紅牌，己方剩餘進球率 ×1.30
+  red_card_defense_penalty: 0.25
+  max_quote_age_s: 30        # 走地只接受 30 秒內的報價

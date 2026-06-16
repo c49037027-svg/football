@@ -64,6 +64,9 @@ class LiveMonitor:
                 self.model, state.home, state.away, state.minute,
                 state.home_goals, state.away_goals,
                 rate_scale=self.cfg.live.inplay_rate_scale,
+                home_red=state.home_red, away_red=state.away_red,
+                red_attack_boost=self.cfg.live.red_card_attack_boost,
+                red_defense_penalty=self.cfg.live.red_card_defense_penalty,
             )
         except KeyError:
             # 模型不認得這兩隊（不在訓練聯賽），略過

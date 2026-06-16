@@ -40,16 +40,20 @@ def fetch_data(league, seasons, out):
 @click.option("--data", "data_path", required=True, help="歷史資料 CSV")
 @click.option("--out", default=None, help="模型輸出路徑（預設 models/<name>.pkl）")
 @click.option("--half-life", default=None, type=float, help="時間衰減半衰期（天）")
+@click.option("--xg-weight", default=None, type=float, help="xG 混合權重 0~1（需資料含 xG）")
 @click.pass_context
-def train(ctx, data_path, out, half_life):
+def train(ctx, data_path, out, half_life, xg_weight):
     cfg: Config = ctx.obj["cfg"]
     if half_life is not None:
         cfg.model.half_life_days = half_life
+    if xg_weight is not None:
+        cfg.model.xg_weight = xg_weight
     df = loader.load_csv(data_path)
-    click.echo(f"[train] 載入 {len(df)} 場比賽，開始擬合（half_life={cfg.model.half_life_days}天）…")
+    click.echo(f"[train] 載入 {len(df)} 場比賽，開始擬合"
+               f"（half_life={cfg.model.half_life_days}天, xg_weight={cfg.model.xg_weight}）…")
     model = dc.fit(df, half_life_days=cfg.model.half_life_days,
                    max_goals=cfg.model.max_goals, rho_init=cfg.model.rho_init,
-                   verbose=True)
+                   xg_weight=cfg.model.xg_weight, verbose=True)
     out = out or f"models/{_stem(data_path)}.pkl"
     model.save(out)
     click.echo(f"[ok] 模型已存：{out}（{len(model.teams)} 隊，主場優勢={model.home_adv:.3f}，rho={model.rho:.3f}）")
@@ -58,13 +62,19 @@ def train(ctx, data_path, out, half_life):
 @cli.command("scan-prematch")
 @click.option("--model", "model_path", required=True)
 @click.option("--fixtures", required=True, help="即將開賽盤口 CSV")
+@click.option("--adjustments", default=None, help="傷停/輪休手動調整 CSV（選用）")
 @click.pass_context
-def scan_prematch(ctx, model_path, fixtures):
+def scan_prematch(ctx, model_path, fixtures, adjustments):
     from . import prematch
     cfg: Config = ctx.obj["cfg"]
     model = dc.DixonColesModel.load(model_path)
     fx = pd.read_csv(fixtures)
-    rows = prematch.scan(model, fx, cfg)
+    adj = None
+    if adjustments:
+        from .context import load_adjustments_csv
+        adj = load_adjustments_csv(adjustments)
+        click.echo(f"[ctx] 已載入 {len(adj)} 場情境調整")
+    rows = prematch.scan(model, fx, cfg, adjustments=adj)
     if not rows:
         click.echo("沒有找到符合門檻的 value 下注。")
         return
@@ -105,15 +115,38 @@ def backtest(ctx, data_path, half_life, edge, kelly, refit_every, export):
         click.echo(f"[ok] 已匯出 {len(res.bets)} 筆下注到 {export}")
 
 
+@cli.command("evaluate")
+@click.option("--data", "data_path", required=True)
+@click.option("--half-life", default=None, type=float)
+@click.option("--xg-weight", default=None, type=float)
+@click.option("--refit-every", default=20, type=int)
+@click.pass_context
+def evaluate(ctx, data_path, half_life, xg_weight, refit_every):
+    """模型校準（Brier/LogLoss/可靠度）與 CLV 分析。"""
+    from . import evaluation
+    cfg: Config = ctx.obj["cfg"]
+    if half_life is not None:
+        cfg.model.half_life_days = half_life
+    if xg_weight is not None:
+        cfg.model.xg_weight = xg_weight
+    df = loader.load_csv(data_path)
+    click.echo(f"[evaluate] {len(df)} 場 walk-forward 校準中…")
+    res = evaluation.run(df, cfg, refit_every=refit_every)
+    click.echo(res.summary(cfg))
+
+
 @cli.command("live")
 @click.option("--model", "model_path", required=True)
-@click.option("--feed", default="simulated", help="盤口來源：simulated（內建模擬）")
+@click.option("--feed", default="simulated",
+              help="盤口來源：simulated（內建模擬）/ theoddsapi（真實，需 ODDS_API_KEY）")
+@click.option("--sport", default="soccer_epl", help="theoddsapi 聯賽鍵，如 soccer_epl")
+@click.option("--bookmaker", default=None, help="theoddsapi 指定博彩商，如 pinnacle")
 @click.option("--home", default="HomeTeam", help="模擬用主隊名（需在模型中）")
 @click.option("--away", default="AwayTeam", help="模擬用客隊名（需在模型中）")
 @click.option("--max-polls", default=None, type=int)
 @click.option("--sleep", "sleep_s", default=None, type=float, help="輪詢間隔秒（模擬可設 0）")
 @click.pass_context
-def live(ctx, model_path, feed, home, away, max_polls, sleep_s):
+def live(ctx, model_path, feed, sport, bookmaker, home, away, max_polls, sleep_s):
     from .live.feed import SimulatedFeed
     from .live.monitor import LiveMonitor
     cfg: Config = ctx.obj["cfg"]
@@ -127,12 +160,19 @@ def live(ctx, model_path, feed, home, away, max_polls, sleep_s):
             lam, mu = 1.5, 1.1
             click.echo(f"[warn] {home}/{away} 不在模型中，用預設進球率模擬。")
         src = SimulatedFeed(home, away, true_lambda=lam, true_mu=mu)
+        sleep_default = 0.0
+    elif feed in ("theoddsapi", "the-odds-api"):
+        from .live.providers import TheOddsApiFeed
+        src = TheOddsApiFeed(sport=sport, bookmaker=bookmaker, in_play=True)
+        sleep_default = cfg.live.poll_interval_s
+        click.echo(f"[live] 已連 The Odds API（{sport}），開始走地盯盤。")
     else:
         raise click.ClickException(
-            f"未知 feed '{feed}'。內建只有 simulated；接真實數據請實作 OddsFeed 子類別。")
+            f"未知 feed '{feed}'。支援 simulated / theoddsapi。")
 
     monitor = LiveMonitor(model, cfg)
-    monitor.run(src, max_polls=max_polls, sleep_s=sleep_s if sleep_s is not None else 0.0)
+    monitor.run(src, max_polls=max_polls,
+                sleep_s=sleep_s if sleep_s is not None else sleep_default)
 
 
 def _stem(path: str) -> str:
