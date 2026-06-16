@@ -16,7 +16,7 @@ tau(x, y; lambda, mu, rho) 修正項調整其相關性（rho 通常為小負數�
 from __future__ import annotations
 
 import pickle
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
 
 import numpy as np
@@ -58,14 +58,23 @@ class DixonColesModel:
     max_goals: int = 10
     # 訓練資料的最後日期，用於走地/初盤推論時計算「距今天數」（此處僅備查）。
     trained_until: "pd.Timestamp | None" = None
+    # Elo 擴充：全域係數與每隊最新 Elo（推論時用）。elo_coef=0 代表未用 Elo。
+    elo_coef: float = 0.0
+    team_elo: dict[str, float] = field(default_factory=dict)
 
     # ---------- 推論 ----------
     def expected_goals(self, home: str, away: str) -> tuple[float, float]:
         """回傳 (lambda_home, mu_away)：雙方預期進球數。"""
         if home not in self.attack or away not in self.attack:
             raise KeyError(f"模型未包含球隊：{home} 或 {away}")
-        lam = np.exp(self.attack[home] - self.defence[away] + self.home_adv)
-        mu = np.exp(self.attack[away] - self.defence[home])
+        elo_term = 0.0
+        if self.elo_coef and self.team_elo:
+            mean_elo = sum(self.team_elo.values()) / len(self.team_elo)
+            eh = self.team_elo.get(home, mean_elo)
+            ea = self.team_elo.get(away, mean_elo)
+            elo_term = self.elo_coef * (eh - ea) / 400.0
+        lam = np.exp(self.attack[home] - self.defence[away] + self.home_adv + elo_term)
+        mu = np.exp(self.attack[away] - self.defence[home] - elo_term)
         return float(lam), float(mu)
 
     def score_matrix(self, home: str, away: str,
@@ -118,7 +127,8 @@ def score_matrix_from_rates(lam: float, mu: float, rho: float, max_goals: int) -
 
 def fit(df: pd.DataFrame, half_life_days: float = 180.0, max_goals: int = 10,
         rho_init: float = -0.05, reference_date: "pd.Timestamp | None" = None,
-        xg_weight: float = 0.0, verbose: bool = False) -> DixonColesModel:
+        xg_weight: float = 0.0, use_elo: bool = False,
+        verbose: bool = False) -> DixonColesModel:
     """以最大概似估計擬合 Dixon–Coles 模型。
 
     df 需含內部欄位：date, home, away, home_goals, away_goals。
@@ -157,7 +167,16 @@ def fit(df: pd.DataFrame, half_life_days: float = 180.0, max_goals: int = 10,
     age_days = (reference_date - df[S.DATE]).dt.days.to_numpy(dtype=float)
     weights = np.exp(-xi * np.clip(age_days, 0, None))
 
-    # 參數向量：[attack(n), defence(n), home_adv, rho]
+    # Elo：若啟用且資料含 Elo 欄位，準備每場的 (Elo_home - Elo_away)/400。
+    has_elo = use_elo and S.HOME_ELO in df.columns and S.AWAY_ELO in df.columns
+    if has_elo:
+        eh = pd.to_numeric(df[S.HOME_ELO], errors="coerce")
+        ea = pd.to_numeric(df[S.AWAY_ELO], errors="coerce")
+        elo_diff = ((eh - ea) / 400.0).fillna(0.0).to_numpy(dtype=float)
+    else:
+        elo_diff = np.zeros(len(df))
+
+    # 參數向量：[attack(n-1), defence(n), home_adv, rho, (elo_coef 若啟用)]
     # attack 平均固定為 0（以最後一隊 = -sum(其餘) 表示，少一個自由參數）。
     def unpack(params: np.ndarray):
         att = np.empty(n)
@@ -166,12 +185,13 @@ def fit(df: pd.DataFrame, half_life_days: float = 180.0, max_goals: int = 10,
         defence = params[n - 1 : 2 * n - 1]
         home_adv = params[2 * n - 1]
         rho = params[2 * n]
-        return att, defence, home_adv, rho
+        elo_coef = params[2 * n + 1] if has_elo else 0.0
+        return att, defence, home_adv, rho, elo_coef
 
     def neg_log_likelihood(params: np.ndarray) -> float:
-        att, dfc, home_adv, rho = unpack(params)
-        lam = np.exp(att[hi] - dfc[ai] + home_adv)
-        mu = np.exp(att[ai] - dfc[hi])
+        att, dfc, home_adv, rho, elo_coef = unpack(params)
+        lam = np.exp(att[hi] - dfc[ai] + home_adv + elo_coef * elo_diff)
+        mu = np.exp(att[ai] - dfc[hi] - elo_coef * elo_diff)
         # 數值保護
         lam = np.clip(lam, 1e-8, 30.0)
         mu = np.clip(mu, 1e-8, 30.0)
@@ -191,28 +211,43 @@ def fit(df: pd.DataFrame, half_life_days: float = 180.0, max_goals: int = 10,
         return -ll.sum()
 
     # 初始值
-    x0 = np.concatenate([
+    x0_parts = [
         np.zeros(n - 1),          # attack
         np.zeros(n),              # defence
         np.array([0.25]),         # home_adv（典型約 0.2~0.4）
         np.array([rho_init]),     # rho
-    ])
-
+    ]
     bounds = ([(-3, 3)] * (n - 1)
               + [(-3, 3)] * n
-              + [(-1, 1)]      # home_adv
+              + [(-1, 1)]       # home_adv
               + [(-0.2, 0.2)])  # rho 通常很小
+    if has_elo:
+        x0_parts.append(np.array([0.5]))  # elo_coef 初始值
+        bounds.append((-5, 5))
+    x0 = np.concatenate(x0_parts)
 
     res = minimize(
         neg_log_likelihood, x0, method="L-BFGS-B", bounds=bounds,
         options={"maxiter": 500},
     )
+    att, dfc, home_adv, rho, elo_coef = unpack(res.x)
     if verbose:
-        print(f"[fit] 收斂={res.success} NLL={res.fun:.2f} 球隊數={n} 比賽數={len(df)}")
-
-    att, dfc, home_adv, rho = unpack(res.x)
+        extra = f" elo_coef={elo_coef:.3f}" if has_elo else ""
+        print(f"[fit] 收斂={res.success} NLL={res.fun:.2f} 球隊數={n} 比賽數={len(df)}{extra}")
     if disable_tau:
         rho = 0.0  # xG 模式未使用 tau，rho 無意義，存 0 避免推論時誤用
+
+    # 每隊最新 Elo（推論時用）：取訓練資料中該隊最後一次出現的 Elo
+    team_elo: dict[str, float] = {}
+    if has_elo:
+        for _, r in df.iterrows():
+            he = r.get(S.HOME_ELO)
+            ae = r.get(S.AWAY_ELO)
+            if pd.notna(he):
+                team_elo[r[S.HOME]] = float(he)
+            if pd.notna(ae):
+                team_elo[r[S.AWAY]] = float(ae)
+
     return DixonColesModel(
         teams=teams,
         attack={t: float(att[idx[t]]) for t in teams},
@@ -221,4 +256,6 @@ def fit(df: pd.DataFrame, half_life_days: float = 180.0, max_goals: int = 10,
         rho=float(rho),
         max_goals=max_goals,
         trained_until=reference_date,
+        elo_coef=float(elo_coef),
+        team_elo=team_elo,
     )

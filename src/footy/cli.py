@@ -50,19 +50,22 @@ def fetch_github(league, out):
 @click.option("--out", default=None, help="模型輸出路徑（預設 models/<name>.pkl）")
 @click.option("--half-life", default=None, type=float, help="時間衰減半衰期（天）")
 @click.option("--xg-weight", default=None, type=float, help="xG 混合權重 0~1（需資料含 xG）")
+@click.option("--use-elo", is_flag=True, default=False, help="把賽前 Elo 當特徵（需資料含 Elo）")
 @click.pass_context
-def train(ctx, data_path, out, half_life, xg_weight):
+def train(ctx, data_path, out, half_life, xg_weight, use_elo):
     cfg: Config = ctx.obj["cfg"]
     if half_life is not None:
         cfg.model.half_life_days = half_life
     if xg_weight is not None:
         cfg.model.xg_weight = xg_weight
+    if use_elo:
+        cfg.model.use_elo = True
     df = loader.load_csv(data_path)
     click.echo(f"[train] 載入 {len(df)} 場比賽，開始擬合"
                f"（half_life={cfg.model.half_life_days}天, xg_weight={cfg.model.xg_weight}）…")
     model = dc.fit(df, half_life_days=cfg.model.half_life_days,
                    max_goals=cfg.model.max_goals, rho_init=cfg.model.rho_init,
-                   xg_weight=cfg.model.xg_weight, verbose=True)
+                   xg_weight=cfg.model.xg_weight, use_elo=cfg.model.use_elo, verbose=True)
     out = out or f"models/{_stem(data_path)}.pkl"
     model.save(out)
     click.echo(f"[ok] 模型已存：{out}（{len(model.teams)} 隊，主場優勢={model.home_adv:.3f}，rho={model.rho:.3f}）")
@@ -100,10 +103,11 @@ def scan_prematch(ctx, model_path, fixtures, adjustments):
 @click.option("--half-life", default=None, type=float)
 @click.option("--edge", default=None, type=float, help="最低 edge 門檻")
 @click.option("--kelly", default=None, type=float, help="分數凱利係數")
+@click.option("--use-elo", is_flag=True, default=False, help="把賽前 Elo 當特徵")
 @click.option("--refit-every", default=20, type=int)
 @click.option("--export", default=None, help="把每筆下注匯出成 CSV")
 @click.pass_context
-def backtest(ctx, data_path, half_life, edge, kelly, refit_every, export):
+def backtest(ctx, data_path, half_life, edge, kelly, use_elo, refit_every, export):
     from .backtest import engine
     cfg: Config = ctx.obj["cfg"]
     if half_life is not None:
@@ -112,6 +116,8 @@ def backtest(ctx, data_path, half_life, edge, kelly, refit_every, export):
         cfg.value.min_edge = edge
     if kelly is not None:
         cfg.staking.kelly_fraction = kelly
+    if use_elo:
+        cfg.model.use_elo = True
 
     df = loader.load_csv(data_path)
     click.echo(f"[backtest] {len(df)} 場，half_life={cfg.model.half_life_days}天 "
@@ -128,9 +134,10 @@ def backtest(ctx, data_path, half_life, edge, kelly, refit_every, export):
 @click.option("--data", "data_path", required=True)
 @click.option("--half-life", default=None, type=float)
 @click.option("--xg-weight", default=None, type=float)
+@click.option("--use-elo", is_flag=True, default=False, help="把賽前 Elo 當特徵")
 @click.option("--refit-every", default=20, type=int)
 @click.pass_context
-def evaluate(ctx, data_path, half_life, xg_weight, refit_every):
+def evaluate(ctx, data_path, half_life, xg_weight, use_elo, refit_every):
     """模型校準（Brier/LogLoss/可靠度）與 CLV 分析。"""
     from . import evaluation
     cfg: Config = ctx.obj["cfg"]
@@ -138,6 +145,8 @@ def evaluate(ctx, data_path, half_life, xg_weight, refit_every):
         cfg.model.half_life_days = half_life
     if xg_weight is not None:
         cfg.model.xg_weight = xg_weight
+    if use_elo:
+        cfg.model.use_elo = True
     df = loader.load_csv(data_path)
     click.echo(f"[evaluate] {len(df)} 場 walk-forward 校準中…")
     res = evaluation.run(df, cfg, refit_every=refit_every)

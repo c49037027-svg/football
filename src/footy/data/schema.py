@@ -18,6 +18,10 @@ AWAY_GOALS = "away_goals"
 HOME_XG = "home_xg"
 AWAY_XG = "away_xg"
 
+# 選用：賽前 Elo 評分（球隊長期實力，含比分差幅資訊，常比近期進球更穩定）。
+HOME_ELO = "home_elo"
+AWAY_ELO = "away_elo"
+
 # 收盤 1X2 賠率（用 Bet365 收盤盤，缺則用 market average）
 ODDS_HOME = "odds_home"
 ODDS_DRAW = "odds_draw"

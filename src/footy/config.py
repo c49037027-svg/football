@@ -26,6 +26,9 @@ class ModelConfig:
     # 0 = 純用實際進球；0.5 = 各半；1 = 純用 xG（若資料含 xG 欄位）。
     # xG 通常比實際進球更穩定、更能反映實力，但需資料提供 xG。
     xg_weight: float = 0.0
+    # 是否把賽前 Elo 評分當額外特徵加進預期進球（需資料含 Elo 欄位）。
+    # Elo 含長期實力與比分差幅資訊，可能補足「只看近期進球」的不足。
+    use_elo: bool = False
 
 
 @dataclass
@@ -96,6 +99,18 @@ class LiveConfig:
 
     # 走地賠率/延遲安全：只接受報價時間在此秒數內的盤口（過舊視為失效）。
     max_quote_age_s: float = 30.0
+
+    # ---- 走地十六法則 規則引擎參數（見 live/rules.py）----
+    rules_enabled: bool = True
+    no_bet_before_minute: int = 15      # 開賽前 N 分鐘不下注（盤未穩）
+    late_game_minute: int = 80          # 此後視為終場前高波動段
+    late_game_stake_factor: float = 0.5  # 終場前注碼折半
+    small_ball_min_line: float = 2.0    # 小球不碰低於此線（如小1.5）
+    big_ball_max_line: float = 3.5      # 大球一般不追超過此線
+    high_goal_env_total: float = 2.9    # 預期總進球高於此視為高進球環境，放寬大球頂線
+    handicap_requires_man_adv: bool = True  # 讓球只在一方少打多（紅牌）時才考慮
+    big_lead_goals: int = 2             # 領先達此球數視為大幅領先
+    max_live_bets_per_match: int = 4    # 單場走地最多下注次數，防過度交易
 
 
 @dataclass

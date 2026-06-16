@@ -18,7 +18,7 @@ from ..models import markets
 
 @dataclass
 class ValueBet:
-    market: str          # 例如 "1X2:home" / "OU2.5:over" / "AH-0.5:home"
+    market: str          # 顯示用，例如 "1X2" / "OU2.5" / "AH-0.5"
     selection: str
     odds: float
     model_prob: float    # 模型給的「等效勝率」（對含退款盤口為 EV 反推的等效值，僅供顯示）
@@ -26,6 +26,8 @@ class ValueBet:
     ev: float            # 每單位本金期望淨報酬
     edge: float          # 相對市場公平機率的優勢
     is_value: bool
+    market_kind: str = ""   # 原始市場種類："1X2" / "OU" / "AH"（給走地法則用）
+    line: float | None = None  # 盤口線數（OU/AH 用）
 
 
 def _equivalent_winprob_from_ev(ev: float, odds: float) -> float:
@@ -39,7 +41,8 @@ def evaluate(market: str, selection: str, odds: float,
              prob_win: float, cfg: ValueConfig,
              prob_push: float = 0.0, prob_half_win: float = 0.0,
              prob_half_loss: float = 0.0, fair_prob: float | None = None,
-             extra_edge: float = 0.0) -> ValueBet:
+             extra_edge: float = 0.0, market_kind: str = "",
+             line: float | None = None) -> ValueBet:
     """評估單一選項是否為 value bet。
 
     prob_* 為模型對該選項的逐結果機率（亞盤/含 push 用得到）。
@@ -63,4 +66,5 @@ def evaluate(market: str, selection: str, odds: float,
     return ValueBet(
         market=market, selection=selection, odds=odds,
         model_prob=eq_p, fair_prob=fair_prob, ev=ev, edge=edge, is_value=is_value,
+        market_kind=market_kind, line=line,
     )

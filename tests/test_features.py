@@ -39,6 +39,27 @@ def test_xg_weight_fit_runs_and_disables_rho(synthetic_df):
     assert abs(mat.sum() - 1.0) < 1e-9
 
 
+# ---------- Elo 特徵 ----------
+def test_elo_fit_learns_coef_and_stores_team_elo(synthetic_df):
+    model = dc.fit(synthetic_df, half_life_days=10_000, use_elo=True)
+    # 應學到非零 Elo 係數，且每隊存有最新 Elo
+    assert model.elo_coef != 0.0
+    assert len(model.team_elo) == len(model.teams)
+    # 預期進球可正常計算（含 Elo 項）
+    lam, mu = model.expected_goals(model.teams[0], model.teams[1])
+    assert lam > 0 and mu > 0
+
+
+def test_elo_affects_expected_goals(synthetic_df):
+    model = dc.fit(synthetic_df, half_life_days=10_000, use_elo=True)
+    h, a = model.teams[0], model.teams[1]
+    lam_with = model.expected_goals(h, a)
+    # 移除 Elo 後預期進球應改變
+    model.elo_coef = 0.0
+    lam_without = model.expected_goals(h, a)
+    assert lam_with != lam_without
+
+
 # ---------- The Odds API 解析 ----------
 SAMPLE_ODDS = [{
     "id": "evt1", "home_team": "Arsenal", "away_team": "Chelsea",

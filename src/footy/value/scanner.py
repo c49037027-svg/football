@@ -53,6 +53,7 @@ def scan_market(mat: np.ndarray, quotes: list, cfg: ValueConfig,
                 prob_half_win=probs.get("half_win", 0.0),
                 prob_half_loss=probs.get("half_loss", 0.0),
                 cfg=cfg, fair_prob=fair_prob, extra_edge=extra_edge,
+                market_kind=market, line=line,
             )
             results.append(vb)
     return results

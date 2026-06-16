@@ -135,6 +135,8 @@ CONSOLIDATED_MAP = {
     "OddHome": S.ODDS_HOME,
     "OddDraw": S.ODDS_DRAW,
     "OddAway": S.ODDS_AWAY,
+    "HomeElo": S.HOME_ELO,
+    "AwayElo": S.AWAY_ELO,
 }
 
 
@@ -144,6 +146,9 @@ def normalize_consolidated(raw: pd.DataFrame, division: str | None = None) -> pd
         raw = raw[raw["Division"] == division]
     cols = {dst: raw[src] for src, dst in CONSOLIDATED_MAP.items() if src in raw.columns}
     df = pd.DataFrame(cols)
+    for c in (S.ODDS_HOME, S.ODDS_DRAW, S.ODDS_AWAY, S.HOME_ELO, S.AWAY_ELO):
+        if c in df.columns:
+            df[c] = pd.to_numeric(df[c], errors="coerce")
     # 紅牌（選用，走地/分析可用）
     if "HomeRed" in raw.columns:
         df["home_red"] = pd.to_numeric(raw["HomeRed"].values, errors="coerce")

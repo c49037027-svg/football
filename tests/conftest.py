@@ -16,6 +16,8 @@ def make_synthetic_matches(n_teams: int = 10, n_rounds: int = 30,
     attack = {t: rng.normal(0, 0.3) for t in teams}
     defence = {t: rng.normal(0, 0.3) for t in teams}
     home_adv = 0.25
+    # 由球隊強度導出一個 pseudo-Elo（讓 use_elo 有訊號可學）
+    elo = {t: 1500 + 250 * (attack[t] + defence[t]) for t in teams}
 
     rows = []
     start = pd.Timestamp("2022-08-01")
@@ -35,6 +37,8 @@ def make_synthetic_matches(n_teams: int = 10, n_rounds: int = 30,
                 # xG：以真實 lambda/mu 加噪音，模擬 xG 較進球更平滑
                 S.HOME_XG: round(float(lam + rng.normal(0, 0.2)), 2),
                 S.AWAY_XG: round(float(mu + rng.normal(0, 0.2)), 2),
+                S.HOME_ELO: round(elo[h], 1),
+                S.AWAY_ELO: round(elo[a], 1),
                 # 給個粗略的「市場」賠率（公平機率加 5% vig），回測會用到
                 S.ODDS_HOME: round(1.0 / max(0.05, 0.40) * 1.05, 2),
                 S.ODDS_DRAW: round(1.0 / max(0.05, 0.27) * 1.05, 2),

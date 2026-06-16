@@ -128,6 +128,8 @@ def run(df: pd.DataFrame, cfg: Config, refit_every: int = 20,
                 model = dc.fit(train, half_life_days=cfg.model.half_life_days,
                                max_goals=cfg.model.max_goals,
                                rho_init=cfg.model.rho_init,
+                               xg_weight=cfg.model.xg_weight,
+                               use_elo=cfg.model.use_elo,
                                reference_date=row[S.DATE])
             except Exception as e:  # noqa: BLE001
                 if verbose:

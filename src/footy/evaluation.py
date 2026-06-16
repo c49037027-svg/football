@@ -136,7 +136,8 @@ def run(df: pd.DataFrame, cfg: Config, refit_every: int = 20,
             try:
                 model = dc.fit(df.iloc[:i], half_life_days=cfg.model.half_life_days,
                                max_goals=cfg.model.max_goals, rho_init=cfg.model.rho_init,
-                               xg_weight=cfg.model.xg_weight, reference_date=row[S.DATE])
+                               xg_weight=cfg.model.xg_weight, use_elo=cfg.model.use_elo,
+                               reference_date=row[S.DATE])
             except Exception as e:  # noqa: BLE001
                 if verbose:
                     print(f"[warn] 第 {i} 場擬合失敗：{e}")

@@ -10,6 +10,8 @@ from dataclasses import dataclass
 from datetime import datetime
 from typing import Callable
 
+import numpy as np
+
 from ..config import Config
 from ..models.dixon_coles import DixonColesModel
 from ..risk.manager import RiskManager
@@ -17,6 +19,15 @@ from ..value import scanner, staking
 from ..value.edge import ValueBet
 from .feed import OddsFeed
 from .inplay import final_score_matrix
+from .rules import RuleContext
+
+
+def _expected_total_goals(mat: np.ndarray) -> float:
+    """由比分機率矩陣算預期總進球（整場），給走地法則判斷環境鬆緊。"""
+    n = mat.shape[0]
+    h = np.arange(n)
+    # E[home] + E[away]
+    return float((mat.sum(axis=1) * h).sum() + (mat.sum(axis=0) * h).sum())
 
 
 @dataclass
@@ -30,6 +41,7 @@ class Alert:
     bet: ValueBet
     suggested_stake: float
     risk_note: str
+    rule_note: str = ""
 
     def format(self) -> str:
         b = self.bet
@@ -38,6 +50,7 @@ class Alert:
             f"({self.minute}') | {b.market} {b.selection} @ {b.odds:.2f}\n"
             f"    模型勝率≈{b.model_prob:.1%}  公平機率≈{b.fair_prob:.1%}  "
             f"edge={b.edge:+.1%}  EV={b.ev:+.3f}/單位\n"
+            f"    走地法則：{self.rule_note}\n"
             f"    建議下注：{self.suggested_stake:.2f}（{self.risk_note}）"
         )
 
@@ -54,6 +67,9 @@ class LiveMonitor:
         self.cfg = cfg
         self.risk = risk or RiskManager(cfg.risk)
         self.alert_sink = alert_sink
+        # 走地十六法則 規則引擎
+        from .rules import RuleEngine
+        self.rules = RuleEngine(cfg.live)
         # 同一場同一盤口避免短時間重複提示
         self._seen: set[tuple] = set()
 
@@ -72,6 +88,9 @@ class LiveMonitor:
             # 模型不認得這兩隊（不在訓練聯賽），略過
             return alerts
 
+        # 模型對整場的預期總進球（規則引擎判斷環境鬆緊用）
+        exp_total = _expected_total_goals(mat)
+
         vbs = scanner.value_bets(mat, state.quotes, self.cfg.value,
                                  extra_edge=self.cfg.live.extra_edge)
         for vb in vbs:
@@ -81,13 +100,37 @@ class LiveMonitor:
                 continue
             self._seen.add(dedup_key)
 
+            # 走地十六法則：否決不該碰的盤、對高風險情境縮減注碼
+            ctx = RuleContext(
+                minute=state.minute, home_goals=state.home_goals,
+                away_goals=state.away_goals, home_red=state.home_red,
+                away_red=state.away_red, market=vb.market_kind,
+                selection=vb.selection, line=vb.line, exp_total_goals=exp_total,
+            )
+            verdict = self.rules.evaluate(ctx, match_id=state.match_id)
+
+            if not verdict.allow:
+                # 法則否決：仍發出提示但標記為不下注，方便你了解為何不下
+                alerts.append(Alert(
+                    timestamp=datetime.utcnow().strftime("%H:%M:%S"),
+                    match_id=state.match_id, home=state.home, away=state.away,
+                    minute=state.minute,
+                    score=f"{state.home_goals}-{state.away_goals}",
+                    bet=vb, suggested_stake=0.0,
+                    risk_note="走地法則否決", rule_note=verdict.summary(),
+                ))
+                continue
+
             req = staking.stake(self.risk.bankroll, vb.ev, vb.odds, self.cfg.staking)
+            req *= verdict.stake_factor  # 套用法則的注碼調節
             decision = self.risk.approve(
                 state.match_id, f"{vb.market}:{vb.selection}", req, vb.odds,
                 day=datetime.utcnow().date(),
             )
             stake_amt = decision.stake if decision.approved else 0.0
             note = decision.reason if decision.approved else f"風控否決：{decision.reason}"
+            if decision.approved and stake_amt > 0:
+                self.rules.record_bet(state.match_id)
 
             alerts.append(Alert(
                 timestamp=datetime.utcnow().strftime("%H:%M:%S"),
@@ -95,6 +138,7 @@ class LiveMonitor:
                 minute=state.minute,
                 score=f"{state.home_goals}-{state.away_goals}",
                 bet=vb, suggested_stake=stake_amt, risk_note=note,
+                rule_note=verdict.summary(),
             ))
         return alerts
 
