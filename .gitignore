@@ -10,8 +10,9 @@ dist/
 venv/
 
 # 下載的資料與訓練好的模型（屬於本機產物，不入庫）
-data/
-models/
+# 注意：用 / 錨定到 repo 根目錄，否則會誤傷原始碼套件 src/footy/data/
+/data/
+/models/
 *.pkl
 
 # 匯出的回測明細

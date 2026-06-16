@@ -36,6 +36,15 @@ def fetch_data(league, seasons, out):
     loader.fetch(league, list(seasons), out_path=out)
 
 
+@cli.command("fetch-github")
+@click.option("--league", required=True, help="聯賽代碼，如 E0/SP1/I1/D1/F1")
+@click.option("--out", default=None, help="輸出 CSV 路徑（預設 data/<league>.csv）")
+def fetch_github(league, out):
+    """從 GitHub 鏡像下載含賠率的歷史資料（官方站被網路政策擋住時使用）。"""
+    out = out or f"data/{league}.csv"
+    loader.fetch_github(league, out_path=out)
+
+
 @cli.command("train")
 @click.option("--data", "data_path", required=True, help="歷史資料 CSV")
 @click.option("--out", default=None, help="模型輸出路徑（預設 models/<name>.pkl）")
