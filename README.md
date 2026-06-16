@@ -61,6 +61,7 @@ src/footy/
 │   ├── inplay.py      # 走地模型（依比分+剩餘時間+紅牌人數差重算）
 │   ├── feed.py        # 盤口 feed 抽象介面 + 模擬 feed
 │   ├── providers.py   # 真實賠率來源（The Odds API：初盤+走地+比分）
+│   ├── rules.py       # 走地十六法則 規則引擎（過濾 + 注碼調節）
 │   └── monitor.py     # 實時盯盤迴圈 + 提示
 ├── risk/
 │   └── manager.py     # 資金管理 / 曝險上限 / 停損 / 熔斷
@@ -91,6 +92,25 @@ footy live --model models/E0.pkl --feed theoddsapi --sport soccer_epl --bookmake
 ```bash
 footy train --data data/E0.csv --xg-weight 0.6   # 0=純進球, 1=純xG
 ```
+
+### 2b) Elo 特徵
+若資料含賽前 `home_elo` / `away_elo`，可把 Elo 當額外特徵：預期進球加入
+`elo_coef * (Elo_home − Elo_away)/400` 項，`elo_coef` 由 MLE 學習。Elo 含長期實力與
+比分差幅資訊，可補足「只看近期進球」的不足：
+```bash
+footy train   --data data/E0.csv --use-elo
+footy evaluate --data data/E0.csv --use-elo   # 比較有無 Elo 對校準的影響
+```
+
+### 走地十六法則（滾球心法規則引擎）
+> ⚠️ 「滾球/走地十六法則」是華人足球圈流傳的心法，**並無單一權威版本**。
+> `live/rules.py` 是我綜合常見共識（走地以大小球為主、讓球只在少打多時才玩、
+> 小球有底線、大球有頂線、紅牌是關鍵信號、賠率跳動快要保守、終場前減碼、
+> 限制過度交易…）整理、編碼成 **16 條透明且可調**的規則。
+
+它們**不是真理**，而是疊在 +EV 引擎之上的**過濾器與注碼調節器**：先由模型找出正期望值
+的盤，再用這些法則否決不該碰的、並對高風險情境縮減注碼。所有門檻都在 `config.yaml`
+的 `live:` 區可調，請用你自己的資料校準。走地盯盤時自動生效，提示中會顯示每筆觸發的法則。
 
 ### 3) 走地紅牌 / 少打多即時調整
 走地模型會依紅牌造成的人數差，即時調整雙方剩餘時間的進球率

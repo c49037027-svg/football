@@ -6,6 +6,7 @@ model:
   max_goals: 10
   rho_init: -0.05
   xg_weight: 0.0           # xG 混合權重 0~1（需資料含 home_xg/away_xg）
+  use_elo: false           # 把賽前 Elo 當特徵（需資料含 home_elo/away_elo）
 
 value:
   min_edge: 0.03           # 模型機率至少要比公平機率高 3% 才算 value
@@ -34,3 +35,14 @@ live:
   red_card_attack_boost: 0.30 # 對方每多吃一張紅牌，己方剩餘進球率 ×1.30
   red_card_defense_penalty: 0.25
   max_quote_age_s: 30        # 走地只接受 30 秒內的報價
+  # 走地十六法則 規則引擎
+  rules_enabled: true
+  no_bet_before_minute: 15   # 開賽前 15 分鐘不下注
+  late_game_minute: 80       # 80' 後視為終場前高波動
+  late_game_stake_factor: 0.5
+  small_ball_min_line: 2.0   # 小球不碰低於 2.0 的線
+  big_ball_max_line: 3.5     # 大球一般不追超過 3.5
+  high_goal_env_total: 2.9   # 預期總進球 >2.9 視為高進球環境，放寬大球頂線
+  handicap_requires_man_adv: true  # 走地讓球只在少打多時才考慮
+  big_lead_goals: 2
+  max_live_bets_per_match: 4
