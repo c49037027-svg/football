@@ -1,0 +1,32 @@
+# Footy 設定檔範例。所有未列出的項目都用程式內預設值。
+# 用法：footy --config config.yaml <command>
+
+model:
+  half_life_days: 180      # 時間衰減半衰期（天），越小越看重近期
+  max_goals: 10
+  rho_init: -0.05
+
+value:
+  min_edge: 0.03           # 模型機率至少要比公平機率高 3% 才算 value
+  min_ev: 0.02             # 且每單位本金期望淨報酬 >= 0.02
+  min_odds: 1.30
+  max_odds: 10.0
+
+staking:
+  kelly_fraction: 0.25     # 四分之一凱利（較穩健）
+  max_stake_fraction: 0.02 # 單注最多押 2% 資金
+  min_stake: 1.0
+
+risk:
+  bankroll: 1000.0
+  max_match_exposure: 0.05 # 單場最多 5% 資金
+  max_daily_exposure: 0.15 # 單日最多 15% 資金
+  max_open_bets: 20
+  daily_stop_loss: 0.10    # 當日虧 10% 停手
+  max_drawdown: 0.25       # 回撤 25% 熔斷
+  losing_streak_cooldown: 6
+
+live:
+  poll_interval_s: 10
+  inplay_rate_scale: 1.0
+  extra_edge: 0.02         # 走地比初盤更嚴格（多 2% 邊際）
