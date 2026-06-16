@@ -133,6 +133,16 @@ footy evaluate --data data/E0.csv --refit-every 20
 - **可靠度表**（reliability）—— 模型說「30%」的事是否真的約 30% 發生。
 - **CLV（closing line value）**—— 你的下注價 vs 收盤價；長期正 CLV 是最可靠的 +EV 指標。
 
+## 真實數據實證結論
+
+我們已用真實英超（E0）與英冠（E1）近 9 季資料做了 walk-forward 校準。
+**重點：基礎 Dixon–Coles（即使加 Elo）在 1X2 主流市場上贏不過收盤盤**——
+詳見 [`docs/FINDINGS.md`](docs/FINDINGS.md)。這代表沒有資訊優勢、難以長期 +EV。
+這不是程式失敗，而是系統**誠實地告訴你真相**：在投真錢前，先用 `evaluate` 確認有沒有 edge。
+
+可能有 edge 的方向（未在本 repo 驗證）：打贏開盤線/正 CLV、次級市場（角球/罰牌）、
+走地反應速度、更獨家且更快的資料。
+
 ## 免責
 
 本專案僅供研究與教育用途。作者不對任何投注盈虧負責。
