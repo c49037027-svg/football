@@ -52,6 +52,24 @@ def _alias(name: str) -> str:
     return TEAM_ALIASES.get(name, name)
 
 
+WC2026_SCHEDULE_URL = (
+    "https://raw.githubusercontent.com/openfootball/"
+    "world-cup.json/master/2026/worldcup.json")
+
+
+def fetch_schedule(out_path: str | Path = "data/wc2026.json",
+                   timeout: float = 30.0) -> Path:
+    """下載 openfootball 2026 世界盃賽程 JSON（含最新已踢比分）。"""
+    import requests
+    r = requests.get(WC2026_SCHEDULE_URL, headers={"User-Agent": "Mozilla/5.0"},
+                     timeout=timeout)
+    r.raise_for_status()
+    out_path = Path(out_path)
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+    out_path.write_text(r.text, encoding="utf-8")
+    return out_path
+
+
 GROUP_ROUNDS = {f"Matchday {i}" for i in range(1, 18)}
 KO_ORDER = ["Round of 32", "Round of 16", "Quarter-final", "Semi-final",
             "Match for third place", "Final"]

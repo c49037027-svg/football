@@ -170,6 +170,20 @@ footy worldcup --model models/intl.pkl --schedule examples/wc2026.json \
 賽制：12 組各 4 隊，前 2 + 8 個最佳第三名 → 32 強。已踢比分自動納入（隨賽程更新會更準）。
 > ⚠️ 「最佳第三名 → R32 槽位」用符合官方允許組別的二分匹配近似；晉級/奪冠機率為主要可信輸出。
 
+### 多頁網站（每場可點進單場分析）＋ 每日自動更新
+
+```bash
+# 產生多頁網站：首頁 index.html + 每場 match_<num>.html（手機友善、全中文）
+footy wc-site --model models/intl.pkl --schedule examples/wc2026.json \
+              --history data/intl.csv --outdir out/wc
+
+# 每日自動更新（抓最新比分→重建網站）；加 --full 連模型一起更新
+bash scripts/update_worldcup.sh
+# 排程：crontab 加 → 0 8 * * * cd /path/to/football && bash scripts/update_worldcup.sh
+```
+首頁的每場小組賽與（隊伍確定後的）淘汰賽都可點進**單場深度分析頁**，頁內有「返回首頁」。
+手機開啟：把 `out/wc/` 整個資料夾傳到手機，用瀏覽器開 `index.html` 即可（連結為相對路徑）。
+
 ## 世界盃單場深度分析（像 soccermaddy 那種 UI）
 
 針對國際賽（世界盃）的單場全面分析，整合 **Poisson（解析）+ 蒙地卡羅**，

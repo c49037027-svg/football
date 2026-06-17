@@ -249,7 +249,7 @@ def _fh_ou_box(line, p):
             f"<div style='color:{col};font-weight:700;margin-top:4px'>{reco}</div></div>")
 
 
-def render_analysis_html(a, title: str = "單場分析") -> str:
+def render_analysis_html(a, title: str = "單場分析", back_href: str | None = None) -> str:
     import datetime as _dt
     today = _dt.date.today().isoformat()
     venue = "中立場" if a.neutral else "主客場"
@@ -258,6 +258,7 @@ def render_analysis_html(a, title: str = "單場分析") -> str:
     c, k = a.corners, a.cards
     ah_col = _reco_color("大")
     h, d, aw = a.p_home, a.p_draw, a.p_away
+    nav = (f'<a class="back" href="{back_href}">← 返回首頁</a>' if back_href else "")
     return f"""<!doctype html><html lang="zh-Hant"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>{html.escape(title)}</title><style>{_CSS}
@@ -265,9 +266,11 @@ def render_analysis_html(a, title: str = "單場分析") -> str:
 .reco{{font-size:20px;font-weight:800;margin-top:6px}}
 .small{{color:var(--muted);font-size:12px}}
 .split{{display:grid;grid-template-columns:1fr 1fr;gap:14px}}
+.back{{display:inline-block;color:var(--accent);text-decoration:none;font-size:14px;margin-bottom:10px}}
 @media(max-width:560px){{.split{{grid-template-columns:1fr}}}}
 </style></head>
 <body><div class="wrap">
+  {nav}
   <h1>⚽ {html.escape(a.home)} <span style="color:#8a97a6">vs</span> {html.escape(a.away)}</h1>
   <div class="sub">{today} · {venue} · 蒙地卡羅 {a.n_sims:,} 次 + Poisson · Dixon–Coles</div>
   <div class="disc">⚠️ 純機率分析，非投注建議。角球/黃牌為先驗近似（國際賽無公開統計）。投注有風險。</div>
@@ -354,8 +357,11 @@ def write_analysis_html(a, out_path: str | Path, title: str = "單場分析") ->
 
 
 # ---------------- 世界盃整屆網站首頁 ----------------
-def _match_pred_row(model, m):
-    """單場小組賽一列：已踢顯示真實比分，未踢顯示預測比分與 1X2。"""
+def _match_pred_row(model, m, linked: set | None = None):
+    """單場小組賽一列：已踢顯示真實比分，未踢顯示預測比分與 1X2。
+
+    若該場有分析頁（m.num in linked），整列可點進去。
+    """
     from .models import markets
     t1, t2 = m.team1, m.team2
     if m.played:
@@ -368,13 +374,16 @@ def _match_pred_row(model, m):
                f"<span class='small'>{o['home']:.0%}/{o['draw']:.0%}/{o['away']:.0%}</span>")
     else:
         tag = "<span class='small'>—</span>"
-    return (f"<div class='fx'><span class='fxd'>{m.date[5:]}</span>"
-            f"<span class='fxt'>{html.escape(t1)}</span>"
-            f"<span class='fxm'>{tag}</span>"
-            f"<span class='fxt r'>{html.escape(t2)}</span></div>")
+    inner = (f"<span class='fxd'>{m.date[5:]}</span>"
+             f"<span class='fxt'>{html.escape(t1)}</span>"
+             f"<span class='fxm'>{tag}</span>"
+             f"<span class='fxt r'>{html.escape(t2)}</span>")
+    if linked and m.num in linked:
+        return f"<a class='fx fxlink' href='match_{m.num}.html'>{inner}<span class='arow'>›</span></a>"
+    return f"<div class='fx'>{inner}</div>"
 
 
-def _group_card(g, teams, result, model, matches):
+def _group_card(g, teams, result, model, matches, linked=None):
     rows = sorted(teams, key=lambda t: result.qualify.get(t, 0), reverse=True)
     trs = []
     for rank, t in enumerate(rows, 1):
@@ -385,7 +394,7 @@ def _group_card(g, teams, result, model, matches):
             f"<td style=\"{_heat(result.group_top2.get(t,0)*100,'140')}\">{result.group_top2.get(t,0):.0%}</td>"
             f"<td style=\"{_heat(q*100,'140')}\">{q:.0%}</td>"
             f"<td class='num'>{result.exp_points.get(t,0):.1f}</td></tr>")
-    fixtures = "".join(_match_pred_row(model, m)
+    fixtures = "".join(_match_pred_row(model, m, linked)
                        for m in sorted([mm for mm in matches if mm.group == g],
                                        key=lambda mm: mm.date))
     return f"""
@@ -397,7 +406,8 @@ def _group_card(g, teams, result, model, matches):
     </div>"""
 
 
-def render_worldcup_html(result, model, matches, title: str = "2026 世界盃預測") -> str:
+def render_worldcup_html(result, model, matches, title: str = "2026 世界盃預測",
+                         linked: set | None = None) -> str:
     import datetime as _dt
     today = _dt.date.today().isoformat()
     # 冠軍機率前 16
@@ -419,8 +429,38 @@ def render_worldcup_html(result, model, matches, title: str = "2026 世界盃預
         for t, p in top)
 
     groups_html = "".join(
-        _group_card(g, result.groups[g], result, model, matches)
+        _group_card(g, result.groups[g], result, model, matches, linked)
         for g in sorted(result.groups))
+
+    # 淘汰賽賽程（槽位碼；隊伍已定且有分析頁則可點）
+    ko_order = ["Round of 32", "Round of 16", "Quarter-final", "Semi-final",
+                "Match for third place", "Final"]
+    ko_names = {"Round of 32": "32 強", "Round of 16": "16 強", "Quarter-final": "8 強",
+                "Semi-final": "4 強", "Match for third place": "季軍戰", "Final": "決賽"}
+    ko_sections = []
+    for rnd in ko_order:
+        rms = sorted([m for m in matches if m.round == rnd], key=lambda m: (m.date, m.num))
+        if not rms:
+            continue
+        rows = []
+        for m in rms:
+            label = f"{html.escape(m.team1)} vs {html.escape(m.team2)}"
+            if m.played:
+                mid = f"<span class='res'>{m.hg}-{m.ag}</span>"
+            else:
+                mid = "<span class='small'>待定</span>"
+            inner = (f"<span class='fxd'>{m.date[5:]}</span>"
+                     f"<span class='fxt'>{html.escape(m.team1)}</span>"
+                     f"<span class='fxm'>{mid}</span>"
+                     f"<span class='fxt r'>{html.escape(m.team2)}</span>")
+            if linked and m.num in linked:
+                rows.append(f"<a class='fx fxlink' href='match_{m.num}.html'>{inner}<span class='arow'>›</span></a>")
+            else:
+                rows.append(f"<div class='fx'>{inner}</div>")
+        ko_sections.append(
+            f"<div class='card grp'><div class='sec'>{ko_names[rnd]}</div>"
+            f"<div class='fxs'>{''.join(rows)}</div></div>")
+    ko_html = "".join(ko_sections)
 
     return f"""<!doctype html><html lang="zh-Hant"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
@@ -441,6 +481,8 @@ th{{color:var(--muted);font-size:11px}}td.tm{{text-align:left;font-weight:700}}t
 font-size:12px;padding:3px 0;border-top:1px solid #1c242d}}
 .fxt{{font-weight:600}}.fxt.r{{text-align:right}}.fxd{{color:var(--muted)}}.fxm{{text-align:center}}
 .pred{{color:#7be0b0;font-weight:700}}.res{{color:#e0b341;font-weight:700}}
+a.fxlink{{text-decoration:none;color:inherit;grid-template-columns:42px 1fr auto 1fr 14px}}
+a.fxlink:active{{background:#1c242d}}.arow{{color:var(--accent);text-align:right}}
 </style></head>
 <body><div class="wrap">
   <h1>🏆 {html.escape(title)}</h1>
@@ -459,15 +501,49 @@ font-size:12px;padding:3px 0;border-top:1px solid #1c242d}}
     </div>
   </div>
 
-  <div class="sec" style="margin-top:22px">📋 小組賽程與預測</div>
+  <div class="sec" style="margin-top:22px">📋 小組賽程與預測（點擊看單場分析）</div>
   <div class="grids">{groups_html}</div>
+
+  <div class="sec" style="margin-top:22px">🏟️ 淘汰賽賽程</div>
+  <div class="grids">{ko_html}</div>
 
   <div class="foot">Generated by footy · 研究與教育用途 · 資料：openfootball + martj42</div>
 </div></body></html>"""
 
 
-def write_worldcup_html(result, model, matches, out_path, title="2026 世界盃預測"):
+def write_worldcup_html(result, model, matches, out_path, title="2026 世界盃預測",
+                        linked=None):
     out_path = Path(out_path)
     out_path.parent.mkdir(parents=True, exist_ok=True)
-    out_path.write_text(render_worldcup_html(result, model, matches, title), encoding="utf-8")
+    out_path.write_text(render_worldcup_html(result, model, matches, title, linked),
+                        encoding="utf-8")
     return out_path
+
+
+def write_worldcup_site(result, model, matches, outdir, history=None,
+                        title="2026 世界盃預測", n_sims=20000):
+    """產生多頁網站：index.html + 每場可分析的 match_<num>.html。
+
+    可分析 = 雙方皆為模型已知球隊（小組賽全部；淘汰賽待隊伍確定後）。
+    """
+    from . import analysis
+    outdir = Path(outdir)
+    outdir.mkdir(parents=True, exist_ok=True)
+
+    linked = set()
+    ko_rounds = {"Round of 32", "Round of 16", "Quarter-final", "Semi-final",
+                 "Match for third place", "Final"}
+    for m in matches:
+        t1, t2 = m.team1, m.team2
+        if t1 in model.attack and t2 in model.attack:
+            knockout = m.round in ko_rounds
+            a = analysis.analyze(model, t1, t2, history=history, neutral=True,
+                                 knockout=knockout, n_sims=n_sims)
+            rnd_label = m.group or m.round
+            page_title = f"{t1} vs {t2}｜{rnd_label}"
+            html_doc = render_analysis_html(a, page_title, back_href="index.html")
+            (outdir / f"match_{m.num}.html").write_text(html_doc, encoding="utf-8")
+            linked.add(m.num)
+
+    write_worldcup_html(result, model, matches, outdir / "index.html", title, linked)
+    return outdir, len(linked)
