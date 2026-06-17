@@ -380,6 +380,41 @@ def tune(ctx, data_path, refit_every, min_train, save_config):
         click.echo(f"[ok] 最佳設定已存：{save_config}")
 
 
+@cli.command("check-injuries")
+@click.option("--league", default=1, type=int, help="賽事 id（世界盃通常是 1）")
+@click.option("--season", default=2026, type=int)
+def check_injuries(league, season):
+    """診斷 api-football：印出方案狀態與某賽事的傷停筆數（需 API_FOOTBALL_KEY）。"""
+    import os
+    import requests
+    key = os.environ.get("API_FOOTBALL_KEY")
+    if not key:
+        raise click.ClickException("缺少環境變數 API_FOOTBALL_KEY")
+    base = "https://v3.football.api-sports.io"
+    h = {"x-apisports-key": key}
+    # 方案/額度狀態
+    try:
+        st = requests.get(f"{base}/status", headers=h, timeout=20).json()
+        resp = st.get("response", {})
+        sub = resp.get("subscription", {})
+        click.echo(f"方案：{sub.get('plan')}　到期：{sub.get('end')}　"
+                   f"今日用量：{(resp.get('requests') or {}).get('current')}/"
+                   f"{(resp.get('requests') or {}).get('limit_day')}")
+    except Exception as e:  # noqa: BLE001
+        click.echo(f"[warn] 取 status 失敗：{e}")
+    # 傷停筆數
+    try:
+        r = requests.get(f"{base}/injuries", params={"league": league, "season": season},
+                         headers=h, timeout=20).json()
+        click.echo(f"injuries(league={league}, season={season})："
+                   f"results={r.get('results')}　errors={r.get('errors')}")
+        for item in (r.get("response") or [])[:3]:
+            click.echo(f"  範例：{(item.get('team') or {}).get('name')} - "
+                       f"{(item.get('player') or {}).get('name')}")
+    except Exception as e:  # noqa: BLE001
+        click.echo(f"[warn] 取 injuries 失敗：{e}")
+
+
 @cli.command("eval-intl")
 @click.option("--data", "data_path", default="data/intl.csv", help="國際賽 CSV（含 Elo/neutral）")
 @click.option("--since", default="2018-01-01", help="只對此日期後的比賽計分")
