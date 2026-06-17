@@ -203,3 +203,45 @@ def ev_per_unit(prob_win: float, odds: float, prob_push: float = 0.0,
           + prob_half_loss * (-0.5)
           + prob_full_loss * (-1.0))
     return float(ev)
+
+
+# ---------------- 公平賠率（讓盤口看起來像真盤口）----------------
+def _ah_fair_odds_from_result(ah: AHResult) -> float:
+    """由亞盤逐結果機率，反解 EV=0 的公平小數賠率。
+
+    解 (o-1)*(p_win + p_half_win/2) - 0.5*p_half_loss - p_loss = 0。
+    """
+    denom = ah.p_win + ah.p_half_win / 2.0
+    if denom <= 1e-12:
+        return 99.0
+    o = 1.0 + (0.5 * ah.p_half_loss + ah.p_loss) / denom
+    return float(min(99.0, max(1.01, o)))
+
+
+def ah_fair_odds(mat: np.ndarray, home_line: float) -> tuple[float, float]:
+    """給主隊視角讓球線，回傳 (主隊公平賠率, 客隊公平賠率)。"""
+    o_home = _ah_fair_odds_from_result(asian_handicap(mat, home_line, "home"))
+    o_away = _ah_fair_odds_from_result(asian_handicap(mat, home_line, "away"))
+    return o_home, o_away
+
+
+def ou_fair_odds(mat: np.ndarray, line: float) -> tuple[float, float]:
+    """回傳 (大球公平賠率, 小球公平賠率)。push（整數線）退款，不計輸贏。"""
+    d = over_under(mat, line)
+    ow, uw = d["over_win"], d["under_win"]
+    o_over = 1.0 + uw / ow if ow > 1e-12 else 99.0
+    o_under = 1.0 + ow / uw if uw > 1e-12 else 99.0
+    return float(min(99.0, o_over)), float(min(99.0, o_under))
+
+
+def main_handicap_line(supremacy: float) -> float:
+    """由讓步（lambda-mu）取最接近的 0.25 主隊視角讓球線（負=主隊讓）。"""
+    mag = round(abs(supremacy) * 4) / 4.0
+    return -mag if supremacy >= 0 else mag
+
+
+def odds_1x2(mat: np.ndarray) -> dict[str, float]:
+    """1X2 公平賠率（1/機率）。"""
+    o = outcome_1x2(mat)
+    return {k: (1.0 / v if v > 1e-12 else 99.0) for k, v in o.items()}
+

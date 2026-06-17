@@ -42,7 +42,7 @@ jobs:
       - name: 下載國際賽資料並計算 Elo / 訓練模型
         run: |
           footy fetch-intl --out data/intl.csv --since 2010-01-01
-          footy train --data data/intl.csv --half-life 540 --use-elo --reg 2.0 --out models/intl.pkl
+          footy train --data data/intl.csv --half-life 540 --use-elo --reg 0.75 --out models/intl.pkl
 
       - name: 下載最新世界盃賽程與比分
         run: footy fetch-wc --out data/wc2026.json

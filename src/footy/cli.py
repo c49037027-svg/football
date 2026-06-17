@@ -169,12 +169,14 @@ def fetch_intl(out, since):
 @click.option("--away-formation", default=None, help="客隊陣型，如 5-3-2（手動輸入）")
 @click.option("--home-missing", default=0, type=int, help="主隊缺陣主力人數")
 @click.option("--away-missing", default=0, type=int, help="客隊缺陣主力人數")
+@click.option("--ah-line", default=None, type=float,
+              help="指定盤口讓球線（主隊視角，如 -1.5），模型在此線上評估買哪邊")
 @click.option("--html", "html_out", default=None, help="輸出分析 HTML")
 @click.option("--title", default=None, help="頁面標題")
 @click.pass_context
 def analyze(ctx, model_path, home, away, history_path, neutral, knockout,
             n_sims, home_formation, away_formation, home_missing, away_missing,
-            html_out, title):
+            ah_line, html_out, title):
     """世界盃單場深度分析（比分/大小/BTTS/亞盤/角球/黃牌/上半場/因子）。"""
     from . import analysis, report, context
     model = dc.DixonColesModel.load(model_path)
@@ -188,10 +190,10 @@ def analyze(ctx, model_path, home, away, history_path, neutral, knockout,
         if (home_missing or away_missing) else None,
     )
     a = analysis.analyze(model, home, away, history=hist, neutral=neutral,
-                         knockout=knockout, n_sims=n_sims, adjustment=adj)
-    if home_formation or away_formation:
-        a.home_style = f"{home_formation or '-'}（{a.home_style}）"
-        a.away_style = f"{away_formation or '-'}（{a.away_style}）"
+                         knockout=knockout, n_sims=n_sims, adjustment=adj,
+                         home_formation=home_formation or "",
+                         away_formation=away_formation or "",
+                         ah_line_override=ah_line)
     if home_missing or away_missing:
         a.player_note_home = f"缺主力 {home_missing} 人" if home_missing else "主力盡出"
         a.player_note_away = f"缺主力 {away_missing} 人" if away_missing else "主力盡出"

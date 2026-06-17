@@ -18,13 +18,13 @@ OUTDIR="out/wc"
 if [[ "${1:-}" == "--full" ]]; then
   echo "[update] 重新下載國際賽資料並重算 Elo / 訓練模型…"
   footy fetch-intl --out "$HISTORY" --since 2010-01-01
-  footy train --data "$HISTORY" --half-life 540 --use-elo --reg 2.0 --out "$MODEL"
+  footy train --data "$HISTORY" --half-life 540 --use-elo --reg 0.75 --out "$MODEL"
 fi
 
 if [[ ! -f "$MODEL" ]]; then
   echo "[update] 找不到模型，先做完整訓練…"
   footy fetch-intl --out "$HISTORY" --since 2010-01-01
-  footy train --data "$HISTORY" --half-life 540 --use-elo --reg 2.0 --out "$MODEL"
+  footy train --data "$HISTORY" --half-life 540 --use-elo --reg 0.75 --out "$MODEL"
 fi
 
 echo "[update] 下載最新賽程與比分…"

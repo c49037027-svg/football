@@ -53,9 +53,9 @@ class MatchAnalysis:
     btts_yes: float
     p_home_scores: float
     p_away_scores: float
-    # 亞盤
+    # 亞盤（像盤口一樣開：主隊視角讓球線 + 主/客公平賠率）
     ah_fav: str
-    ah_line: float
+    ah_line: float            # 主隊視角讓球線（負=主隊讓），如 -0.75
     ah_supremacy: float
     ah_cover_prob: float
     ah_reco: str
@@ -67,6 +67,13 @@ class MatchAnalysis:
     fh_draw: float
     fh_away: float
     fh_over: dict[float, float]   # line -> P(over)
+    # 開盤公平賠率（無水位；讓畫面像盤口）
+    ah_home_odds: float = 2.0
+    ah_away_odds: float = 2.0
+    odds_home: float = 0.0
+    odds_draw: float = 0.0
+    odds_away: float = 0.0
+    ou_odds: dict = None       # line -> (over_odds, under_odds)
     # 影響因子
     elo_home: float = 0.0
     elo_away: float = 0.0
@@ -77,28 +84,36 @@ class MatchAnalysis:
     away_style: str = ""
     player_note_home: str = "資料不足（中性）"
     player_note_away: str = "資料不足（中性）"
+    home_formation: str = ""
+    away_formation: str = ""
+    # 資料量支撐（0~1）：兩隊近期樣本越多越可信，用於可信度評分（非機率本身）
+    data_support: float = 1.0
     n_sims: int = 0
 
 
-def _ah_model_line(lam: float, mu: float, mat: np.ndarray) -> tuple[str, float, float, float, str]:
+def _ah_model_line(lam: float, mu: float, mat: np.ndarray,
+                   line_override: float | None = None
+                   ) -> tuple[str, float, float, float, str]:
     """由讓步（supremacy=lam-mu）給亞盤建議。
 
-    回傳 (受讓方視角的熱門隊, 讓球線(熱門 -X), supremacy, 熱門covers機率, 建議文字)。
+    line_override：若提供（如盤口開的 -1.5），就用該主隊視角讓球線評估，
+    模型只決定在這條線上推薦買哪邊（買贏面較大的一邊）。
+    回傳 (受讓方視角的熱門隊, 讓球線, supremacy, 熱門covers機率, 建議文字, 主odds, 客odds)。
     """
     supremacy = lam - mu
     fav_is_home = supremacy >= 0
-    sup_abs = abs(supremacy)
-    line_q = round(sup_abs * 4) / 4.0  # 最接近的 0.25
-    # 用比熱門 supremacy 略低的線當建議（保守），至少 0.25
-    bet_line = max(0.25, line_q)
-    side = "home" if fav_is_home else "away"
-    # home 視角讓球：熱門讓球為負
-    handicap_home_view = -bet_line if fav_is_home else bet_line
-    ah = markets.asian_handicap(mat, handicap_home_view, side)
-    cover = ah.p_win + ah.p_half_win + 0.5 * ah.p_push
-    fav = "home" if fav_is_home else "away"
-    reco = f"買{'主' if fav_is_home else '客'}隊 讓{bet_line}"
-    return fav, bet_line, supremacy, float(cover), reco
+    # 像盤口一樣開「主場視角」讓球線（負=主隊讓），取最接近的 0.25
+    home_line = line_override if line_override is not None else markets.main_handicap_line(supremacy)
+    o_home, o_away = markets.ah_fair_odds(mat, home_line)
+    # 在這條線上，買「覆蓋機率較高」的一邊（指定盤口線時不一定是熱門方）
+    ah_h = markets.asian_handicap(mat, home_line, "home")
+    cover_h = ah_h.p_win + ah_h.p_half_win + 0.5 * ah_h.p_push
+    pick_home = cover_h >= 0.5
+    cover = cover_h if pick_home else (1.0 - cover_h)
+    fav = "home" if pick_home else "away"
+    pick_line = home_line if pick_home else -home_line
+    reco = f"買{'主' if pick_home else '客'}隊 {pick_line:+g}"
+    return fav, home_line, supremacy, float(cover), reco, o_home, o_away
 
 
 def _style(attack: float, defence: float) -> str:
@@ -114,12 +129,26 @@ def _style(attack: float, defence: float) -> str:
     return "均衡"
 
 
+def _data_support(history, home, away) -> float:
+    """兩隊近期樣本量 → 可信度權重 0~1（樣本越多越可信）。"""
+    if history is None or S.DATE not in history:
+        return 0.7
+    cutoff = history[S.DATE].max() - pd.Timedelta(days=1095)  # 近三年
+    recent = history[history[S.DATE] >= cutoff]
+    def cnt(t):
+        return int(((recent[S.HOME] == t) | (recent[S.AWAY] == t)).sum())
+    support = min(cnt(home), cnt(away))
+    return float(min(1.0, max(0.3, support / 20.0)))  # 20 場以上視為充分
+
+
 def analyze(model: DixonColesModel, home: str, away: str,
             history: pd.DataFrame | None = None, neutral: bool = True,
             knockout: bool = False, n_sims: int = 50000,
             first_half_fraction: float = 0.45,
             adjustment: ContextAdjustment | None = None,
             priors: counts.CountPriors | None = None,
+            home_formation: str = "", away_formation: str = "",
+            ah_line_override: float | None = None,
             seed: int | None = 42) -> MatchAnalysis:
     lam, mu = model.expected_goals(home, away, neutral=neutral)
     if adjustment is not None:
@@ -130,14 +159,18 @@ def analyze(model: DixonColesModel, home: str, away: str,
     o = markets.outcome_1x2(mat)
     eh, ea = markets.expected_goals_from_matrix(mat)
     ou = {}
+    ou_odds = {}
     for line in (1.5, 2.5, 3.5):
         d = markets.over_under(mat, line)
         ou[line] = {"over": d["over_win"], "under": d["under_win"]}
+        ou_odds[line] = markets.ou_fair_odds(mat, line)
     bt = markets.btts(mat)
     p_home_scores = float(1.0 - mat[0, :].sum())
     p_away_scores = float(1.0 - mat[:, 0].sum())
+    o1x2 = markets.odds_1x2(mat)
 
-    fav, bet_line, supremacy, cover, ah_reco = _ah_model_line(lam, mu, mat)
+    fav, bet_line, supremacy, cover, ah_reco, ah_o_home, ah_o_away = _ah_model_line(
+        lam, mu, mat, line_override=ah_line_override)
 
     # ---- 角球 / 黃牌（Poisson 先驗）----
     sh = model.attack.get(home, 0.0) - model.defence.get(home, 0.0)
@@ -176,12 +209,18 @@ def analyze(model: DixonColesModel, home: str, away: str,
         p_home_scores=p_home_scores, p_away_scores=p_away_scores,
         ah_fav=fav, ah_line=bet_line, ah_supremacy=round(supremacy, 2),
         ah_cover_prob=cover, ah_reco=ah_reco,
+        ah_home_odds=round(ah_o_home, 2), ah_away_odds=round(ah_o_away, 2),
+        odds_home=round(o1x2["home"], 2), odds_draw=round(o1x2["draw"], 2),
+        odds_away=round(o1x2["away"], 2),
+        ou_odds={k: (round(v[0], 2), round(v[1], 2)) for k, v in ou_odds.items()},
         corners=corners, cards=cards,
         fh_home=fh_home_p, fh_draw=fh_draw_p, fh_away=fh_away_p, fh_over=fh_over,
         elo_home=round(model.team_elo.get(home, 0.0), 0) if model.team_elo else 0.0,
         elo_away=round(model.team_elo.get(away, 0.0), 0) if model.team_elo else 0.0,
         home_style=_style(model.attack.get(home, 0), model.defence.get(home, 0)),
         away_style=_style(model.attack.get(away, 0), model.defence.get(away, 0)),
+        home_formation=home_formation, away_formation=away_formation,
+        data_support=_data_support(history, home, away),
         n_sims=n_sims,
     )
     if history is not None:

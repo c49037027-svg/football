@@ -228,27 +228,32 @@ def render_analysis_console(a) -> str:
     L.append(f"⚽ {hz} vs {az}" + ("（中立場）" if a.neutral else ""))
     L.append(f"  AI 預測比分 {a.predicted_score[0]}-{a.predicted_score[1]}"
              f"（機率 {a.predicted_score_prob:.0%}；總進球 {a.total_goals}）· xG {a.xg_low}-{a.xg_high}")
-    L.append(f"  1X2     主勝 {a.p_home:.0%} | 和 {a.p_draw:.0%} | 客勝 {a.p_away:.0%}"
-             f"（AI信心 {max(a.p_home, a.p_draw, a.p_away):.0%}）")
+    L.append(f"  1X2     主 @{a.odds_home:.2f} / 和 @{a.odds_draw:.2f} / 客 @{a.odds_away:.2f}"
+             f"  可信度 {_conf_text(max(a.p_home, a.p_draw, a.p_away), a.data_support)}")
+    ouo = a.ou_odds or {}
     for ln in (1.5, 2.5, 3.5):
         d = a.over_under[ln]
-        L.append(f"  大小{ln}  大 {d['over']:.0%} / 小 {d['under']:.0%}  "
-                 f"建議 {'買大' if d['over']>=0.5 else '買小'}"
-                 f"（AI信心 {max(d['over'], d['under']):.0%}）")
-    L.append(f"  BTTS    是 {a.btts_yes:.0%}（{hz} 進球 {a.p_home_scores:.0%}"
-             f" × {az} 進球 {a.p_away_scores:.0%}）（AI信心 {max(a.btts_yes, 1-a.btts_yes):.0%}）")
-    L.append(f"  亞盤     supremacy(xG差) {a.ah_supremacy:+.2f} → {a.ah_reco}"
-             f"（AI信心 {max(a.ah_cover_prob, 1-a.ah_cover_prob):.0%}）")
+        oo = ouo.get(ln, (0, 0))
+        L.append(f"  大小{ln}  大 @{oo[0]:.2f} / 小 @{oo[1]:.2f}  "
+                 f"{'買大' if d['over']>=0.5 else '買小'}"
+                 f"  可信度 {_conf_text(max(d['over'], d['under']), a.data_support)}")
+    L.append(f"  BTTS    {'買是' if a.btts_yes>=0.5 else '買否'}"
+             f"（{hz} 進球 {a.p_home_scores:.0%} × {az} 進球 {a.p_away_scores:.0%}）"
+             f"  可信度 {_conf_text(max(a.btts_yes, 1-a.btts_yes), a.data_support)}")
+    L.append(f"  亞盤     {hz} {a.ah_line:+g} @{a.ah_home_odds:.2f} / "
+             f"{az} {-a.ah_line:+g} @{a.ah_away_odds:.2f} → {a.ah_reco}"
+             f"  可信度 {_conf_text(max(a.ah_cover_prob, 1-a.ah_cover_prob), a.data_support)}")
     c = a.corners
     L.append(f"  角球     合計 {c.total}（{hz} {c.home} / {az} {c.away}）"
-             f" 估線 {c.line} {c.recommend}（信心 {c.confidence:.0%}）")
+             f" 估線 {c.line} {c.recommend}  可信度 {_conf_text(c.confidence, a.data_support)}")
     k = a.cards
-    L.append(f"  黃牌     合計 {k.total} 估線 {k.line} {k.recommend}（信心 {k.confidence:.0%}）")
+    L.append(f"  黃牌     合計 {k.total} 估線 {k.line} {k.recommend}  可信度 {_conf_text(k.confidence, a.data_support)}")
     L.append(f"  上半場   主 {a.fh_home:.0%} / 平 {a.fh_draw:.0%} / 客 {a.fh_away:.0%}"
-             f"（AI信心 {max(a.fh_home, a.fh_draw, a.fh_away):.0%}）"
+             f"  可信度 {_conf_text(max(a.fh_home, a.fh_draw, a.fh_away), a.data_support)}"
              f"  大0.5 {a.fh_over[0.5]:.0%} / 大1.5 {a.fh_over[1.5]:.0%}")
-    L.append(f"  因子     Elo {a.elo_home:.0f} vs {a.elo_away:.0f}｜狀態 {a.home_form or '-'}"
-             f" / {a.away_form or '-'}｜{a.h2h}｜戰術 {a.home_style} vs {a.away_style}")
+    L.append(f"  因子     Elo {a.elo_home:.0f} vs {a.elo_away:.0f}｜陣型 "
+             f"{a.home_formation or '—'} vs {a.away_formation or '—'}｜"
+             f"狀態 {a.home_form or '-'}/{a.away_form or '-'}｜資料可信度 {a.data_support*100:.0f}%")
     return "\n".join(L)
 
 
@@ -260,43 +265,83 @@ def _reco_color(reco: str) -> str:
     return "#e0b341"
 
 
-def _conf_label(p: float) -> str:
-    """信心 = 推薦那一邊的機率（離 50/50 越遠越有信心）。"""
-    return f"<div class='cf'>AI 信心 {max(p, 1 - p):.0%}</div>"
+def _conf_tier(p: float, support: float = 1.0) -> tuple[int, str]:
+    """可信度 = 決斷度 × 資料量支撐（不是機率本身）。
+
+    決斷度 = 推薦方機率離 50/50 多遠（2c-1）；資料少的對戰會被扣分。
+    回傳 星等(1-5) 與分級標籤。
+    """
+    c = max(p, 1 - p)
+    decisiveness = max(0.0, 2 * c - 1.0)          # 0（擲硬幣）~1（壓倒性）
+    score = decisiveness * max(0.0, min(1.0, support))
+    if score >= 0.55:
+        return 5, "極高"
+    if score >= 0.40:
+        return 4, "高"
+    if score >= 0.25:
+        return 3, "中"
+    if score >= 0.12:
+        return 2, "偏低"
+    return 1, "低"
 
 
-def _ou_box(line, d):
+def _conf_text(p: float, support: float = 1.0) -> str:
+    """純文字可信度（console 用）：★星 + 分級。"""
+    stars, tier = _conf_tier(p, support)
+    return f"{'★' * stars}{'☆' * (5 - stars)} {tier}"
+
+
+def _conf_label(p: float, support: float = 1.0) -> str:
+    """可信度徽章（HTML 用）：★星 + 分級（與機率分開，避免循環）。"""
+    stars, tier = _conf_tier(p, support)
+    return (f"<div class='cf'>可信度 <span class='stars'>{'★' * stars}"
+            f"<span class='dim'>{'★' * (5 - stars)}</span></span> {tier}</div>")
+
+
+def _odds(o: float) -> str:
+    return f"{o:.2f}" if o and o < 50 else "—"
+
+
+def _ou_box(line, d, odds=None, support=1.0):
     reco = "買大" if d["over"] >= 0.5 else "買小"
     col = _reco_color(reco)
+    price = ""
+    if odds:
+        price = (f"<div class='price'>大 {_odds(odds[0])} ／ 小 {_odds(odds[1])}</div>")
     return (f"<div class='box'><div class='k'>線 {line}</div>"
             f"<div class='v'>大 {d['over']:.0%}</div>"
+            f"{price}"
             f"<div style='color:{col};font-weight:700;margin-top:4px'>{reco}</div>"
-            f"{_conf_label(d['over'])}</div>")
+            f"{_conf_label(d['over'], support)}</div>")
 
 
-def _fh_ou_box(line, p):
+def _fh_ou_box(line, p, support=1.0):
     reco = "買大" if p >= 0.5 else "買小"
     col = _reco_color(reco)
     return (f"<div class='box'><div class='k'>上半場線 {line}</div>"
             f"<div class='v'>大 {p:.0%}</div>"
             f"<div style='color:{col};font-weight:700;margin-top:4px'>{reco}</div>"
-            f"{_conf_label(p)}</div>")
+            f"{_conf_label(p, support)}</div>")
 
 
 def render_analysis_html(a, title: str = "單場分析", back_href: str | None = None) -> str:
     import datetime as _dt
     today = _dt.date.today().isoformat()
     venue = "中立場" if a.neutral else "主客場"
-    ou_boxes = "".join(_ou_box(ln, a.over_under[ln]) for ln in (1.5, 2.5, 3.5))
-    fh_ou = "".join(_fh_ou_box(ln, p) for ln, p in a.fh_over.items())
+    sup = a.data_support
+    ou_odds = a.ou_odds or {}
+    ou_boxes = "".join(_ou_box(ln, a.over_under[ln], ou_odds.get(ln), sup)
+                       for ln in (1.5, 2.5, 3.5))
+    fh_ou = "".join(_fh_ou_box(ln, p, sup) for ln, p in a.fh_over.items())
     c, k = a.corners, a.cards
     ah_col = _reco_color("大")
     h, d, aw = a.p_home, a.p_draw, a.p_away
-    # 各欄位信心 = 模型對其推薦那一邊的機率（離 50/50 越遠越有信心），皆為算出來的值
     conf_1x2 = max(h, d, aw)
     conf_btts = max(a.btts_yes, 1 - a.btts_yes)
     conf_ah = max(a.ah_cover_prob, 1 - a.ah_cover_prob)
     conf_fh = max(a.fh_home, a.fh_draw, a.fh_away)
+    hf = a.home_formation or "—（賽前公布）"
+    af = a.away_formation or "—（賽前公布）"
     nav = (f'<a class="back" href="{back_href}">← 返回首頁</a>' if back_href else "")
     return f"""<!doctype html><html lang="zh-Hant"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
@@ -306,27 +351,36 @@ def render_analysis_html(a, title: str = "單場分析", back_href: str | None =
 .small{{color:var(--muted);font-size:12px}}
 .split{{display:grid;grid-template-columns:1fr 1fr;gap:14px}}
 .back{{display:inline-block;color:var(--accent);text-decoration:none;font-size:14px;margin-bottom:10px}}
-.cf{{margin-top:4px;font-size:11px;color:#7be0b0;font-weight:700}}
+.cf{{margin-top:5px;font-size:11px;color:var(--muted)}}
+.cf .stars{{color:#f0c050;letter-spacing:1px}}.cf .dim{{color:#3a4350}}
+.cf .pct{{color:#7be0b0;font-weight:700}}
+.price{{margin-top:3px;font-size:13px;color:#cdd9e5;font-weight:700;font-variant-numeric:tabular-nums}}
+.line-row{{display:flex;justify-content:space-between;gap:10px;margin:6px 0;
+font-size:15px;font-weight:700;font-variant-numeric:tabular-nums}}
+.line-row .o{{color:#7be0b0}}
 @media(max-width:560px){{.split{{grid-template-columns:1fr}}}}
 </style></head>
 <body><div class="wrap">
   {nav}
   <h1>⚽ {html.escape(zh(a.home))} <span style="color:#8a97a6">vs</span> {html.escape(zh(a.away))}</h1>
   <div class="sub">{today} · {venue} · 蒙地卡羅 {a.n_sims:,} 次 + Poisson · Dixon–Coles</div>
-  <div class="disc">⚠️ 純機率分析，非投注建議。AI 信心 = 模型對推薦選項算出的機率（離 50/50 越遠越高）。角球/黃牌為先驗近似。投注有風險。</div>
+  <div class="disc">⚠️ 純機率分析，非投注建議。可信度 = 決斷度 × 資料量支撐（與機率/賠率分開，避免循環）。角球/黃牌為先驗近似。投注有風險。</div>
 
   <div class="card">
     <div class="head"><div class="teams">AI 預測比分 {a.predicted_score[0]}-{a.predicted_score[1]}
       <span class="small">（機率 {a.predicted_score_prob:.0%}）</span></div>
       <div class="small">總進球 {a.total_goals} · xG {a.xg_low}–{a.xg_high}</div>
-      <div class="cf">AI 信心 {a.predicted_score_prob:.0%}</div></div>
+      <div class="cf">最可能比分機率 {a.predicted_score_prob:.0%}</div></div>
     <div class="bar">
       <div class="h" style="width:{h*100:.1f}%">{h:.0%}</div>
       <div class="d" style="width:{d*100:.1f}%">{d:.0%}</div>
       <div class="a" style="width:{aw*100:.1f}%">{aw:.0%}</div>
     </div>
-    <div class="small">主勝 / 和 / 客勝</div>
-    {_conf_label(conf_1x2)}
+    <div class="line-row"><span>主勝 <span class="o">{_odds(a.odds_home)}</span></span>
+      <span>和 <span class="o">{_odds(a.odds_draw)}</span></span>
+      <span>客勝 <span class="o">{_odds(a.odds_away)}</span></span></div>
+    <div class="small">模型公平賠率（無水位）</div>
+    {_conf_label(conf_1x2, sup)}
   </div>
 
   <div class="sec">⚽ 大小球</div>
@@ -338,13 +392,17 @@ def render_analysis_html(a, title: str = "單場分析", back_href: str | None =
       <div class="reco" style="color:{_reco_color('買是' if a.btts_yes>=0.5 else '買否')}">
         {'買是' if a.btts_yes>=0.5 else '買否'}（{a.btts_yes:.0%}）</div>
       <div class="small">{html.escape(zh(a.home))} 進球 {a.p_home_scores:.0%} × {html.escape(zh(a.away))} 進球 {a.p_away_scores:.0%}</div>
-      {_conf_label(conf_btts)}
+      {_conf_label(conf_btts, sup)}
     </div>
     <div class="card">
-      <div class="sec">⚖️ 亞盤讓球</div>
-      <div class="v" style="font-size:18px">{html.escape(a.ah_reco)}</div>
-      <div class="small">模型 supremacy(xG差)：{a.ah_supremacy:+.2f}　covers {a.ah_cover_prob:.0%}</div>
-      {_conf_label(conf_ah)}
+      <div class="sec">⚖️ 亞盤讓球（模型開盤）</div>
+      <div class="line-row">
+        <span>{html.escape(zh(a.home))} {a.ah_line:+g} <span class="o">{_odds(a.ah_home_odds)}</span></span>
+        <span>{html.escape(zh(a.away))} {-a.ah_line:+g} <span class="o">{_odds(a.ah_away_odds)}</span></span>
+      </div>
+      <div class="reco" style="font-size:16px;color:{_reco_color('讓')}">{html.escape(a.ah_reco)}</div>
+      <div class="small">supremacy(xG差) {a.ah_supremacy:+.2f}　公平賠率（無水位）</div>
+      {_conf_label(conf_ah, sup)}
     </div>
   </div>
 
@@ -374,7 +432,7 @@ def render_analysis_html(a, title: str = "單場分析", back_href: str | None =
       <div>平 <b>{a.fh_draw:.0%}</b></div>
       <div>客 <b style="color:#e07a5f">{a.fh_away:.0%}</b></div>
     </div>
-    {_conf_label(conf_fh)}
+    {_conf_label(conf_fh, sup)}
     <div class="grid" style="margin-top:10px">{fh_ou}</div>
   </div>
 
@@ -382,11 +440,14 @@ def render_analysis_html(a, title: str = "單場分析", back_href: str | None =
   <div class="card">
     <div class="grid">
       <div class="box"><div class="k">Elo 評分</div><div class="v">{a.elo_home:.0f} vs {a.elo_away:.0f}</div></div>
+      <div class="box"><div class="k">資料量可信度</div><div class="v">{a.data_support*100:.0f}%</div></div>
+      <div class="box"><div class="k">陣型 {html.escape(zh(a.home))}</div><div class="v">{html.escape(hf)}</div></div>
+      <div class="box"><div class="k">陣型 {html.escape(zh(a.away))}</div><div class="v">{html.escape(af)}</div></div>
+      <div class="box"><div class="k">先發/缺陣 {html.escape(zh(a.home))}</div><div class="v" style="font-size:12px">{html.escape(a.player_note_home)}</div></div>
+      <div class="box"><div class="k">先發/缺陣 {html.escape(zh(a.away))}</div><div class="v" style="font-size:12px">{html.escape(a.player_note_away)}</div></div>
       <div class="box"><div class="k">近5場 {html.escape(zh(a.home))}</div><div class="v form">{_form_html(a.home_form)}</div></div>
       <div class="box"><div class="k">近5場 {html.escape(zh(a.away))}</div><div class="v form">{_form_html(a.away_form)}</div></div>
-      <div class="box"><div class="k">戰術對比</div><div class="v" style="font-size:13px">{a.home_style} / {a.away_style}</div></div>
-      <div class="box"><div class="k">球員狀態 {html.escape(zh(a.home))}</div><div class="v" style="font-size:12px">{html.escape(a.player_note_home)}</div></div>
-      <div class="box"><div class="k">球員狀態 {html.escape(zh(a.away))}</div><div class="v" style="font-size:12px">{html.escape(a.player_note_away)}</div></div>
+      <div class="box"><div class="k">戰術風格</div><div class="v" style="font-size:13px">{a.home_style} / {a.away_style}</div></div>
     </div>
     <div class="small" style="margin-top:8px">歷史交手：{html.escape(a.h2h or '無紀錄')}</div>
   </div>
