@@ -109,6 +109,19 @@ footy train   --data data/E0.csv --use-elo
 footy evaluate --data data/E0.csv --use-elo   # 比較有無 Elo 對校準的影響
 ```
 
+### 模型精度強化：防洩漏 / 正則化 / 自動調參
+- **防洩漏**：`dc.fit` 給 `reference_date` 時自動剔除晚於該日的比賽，杜絕用到未來資料
+  （回測/評估本就逐場往前，這也修掉「未來比賽因 age<0 被當成全權重」的舊 bug）。
+- **L2 正則化** `--reg`：對攻防參數加 `reg·Σ(attack²+defence²)` 懲罰，把弱資料的隊往
+  聯盟平均收縮，降低過擬合、穩定擬合（多隊國際賽尤其有用）。
+- **自動調參** `footy tune`：用 walk-forward 樣本外 log-loss 網格搜尋最佳
+  `half_life/reg/use_elo/xg_weight`，把「手設」變成「證明過最低 log-loss」：
+```bash
+footy tune     --data data/E0.csv --save-config config.best.yaml
+footy --config config.best.yaml evaluate --data data/E0.csv   # 用最佳設定驗證
+footy --config config.best.yaml train    --data data/E0.csv   # 用最佳設定訓練
+```
+
 ### 走地十六法則（滾球心法規則引擎）
 > ⚠️ 「滾球/走地十六法則」是華人足球圈流傳的心法，**並無單一權威版本**。
 > `live/rules.py` 是我綜合常見共識（走地以大小球為主、讓球只在少打多時才玩、
