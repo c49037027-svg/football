@@ -1,0 +1,9 @@
+# 英超（E0）經 footy tune 調校出的最佳設定（樣本外 log-loss 最低）。
+# 用法：footy --config config.epl.yaml train|evaluate --data data/E0.csv
+model:
+  half_life_days: 240.0   # 調校最佳（120/240/480 中最低 log-loss）
+  max_goals: 10
+  rho_init: -0.05
+  xg_weight: 0.0
+  use_elo: false          # 英超 Elo 近中性，不開
+  reg: 2.0                # L2 正則化有幫助
