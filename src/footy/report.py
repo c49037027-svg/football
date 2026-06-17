@@ -389,6 +389,7 @@ def _match_pred_row(model, m, linked: set | None = None):
     """
     from .models import markets
     t1, t2 = m.team1, m.team2
+    cs5 = ""
     if m.played:
         tag = f"<span class='res'>{m.hg}-{m.ag}</span> <span class='small'>(已賽)</span>"
     elif t1 in model.attack and t2 in model.attack:
@@ -398,6 +399,9 @@ def _match_pred_row(model, m, linked: set | None = None):
         o = markets.outcome_1x2(mat)
         tag = (f"<span class='pred'>{s[0]}-{s[1]}</span><span class='small'>（{sp:.0%}）</span> "
                f"<span class='small'>{o['home']:.0%}/{o['draw']:.0%}/{o['away']:.0%}</span>")
+        top = markets.correct_score(mat, top_n=5)
+        cs5 = ("<div class='cs5'>正確比分：" +
+               " · ".join(f"{a}-{b} {p*100:.0f}%" for (a, b), p in top) + "</div>")
     else:
         tag = "<span class='small'>—</span>"
     inner = (f"<span class='fxd'>{m.date[5:]}</span>"
@@ -405,8 +409,9 @@ def _match_pred_row(model, m, linked: set | None = None):
              f"<span class='fxm'>{tag}</span>"
              f"<span class='fxt r'>{html.escape(zh(t2))}</span>")
     if linked and m.num in linked:
-        return f"<a class='fx fxlink' href='match_{m.num}.html'>{inner}<span class='arow'>›</span></a>"
-    return f"<div class='fx'>{inner}</div>"
+        return (f"<a class='fx fxlink' href='match_{m.num}.html'>{inner}"
+                f"<span class='arow'>›</span></a>{cs5}")
+    return f"<div class='fx'>{inner}</div>{cs5}"
 
 
 def _group_card(g, teams, result, model, matches, linked=None):
@@ -508,6 +513,7 @@ th{{color:var(--muted);font-size:11px}}td.tm{{text-align:left;font-weight:700}}t
 font-size:12px;padding:3px 0;border-top:1px solid #1c242d}}
 .fxt{{font-weight:600}}.fxt.r{{text-align:right}}.fxd{{color:var(--muted)}}.fxm{{text-align:center}}
 .pred{{color:#7be0b0;font-weight:700}}.res{{color:#e0b341;font-weight:700}}
+.cs5{{font-size:11px;color:var(--muted);padding:0 0 5px 42px;letter-spacing:.02em}}
 a.fxlink{{text-decoration:none;color:inherit;grid-template-columns:42px 1fr auto 1fr 14px}}
 a.fxlink:active{{background:#1c242d}}.arow{{color:var(--accent);text-align:right}}
 </style></head>
