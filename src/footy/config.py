@@ -29,6 +29,9 @@ class ModelConfig:
     # 是否把賽前 Elo 評分當額外特徵加進預期進球（需資料含 Elo 欄位）。
     # Elo 含長期實力與比分差幅資訊，可能補足「只看近期進球」的不足。
     use_elo: bool = False
+    # L2 正則化強度（>=0）。對攻防參數施加 reg * Σ(attack²+defence²) 懲罰，
+    # 把資料少的隊往聯盟平均（0）收縮，降低過擬合、穩定擬合。0 = 不正則化。
+    reg: float = 0.0
 
 
 @dataclass

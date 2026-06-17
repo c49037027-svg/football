@@ -133,20 +133,26 @@ def score_matrix_from_rates(lam: float, mu: float, rho: float, max_goals: int) -
 
 def fit(df: pd.DataFrame, half_life_days: float = 180.0, max_goals: int = 10,
         rho_init: float = -0.05, reference_date: "pd.Timestamp | None" = None,
-        xg_weight: float = 0.0, use_elo: bool = False,
+        xg_weight: float = 0.0, use_elo: bool = False, reg: float = 0.0,
         verbose: bool = False) -> DixonColesModel:
     """以最大概似估計擬合 Dixon–Coles 模型。
 
     df 需含內部欄位：date, home, away, home_goals, away_goals。
-    reference_date：時間衰減的基準（預設為資料中最後一天）。
+    reference_date：時間衰減的基準（預設為資料中最後一天）。**晚於此日期的比賽會被
+        剔除**，避免用到「未來」資料造成洩漏（look-ahead）。
     xg_weight：若資料含 home_xg/away_xg，用 (1-w)*goals + w*xG 當建模目標。
         xG 通常比實際進球更穩定、雜訊更低。注意：xG 為連續值，Poisson 概似用
         gammaln 仍可定義；但 Dixon–Coles 的低比分 tau 修正只對「整數低比分」有意義，
         因此 xg_weight>0 時自動關閉 tau 修正（rho 固定為 0）。
+    reg：L2 正則化強度，對攻防參數施加 reg*Σ(attack²+defence²) 懲罰，把弱資料的隊
+        往聯盟平均收縮，降低過擬合。
     """
     df = df.dropna(subset=[S.HOME, S.AWAY, S.HOME_GOALS, S.AWAY_GOALS]).copy()
     if reference_date is None:
         reference_date = df[S.DATE].max()
+    else:
+        # 防洩漏：只用基準日（含）之前的比賽
+        df = df[df[S.DATE] <= reference_date].copy()
 
     teams = sorted(set(df[S.HOME]) | set(df[S.AWAY]))
     n = len(teams)
@@ -213,14 +219,16 @@ def fit(df: pd.DataFrame, half_life_days: float = 180.0, max_goals: int = 10,
 
         log_p = (hg * np.log(lam) - lam - gammaln(hg + 1)
                  + ag * np.log(mu) - mu - gammaln(ag + 1))
+        # L2 正則化：把攻防參數往 0（聯盟平均）收縮
+        penalty = reg * (np.sum(att ** 2) + np.sum(dfc ** 2)) if reg > 0 else 0.0
         if disable_tau:
             ll = weights * log_p
-            return -ll.sum()
+            return -ll.sum() + penalty
         tau = _tau(hg, ag, lam, mu, rho)
         if np.any(tau <= 0):
             return 1e10  # 無效參數重罰
         ll = weights * (log_p + np.log(tau))
-        return -ll.sum()
+        return -ll.sum() + penalty
 
     # 初始值
     x0_parts = [

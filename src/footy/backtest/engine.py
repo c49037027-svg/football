@@ -130,6 +130,7 @@ def run(df: pd.DataFrame, cfg: Config, refit_every: int = 20,
                                rho_init=cfg.model.rho_init,
                                xg_weight=cfg.model.xg_weight,
                                use_elo=cfg.model.use_elo,
+                               reg=cfg.model.reg,
                                reference_date=row[S.DATE])
             except Exception as e:  # noqa: BLE001
                 if verbose:

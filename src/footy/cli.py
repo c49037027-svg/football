@@ -51,8 +51,9 @@ def fetch_github(league, out):
 @click.option("--half-life", default=None, type=float, help="時間衰減半衰期（天）")
 @click.option("--xg-weight", default=None, type=float, help="xG 混合權重 0~1（需資料含 xG）")
 @click.option("--use-elo", is_flag=True, default=False, help="把賽前 Elo 當特徵（需資料含 Elo）")
+@click.option("--reg", default=None, type=float, help="L2 正則化強度（往聯盟平均收縮）")
 @click.pass_context
-def train(ctx, data_path, out, half_life, xg_weight, use_elo):
+def train(ctx, data_path, out, half_life, xg_weight, use_elo, reg):
     cfg: Config = ctx.obj["cfg"]
     if half_life is not None:
         cfg.model.half_life_days = half_life
@@ -60,12 +61,16 @@ def train(ctx, data_path, out, half_life, xg_weight, use_elo):
         cfg.model.xg_weight = xg_weight
     if use_elo:
         cfg.model.use_elo = True
+    if reg is not None:
+        cfg.model.reg = reg
     df = loader.load_csv(data_path)
     click.echo(f"[train] 載入 {len(df)} 場比賽，開始擬合"
-               f"（half_life={cfg.model.half_life_days}天, xg_weight={cfg.model.xg_weight}）…")
+               f"（half_life={cfg.model.half_life_days}天, xg_weight={cfg.model.xg_weight}, "
+               f"reg={cfg.model.reg}）…")
     model = dc.fit(df, half_life_days=cfg.model.half_life_days,
                    max_goals=cfg.model.max_goals, rho_init=cfg.model.rho_init,
-                   xg_weight=cfg.model.xg_weight, use_elo=cfg.model.use_elo, verbose=True)
+                   xg_weight=cfg.model.xg_weight, use_elo=cfg.model.use_elo,
+                   reg=cfg.model.reg, verbose=True)
     out = out or f"models/{_stem(data_path)}.pkl"
     model.save(out)
     click.echo(f"[ok] 模型已存：{out}（{len(model.teams)} 隊，主場優勢={model.home_adv:.3f}，rho={model.rho:.3f}）")
@@ -332,14 +337,38 @@ def backtest(ctx, data_path, half_life, edge, kelly, use_elo, refit_every, expor
         click.echo(f"[ok] 已匯出 {len(res.bets)} 筆下注到 {export}")
 
 
+@cli.command("tune")
+@click.option("--data", "data_path", required=True)
+@click.option("--refit-every", default=40, type=int)
+@click.option("--min-train", default=300, type=int)
+@click.option("--save-config", default=None, help="把最佳組合寫成 YAML 設定檔")
+@click.pass_context
+def tune(ctx, data_path, refit_every, min_train, save_config):
+    """自動調超參數：用樣本外 log-loss 選最佳 half_life/reg/elo/xg。"""
+    from . import tuning
+    import yaml
+    cfg: Config = ctx.obj["cfg"]
+    df = loader.load_csv(data_path)
+    click.echo(f"[tune] {len(df)} 場，網格搜尋中（每組做一次 walk-forward）…")
+    result = tuning.tune(df, base_cfg=cfg, refit_every=refit_every,
+                         min_train_matches=min_train)
+    click.echo(result.summary())
+    if save_config:
+        tuning.apply_best(cfg, result)
+        with open(save_config, "w", encoding="utf-8") as f:
+            yaml.safe_dump(cfg.to_dict(), f, allow_unicode=True, sort_keys=False)
+        click.echo(f"[ok] 最佳設定已存：{save_config}")
+
+
 @cli.command("evaluate")
 @click.option("--data", "data_path", required=True)
 @click.option("--half-life", default=None, type=float)
 @click.option("--xg-weight", default=None, type=float)
 @click.option("--use-elo", is_flag=True, default=False, help="把賽前 Elo 當特徵")
+@click.option("--reg", default=None, type=float, help="L2 正則化強度")
 @click.option("--refit-every", default=20, type=int)
 @click.pass_context
-def evaluate(ctx, data_path, half_life, xg_weight, use_elo, refit_every):
+def evaluate(ctx, data_path, half_life, xg_weight, use_elo, reg, refit_every):
     """模型校準（Brier/LogLoss/可靠度）與 CLV 分析。"""
     from . import evaluation
     cfg: Config = ctx.obj["cfg"]
@@ -349,6 +378,8 @@ def evaluate(ctx, data_path, half_life, xg_weight, use_elo, refit_every):
         cfg.model.xg_weight = xg_weight
     if use_elo:
         cfg.model.use_elo = True
+    if reg is not None:
+        cfg.model.reg = reg
     df = loader.load_csv(data_path)
     click.echo(f"[evaluate] {len(df)} 場 walk-forward 校準中…")
     res = evaluation.run(df, cfg, refit_every=refit_every)
