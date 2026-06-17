@@ -1,0 +1,60 @@
+<!doctype html><html lang="zh-Hant"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>英超 2024/25 整季模擬 (Demo)</title><style>
+:root{--bg:#0f1419;--card:#1a2129;--accent:#21c07a;--muted:#8a97a6;--line:#2a333d;--warn:#e0b341}
+*{box-sizing:border-box}body{margin:0;font-family:system-ui,-apple-system,"Noto Sans TC",sans-serif;
+background:var(--bg);color:#e6edf3}
+.wrap{max-width:980px;margin:0 auto;padding:24px}
+h1{font-size:24px;margin:0 0 4px}.sub{color:var(--muted);font-size:13px;margin-bottom:18px}
+.disc{background:#2a2410;border:1px solid var(--warn);color:#f0d98c;padding:10px 14px;border-radius:8px;
+font-size:13px;margin-bottom:20px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px 18px;margin-bottom:16px}
+.head{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.teams{font-size:18px;font-weight:700}.tip{background:var(--accent);color:#04130c;font-weight:700;
+padding:4px 10px;border-radius:20px;font-size:12px}
+.bar{display:flex;height:26px;border-radius:6px;overflow:hidden;margin:8px 0;font-size:12px;font-weight:600}
+.bar>div{display:flex;align-items:center;justify-content:center;color:#04130c}
+.h{background:#21c07a}.d{background:#5b6a7a}.a{background:#e07a5f}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-top:10px}
+.box{background:#11161c;border:1px solid var(--line);border-radius:8px;padding:10px}
+.box .k{color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.04em}
+.box .v{font-size:15px;font-weight:700;margin-top:3px}
+.cs span{display:inline-block;background:#11161c;border:1px solid var(--line);border-radius:6px;
+padding:3px 8px;margin:2px 4px 2px 0;font-size:12px}
+.form{font-family:ui-monospace,monospace;letter-spacing:2px}.W{color:#21c07a}.D{color:#c9b458}.L{color:#e07a5f}
+.foot{color:var(--muted);font-size:12px;text-align:center;margin-top:24px}
+
+table{width:100%;border-collapse:collapse;font-size:14px;background:var(--card);border-radius:12px;overflow:hidden}
+th,td{padding:9px 10px;text-align:center;border-bottom:1px solid var(--line)}
+th{background:#11161c;color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.03em}
+td.rk{color:var(--muted)}td.tm{text-align:left;font-weight:700}td.num{color:#cdd9e5}
+</style></head>
+<body><div class="wrap">
+  <h1>🏆 英超 2024/25 整季模擬 (Demo)</h1>
+  <div class="sub">產生於 2026-06-17 · 20,000 次蒙地卡羅模擬 · Dixon–Coles 抽樣</div>
+  <div class="disc">⚠️ 純機率模擬，依目前模型強度推估，未含轉會/傷停等未來變動；非投注建議。</div>
+  <table>
+    <thead><tr><th>#</th><th>隊伍</th><th>冠軍</th><th>前四</th><th>前六</th><th>降級</th><th>預期積分</th><th>預期名次</th></tr></thead>
+    <tbody><tr><td class='rk'>1</td><td class='tm'>Arsenal</td><td style="background:hsla(48,70%,45%,0.36)">34.8%</td><td style="background:hsla(140,70%,45%,0.76)">91.3%</td><td style="background:hsla(140,70%,45%,0.81)">97.9%</td><td style="background:hsla(0,70%,45%,0.12)">0.0%</td><td class='num'>77.2</td><td class='num'>2.4</td></tr>
+<tr><td class='rk'>2</td><td class='tm'>Man City</td><td style="background:hsla(48,70%,45%,0.33)">30.3%</td><td style="background:hsla(140,70%,45%,0.75)">89.5%</td><td style="background:hsla(140,70%,45%,0.80)">97.2%</td><td style="background:hsla(0,70%,45%,0.12)">0.0%</td><td class='num'>76.3</td><td class='num'>2.5</td></tr>
+<tr><td class='rk'>3</td><td class='tm'>Liverpool</td><td style="background:hsla(48,70%,45%,0.32)">28.0%</td><td style="background:hsla(140,70%,45%,0.74)">88.3%</td><td style="background:hsla(140,70%,45%,0.80)">96.7%</td><td style="background:hsla(0,70%,45%,0.12)">0.0%</td><td class='num'>75.8</td><td class='num'>2.7</td></tr>
+<tr><td class='rk'>4</td><td class='tm'>Newcastle</td><td style="background:hsla(48,70%,45%,0.15)">3.6%</td><td style="background:hsla(140,70%,45%,0.43)">44.8%</td><td style="background:hsla(140,70%,45%,0.62)">72.1%</td><td style="background:hsla(0,70%,45%,0.12)">0.0%</td><td class='num'>66.0</td><td class='num'>5.4</td></tr>
+<tr><td class='rk'>5</td><td class='tm'>Chelsea</td><td style="background:hsla(48,70%,45%,0.13)">1.7%</td><td style="background:hsla(140,70%,45%,0.32)">28.7%</td><td style="background:hsla(140,70%,45%,0.52)">57.1%</td><td style="background:hsla(0,70%,45%,0.12)">0.0%</td><td class='num'>63.0</td><td class='num'>6.5</td></tr>
+<tr><td class='rk'>6</td><td class='tm'>Nott&#x27;m Forest</td><td style="background:hsla(48,70%,45%,0.12)">0.5%</td><td style="background:hsla(140,70%,45%,0.22)">13.8%</td><td style="background:hsla(140,70%,45%,0.37)">36.4%</td><td style="background:hsla(0,70%,45%,0.12)">0.1%</td><td class='num'>59.0</td><td class='num'>8.1</td></tr>
+<tr><td class='rk'>7</td><td class='tm'>Aston Villa</td><td style="background:hsla(48,70%,45%,0.12)">0.4%</td><td style="background:hsla(140,70%,45%,0.21)">13.2%</td><td style="background:hsla(140,70%,45%,0.36)">34.8%</td><td style="background:hsla(0,70%,45%,0.12)">0.1%</td><td class='num'>58.6</td><td class='num'>8.3</td></tr>
+<tr><td class='rk'>8</td><td class='tm'>Brentford</td><td style="background:hsla(48,70%,45%,0.12)">0.2%</td><td style="background:hsla(140,70%,45%,0.18)">8.4%</td><td style="background:hsla(140,70%,45%,0.30)">25.8%</td><td style="background:hsla(0,70%,45%,0.12)">0.1%</td><td class='num'>56.7</td><td class='num'>9.2</td></tr>
+<tr><td class='rk'>9</td><td class='tm'>Bournemouth</td><td style="background:hsla(48,70%,45%,0.12)">0.2%</td><td style="background:hsla(140,70%,45%,0.15)">4.9%</td><td style="background:hsla(140,70%,45%,0.24)">17.2%</td><td style="background:hsla(0,70%,45%,0.12)">0.3%</td><td class='num'>54.6</td><td class='num'>10.1</td></tr>
+<tr><td class='rk'>10</td><td class='tm'>Brighton</td><td style="background:hsla(48,70%,45%,0.12)">0.1%</td><td style="background:hsla(140,70%,45%,0.16)">6.1%</td><td style="background:hsla(140,70%,45%,0.26)">19.3%</td><td style="background:hsla(0,70%,45%,0.12)">0.2%</td><td class='num'>55.0</td><td class='num'>9.9</td></tr>
+<tr><td class='rk'>11</td><td class='tm'>Crystal Palace</td><td style="background:hsla(48,70%,45%,0.12)">0.1%</td><td style="background:hsla(140,70%,45%,0.15)">4.9%</td><td style="background:hsla(140,70%,45%,0.24)">17.0%</td><td style="background:hsla(0,70%,45%,0.12)">0.4%</td><td class='num'>54.3</td><td class='num'>10.2</td></tr>
+<tr><td class='rk'>12</td><td class='tm'>Fulham</td><td style="background:hsla(48,70%,45%,0.12)">0.0%</td><td style="background:hsla(140,70%,45%,0.13)">1.8%</td><td style="background:hsla(140,70%,45%,0.18)">8.2%</td><td style="background:hsla(0,70%,45%,0.13)">0.8%</td><td class='num'>51.1</td><td class='num'>11.7</td></tr>
+<tr><td class='rk'>13</td><td class='tm'>Everton</td><td style="background:hsla(48,70%,45%,0.12)">0.0%</td><td style="background:hsla(140,70%,45%,0.13)">1.7%</td><td style="background:hsla(140,70%,45%,0.17)">7.7%</td><td style="background:hsla(0,70%,45%,0.13)">0.8%</td><td class='num'>50.8</td><td class='num'>11.8</td></tr>
+<tr><td class='rk'>14</td><td class='tm'>Tottenham</td><td style="background:hsla(48,70%,45%,0.12)">0.0%</td><td style="background:hsla(140,70%,45%,0.13)">1.3%</td><td style="background:hsla(140,70%,45%,0.16)">6.3%</td><td style="background:hsla(0,70%,45%,0.13)">1.3%</td><td class='num'>49.8</td><td class='num'>12.3</td></tr>
+<tr><td class='rk'>15</td><td class='tm'>Man United</td><td style="background:hsla(48,70%,45%,0.12)">0.0%</td><td style="background:hsla(140,70%,45%,0.12)">0.7%</td><td style="background:hsla(140,70%,45%,0.15)">4.1%</td><td style="background:hsla(0,70%,45%,0.13)">1.9%</td><td class='num'>48.1</td><td class='num'>13.0</td></tr>
+<tr><td class='rk'>16</td><td class='tm'>Wolves</td><td style="background:hsla(48,70%,45%,0.12)">0.0%</td><td style="background:hsla(140,70%,45%,0.12)">0.2%</td><td style="background:hsla(140,70%,45%,0.13)">1.2%</td><td style="background:hsla(0,70%,45%,0.16)">5.4%</td><td class='num'>44.1</td><td class='num'>14.5</td></tr>
+<tr><td class='rk'>17</td><td class='tm'>West Ham</td><td style="background:hsla(48,70%,45%,0.12)">0.0%</td><td style="background:hsla(140,70%,45%,0.12)">0.1%</td><td style="background:hsla(140,70%,45%,0.13)">1.1%</td><td style="background:hsla(0,70%,45%,0.16)">6.0%</td><td class='num'>43.6</td><td class='num'>14.7</td></tr>
+<tr><td class='rk'>18</td><td class='tm'>Leicester</td><td style="background:hsla(48,70%,45%,0.12)">0.0%</td><td style="background:hsla(140,70%,45%,0.12)">0.0%</td><td style="background:hsla(140,70%,45%,0.12)">0.0%</td><td style="background:hsla(0,70%,45%,0.75)">90.7%</td><td class='num'>26.6</td><td class='num'>18.5</td></tr>
+<tr><td class='rk'>19</td><td class='tm'>Ipswich</td><td style="background:hsla(48,70%,45%,0.12)">0.0%</td><td style="background:hsla(140,70%,45%,0.12)">0.0%</td><td style="background:hsla(140,70%,45%,0.12)">0.0%</td><td style="background:hsla(0,70%,45%,0.77)">93.2%</td><td class='num'>25.5</td><td class='num'>18.7</td></tr>
+<tr><td class='rk'>20</td><td class='tm'>Southampton</td><td style="background:hsla(48,70%,45%,0.12)">0.0%</td><td style="background:hsla(140,70%,45%,0.12)">0.0%</td><td style="background:hsla(140,70%,45%,0.12)">0.0%</td><td style="background:hsla(0,70%,45%,0.81)">98.9%</td><td class='num'>20.0</td><td class='num'>19.5</td></tr></tbody>
+  </table>
+  <div class="foot">Generated by footy · 研究與教育用途</div>
+</div></body></html>

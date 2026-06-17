@@ -136,6 +136,69 @@ def predict(ctx, model_path, fixtures, history_path, adjustments, html_out, md_o
         click.echo(f"[ok] 已輸出 HTML：{html_out}")
 
 
+@cli.command("simulate-season")
+@click.option("--model", "model_path", required=True)
+@click.option("--teams", default=None,
+              help="參賽隊伍 CSV（含 team 欄）；省略則用 standings/fixtures 推斷或全模型隊伍")
+@click.option("--fixtures", default=None,
+              help="剩餘賽程 CSV（home, away）；省略則生成雙循環")
+@click.option("--standings", "standings_path", default=None,
+              help="目前積分榜 CSV（team, points, gf, ga）；或用 --played 從賽果推算")
+@click.option("--played", "played_path", default=None,
+              help="本季已踢賽果 CSV（內部格式），自動推算目前積分榜與剩餘賽程")
+@click.option("--n-sims", default=10000, type=int)
+@click.option("--relegation", default=3, type=int, help="降級名額")
+@click.option("--html", "html_out", default=None, help="輸出 HTML 表路徑")
+@click.option("--title", default="整季模擬", help="頁面標題")
+@click.pass_context
+def simulate_season(ctx, model_path, teams, fixtures, standings_path, played_path,
+                    n_sims, relegation, html_out, title):
+    """整季蒙地卡羅模擬：奪冠/前四/降級機率與預期積分。"""
+    from . import report, season
+    model = dc.DixonColesModel.load(model_path)
+
+    start_standings = None
+    remaining = None
+    team_list = None
+
+    if played_path:
+        played = loader.load_csv(played_path)
+        start_standings = season.standings_from_matches(played)
+        team_list = sorted(start_standings.keys())
+        # 剩餘賽程 = 雙循環中尚未踢的對戰
+        played_pairs = {(str(r["home"]), str(r["away"])) for _, r in played.iterrows()}
+        remaining = [(h, a) for (h, a) in season.round_robin_fixtures(team_list)
+                     if (h, a) not in played_pairs]
+        click.echo(f"[season] 由 {len(played)} 場已踢推算積分榜，剩餘 {len(remaining)} 場")
+
+    if teams:
+        team_list = pd.read_csv(teams)["team"].astype(str).tolist()
+    if standings_path:
+        st = pd.read_csv(standings_path)
+        start_standings = {}
+        for _, r in st.iterrows():
+            start_standings[str(r["team"])] = season.TeamStanding(
+                team=str(r["team"]), points=int(r.get("points", 0)),
+                gf=int(r.get("gf", 0)), ga=int(r.get("ga", 0)))
+        team_list = team_list or list(start_standings.keys())
+    if fixtures:
+        fx = pd.read_csv(fixtures)
+        remaining = [(str(r["home"]), str(r["away"])) for _, r in fx.iterrows()]
+        team_list = team_list or sorted({t for pair in remaining for t in pair})
+
+    if not team_list:
+        team_list = list(model.teams)
+
+    click.echo(f"[season] {len(team_list)} 隊 × {n_sims:,} 次模擬…")
+    sim = season.simulate_season(
+        model, team_list, fixtures=remaining, start_standings=start_standings,
+        n_sims=n_sims, relegation_spots=relegation)
+    click.echo(report.render_season_console(sim))
+    if html_out:
+        report.write_season_html(sim, html_out, title)
+        click.echo(f"[ok] 已輸出 HTML：{html_out}")
+
+
 @cli.command("backtest")
 @click.option("--data", "data_path", required=True)
 @click.option("--half-life", default=None, type=float)

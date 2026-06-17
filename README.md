@@ -68,7 +68,8 @@ src/footy/
 ├── context.py         # 傷停/輪休情境調整（手動 CSV + api-football）
 ├── evaluation.py      # 模型校準（Brier/LogLoss/可靠度）+ CLV 分析
 ├── predict.py         # 預測站風格內容（1X2/比分/大小球/BTTS/狀態/H2H/Tip）
-├── report.py          # 渲染預測為 console / Markdown / HTML
+├── season.py          # 整季蒙地卡羅模擬（奪冠/前四/降級機率）
+├── report.py          # 渲染預測/季模擬為 console / Markdown / HTML
 ├── prematch.py        # 初盤價值掃描
 ├── backtest/
 │   └── engine.py      # walk-forward 回測引擎
@@ -147,6 +148,25 @@ footy predict --model models/E0.pkl --fixtures examples/epl_fixtures.csv \
 ```
 > 這是**純機率預測內容**（給讀者看的），與 `scan-prematch`／`live`（找 +EV 下注）不同；
 > 預測站好看，但別忘了 `docs/FINDINGS.md`：模型機率未必勝過市場盤口。
+
+## 整季蒙地卡羅模擬（像 FiveThirtyEight）
+
+對整季所有比賽反覆抽樣（從 Dixon–Coles 比分分布，含 DC 低分修正），統計每隊的
+**奪冠 / 前四 / 前六 / 降級機率與預期積分、預期名次**。可從零（季前預測）或帶入
+目前積分榜＋剩餘賽程（季中更新）：
+```bash
+# 季前：用一份隊伍清單跑全季雙循環
+footy simulate-season --model models/E0.pkl --teams examples/epl_2425_teams.csv \
+                      --n-sims 20000 --relegation 3 --html out/season.html
+
+# 季中：由本季已踢賽果自動推算積分榜與剩餘賽程
+footy simulate-season --model models/E0.pkl --played data/this_season.csv --n-sims 20000
+```
+輸出 console 表或熱力圖 HTML。實測：用真實英超模型，三強（Arsenal/Man City/Liverpool）
+爭冠、升班三隊降級機率最高，與 2024/25 真實結果相符。
+
+> 這是**解析模型 + 蒙地卡羅抽樣**：單場市場用解析矩陣（精確），整季名次因涉及
+> 380 場的聯合分布與排序，才用 MC 抽樣最自然。
 
 ## 真實數據實證結論
 
