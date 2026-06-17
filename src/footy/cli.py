@@ -224,8 +224,13 @@ def worldcup(ctx, model_path, schedule, n_sims, html_out, title):
 @click.option("--n-sims", default=20000, type=int, help="整屆模擬次數")
 @click.option("--match-sims", default=20000, type=int, help="每場分析模擬次數")
 @click.option("--title", default="2026 世界盃預測", help="標題")
+@click.option("--use-injuries", is_flag=True, default=False,
+              help="抓 api-football 傷停納入（需環境變數 API_FOOTBALL_KEY；失敗則略過）")
+@click.option("--wc-season", default=2026, type=int, help="api-football 賽季")
+@click.option("--wc-league", default=1, type=int, help="api-football 賽事 id（世界盃=1）")
 @click.pass_context
-def wc_site(ctx, model_path, schedule, history_path, outdir, n_sims, match_sims, title):
+def wc_site(ctx, model_path, schedule, history_path, outdir, n_sims, match_sims, title,
+            use_injuries, wc_season, wc_league):
     """產生整屆世界盃多頁網站：首頁 + 每場可點進的單場分析頁。"""
     from . import report, worldcup as wc
     from .i18n import zh
@@ -234,9 +239,24 @@ def wc_site(ctx, model_path, schedule, history_path, outdir, n_sims, match_sims,
     click.echo(f"[wc] 模擬整屆 {n_sims:,} 次…")
     result = wc.simulate_worldcup(model, schedule, n_sims=n_sims)
     _, matches, _ = wc.parse_wc_json(schedule)
+
+    injury_counts = None
+    if use_injuries:
+        # 失敗安全：抓不到傷停就略過，網站照常產生
+        try:
+            from . import context
+            raw = context.fetch_league_injuries(wc_league, wc_season)
+            injury_counts = context.map_injury_counts(raw, list(model.teams))
+            click.echo(f"[wc] 傷停：{sum(injury_counts.values())} 人次，"
+                       f"涵蓋 {len(injury_counts)} 隊")
+        except Exception as e:  # noqa: BLE001
+            click.echo(f"[warn] 取傷停失敗，略過（網站照常產生）：{e}")
+            injury_counts = None
+
     click.echo("[wc] 產生首頁與各場分析頁…")
     out, n = report.write_worldcup_site(result, model, matches, outdir,
-                                        history=hist, title=title, n_sims=match_sims)
+                                        history=hist, title=title, n_sims=match_sims,
+                                        injury_counts=injury_counts)
     champ = sorted(result.champion.items(), key=lambda x: x[1], reverse=True)[:5]
     click.echo("奪冠機率前五：" + "  ".join(f"{zh(t)} {p:.1%}" for t, p in champ))
     click.echo(f"[ok] 網站已輸出到 {out}/（首頁 index.html，{n} 場分析頁）")

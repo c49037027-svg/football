@@ -32,6 +32,7 @@ footy fetch-wc --out "$SCHEDULE"
 
 echo "[update] 重建世界盃網站…"
 footy wc-site --model "$MODEL" --schedule "$SCHEDULE" --history "$HISTORY" \
-              --outdir "$OUTDIR" --n-sims 20000 --match-sims 20000
+              --outdir "$OUTDIR" --n-sims 20000 --match-sims 20000 \
+              --use-injuries   # 需 export API_FOOTBALL_KEY；抓不到會自動略過
 
 echo "[update] 完成：$OUTDIR/index.html （更新於 $(date '+%Y-%m-%d %H:%M')）"

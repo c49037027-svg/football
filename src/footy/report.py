@@ -575,14 +575,18 @@ def write_worldcup_html(result, model, matches, out_path, title="2026 世界盃�
 
 
 def write_worldcup_site(result, model, matches, outdir, history=None,
-                        title="2026 世界盃預測", n_sims=20000):
+                        title="2026 世界盃預測", n_sims=20000, injury_counts=None):
     """產生多頁網站：index.html + 每場可分析的 match_<num>.html。
 
     可分析 = 雙方皆為模型已知球隊（小組賽全部；淘汰賽待隊伍確定後）。
+    injury_counts：{隊名: 缺陣人數}（選用，來自 api-football），會套用到該場預期進球
+        並在「球員狀態」欄顯示缺陣人數。
     """
     from . import analysis
+    from .context import injuries_to_adjustment
     outdir = Path(outdir)
     outdir.mkdir(parents=True, exist_ok=True)
+    injury_counts = injury_counts or {}
 
     linked = set()
     ko_rounds = {"Round of 32", "Round of 16", "Quarter-final", "Semi-final",
@@ -591,8 +595,13 @@ def write_worldcup_site(result, model, matches, outdir, history=None,
         t1, t2 = m.team1, m.team2
         if t1 in model.attack and t2 in model.attack:
             knockout = m.round in ko_rounds
+            ch, ca = injury_counts.get(t1, 0), injury_counts.get(t2, 0)
+            adj = injuries_to_adjustment(ch, ca) if (ch or ca) else None
             a = analysis.analyze(model, t1, t2, history=history, neutral=True,
-                                 knockout=knockout, n_sims=n_sims)
+                                 knockout=knockout, n_sims=n_sims, adjustment=adj)
+            if injury_counts:
+                a.player_note_home = f"缺陣 {ch} 人" if ch else "無重大缺陣"
+                a.player_note_away = f"缺陣 {ca} 人" if ca else "無重大缺陣"
             rnd_label = m.group or m.round
             page_title = f"{zh(t1)} vs {zh(t2)}｜{group_zh(rnd_label)}"
             html_doc = render_analysis_html(a, page_title, back_href="index.html")

@@ -93,3 +93,63 @@ def fetch_injuries(fixture_id: int, api_key: str | None = None,
                      headers={"x-apisports-key": api_key}, timeout=timeout)
     r.raise_for_status()
     return parse_api_football_injuries(r.json())
+
+
+def fetch_league_injuries(league: int, season: int, api_key: str | None = None,
+                          timeout: float = 20.0, max_pages: int = 5) -> dict[str, int]:
+    """一次抓整個賽事的傷停（依 league+season），回傳 {隊名: 缺陣人數}。
+
+    比逐隊抓省很多 API 額度（世界盃 league=1）。會自動翻頁。
+    """
+    api_key = api_key or os.environ.get("API_FOOTBALL_KEY")
+    if not api_key:
+        raise RuntimeError("缺少 api-football key。請設環境變數 API_FOOTBALL_KEY。")
+    headers = {"x-apisports-key": api_key}
+    counts: dict[str, int] = {}
+    page = 1
+    while page <= max_pages:
+        r = requests.get(f"{API_FOOTBALL_BASE}/injuries",
+                         params={"league": league, "season": season, "page": page},
+                         headers=headers, timeout=timeout)
+        r.raise_for_status()
+        payload = r.json()
+        for team, c in parse_api_football_injuries(payload).items():
+            counts[team] = counts.get(team, 0) + c
+        paging = payload.get("paging") or {}
+        if page >= int(paging.get("total", 1)):
+            break
+        page += 1
+    return counts
+
+
+def map_injury_counts(counts: dict[str, int], known_teams: list[str]) -> dict[str, int]:
+    """把 api-football 隊名對到我們模型的隊名（別名 + 模糊比對），合併計數。"""
+    import difflib
+    from .worldcup import TEAM_ALIASES
+    known = set(known_teams)
+    out: dict[str, int] = {}
+    for name, c in counts.items():
+        target = TEAM_ALIASES.get(name, name)
+        if target not in known:
+            match = difflib.get_close_matches(target, known_teams, n=1, cutoff=0.8)
+            target = match[0] if match else None
+        if target:
+            out[target] = out.get(target, 0) + c
+    return out
+
+
+def build_injury_adjustments(counts: dict[str, int], matches,
+                             per_injury_penalty: float = 0.04,
+                             max_penalty: float = 0.25) -> dict:
+    """由各隊缺陣人數，為每場（home, away）建 ContextAdjustment。"""
+    adj: dict = {}
+    for m in matches:
+        h, a = getattr(m, "team1", None), getattr(m, "team2", None)
+        if not h or not a:
+            continue
+        ch, ca = counts.get(h, 0), counts.get(a, 0)
+        if ch == 0 and ca == 0:
+            continue
+        adj[(h, a)] = injuries_to_adjustment(ch, ca, per_injury_penalty, max_penalty)
+    return adj
+
