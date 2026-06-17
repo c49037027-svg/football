@@ -351,3 +351,123 @@ def write_analysis_html(a, out_path: str | Path, title: str = "單場分析") ->
     out_path.parent.mkdir(parents=True, exist_ok=True)
     out_path.write_text(render_analysis_html(a, title), encoding="utf-8")
     return out_path
+
+
+# ---------------- 世界盃整屆網站首頁 ----------------
+def _match_pred_row(model, m):
+    """單場小組賽一列：已踢顯示真實比分，未踢顯示預測比分與 1X2。"""
+    from .models import markets
+    t1, t2 = m.team1, m.team2
+    if m.played:
+        tag = f"<span class='res'>{m.hg}-{m.ag}</span> <span class='small'>(已賽)</span>"
+    elif t1 in model.attack and t2 in model.attack:
+        mat = model.score_matrix(t1, t2, neutral=True)
+        s = markets.most_likely_score(mat)
+        o = markets.outcome_1x2(mat)
+        tag = (f"<span class='pred'>{s[0]}-{s[1]}</span> "
+               f"<span class='small'>{o['home']:.0%}/{o['draw']:.0%}/{o['away']:.0%}</span>")
+    else:
+        tag = "<span class='small'>—</span>"
+    return (f"<div class='fx'><span class='fxd'>{m.date[5:]}</span>"
+            f"<span class='fxt'>{html.escape(t1)}</span>"
+            f"<span class='fxm'>{tag}</span>"
+            f"<span class='fxt r'>{html.escape(t2)}</span></div>")
+
+
+def _group_card(g, teams, result, model, matches):
+    rows = sorted(teams, key=lambda t: result.qualify.get(t, 0), reverse=True)
+    trs = []
+    for rank, t in enumerate(rows, 1):
+        q = result.qualify.get(t, 0)
+        trs.append(
+            f"<tr><td class='rk'>{rank}</td><td class='tm'>{html.escape(t)}</td>"
+            f"<td style=\"{_heat(result.group_first.get(t,0)*100,'48')}\">{result.group_first.get(t,0):.0%}</td>"
+            f"<td style=\"{_heat(result.group_top2.get(t,0)*100,'140')}\">{result.group_top2.get(t,0):.0%}</td>"
+            f"<td style=\"{_heat(q*100,'140')}\">{q:.0%}</td>"
+            f"<td class='num'>{result.exp_points.get(t,0):.1f}</td></tr>")
+    fixtures = "".join(_match_pred_row(model, m)
+                       for m in sorted([mm for mm in matches if mm.group == g],
+                                       key=lambda mm: mm.date))
+    return f"""
+    <div class="card grp">
+      <div class="sec">{html.escape(g)}</div>
+      <table class="gt"><thead><tr><th>#</th><th>隊伍</th><th>首名</th><th>前二</th><th>晉級</th><th>預期分</th></tr></thead>
+      <tbody>{''.join(trs)}</tbody></table>
+      <div class="fxs">{fixtures}</div>
+    </div>"""
+
+
+def render_worldcup_html(result, model, matches, title: str = "2026 世界盃預測") -> str:
+    import datetime as _dt
+    today = _dt.date.today().isoformat()
+    # 冠軍機率前 16
+    champ = sorted(result.champion.items(), key=lambda x: x[1], reverse=True)
+    top = [(t, p) for t, p in champ if p > 0][:16]
+    maxp = top[0][1] if top else 1.0
+    champ_bars = "".join(
+        f"<div class='crow'><span class='cn'>{html.escape(t)}</span>"
+        f"<span class='cbar'><span style='width:{p/maxp*100:.1f}%'></span></span>"
+        f"<span class='cp'>{p:.1%}</span></div>" for t, p in top)
+
+    # 晉級展望表（前 16 依冠軍機率）
+    ko_rows = "".join(
+        f"<tr><td class='tm'>{html.escape(t)}</td>"
+        f"<td>{result.qualify.get(t,0):.0%}</td><td>{result.r16.get(t,0):.0%}</td>"
+        f"<td>{result.quarter.get(t,0):.0%}</td><td>{result.semi.get(t,0):.0%}</td>"
+        f"<td>{result.final.get(t,0):.0%}</td>"
+        f"<td style=\"{_heat(p*100,'48')}\"><b>{p:.1%}</b></td></tr>"
+        for t, p in top)
+
+    groups_html = "".join(
+        _group_card(g, result.groups[g], result, model, matches)
+        for g in sorted(result.groups))
+
+    return f"""<!doctype html><html lang="zh-Hant"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>{html.escape(title)}</title><style>{_CSS}
+.two{{display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start}}
+@media(max-width:760px){{.two{{grid-template-columns:1fr}}}}
+.sec{{font-weight:800;margin:6px 0 10px;font-size:16px}}
+.crow{{display:flex;align-items:center;gap:8px;margin:5px 0;font-size:13px}}
+.cn{{width:120px;flex:none;font-weight:600}}.cp{{width:48px;text-align:right;color:#cdd9e5}}
+.cbar{{flex:1;background:#11161c;border-radius:5px;height:14px;overflow:hidden}}
+.cbar>span{{display:block;height:100%;background:linear-gradient(90deg,#21c07a,#7be0b0)}}
+table{{width:100%;border-collapse:collapse;font-size:13px}}
+th,td{{padding:6px 7px;text-align:center;border-bottom:1px solid var(--line)}}
+th{{color:var(--muted);font-size:11px}}td.tm{{text-align:left;font-weight:700}}td.rk{{color:var(--muted)}}
+.grids{{display:grid;grid-template-columns:repeat(auto-fill,minmax(310px,1fr));gap:14px}}
+.grp .fxs{{margin-top:8px}}
+.fx{{display:grid;grid-template-columns:42px 1fr auto 1fr;gap:6px;align-items:center;
+font-size:12px;padding:3px 0;border-top:1px solid #1c242d}}
+.fxt{{font-weight:600}}.fxt.r{{text-align:right}}.fxd{{color:var(--muted)}}.fxm{{text-align:center}}
+.pred{{color:#7be0b0;font-weight:700}}.res{{color:#e0b341;font-weight:700}}
+</style></head>
+<body><div class="wrap">
+  <h1>🏆 {html.escape(title)}</h1>
+  <div class="sub">{today} · 蒙地卡羅 {result.n_sims:,} 次 · Dixon–Coles + Elo · 已踢比分納入</div>
+  <div class="disc">⚠️ 純機率預測，非投注建議。最佳第三名→R32 槽位為近似指派；晉級機率為主要可信輸出。</div>
+
+  <div class="two">
+    <div class="card">
+      <div class="sec">🥇 奪冠機率</div>
+      {champ_bars}
+    </div>
+    <div class="card">
+      <div class="sec">📈 晉級展望</div>
+      <table><thead><tr><th>隊伍</th><th>晉級</th><th>16強</th><th>8強</th><th>4強</th><th>決賽</th><th>奪冠</th></tr></thead>
+      <tbody>{ko_rows}</tbody></table>
+    </div>
+  </div>
+
+  <div class="sec" style="margin-top:22px">📋 小組賽程與預測</div>
+  <div class="grids">{groups_html}</div>
+
+  <div class="foot">Generated by footy · 研究與教育用途 · 資料：openfootball + martj42</div>
+</div></body></html>"""
+
+
+def write_worldcup_html(result, model, matches, out_path, title="2026 世界盃預測"):
+    out_path = Path(out_path)
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+    out_path.write_text(render_worldcup_html(result, model, matches, title), encoding="utf-8")
+    return out_path

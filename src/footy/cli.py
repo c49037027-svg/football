@@ -179,6 +179,26 @@ def analyze(ctx, model_path, home, away, history_path, neutral, knockout,
         click.echo(f"[ok] 已輸出 HTML：{html_out}")
 
 
+@cli.command("worldcup")
+@click.option("--model", "model_path", required=True)
+@click.option("--schedule", required=True, help="世界盃賽程 JSON（openfootball 格式）")
+@click.option("--n-sims", default=10000, type=int)
+@click.option("--html", "html_out", default="out/worldcup.html", help="輸出網站首頁 HTML")
+@click.option("--title", default="2026 世界盃預測", help="頁面標題")
+@click.pass_context
+def worldcup(ctx, model_path, schedule, n_sims, html_out, title):
+    """整屆世界盃模擬 + 多場分析首頁（小組賽程預測 + 晉級/奪冠機率）。"""
+    from . import report, worldcup as wc
+    model = dc.DixonColesModel.load(model_path)
+    click.echo(f"[wc] 模擬整屆 {n_sims:,} 次…")
+    result = wc.simulate_worldcup(model, schedule, n_sims=n_sims)
+    _, matches, _ = wc.parse_wc_json(schedule)
+    champ = sorted(result.champion.items(), key=lambda x: x[1], reverse=True)[:8]
+    click.echo("奪冠機率前八：" + "  ".join(f"{t} {p:.1%}" for t, p in champ))
+    report.write_worldcup_html(result, model, matches, html_out, title)
+    click.echo(f"[ok] 已輸出網站首頁：{html_out}")
+
+
 @cli.command("simulate-season")
 @click.option("--model", "model_path", required=True)
 @click.option("--teams", default=None,

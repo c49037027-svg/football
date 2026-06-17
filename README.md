@@ -68,6 +68,7 @@ src/footy/
 ├── context.py         # 傷停/輪休情境調整（手動 CSV + api-football）
 ├── evaluation.py      # 模型校準（Brier/LogLoss/可靠度）+ CLV 分析
 ├── predict.py         # 預測站風格內容（1X2/比分/大小球/BTTS/狀態/H2H/Tip）
+├── worldcup.py        # 整屆世界盃模擬（小組+淘汰賽，晉級/奪冠機率）
 ├── analysis.py        # 世界盃單場深度分析（Poisson+蒙地卡羅，全面板）
 ├── counts.py          # 角球/黃牌 Poisson 計數模型（先驗近似）
 ├── intl/              # 國際賽資料、Elo 評分、進球分鐘分布
@@ -151,6 +152,23 @@ footy predict --model models/E0.pkl --fixtures examples/epl_fixtures.csv \
 ```
 > 這是**純機率預測內容**（給讀者看的），與 `scan-prematch`／`live`（找 +EV 下注）不同；
 > 預測站好看，但別忘了 `docs/FINDINGS.md`：模型機率未必勝過市場盤口。
+
+## 整屆世界盃預測網站（多場一次看）
+
+讀 openfootball 官方 2026 世界盃賽程（含分組、已踢比分），蒙地卡羅模擬整屆，
+產出一頁式網站首頁：
+```bash
+footy worldcup --model models/intl.pkl --schedule examples/wc2026.json \
+               --n-sims 20000 --html out/worldcup.html
+```
+首頁包含：
+- **奪冠機率排行**（橫條圖）
+- **晉級展望表**：每隊 晉級 / 16強 / 8強 / 4強 / 決賽 / 奪冠 機率
+- **12 個小組**：各組出線機率表（首名 / 前二 / 晉級含最佳第三）＋ 預期積分
+- **每場小組賽預測**：未踢顯示預測比分與 1X2，已踢顯示真實比分
+
+賽制：12 組各 4 隊，前 2 + 8 個最佳第三名 → 32 強。已踢比分自動納入（隨賽程更新會更準）。
+> ⚠️ 「最佳第三名 → R32 槽位」用符合官方允許組別的二分匹配近似；晉級/奪冠機率為主要可信輸出。
 
 ## 世界盃單場深度分析（像 soccermaddy 那種 UI）
 
