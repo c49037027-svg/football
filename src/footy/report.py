@@ -228,21 +228,24 @@ def render_analysis_console(a) -> str:
     L.append(f"⚽ {hz} vs {az}" + ("（中立場）" if a.neutral else ""))
     L.append(f"  AI 預測比分 {a.predicted_score[0]}-{a.predicted_score[1]}"
              f"（機率 {a.predicted_score_prob:.0%}；總進球 {a.total_goals}）· xG {a.xg_low}-{a.xg_high}")
-    L.append(f"  1X2     主勝 {a.p_home:.0%} | 和 {a.p_draw:.0%} | 客勝 {a.p_away:.0%}")
+    L.append(f"  1X2     主勝 {a.p_home:.0%} | 和 {a.p_draw:.0%} | 客勝 {a.p_away:.0%}"
+             f"（AI信心 {max(a.p_home, a.p_draw, a.p_away):.0%}）")
     for ln in (1.5, 2.5, 3.5):
         d = a.over_under[ln]
         L.append(f"  大小{ln}  大 {d['over']:.0%} / 小 {d['under']:.0%}  "
-                 f"建議 {'買大' if d['over']>=0.5 else '買小'}")
+                 f"建議 {'買大' if d['over']>=0.5 else '買小'}"
+                 f"（AI信心 {max(d['over'], d['under']):.0%}）")
     L.append(f"  BTTS    是 {a.btts_yes:.0%}（{hz} 進球 {a.p_home_scores:.0%}"
-             f" × {az} 進球 {a.p_away_scores:.0%}）")
+             f" × {az} 進球 {a.p_away_scores:.0%}）（AI信心 {max(a.btts_yes, 1-a.btts_yes):.0%}）")
     L.append(f"  亞盤     supremacy(xG差) {a.ah_supremacy:+.2f} → {a.ah_reco}"
-             f"（covers {a.ah_cover_prob:.0%}）")
+             f"（AI信心 {max(a.ah_cover_prob, 1-a.ah_cover_prob):.0%}）")
     c = a.corners
     L.append(f"  角球     合計 {c.total}（{hz} {c.home} / {az} {c.away}）"
              f" 估線 {c.line} {c.recommend}（信心 {c.confidence:.0%}）")
     k = a.cards
     L.append(f"  黃牌     合計 {k.total} 估線 {k.line} {k.recommend}（信心 {k.confidence:.0%}）")
     L.append(f"  上半場   主 {a.fh_home:.0%} / 平 {a.fh_draw:.0%} / 客 {a.fh_away:.0%}"
+             f"（AI信心 {max(a.fh_home, a.fh_draw, a.fh_away):.0%}）"
              f"  大0.5 {a.fh_over[0.5]:.0%} / 大1.5 {a.fh_over[1.5]:.0%}")
     L.append(f"  因子     Elo {a.elo_home:.0f} vs {a.elo_away:.0f}｜狀態 {a.home_form or '-'}"
              f" / {a.away_form or '-'}｜{a.h2h}｜戰術 {a.home_style} vs {a.away_style}")
@@ -257,12 +260,18 @@ def _reco_color(reco: str) -> str:
     return "#e0b341"
 
 
+def _conf_label(p: float) -> str:
+    """信心 = 推薦那一邊的機率（離 50/50 越遠越有信心）。"""
+    return f"<div class='cf'>AI 信心 {max(p, 1 - p):.0%}</div>"
+
+
 def _ou_box(line, d):
     reco = "買大" if d["over"] >= 0.5 else "買小"
     col = _reco_color(reco)
     return (f"<div class='box'><div class='k'>線 {line}</div>"
             f"<div class='v'>大 {d['over']:.0%}</div>"
-            f"<div style='color:{col};font-weight:700;margin-top:4px'>{reco}</div></div>")
+            f"<div style='color:{col};font-weight:700;margin-top:4px'>{reco}</div>"
+            f"{_conf_label(d['over'])}</div>")
 
 
 def _fh_ou_box(line, p):
@@ -270,7 +279,8 @@ def _fh_ou_box(line, p):
     col = _reco_color(reco)
     return (f"<div class='box'><div class='k'>上半場線 {line}</div>"
             f"<div class='v'>大 {p:.0%}</div>"
-            f"<div style='color:{col};font-weight:700;margin-top:4px'>{reco}</div></div>")
+            f"<div style='color:{col};font-weight:700;margin-top:4px'>{reco}</div>"
+            f"{_conf_label(p)}</div>")
 
 
 def render_analysis_html(a, title: str = "單場分析", back_href: str | None = None) -> str:
@@ -282,6 +292,11 @@ def render_analysis_html(a, title: str = "單場分析", back_href: str | None =
     c, k = a.corners, a.cards
     ah_col = _reco_color("大")
     h, d, aw = a.p_home, a.p_draw, a.p_away
+    # 各欄位信心 = 模型對其推薦那一邊的機率（離 50/50 越遠越有信心），皆為算出來的值
+    conf_1x2 = max(h, d, aw)
+    conf_btts = max(a.btts_yes, 1 - a.btts_yes)
+    conf_ah = max(a.ah_cover_prob, 1 - a.ah_cover_prob)
+    conf_fh = max(a.fh_home, a.fh_draw, a.fh_away)
     nav = (f'<a class="back" href="{back_href}">← 返回首頁</a>' if back_href else "")
     return f"""<!doctype html><html lang="zh-Hant"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
@@ -291,24 +306,27 @@ def render_analysis_html(a, title: str = "單場分析", back_href: str | None =
 .small{{color:var(--muted);font-size:12px}}
 .split{{display:grid;grid-template-columns:1fr 1fr;gap:14px}}
 .back{{display:inline-block;color:var(--accent);text-decoration:none;font-size:14px;margin-bottom:10px}}
+.cf{{margin-top:4px;font-size:11px;color:#7be0b0;font-weight:700}}
 @media(max-width:560px){{.split{{grid-template-columns:1fr}}}}
 </style></head>
 <body><div class="wrap">
   {nav}
   <h1>⚽ {html.escape(zh(a.home))} <span style="color:#8a97a6">vs</span> {html.escape(zh(a.away))}</h1>
   <div class="sub">{today} · {venue} · 蒙地卡羅 {a.n_sims:,} 次 + Poisson · Dixon–Coles</div>
-  <div class="disc">⚠️ 純機率分析，非投注建議。角球/黃牌為先驗近似（國際賽無公開統計）。投注有風險。</div>
+  <div class="disc">⚠️ 純機率分析，非投注建議。AI 信心 = 模型對推薦選項算出的機率（離 50/50 越遠越高）。角球/黃牌為先驗近似。投注有風險。</div>
 
   <div class="card">
     <div class="head"><div class="teams">AI 預測比分 {a.predicted_score[0]}-{a.predicted_score[1]}
       <span class="small">（機率 {a.predicted_score_prob:.0%}）</span></div>
-      <div class="small">總進球 {a.total_goals} · xG {a.xg_low}–{a.xg_high}</div></div>
+      <div class="small">總進球 {a.total_goals} · xG {a.xg_low}–{a.xg_high}</div>
+      <div class="cf">AI 信心 {a.predicted_score_prob:.0%}</div></div>
     <div class="bar">
       <div class="h" style="width:{h*100:.1f}%">{h:.0%}</div>
       <div class="d" style="width:{d*100:.1f}%">{d:.0%}</div>
       <div class="a" style="width:{aw*100:.1f}%">{aw:.0%}</div>
     </div>
     <div class="small">主勝 / 和 / 客勝</div>
+    {_conf_label(conf_1x2)}
   </div>
 
   <div class="sec">⚽ 大小球</div>
@@ -320,11 +338,13 @@ def render_analysis_html(a, title: str = "單場分析", back_href: str | None =
       <div class="reco" style="color:{_reco_color('買是' if a.btts_yes>=0.5 else '買否')}">
         {'買是' if a.btts_yes>=0.5 else '買否'}（{a.btts_yes:.0%}）</div>
       <div class="small">{html.escape(zh(a.home))} 進球 {a.p_home_scores:.0%} × {html.escape(zh(a.away))} 進球 {a.p_away_scores:.0%}</div>
+      {_conf_label(conf_btts)}
     </div>
     <div class="card">
       <div class="sec">⚖️ 亞盤讓球</div>
       <div class="v" style="font-size:18px">{html.escape(a.ah_reco)}</div>
       <div class="small">模型 supremacy(xG差)：{a.ah_supremacy:+.2f}　covers {a.ah_cover_prob:.0%}</div>
+      {_conf_label(conf_ah)}
     </div>
   </div>
 
@@ -354,6 +374,7 @@ def render_analysis_html(a, title: str = "單場分析", back_href: str | None =
       <div>平 <b>{a.fh_draw:.0%}</b></div>
       <div>客 <b style="color:#e07a5f">{a.fh_away:.0%}</b></div>
     </div>
+    {_conf_label(conf_fh)}
     <div class="grid" style="margin-top:10px">{fh_ou}</div>
   </div>
 
