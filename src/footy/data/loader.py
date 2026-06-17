@@ -199,6 +199,11 @@ def load_csv(path: str | Path) -> pd.DataFrame:
     if set(S.REQUIRED_INTERNAL).issubset(df.columns):
         df[S.DATE] = pd.to_datetime(df[S.DATE], errors="coerce")
         df = _sanitize_odds(df)
+        # neutral 由 CSV 讀回常是字串 "True"/"False"，需轉回布林（bool("False")=True 是陷阱）
+        if S.NEUTRAL in df.columns:
+            df[S.NEUTRAL] = (df[S.NEUTRAL].map({"True": True, "False": False,
+                                                True: True, False: False, 1: True, 0: False})
+                             .fillna(False).astype(bool))
         return df.dropna(subset=[S.DATE]).sort_values(S.DATE).reset_index(drop=True)
     # 彙整檔格式？
     if {"Division", "MatchDate", "FTHome", "OddHome"}.issubset(df.columns):

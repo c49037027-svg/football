@@ -35,6 +35,8 @@ class EvalResult:
     actuals: list[int] = field(default_factory=list)
     # CLV：每場每結果 (bet_odds, close_odds) 在我們「會下注」的選項上
     clv_samples: list[float] = field(default_factory=list)
+    # 基準名稱（有賠率時為「市場」；國際賽無賠率時為「均勻基準」等）
+    baseline_name: str = "市場"
 
     # ---- 指標 ----
     @staticmethod
@@ -122,18 +124,18 @@ class EvalResult:
             "============== 校準 / CLV 報告 ==============",
             f"樣本場數          : {len(self.actuals)}",
             f"模型 Brier        : {self.model_brier():.4f}（越低越好）",
-            f"市場 Brier        : {self.market_brier():.4f}",
+            f"{self.baseline_name} Brier  : {self.market_brier():.4f}",
             f"模型 LogLoss      : {self.model_logloss():.4f}（越低越好）",
-            f"市場 LogLoss      : {self.market_logloss():.4f}",
+            f"{self.baseline_name} LogLoss: {self.market_logloss():.4f}",
         ]
         beat = self.model_logloss() < self.market_logloss()
         lines.append(
-            ("✅ 模型 LogLoss 低於市場：有資訊優勢的跡象。"
+            (f"✅ 模型 LogLoss 低於{self.baseline_name}：有資訊優勢的跡象。"
              if beat else
-             "⚠️ 模型 LogLoss 未贏市場：缺乏明顯資訊優勢，難以長期 +EV。"))
+             f"⚠️ 模型 LogLoss 未贏{self.baseline_name}。"))
 
-        # 市場融合
-        bb = self.best_blend()
+        # 市場融合（僅在有真實市場賠率時才有意義）
+        bb = self.best_blend() if self.baseline_name == "市場" else None
         if bb:
             lines += [
                 "------------- 市場融合（blending）-------------",
@@ -159,6 +161,54 @@ class EvalResult:
         lines.append("\n可靠度表（pred_mean 應接近 obs_freq）：")
         lines.append(self.reliability_table().to_string(index=False))
         return "\n".join(lines)
+
+
+def run_intl(df: pd.DataFrame, cfg: Config, test_since: str | None = "2018-01-01",
+             refit_every: int = 200, min_train_matches: int = 1000,
+             neutral_default: bool = False, verbose: bool = False) -> EvalResult:
+    """國際賽校準（無賠率）：walk-forward 評估模型 1X2 校準，基準為均勻(1/3)。
+
+    df 需含內部欄位與（選用）home_elo/away_elo、neutral。只對 test_since 之後的
+    比賽計分（但仍用其之前全部資料擬合，避免洩漏）。
+    """
+    df = df.sort_values(S.DATE).reset_index(drop=True)
+    res = EvalResult(baseline_name="均勻(1/3)基準")
+    test_ts = pd.Timestamp(test_since) if test_since else None
+    model = None
+    since_refit = 0
+    uniform = [1 / 3, 1 / 3, 1 / 3]
+
+    for i in range(len(df)):
+        if i < min_train_matches:
+            continue
+        row = df.iloc[i]
+        if model is None or since_refit >= refit_every:
+            try:
+                model = dc.fit(df.iloc[:i], half_life_days=cfg.model.half_life_days,
+                               max_goals=cfg.model.max_goals, rho_init=cfg.model.rho_init,
+                               xg_weight=cfg.model.xg_weight, use_elo=cfg.model.use_elo,
+                               reg=cfg.model.reg, reference_date=row[S.DATE])
+            except Exception as e:  # noqa: BLE001
+                if verbose:
+                    print(f"[warn] 第 {i} 場擬合失敗：{e}")
+                continue
+            since_refit = 0
+        since_refit += 1
+
+        if test_ts is not None and row[S.DATE] < test_ts:
+            continue
+        home, away = row[S.HOME], row[S.AWAY]
+        if home not in model.attack or away not in model.attack:
+            continue
+        neutral = bool(row[S.NEUTRAL]) if S.NEUTRAL in df.columns else neutral_default
+        mat = model.score_matrix(home, away, neutral=neutral)
+        mp = markets.outcome_1x2(mat)
+        actual = (0 if row[S.HOME_GOALS] > row[S.AWAY_GOALS]
+                  else 2 if row[S.HOME_GOALS] < row[S.AWAY_GOALS] else 1)
+        res.model_probs.append([mp["home"], mp["draw"], mp["away"]])
+        res.market_probs.append(uniform)
+        res.actuals.append(actual)
+    return res
 
 
 def run(df: pd.DataFrame, cfg: Config, refit_every: int = 20,

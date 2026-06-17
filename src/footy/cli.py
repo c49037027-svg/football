@@ -360,6 +360,28 @@ def tune(ctx, data_path, refit_every, min_train, save_config):
         click.echo(f"[ok] 最佳設定已存：{save_config}")
 
 
+@cli.command("eval-intl")
+@click.option("--data", "data_path", default="data/intl.csv", help="國際賽 CSV（含 Elo/neutral）")
+@click.option("--since", default="2018-01-01", help="只對此日期後的比賽計分")
+@click.option("--half-life", default=540.0, type=float)
+@click.option("--reg", default=2.0, type=float)
+@click.option("--use-elo/--no-elo", default=True)
+@click.option("--refit-every", default=200, type=int)
+@click.pass_context
+def eval_intl(ctx, data_path, since, half_life, reg, use_elo, refit_every):
+    """國際賽（世界盃）模型校準：無賠率，基準為均勻(1/3)。"""
+    from . import evaluation
+    cfg: Config = ctx.obj["cfg"]
+    cfg.model.half_life_days = half_life
+    cfg.model.reg = reg
+    cfg.model.use_elo = use_elo
+    df = loader.load_csv(data_path)
+    click.echo(f"[eval-intl] {len(df)} 場，計分自 {since}（half_life={half_life}, "
+               f"reg={reg}, elo={use_elo}）…")
+    res = evaluation.run_intl(df, cfg, test_since=since, refit_every=refit_every)
+    click.echo(res.summary(cfg))
+
+
 @cli.command("evaluate")
 @click.option("--data", "data_path", required=True)
 @click.option("--half-life", default=None, type=float)
