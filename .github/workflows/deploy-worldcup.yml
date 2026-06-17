@@ -1,0 +1,76 @@
+name: 部署世界盃預測網站
+
+# 觸發：每天 UTC 06:00（台灣 14:00）自動更新；可手動觸發；推送到本分支時也建置
+on:
+  schedule:
+    - cron: "0 6 * * *"
+  workflow_dispatch:
+  push:
+    branches:
+      - claude/football-betting-predictor-y1xity
+    paths:
+      - "src/footy/**"
+      - ".github/workflows/deploy-worldcup.yml"
+
+# GitHub Pages 部署所需權限
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# 同時只跑一個部署，新觸發取消進行中的
+concurrency:
+  group: "pages"
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+
+      - name: 安裝套件
+        run: pip install -e .
+
+      - name: 下載國際賽資料並計算 Elo / 訓練模型
+        run: |
+          footy fetch-intl --out data/intl.csv --since 2010-01-01
+          footy train --data data/intl.csv --half-life 540 --use-elo --out models/intl.pkl
+
+      - name: 下載最新世界盃賽程與比分
+        run: footy fetch-wc --out data/wc2026.json
+
+      - name: 產生多頁網站
+        run: |
+          footy wc-site \
+            --model models/intl.pkl \
+            --schedule data/wc2026.json \
+            --history data/intl.csv \
+            --outdir out/wc \
+            --n-sims 20000 --match-sims 12000
+
+      - name: 設定 Pages
+        uses: actions/configure-pages@v5
+
+      - name: 上傳網站
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: out/wc
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: 部署到 GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

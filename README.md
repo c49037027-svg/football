@@ -184,6 +184,18 @@ bash scripts/update_worldcup.sh
 首頁的每場小組賽與（隊伍確定後的）淘汰賽都可點進**單場深度分析頁**，頁內有「返回首頁」。
 手機開啟：把 `out/wc/` 整個資料夾傳到手機，用瀏覽器開 `index.html` 即可（連結為相對路徑）。
 
+### 部署到 GitHub Pages（手機用固定網址看、每日自動更新）
+
+已內建 GitHub Actions：`.github/workflows/deploy-worldcup.yml`
+- 每天 UTC 06:00（台灣 14:00）自動：下載最新比分 → 重算 Elo/模型 → 重建網站 → 部署
+- 也可在 GitHub 的 Actions 分頁手動觸發（workflow_dispatch）
+
+**一次性啟用**（GitHub 網站操作）：
+1. 進 repo **Settings → Pages**
+2. **Source** 選 **GitHub Actions**
+3. 到 **Actions** 分頁手動跑一次「部署世界盃預測網站」
+4. 完成後網址為 `https://<帳號>.github.io/football/`，手機開這個網址即可，每天自動更新。
+
 ## 世界盃單場深度分析（像 soccermaddy 那種 UI）
 
 針對國際賽（世界盃）的單場全面分析，整合 **Poisson（解析）+ 蒙地卡羅**，
