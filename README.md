@@ -68,8 +68,11 @@ src/footy/
 ├── context.py         # 傷停/輪休情境調整（手動 CSV + api-football）
 ├── evaluation.py      # 模型校準（Brier/LogLoss/可靠度）+ CLV 分析
 ├── predict.py         # 預測站風格內容（1X2/比分/大小球/BTTS/狀態/H2H/Tip）
+├── analysis.py        # 世界盃單場深度分析（Poisson+蒙地卡羅，全面板）
+├── counts.py          # 角球/黃牌 Poisson 計數模型（先驗近似）
+├── intl/              # 國際賽資料、Elo 評分、進球分鐘分布
 ├── season.py          # 整季蒙地卡羅模擬（奪冠/前四/降級機率）
-├── report.py          # 渲染預測/季模擬為 console / Markdown / HTML
+├── report.py          # 渲染預測/分析/季模擬為 console / Markdown / HTML
 ├── prematch.py        # 初盤價值掃描
 ├── backtest/
 │   └── engine.py      # walk-forward 回測引擎
@@ -148,6 +151,30 @@ footy predict --model models/E0.pkl --fixtures examples/epl_fixtures.csv \
 ```
 > 這是**純機率預測內容**（給讀者看的），與 `scan-prematch`／`live`（找 +EV 下注）不同；
 > 預測站好看，但別忘了 `docs/FINDINGS.md`：模型機率未必勝過市場盤口。
+
+## 世界盃單場深度分析（像 soccermaddy 那種 UI）
+
+針對國際賽（世界盃）的單場全面分析，整合 **Poisson（解析）+ 蒙地卡羅**，
+模型輸入包含 **Elo 評分（≈FIFA 排名）、近5場表現、歷史交手、戰術對比**
+（球員狀態因無公開資料，預設中性、可手動覆寫）：
+```bash
+footy fetch-intl --out data/intl.csv --since 2010-01-01      # 下載國際賽+算 Elo
+footy train --data data/intl.csv --half-life 540 --use-elo --out models/intl.pkl
+footy analyze --model models/intl.pkl --home Iraq --away Norway \
+              --history data/intl.csv --neutral --knockout \
+              --html out/analysis.html
+```
+產出面板（HTML 卡片 UI）：
+- **AI 預測比分 + 總進球 + xG 區間**
+- **大小球 1.5 / 2.5 / 3.5**（買大/買小）
+- **兩隊都進球 BTTS**（含各自進球機率）
+- **亞盤讓球**（模型估線、supremacy/xG 差、建議）
+- **角球 / 黃牌**（合計、估線、建議、信心）— ⚠️ 國際賽無公開角球/黃牌統計，屬 Poisson 先驗近似
+- **上半場走向**（1X2 + 上半場大小 0.5 / 1.5）— 用蒙地卡羅把進球分配到上下半場
+- **影響因子**：Elo、近5場、H2H、戰術風格
+
+> Elo 由國際賽結果自算（前十：阿根廷/西班牙/法國/英格蘭/巴西…，與 FIFA 排名高度吻合），
+> 可用 `intl.data.load_fifa_ranking` 匯入官方 FIFA 排名替代/補充。中立場（世界盃）自動取消主場優勢。
 
 ## 整季蒙地卡羅模擬（像 FiveThirtyEight）
 

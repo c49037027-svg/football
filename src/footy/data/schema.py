@@ -18,6 +18,10 @@ AWAY_GOALS = "away_goals"
 HOME_XG = "home_xg"
 AWAY_XG = "away_xg"
 
+# 國際賽用：中立場地（True 則無主場優勢）、賽事名稱。
+NEUTRAL = "neutral"
+TOURNAMENT = "tournament"
+
 # 選用：賽前 Elo 評分（球隊長期實力，含比分差幅資訊，常比近期進球更穩定）。
 HOME_ELO = "home_elo"
 AWAY_ELO = "away_elo"

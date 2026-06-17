@@ -136,6 +136,49 @@ def predict(ctx, model_path, fixtures, history_path, adjustments, html_out, md_o
         click.echo(f"[ok] 已輸出 HTML：{html_out}")
 
 
+@cli.command("fetch-intl")
+@click.option("--out", default="data/intl.csv", help="輸出 CSV 路徑")
+@click.option("--since", default="2006-01-01", help="只取此日期後的國際賽")
+def fetch_intl(out, since):
+    """下載國際賽結果（martj42 公開資料）並計算 Elo 評分。"""
+    from .intl import data as intl
+    df = intl.fetch_international(out_path=None, since=since)
+    df, elo = intl.compute_elo(df)
+    from pathlib import Path
+    Path(out).parent.mkdir(parents=True, exist_ok=True)
+    df.to_csv(out, index=False)
+    top = sorted(elo.items(), key=lambda x: x[1], reverse=True)[:10]
+    click.echo(f"[ok] 已存 {len(df)} 場到 {out}（含賽前 Elo）")
+    click.echo("Elo 前十：" + ", ".join(f"{t} {r:.0f}" for t, r in top))
+
+
+@cli.command("analyze")
+@click.option("--model", "model_path", required=True)
+@click.option("--home", required=True)
+@click.option("--away", required=True)
+@click.option("--history", "history_path", default=None, help="歷史賽果 CSV（狀態/H2H）")
+@click.option("--neutral/--home-away", default=True, help="中立場（世界盃預設中立）")
+@click.option("--knockout", is_flag=True, default=False, help="淘汰賽（黃牌加成）")
+@click.option("--n-sims", default=50000, type=int)
+@click.option("--html", "html_out", default=None, help="輸出分析 HTML")
+@click.option("--title", default=None, help="頁面標題")
+@click.pass_context
+def analyze(ctx, model_path, home, away, history_path, neutral, knockout,
+            n_sims, html_out, title):
+    """世界盃單場深度分析（比分/大小/BTTS/亞盤/角球/黃牌/上半場/因子）。"""
+    from . import analysis, report
+    model = dc.DixonColesModel.load(model_path)
+    if home not in model.attack or away not in model.attack:
+        raise click.ClickException(f"模型未包含 {home} 或 {away}")
+    hist = loader.load_csv(history_path) if history_path else None
+    a = analysis.analyze(model, home, away, history=hist, neutral=neutral,
+                         knockout=knockout, n_sims=n_sims)
+    click.echo(report.render_analysis_console(a))
+    if html_out:
+        report.write_analysis_html(a, html_out, title or f"{home} vs {away} 分析")
+        click.echo(f"[ok] 已輸出 HTML：{html_out}")
+
+
 @cli.command("simulate-season")
 @click.option("--model", "model_path", required=True)
 @click.option("--teams", default=None,

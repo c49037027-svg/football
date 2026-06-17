@@ -63,8 +63,12 @@ class DixonColesModel:
     team_elo: dict[str, float] = field(default_factory=dict)
 
     # ---------- 推論 ----------
-    def expected_goals(self, home: str, away: str) -> tuple[float, float]:
-        """回傳 (lambda_home, mu_away)：雙方預期進球數。"""
+    def expected_goals(self, home: str, away: str,
+                       neutral: bool = False) -> tuple[float, float]:
+        """回傳 (lambda_home, mu_away)：雙方預期進球數。
+
+        neutral=True 時不套用主場優勢（國際賽中立場地，如世界盃）。
+        """
         if home not in self.attack or away not in self.attack:
             raise KeyError(f"模型未包含球隊：{home} 或 {away}")
         elo_term = 0.0
@@ -73,18 +77,20 @@ class DixonColesModel:
             eh = self.team_elo.get(home, mean_elo)
             ea = self.team_elo.get(away, mean_elo)
             elo_term = self.elo_coef * (eh - ea) / 400.0
-        lam = np.exp(self.attack[home] - self.defence[away] + self.home_adv + elo_term)
+        ha = 0.0 if neutral else self.home_adv
+        lam = np.exp(self.attack[home] - self.defence[away] + ha + elo_term)
         mu = np.exp(self.attack[away] - self.defence[home] - elo_term)
         return float(lam), float(mu)
 
     def score_matrix(self, home: str, away: str,
-                     lam: float | None = None, mu: float | None = None) -> np.ndarray:
+                     lam: float | None = None, mu: float | None = None,
+                     neutral: bool = False) -> np.ndarray:
         """回傳 (max_goals+1) x (max_goals+1) 的比分機率矩陣 P[h, a]。
 
         可直接傳入 lam/mu（走地時用調整後的預期進球），否則用 pre-match 估計。
         """
         if lam is None or mu is None:
-            lam, mu = self.expected_goals(home, away)
+            lam, mu = self.expected_goals(home, away, neutral=neutral)
         return score_matrix_from_rates(lam, mu, self.rho, self.max_goals)
 
     # ---------- 序列化 ----------
@@ -167,6 +173,12 @@ def fit(df: pd.DataFrame, half_life_days: float = 180.0, max_goals: int = 10,
     age_days = (reference_date - df[S.DATE]).dt.days.to_numpy(dtype=float)
     weights = np.exp(-xi * np.clip(age_days, 0, None))
 
+    # 中立場地遮罩：中立場（neutral=True）不套用主場優勢。
+    if S.NEUTRAL in df.columns:
+        home_mask = (~df[S.NEUTRAL].astype(bool)).to_numpy(dtype=float)
+    else:
+        home_mask = np.ones(len(df))
+
     # Elo：若啟用且資料含 Elo 欄位，準備每場的 (Elo_home - Elo_away)/400。
     has_elo = use_elo and S.HOME_ELO in df.columns and S.AWAY_ELO in df.columns
     if has_elo:
@@ -190,7 +202,7 @@ def fit(df: pd.DataFrame, half_life_days: float = 180.0, max_goals: int = 10,
 
     def neg_log_likelihood(params: np.ndarray) -> float:
         att, dfc, home_adv, rho, elo_coef = unpack(params)
-        lam = np.exp(att[hi] - dfc[ai] + home_adv + elo_coef * elo_diff)
+        lam = np.exp(att[hi] - dfc[ai] + home_adv * home_mask + elo_coef * elo_diff)
         mu = np.exp(att[ai] - dfc[hi] - elo_coef * elo_diff)
         # 數值保護
         lam = np.clip(lam, 1e-8, 30.0)
