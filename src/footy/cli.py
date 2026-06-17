@@ -200,12 +200,13 @@ def fetch_wc(out):
 def worldcup(ctx, model_path, schedule, n_sims, html_out, title):
     """整屆世界盃模擬 + 單頁首頁（小組賽程預測 + 晉級/奪冠機率）。"""
     from . import report, worldcup as wc
+    from .i18n import zh
     model = dc.DixonColesModel.load(model_path)
     click.echo(f"[wc] 模擬整屆 {n_sims:,} 次…")
     result = wc.simulate_worldcup(model, schedule, n_sims=n_sims)
     _, matches, _ = wc.parse_wc_json(schedule)
     champ = sorted(result.champion.items(), key=lambda x: x[1], reverse=True)[:8]
-    click.echo("奪冠機率前八：" + "  ".join(f"{t} {p:.1%}" for t, p in champ))
+    click.echo("奪冠機率前八：" + "  ".join(f"{zh(t)} {p:.1%}" for t, p in champ))
     report.write_worldcup_html(result, model, matches, html_out, title)
     click.echo(f"[ok] 已輸出網站首頁：{html_out}")
 
@@ -222,6 +223,7 @@ def worldcup(ctx, model_path, schedule, n_sims, html_out, title):
 def wc_site(ctx, model_path, schedule, history_path, outdir, n_sims, match_sims, title):
     """產生整屆世界盃多頁網站：首頁 + 每場可點進的單場分析頁。"""
     from . import report, worldcup as wc
+    from .i18n import zh
     model = dc.DixonColesModel.load(model_path)
     hist = loader.load_csv(history_path) if history_path else None
     click.echo(f"[wc] 模擬整屆 {n_sims:,} 次…")
@@ -231,7 +233,7 @@ def wc_site(ctx, model_path, schedule, history_path, outdir, n_sims, match_sims,
     out, n = report.write_worldcup_site(result, model, matches, outdir,
                                         history=hist, title=title, n_sims=match_sims)
     champ = sorted(result.champion.items(), key=lambda x: x[1], reverse=True)[:5]
-    click.echo("奪冠機率前五：" + "  ".join(f"{t} {p:.1%}" for t, p in champ))
+    click.echo("奪冠機率前五：" + "  ".join(f"{zh(t)} {p:.1%}" for t, p in champ))
     click.echo(f"[ok] 網站已輸出到 {out}/（首頁 index.html，{n} 場分析頁）")
 
 

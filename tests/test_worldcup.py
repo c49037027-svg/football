@@ -60,8 +60,10 @@ def test_worldcup_render():
     res = worldcup.simulate_worldcup(model, SCHED, n_sims=200, seed=2)
     html = report.render_worldcup_html(res, model, matches, "測試世界盃")
     assert "<!doctype html>" in html
-    for lab in ("奪冠機率", "晉級展望", "小組賽程", "Group A"):
+    for lab in ("奪冠機率", "晉級展望", "小組賽程", "A 組"):
         assert lab in html
+    # 隊名應顯示中文（且不出現英文原名）
+    assert "阿根廷" in html and "Argentina" not in html
 
 
 def _toy_model(teams):
