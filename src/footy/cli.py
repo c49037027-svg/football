@@ -165,19 +165,36 @@ def fetch_intl(out, since):
 @click.option("--neutral/--home-away", default=True, help="中立場（世界盃預設中立）")
 @click.option("--knockout", is_flag=True, default=False, help="淘汰賽（黃牌加成）")
 @click.option("--n-sims", default=50000, type=int)
+@click.option("--home-formation", default=None, help="主隊陣型，如 4-3-3（手動輸入）")
+@click.option("--away-formation", default=None, help="客隊陣型，如 5-3-2（手動輸入）")
+@click.option("--home-missing", default=0, type=int, help="主隊缺陣主力人數")
+@click.option("--away-missing", default=0, type=int, help="客隊缺陣主力人數")
 @click.option("--html", "html_out", default=None, help="輸出分析 HTML")
 @click.option("--title", default=None, help="頁面標題")
 @click.pass_context
 def analyze(ctx, model_path, home, away, history_path, neutral, knockout,
-            n_sims, html_out, title):
+            n_sims, home_formation, away_formation, home_missing, away_missing,
+            html_out, title):
     """世界盃單場深度分析（比分/大小/BTTS/亞盤/角球/黃牌/上半場/因子）。"""
-    from . import analysis, report
+    from . import analysis, report, context
     model = dc.DixonColesModel.load(model_path)
     if home not in model.attack or away not in model.attack:
         raise click.ClickException(f"模型未包含 {home} 或 {away}")
     hist = loader.load_csv(history_path) if history_path else None
+    # 陣型 + 缺陣 合併成情境調整
+    adj = context.combine_adjustments(
+        context.formation_adjustment(home_formation, away_formation),
+        context.injuries_to_adjustment(home_missing, away_missing)
+        if (home_missing or away_missing) else None,
+    )
     a = analysis.analyze(model, home, away, history=hist, neutral=neutral,
-                         knockout=knockout, n_sims=n_sims)
+                         knockout=knockout, n_sims=n_sims, adjustment=adj)
+    if home_formation or away_formation:
+        a.home_style = f"{home_formation or '-'}（{a.home_style}）"
+        a.away_style = f"{away_formation or '-'}（{a.away_style}）"
+    if home_missing or away_missing:
+        a.player_note_home = f"缺主力 {home_missing} 人" if home_missing else "主力盡出"
+        a.player_note_away = f"缺主力 {away_missing} 人" if away_missing else "主力盡出"
     click.echo(report.render_analysis_console(a))
     if html_out:
         report.write_analysis_html(a, html_out, title or f"{home} vs {away} 分析")

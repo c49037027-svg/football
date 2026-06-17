@@ -31,6 +31,17 @@ class ContextAdjustment:
         return lam * self.home_attack_mult, mu * self.away_attack_mult
 
 
+def combine_adjustments(*adjs) -> "ContextAdjustment":
+    """把多個 ContextAdjustment 的乘數相乘合併（None 視為不變）。"""
+    h, a = 1.0, 1.0
+    for adj in adjs:
+        if adj is None:
+            continue
+        h *= adj.home_attack_mult
+        a *= adj.away_attack_mult
+    return ContextAdjustment(home_attack_mult=h, away_attack_mult=a)
+
+
 # ---------------- 手動 CSV ----------------
 def load_adjustments_csv(path: str) -> dict[tuple[str, str], ContextAdjustment]:
     """讀手動調整 CSV。欄位：home, away, home_attack_mult, away_attack_mult。
@@ -136,6 +147,86 @@ def map_injury_counts(counts: dict[str, int], known_teams: list[str]) -> dict[st
         if target:
             out[target] = out.get(target, 0) + c
     return out
+
+
+# ---------------- 陣型（formation）----------------
+# ⚠️ 啟發式先驗：陣型對進球的影響小且依情境而定，這不是資料擬合的精算值。
+# 數字代表「該陣型對自身進攻率的乘數」——越進攻的陣型自身攻擊略升、越防守則略降。
+FORMATION_ATTACK_FACTOR = {
+    "4-3-3": 1.06, "3-4-3": 1.08, "4-2-4": 1.10, "3-3-4": 1.10,
+    "4-2-3-1": 1.02, "4-1-4-1": 1.00, "4-4-2": 1.00, "3-5-2": 1.00,
+    "4-4-1-1": 0.98, "4-5-1": 0.94, "5-3-2": 0.92, "5-4-1": 0.88,
+    "3-4-2-1": 1.03, "4-3-2-1": 1.01,
+}
+DEFENSIVE_FORMATIONS = {"4-5-1", "5-3-2", "5-4-1", "4-4-1-1"}
+
+
+def _norm_formation(f: str | None) -> str | None:
+    return f.strip().replace(" ", "") if f else None
+
+
+def formation_factor(formation: str | None) -> float:
+    """回傳陣型對自身進攻率的乘數（查不到視為 1.0）。"""
+    f = _norm_formation(formation)
+    if not f:
+        return 1.0
+    return FORMATION_ATTACK_FACTOR.get(f, 1.0)
+
+
+def formation_adjustment(home_formation: str | None,
+                         away_formation: str | None) -> ContextAdjustment:
+    """由雙方陣型建 ContextAdjustment（自身進攻率乘數）。
+
+    另含小幅交互：對方擺大巴（防守陣型）時，自身進攻率再打點折扣。
+    """
+    hf = formation_factor(home_formation)
+    af = formation_factor(away_formation)
+    if _norm_formation(away_formation) in DEFENSIVE_FORMATIONS:
+        hf *= 0.96
+    if _norm_formation(home_formation) in DEFENSIVE_FORMATIONS:
+        af *= 0.96
+    return ContextAdjustment(home_attack_mult=hf, away_attack_mult=af)
+
+
+# ---------------- 先發陣容（api-football /fixtures/lineups）----------------
+def parse_lineups(payload: dict) -> dict[str, dict]:
+    """解析 /fixtures/lineups 回應，回傳 {隊名: {formation, starters:[球員名], start_ids:[id]}}。"""
+    out: dict[str, dict] = {}
+    for item in payload.get("response", []):
+        team = (item.get("team") or {}).get("name")
+        if not team:
+            continue
+        starters, ids = [], []
+        for s in item.get("startXI") or []:
+            pl = s.get("player") or {}
+            if pl.get("name"):
+                starters.append(pl["name"])
+            if pl.get("id") is not None:
+                ids.append(pl["id"])
+        out[team] = {"formation": item.get("formation"),
+                     "starters": starters, "start_ids": ids}
+    return out
+
+
+def lineup_strength_adjustment(start_ids: list[int], baseline_ids: list[int],
+                               player_rating: dict[int, float] | None = None,
+                               max_swing: float = 0.20) -> float:
+    """由「實際先發 vs 球隊基準先發」估自身進攻率乘數。
+
+    player_rating：{player_id: 評分/分鐘等重要性}，有則用加權；否則用名單重疊率。
+    回傳乘數（1.0 = 與基準相同；缺主力<1；主力盡出>1），夾在 [1-max_swing, 1+max_swing]。
+    """
+    if not start_ids or not baseline_ids:
+        return 1.0
+    base = set(baseline_ids)
+    if player_rating:
+        base_total = sum(player_rating.get(i, 0.0) for i in baseline_ids) or 1.0
+        got = sum(player_rating.get(i, 0.0) for i in start_ids if i in base)
+        ratio = got / base_total
+    else:
+        ratio = len(base & set(start_ids)) / len(base)
+    factor = 1.0 + (ratio - 1.0)  # ratio=1 → 1.0；缺人 → <1
+    return float(min(1.0 + max_swing, max(1.0 - max_swing, factor)))
 
 
 def build_injury_adjustments(counts: dict[str, int], matches,
