@@ -29,6 +29,12 @@ def _score_str(s: tuple[int, int]) -> str:
     return f"{s[0]}-{s[1]}"
 
 
+def _modal_score_str(p: MatchPrediction) -> str:
+    """最可能比分 + 其機率，例如 1-1（13%）。"""
+    prob = p.correct_scores[0][1] if p.correct_scores else 0.0
+    return f"{_score_str(p.predicted_score)}（{prob:.0%}）"
+
+
 # ---------------- Console ----------------
 def render_console(p: MatchPrediction) -> str:
     cs = "  ".join(f"{_score_str(s)} {prob:.0%}" for s, prob in p.correct_scores[:3])
@@ -37,7 +43,7 @@ def render_console(p: MatchPrediction) -> str:
         f"⚽ {p.home} vs {p.away}\n"
         f"   1X2     : 主勝 {p.p_home:.0%} | 和 {p.p_draw:.0%} | 客勝 {p.p_away:.0%}\n"
         f"   預期進球: {p.exp_home_goals:.2f} - {p.exp_away_goals:.2f}"
-        f"   預測比分: {_score_str(p.predicted_score)}\n"
+        f"   預測比分: {_modal_score_str(p)}\n"
         f"   大小2.5 : 大 {ou25.get('over',0):.0%} / 小 {ou25.get('under',0):.0%}"
         f"   BTTS    : 是 {p.btts_yes:.0%} / 否 {p.btts_no:.0%}\n"
         f"   正確比分: {cs}\n"
@@ -61,7 +67,7 @@ def render_markdown(preds: list[MatchPrediction], title: str = "足球預測") -
             f"|---|---|",
             f"| 1X2 | 主勝 **{p.p_home:.0%}** / 和 **{p.p_draw:.0%}** / 客勝 **{p.p_away:.0%}** |",
             f"| 預期進球 | {p.exp_home_goals:.2f} – {p.exp_away_goals:.2f} |",
-            f"| 預測比分 | **{_score_str(p.predicted_score)}** |",
+            f"| 預測比分 | **{_modal_score_str(p)}** |",
             f"| 大小球 2.5 | 大 {ou25.get('over',0):.0%} / 小 {ou25.get('under',0):.0%} |",
             f"| BTTS | 是 {p.btts_yes:.0%} / 否 {p.btts_no:.0%} |",
             f"| 正確比分 Top5 | {cs} |",
@@ -120,7 +126,7 @@ def _match_card(p: MatchPrediction) -> str:
         <div class="a" style="width:{a*100:.1f}%">{a:.0%}</div>
       </div>
       <div class="grid">
-        <div class="box"><div class="k">預測比分</div><div class="v">{_score_str(p.predicted_score)}</div></div>
+        <div class="box"><div class="k">預測比分</div><div class="v">{_modal_score_str(p)}</div></div>
         <div class="box"><div class="k">預期進球</div><div class="v">{p.exp_home_goals:.2f} – {p.exp_away_goals:.2f}</div></div>
         <div class="box"><div class="k">大/小 2.5</div><div class="v">{ou25.get('over',0):.0%} / {ou25.get('under',0):.0%}</div></div>
         <div class="box"><div class="k">BTTS 是/否</div><div class="v">{p.btts_yes:.0%} / {p.btts_no:.0%}</div></div>
@@ -221,7 +227,7 @@ def render_analysis_console(a) -> str:
     L = []
     L.append(f"⚽ {hz} vs {az}" + ("（中立場）" if a.neutral else ""))
     L.append(f"  AI 預測比分 {a.predicted_score[0]}-{a.predicted_score[1]}"
-             f"（總進球 {a.total_goals}）· xG {a.xg_low}-{a.xg_high}")
+             f"（機率 {a.predicted_score_prob:.0%}；總進球 {a.total_goals}）· xG {a.xg_low}-{a.xg_high}")
     L.append(f"  1X2     主勝 {a.p_home:.0%} | 和 {a.p_draw:.0%} | 客勝 {a.p_away:.0%}")
     for ln in (1.5, 2.5, 3.5):
         d = a.over_under[ln]
@@ -294,7 +300,8 @@ def render_analysis_html(a, title: str = "單場分析", back_href: str | None =
   <div class="disc">⚠️ 純機率分析，非投注建議。角球/黃牌為先驗近似（國際賽無公開統計）。投注有風險。</div>
 
   <div class="card">
-    <div class="head"><div class="teams">AI 預測比分 {a.predicted_score[0]}-{a.predicted_score[1]}</div>
+    <div class="head"><div class="teams">AI 預測比分 {a.predicted_score[0]}-{a.predicted_score[1]}
+      <span class="small">（機率 {a.predicted_score_prob:.0%}）</span></div>
       <div class="small">總進球 {a.total_goals} · xG {a.xg_low}–{a.xg_high}</div></div>
     <div class="bar">
       <div class="h" style="width:{h*100:.1f}%">{h:.0%}</div>
@@ -387,8 +394,9 @@ def _match_pred_row(model, m, linked: set | None = None):
     elif t1 in model.attack and t2 in model.attack:
         mat = model.score_matrix(t1, t2, neutral=True)
         s = markets.most_likely_score(mat)
+        sp = float(mat[s[0], s[1]])
         o = markets.outcome_1x2(mat)
-        tag = (f"<span class='pred'>{s[0]}-{s[1]}</span> "
+        tag = (f"<span class='pred'>{s[0]}-{s[1]}</span><span class='small'>（{sp:.0%}）</span> "
                f"<span class='small'>{o['home']:.0%}/{o['draw']:.0%}/{o['away']:.0%}</span>")
     else:
         tag = "<span class='small'>—</span>"

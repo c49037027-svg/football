@@ -39,6 +39,7 @@ class MatchAnalysis:
     exp_home_goals: float
     exp_away_goals: float
     predicted_score: tuple[int, int]
+    predicted_score_prob: float
     total_goals: float
     xg_low: float
     xg_high: float
@@ -162,12 +163,13 @@ def analyze(model: DixonColesModel, home: str, away: str,
                1.5: float((fh_total > 1.5).mean())}
 
     ml = markets.most_likely_score(mat)
+    ml_prob = float(mat[ml[0], ml[1]])
     total = eh + ea
 
     a = MatchAnalysis(
         home=home, away=away, neutral=neutral,
         exp_home_goals=round(eh, 2), exp_away_goals=round(ea, 2),
-        predicted_score=ml, total_goals=round(total, 1),
+        predicted_score=ml, predicted_score_prob=ml_prob, total_goals=round(total, 1),
         xg_low=round(min(eh, ea), 1), xg_high=round(max(eh, ea), 1),
         p_home=o["home"], p_draw=o["draw"], p_away=o["away"],
         over_under=ou, btts_yes=bt["yes"],
