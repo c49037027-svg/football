@@ -67,6 +67,8 @@ src/footy/
 │   └── manager.py     # 資金管理 / 曝險上限 / 停損 / 熔斷
 ├── context.py         # 傷停/輪休情境調整（手動 CSV + api-football）
 ├── evaluation.py      # 模型校準（Brier/LogLoss/可靠度）+ CLV 分析
+├── predict.py         # 預測站風格內容（1X2/比分/大小球/BTTS/狀態/H2H/Tip）
+├── report.py          # 渲染預測為 console / Markdown / HTML
 ├── prematch.py        # 初盤價值掃描
 ├── backtest/
 │   └── engine.py      # walk-forward 回測引擎
@@ -132,6 +134,19 @@ footy evaluate --data data/E0.csv --refit-every 20
 - **Brier / LogLoss**，並與市場收盤盤比較 —— 模型若沒贏過市場，代表沒有資訊優勢。
 - **可靠度表**（reliability）—— 模型說「30%」的事是否真的約 30% 發生。
 - **CLV（closing line value）**—— 你的下注價 vs 收盤價；長期正 CLV 是最可靠的 +EV 指標。
+
+## 預測站內容（像 soccermaddy / Forebet）
+
+把模型輸出成「預測站」風格的每場預測——1X2 機率、預測比分、正確比分 Top5、
+大小球（1.5/2.5/3.5）、BTTS、雙方預期進球、近期狀態（最近 5 場 W/D/L）、H2H 與推薦 Tip。
+可輸出 console、Markdown 或一頁式 HTML（手機友善、深色卡片風格）：
+```bash
+footy predict --model models/E0.pkl --fixtures examples/epl_fixtures.csv \
+              --history data/E0.csv --html out/predictions.html --md out/predictions.md \
+              --title "今日英超預測"
+```
+> 這是**純機率預測內容**（給讀者看的），與 `scan-prematch`／`live`（找 +EV 下注）不同；
+> 預測站好看，但別忘了 `docs/FINDINGS.md`：模型機率未必勝過市場盤口。
 
 ## 真實數據實證結論
 

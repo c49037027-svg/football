@@ -1,0 +1,142 @@
+<!doctype html><html lang="zh-Hant"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>英超預測 Demo</title><style>
+:root{--bg:#0f1419;--card:#1a2129;--accent:#21c07a;--muted:#8a97a6;--line:#2a333d;--warn:#e0b341}
+*{box-sizing:border-box}body{margin:0;font-family:system-ui,-apple-system,"Noto Sans TC",sans-serif;
+background:var(--bg);color:#e6edf3}
+.wrap{max-width:980px;margin:0 auto;padding:24px}
+h1{font-size:24px;margin:0 0 4px}.sub{color:var(--muted);font-size:13px;margin-bottom:18px}
+.disc{background:#2a2410;border:1px solid var(--warn);color:#f0d98c;padding:10px 14px;border-radius:8px;
+font-size:13px;margin-bottom:20px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px 18px;margin-bottom:16px}
+.head{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.teams{font-size:18px;font-weight:700}.tip{background:var(--accent);color:#04130c;font-weight:700;
+padding:4px 10px;border-radius:20px;font-size:12px}
+.bar{display:flex;height:26px;border-radius:6px;overflow:hidden;margin:8px 0;font-size:12px;font-weight:600}
+.bar>div{display:flex;align-items:center;justify-content:center;color:#04130c}
+.h{background:#21c07a}.d{background:#5b6a7a}.a{background:#e07a5f}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-top:10px}
+.box{background:#11161c;border:1px solid var(--line);border-radius:8px;padding:10px}
+.box .k{color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.04em}
+.box .v{font-size:15px;font-weight:700;margin-top:3px}
+.cs span{display:inline-block;background:#11161c;border:1px solid var(--line);border-radius:6px;
+padding:3px 8px;margin:2px 4px 2px 0;font-size:12px}
+.form{font-family:ui-monospace,monospace;letter-spacing:2px}.W{color:#21c07a}.D{color:#c9b458}.L{color:#e07a5f}
+.foot{color:var(--muted);font-size:12px;text-align:center;margin-top:24px}
+</style></head>
+<body><div class="wrap">
+  <h1>⚽ 英超預測 Demo</h1>
+  <div class="sub">產生於 2026-06-17 · 由 Dixon–Coles 機率模型計算</div>
+  <div class="disc">⚠️ 純機率預測，非投注建議。模型未必勝過市場盤口；投注有風險，請量力而為並遵守當地法律。</div>
+  
+    <div class="card">
+      <div class="head">
+        <div class="teams">Liverpool <span style="color:#8a97a6">vs</span> Man City</div>
+        <div class="tip">💡 主勝（40%）、大2.5、雙方進球</div>
+      </div>
+      <div class="bar">
+        <div class="h" style="width:39.9%">40%</div>
+        <div class="d" style="width:23.7%">24%</div>
+        <div class="a" style="width:36.5%">36%</div>
+      </div>
+      <div class="grid">
+        <div class="box"><div class="k">預測比分</div><div class="v">1-1</div></div>
+        <div class="box"><div class="k">預期進球</div><div class="v">1.61 – 1.54</div></div>
+        <div class="box"><div class="k">大/小 2.5</div><div class="v">61% / 39%</div></div>
+        <div class="box"><div class="k">BTTS 是/否</div><div class="v">63% / 37%</div></div>
+        <div class="box"><div class="k">Liverpool 狀態</div><div class="v form"><span class="D">D</span><span class="L">L</span><span class="D">D</span><span class="L">L</span><span class="W">W</span></div></div>
+        <div class="box"><div class="k">Man City 狀態</div><div class="v form"><span class="W">W</span><span class="W">W</span><span class="D">D</span><span class="W">W</span><span class="W">W</span></div></div>
+      </div>
+      <div class="cs" style="margin-top:10px">正確比分 Top5：<span>1-1 · 11%</span><span>2-1 · 9%</span><span>1-2 · 8%</span><span>1-0 · 7%</span><span>2-2 · 7%</span></div>
+      <div style="color:#8a97a6;font-size:12px;margin-top:8px">近5次：Liverpool 2勝 / 2平 / Man City 1勝</div>
+    </div>
+
+    <div class="card">
+      <div class="head">
+        <div class="teams">Arsenal <span style="color:#8a97a6">vs</span> Chelsea</div>
+        <div class="tip">💡 主勝（54%）、小2.5、非雙方進球</div>
+      </div>
+      <div class="bar">
+        <div class="h" style="width:53.7%">54%</div>
+        <div class="d" style="width:24.6%">25%</div>
+        <div class="a" style="width:21.7%">22%</div>
+      </div>
+      <div class="grid">
+        <div class="box"><div class="k">預測比分</div><div class="v">1-0</div></div>
+        <div class="box"><div class="k">預期進球</div><div class="v">1.64 – 0.95</div></div>
+        <div class="box"><div class="k">大/小 2.5</div><div class="v">48% / 52%</div></div>
+        <div class="box"><div class="k">BTTS 是/否</div><div class="v">49% / 51%</div></div>
+        <div class="box"><div class="k">Arsenal 狀態</div><div class="v form"><span class="W">W</span><span class="W">W</span><span class="D">D</span><span class="L">L</span><span class="D">D</span></div></div>
+        <div class="box"><div class="k">Chelsea 狀態</div><div class="v form"><span class="W">W</span><span class="W">W</span><span class="L">L</span><span class="W">W</span><span class="W">W</span></div></div>
+      </div>
+      <div class="cs" style="margin-top:10px">正確比分 Top5：<span>1-0 · 12%</span><span>1-1 · 12%</span><span>2-0 · 10%</span><span>2-1 · 10%</span><span>0-0 · 8%</span></div>
+      <div style="color:#8a97a6;font-size:12px;margin-top:8px">近5次：Arsenal 3勝 / 2平 / Chelsea 0勝</div>
+    </div>
+
+    <div class="card">
+      <div class="head">
+        <div class="teams">Tottenham <span style="color:#8a97a6">vs</span> Man United</div>
+        <div class="tip">💡 主勝（43%）、大2.5、雙方進球</div>
+      </div>
+      <div class="bar">
+        <div class="h" style="width:43.3%">43%</div>
+        <div class="d" style="width:23.7%">24%</div>
+        <div class="a" style="width:33.0%">33%</div>
+      </div>
+      <div class="grid">
+        <div class="box"><div class="k">預測比分</div><div class="v">1-1</div></div>
+        <div class="box"><div class="k">預期進球</div><div class="v">1.67 – 1.43</div></div>
+        <div class="box"><div class="k">大/小 2.5</div><div class="v">60% / 40%</div></div>
+        <div class="box"><div class="k">BTTS 是/否</div><div class="v">62% / 38%</div></div>
+        <div class="box"><div class="k">Tottenham 狀態</div><div class="v form"><span class="L">L</span><span class="L">L</span><span class="L">L</span><span class="D">D</span><span class="L">L</span></div></div>
+        <div class="box"><div class="k">Man United 狀態</div><div class="v form"><span class="W">W</span><span class="L">L</span><span class="L">L</span><span class="L">L</span><span class="D">D</span></div></div>
+      </div>
+      <div class="cs" style="margin-top:10px">正確比分 Top5：<span>1-1 · 11%</span><span>2-1 · 9%</span><span>1-2 · 8%</span><span>1-0 · 7%</span><span>2-2 · 6%</span></div>
+      <div style="color:#8a97a6;font-size:12px;margin-top:8px">近5次：Tottenham 2勝 / 2平 / Man United 1勝</div>
+    </div>
+
+    <div class="card">
+      <div class="head">
+        <div class="teams">Newcastle <span style="color:#8a97a6">vs</span> Aston Villa</div>
+        <div class="tip">💡 主勝（48%）、大2.5、雙方進球</div>
+      </div>
+      <div class="bar">
+        <div class="h" style="width:48.2%">48%</div>
+        <div class="d" style="width:23.1%">23%</div>
+        <div class="a" style="width:28.8%">29%</div>
+      </div>
+      <div class="grid">
+        <div class="box"><div class="k">預測比分</div><div class="v">1-1</div></div>
+        <div class="box"><div class="k">預期進球</div><div class="v">1.80 – 1.35</div></div>
+        <div class="box"><div class="k">大/小 2.5</div><div class="v">61% / 39%</div></div>
+        <div class="box"><div class="k">BTTS 是/否</div><div class="v">62% / 38%</div></div>
+        <div class="box"><div class="k">Newcastle 狀態</div><div class="v form"><span class="L">L</span><span class="L">L</span><span class="W">W</span><span class="D">D</span><span class="W">W</span></div></div>
+        <div class="box"><div class="k">Aston Villa 狀態</div><div class="v form"><span class="L">L</span><span class="W">W</span><span class="W">W</span><span class="W">W</span><span class="L">L</span></div></div>
+      </div>
+      <div class="cs" style="margin-top:10px">正確比分 Top5：<span>1-1 · 10%</span><span>2-1 · 9%</span><span>1-0 · 8%</span><span>1-2 · 7%</span><span>2-0 · 7%</span></div>
+      <div style="color:#8a97a6;font-size:12px;margin-top:8px">近5次：Newcastle 4勝 / 0平 / Aston Villa 1勝</div>
+    </div>
+
+    <div class="card">
+      <div class="head">
+        <div class="teams">Brighton <span style="color:#8a97a6">vs</span> West Ham</div>
+        <div class="tip">💡 主勝（53%）、大2.5、雙方進球</div>
+      </div>
+      <div class="bar">
+        <div class="h" style="width:53.2%">53%</div>
+        <div class="d" style="width:21.9%">22%</div>
+        <div class="a" style="width:25.0%">25%</div>
+      </div>
+      <div class="grid">
+        <div class="box"><div class="k">預測比分</div><div class="v">1-1</div></div>
+        <div class="box"><div class="k">預期進球</div><div class="v">1.97 – 1.30</div></div>
+        <div class="box"><div class="k">大/小 2.5</div><div class="v">64% / 36%</div></div>
+        <div class="box"><div class="k">BTTS 是/否</div><div class="v">63% / 37%</div></div>
+        <div class="box"><div class="k">Brighton 狀態</div><div class="v form"><span class="W">W</span><span class="W">W</span><span class="W">W</span><span class="D">D</span><span class="W">W</span></div></div>
+        <div class="box"><div class="k">West Ham 狀態</div><div class="v form"><span class="W">W</span><span class="L">L</span><span class="W">W</span><span class="D">D</span><span class="L">L</span></div></div>
+      </div>
+      <div class="cs" style="margin-top:10px">正確比分 Top5：<span>1-1 · 10%</span><span>2-1 · 10%</span><span>1-0 · 7%</span><span>2-0 · 7%</span><span>3-1 · 6%</span></div>
+      <div style="color:#8a97a6;font-size:12px;margin-top:8px">近5次：Brighton 2勝 / 2平 / West Ham 1勝</div>
+    </div>
+  <div class="foot">Generated by footy · 研究與教育用途</div>
+</div></body></html>

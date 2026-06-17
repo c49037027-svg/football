@@ -228,7 +228,7 @@ def fit(df: pd.DataFrame, half_life_days: float = 180.0, max_goals: int = 10,
 
     res = minimize(
         neg_log_likelihood, x0, method="L-BFGS-B", bounds=bounds,
-        options={"maxiter": 500},
+        options={"maxiter": 2000, "maxfun": 20000, "ftol": 1e-9},
     )
     att, dfc, home_adv, rho, elo_coef = unpack(res.x)
     if verbose:

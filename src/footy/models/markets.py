@@ -40,6 +40,39 @@ def total_goals_probs(mat: np.ndarray) -> np.ndarray:
     return totals
 
 
+# ---------------- BTTS / 正確比分 / 預期進球（給預測內容用） ----------------
+def btts(mat: np.ndarray) -> dict[str, float]:
+    """雙方都進球（both teams to score）的機率。"""
+    n = mat.shape[0]
+    yes = mat[1:, 1:].sum()  # 主客皆 >=1
+    total = mat.sum()
+    return {"yes": float(yes / total), "no": float(1.0 - yes / total)}
+
+
+def correct_score(mat: np.ndarray, top_n: int = 5) -> list[tuple[tuple[int, int], float]]:
+    """回傳機率最高的前 top_n 個比分 [((h, a), prob), ...]。"""
+    n = mat.shape[0]
+    flat = [((h, a), float(mat[h, a])) for h in range(n) for a in range(n)]
+    flat.sort(key=lambda x: x[1], reverse=True)
+    return flat[:top_n]
+
+
+def most_likely_score(mat: np.ndarray) -> tuple[int, int]:
+    """單一最可能比分。"""
+    idx = int(np.argmax(mat))
+    return divmod(idx, mat.shape[1])
+
+
+def expected_goals_from_matrix(mat: np.ndarray) -> tuple[float, float]:
+    """由比分矩陣算雙方期望進球（含截斷後的實際分布期望）。"""
+    n = mat.shape[0]
+    goals = np.arange(n)
+    eh = float((mat.sum(axis=1) * goals).sum())
+    ea = float((mat.sum(axis=0) * goals).sum())
+    return eh, ea
+
+
+
 def over_under(mat: np.ndarray, line: float) -> dict[str, float]:
     """回傳大小球機率/退款。
 

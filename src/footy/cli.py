@@ -98,6 +98,44 @@ def scan_prematch(ctx, model_path, fixtures, adjustments):
         )
 
 
+@cli.command("predict")
+@click.option("--model", "model_path", required=True)
+@click.option("--fixtures", required=True, help="賽程 CSV（需含 home, away 欄位）")
+@click.option("--history", "history_path", default=None,
+              help="歷史資料 CSV（用於近期狀態/H2H，選用）")
+@click.option("--adjustments", default=None, help="傷停/輪休手動調整 CSV（選用）")
+@click.option("--html", "html_out", default=None, help="輸出 HTML 預測頁路徑")
+@click.option("--md", "md_out", default=None, help="輸出 Markdown 路徑")
+@click.option("--title", default="今日足球預測", help="頁面標題")
+@click.pass_context
+def predict(ctx, model_path, fixtures, history_path, adjustments, html_out, md_out, title):
+    """產生像預測站那樣的每場比賽預測內容（1X2/比分/大小球/BTTS/狀態）。"""
+    from . import predict as predmod
+    from . import report
+    model = dc.DixonColesModel.load(model_path)
+    fx = pd.read_csv(fixtures)
+    hist = loader.load_csv(history_path) if history_path else None
+    adj = None
+    if adjustments:
+        from .context import load_adjustments_csv
+        adj = load_adjustments_csv(adjustments)
+    preds = predmod.predict_fixtures(model, fx, history=hist, adjustments=adj)
+    if not preds:
+        click.echo("沒有可預測的比賽（球隊不在模型中？）。")
+        return
+    for p in preds:
+        click.echo(report.render_console(p))
+        click.echo("")
+    if md_out:
+        from pathlib import Path
+        Path(md_out).parent.mkdir(parents=True, exist_ok=True)
+        Path(md_out).write_text(report.render_markdown(preds, title), encoding="utf-8")
+        click.echo(f"[ok] 已輸出 Markdown：{md_out}")
+    if html_out:
+        report.write_html(preds, html_out, title)
+        click.echo(f"[ok] 已輸出 HTML：{html_out}")
+
+
 @cli.command("backtest")
 @click.option("--data", "data_path", required=True)
 @click.option("--half-life", default=None, type=float)
