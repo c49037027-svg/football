@@ -60,6 +60,33 @@ class EvalResult:
     def market_logloss(self) -> float:
         return self._logloss(np.array(self.market_probs), np.array(self.actuals))
 
+    # ---- 市場融合（market blending）----
+    def blended_logloss(self, w: float) -> float:
+        """融合機率 = w*模型 + (1-w)*市場 的 log-loss（w=1 純模型、w=0 純市場）。"""
+        mp = np.array(self.model_probs)
+        kp = np.array(self.market_probs)
+        blended = w * mp + (1.0 - w) * kp
+        blended = blended / blended.sum(axis=1, keepdims=True)
+        return self._logloss(blended, np.array(self.actuals))
+
+    def best_blend(self, steps: int = 101) -> dict:
+        """掃 w∈[0,1] 找讓 log-loss 最低的融合權重（不需重訓，直接用已存機率）。
+
+        注意：w 只是單一純量超參，在數千場上挑選過擬合可忽略；要更嚴謹可用 holdout。
+        """
+        if not self.actuals:
+            return {}
+        ws = np.linspace(0.0, 1.0, steps)
+        lls = [self.blended_logloss(float(w)) for w in ws]
+        i = int(np.argmin(lls))
+        return {
+            "w": float(ws[i]),
+            "blended_logloss": float(lls[i]),
+            "model_logloss": self.model_logloss(),
+            "market_logloss": self.market_logloss(),
+            "curve": list(zip([round(float(x), 2) for x in ws], lls)),
+        }
+
     def reliability_table(self, n_bins: int = 10) -> pd.DataFrame:
         """把所有 (預測機率, 是否發生) 攤平分箱，比較預測 vs 實際頻率。"""
         probs = np.array(self.model_probs).ravel()
@@ -104,6 +131,23 @@ class EvalResult:
             ("✅ 模型 LogLoss 低於市場：有資訊優勢的跡象。"
              if beat else
              "⚠️ 模型 LogLoss 未贏市場：缺乏明顯資訊優勢，難以長期 +EV。"))
+
+        # 市場融合
+        bb = self.best_blend()
+        if bb:
+            lines += [
+                "------------- 市場融合（blending）-------------",
+                f"最佳融合權重 w    : {bb['w']:.2f}（w·模型 + (1-w)·市場）",
+                f"融合後 LogLoss    : {bb['blended_logloss']:.4f}",
+                f"  vs 純模型 {bb['model_logloss']:.4f} / 純市場 {bb['market_logloss']:.4f}",
+            ]
+            if bb["blended_logloss"] < bb["market_logloss"] - 1e-6:
+                lines.append("✅ 融合後贏過市場：模型帶來增量資訊（值得用融合機率）。")
+            elif bb["w"] <= 1e-6:
+                lines.append("⚠️ 最佳 w≈0：模型對市場沒有增量，純用市場最好。")
+            else:
+                lines.append("➖ 融合僅與市場持平：模型增量有限。")
+
         if self.clv_samples:
             lines.append(f"平均 CLV          : {self.mean_clv():+.2%}（下注價相對收盤價的優勢）")
             lines.append(f"打贏收盤線比例    : {self.clv_beat_rate():.1%}")
