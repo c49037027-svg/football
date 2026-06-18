@@ -536,26 +536,71 @@ def _group_points(model_matches, g):
     return pts
 
 
+def _group_standings(matches, g, teams):
+    """完整目前積分榜：每隊 賽/勝/平/負/進/失/淨/分。回傳依 分→淨→進 排序的列表。"""
+    st = {t: dict(P=0, W=0, D=0, L=0, GF=0, GA=0) for t in teams}
+    for m in matches:
+        if m.group != g or not m.played:
+            continue
+        for t, gf, ga, res in ((m.team1, m.hg, m.ag, m.hg - m.ag),
+                               (m.team2, m.ag, m.hg, m.ag - m.hg)):
+            if t not in st:
+                st[t] = dict(P=0, W=0, D=0, L=0, GF=0, GA=0)
+            s = st[t]
+            s["P"] += 1
+            s["GF"] += gf
+            s["GA"] += ga
+            s["W"] += res > 0
+            s["D"] += res == 0
+            s["L"] += res < 0
+    rows = []
+    for t, s in st.items():
+        gd = s["GF"] - s["GA"]
+        pts = s["W"] * 3 + s["D"]
+        rows.append((t, s, gd, pts))
+    rows.sort(key=lambda x: (x[3], x[2], x[1]["GF"]), reverse=True)
+    return rows
+
+
+def _standings_table_html(matches, g, teams):
+    """目前積分榜 HTML（只有已踢過才顯示；橫向可捲避免破版）。"""
+    if not any(m.group == g and m.played for m in matches):
+        return ""
+    rows = _group_standings(matches, g, teams)
+    trs = []
+    for i, (t, s, gd, pts) in enumerate(rows, 1):
+        trs.append(
+            f"<tr><td class='rk'>{i}</td><td class='tm'>{html.escape(zh(t))}</td>"
+            f"<td>{s['P']}</td><td>{s['W']}</td><td>{s['D']}</td><td>{s['L']}</td>"
+            f"<td>{s['GF']}-{s['GA']}</td><td>{gd:+d}</td>"
+            f"<td class='num'><b>{pts}</b></td></tr>")
+    return (f"<div class='stbl'><table><thead><tr><th>#</th><th>隊伍</th>"
+            f"<th>賽</th><th>勝</th><th>平</th><th>負</th><th>進失</th><th>淨</th>"
+            f"<th>分</th></tr></thead><tbody>{''.join(trs)}</tbody></table></div>")
+
+
 def _group_card(g, teams, result, model, matches, linked=None):
-    cur_pts = _group_points(matches, g)
     rows = sorted(teams, key=lambda t: result.qualify.get(t, 0), reverse=True)
     trs = []
     for rank, t in enumerate(rows, 1):
         q = result.qualify.get(t, 0)
         trs.append(
             f"<tr><td class='rk'>{rank}</td><td class='tm'>{html.escape(zh(t))}</td>"
-            f"<td class='num'>{cur_pts.get(t, 0)}</td>"
             f"<td style=\"{_heat(result.group_first.get(t,0)*100,'48')}\">{result.group_first.get(t,0):.0%}</td>"
             f"<td style=\"{_heat(result.group_top2.get(t,0)*100,'140')}\">{result.group_top2.get(t,0):.0%}</td>"
             f"<td style=\"{_heat(q*100,'140')}\">{q:.0%}</td>"
             f"<td class='num'>{result.exp_points.get(t,0):.1f}</td></tr>")
+    standings = _standings_table_html(matches, g, teams)
+    if standings:
+        standings = "<div class='sublbl'>目前積分榜</div>" + standings + "<div class='sublbl'>晉級預測</div>"
     fixtures = "".join(_match_pred_row(model, m, linked)
                        for m in sorted([mm for mm in matches if mm.group == g],
                                        key=lambda mm: mm.date))
     return f"""
     <div class="card grp">
       <div class="sec">{html.escape(group_zh(g))}</div>
-      <table class="gt"><thead><tr><th>#</th><th>隊伍</th><th title='目前積分'>分</th><th>首名</th><th>前二</th><th>晉級</th><th>預期分</th></tr></thead>
+      {standings}
+      <table class="gt"><thead><tr><th>#</th><th>隊伍</th><th>首名</th><th>前二</th><th>晉級</th><th>預期分</th></tr></thead>
       <tbody>{''.join(trs)}</tbody></table>
       <div class="fxs">{fixtures}</div>
     </div>"""
@@ -569,16 +614,35 @@ def _navbar(active: str) -> str:
             f"<a href='/custom'{cls('custom')}>🔧 自訂分析</a></div>")
 
 
-def _render_bracket(matches, linked=None) -> str:
-    """淘汰賽對陣圖：各輪一欄，每場一個對陣框（已賽顯示比分並標出晉級方）。"""
-    linked = linked or set()
+def _bracket_order(matches):
+    """依晉級樹排序各輪賽事：讓 R16/8強… 的位置貼著其 R32 來源，畫起來像對陣樹。"""
+    import re as _re
     cols = [("Round of 32", "32 強"), ("Round of 16", "16 強"),
             ("Quarter-final", "8 強"), ("Semi-final", "4 強"), ("Final", "決賽")]
-    out = []
+    ordered_cols = []
+    prev_pos = {}
     for rnd, label in cols:
-        rms = sorted([m for m in matches if m.round == rnd], key=lambda m: m.num)
+        rms = [m for m in matches if m.round == rnd]
         if not rms:
             continue
+        if not ordered_cols:
+            rms = sorted(rms, key=lambda m: m.num)
+        else:
+            def keyf(m):
+                feed = [int(x[1:]) for x in (m.team1, m.team2)
+                        if _re.match(r"^[WL]\d+$", x)]
+                return min((prev_pos.get(f, 999) for f in feed), default=m.num)
+            rms = sorted(rms, key=keyf)
+        prev_pos = {m.num: i for i, m in enumerate(rms)}
+        ordered_cols.append((label, rms))
+    return ordered_cols
+
+
+def _render_bracket(matches, linked=None) -> str:
+    """淘汰賽對陣圖：各輪一欄（依晉級樹排序），每場一個對陣框，已賽標出晉級方。"""
+    linked = linked or set()
+    out = []
+    for label, rms in _bracket_order(matches):
         boxes = []
         for m in rms:
             t1, t2 = _slot_zh(m.team1), _slot_zh(m.team2)
@@ -599,6 +663,40 @@ def _render_bracket(matches, linked=None) -> str:
                 boxes.append(f"<div class='bm'>{inner}</div>")
         out.append(f"<div class='bcol'><h4>{label}</h4>{''.join(boxes)}</div>")
     return f"<div class='bracket'>{''.join(out)}</div>"
+
+
+def _today_section(matches, model, linked=None):
+    """今日比賽；若今天沒有，顯示接下來最近一天的賽事。"""
+    import datetime as _dt
+    linked = linked or set()
+    today = _dt.date.today().isoformat()
+    dates = sorted({m.date for m in matches if m.date})
+    day = today if today in dates else next((d for d in dates if d >= today), None)
+    if not day:
+        return ""  # 賽事已全部結束
+    label = "今日比賽" if day == today else f"接下來（{day[5:]}）"
+    rms = sorted([m for m in matches if m.date == day], key=lambda m: m.num)
+    rows = []
+    for m in rms:
+        from .models import markets
+        t1, t2 = _slot_zh(m.team1), _slot_zh(m.team2)
+        if m.played:
+            mid = f"<span class='res'>{m.hg}-{m.ag}</span>"
+        elif m.team1 in model.attack and m.team2 in model.attack:
+            o = markets.outcome_1x2(model.score_matrix(m.team1, m.team2, neutral=True))
+            mid = f"<span class='small'>{o['home']:.0%}/{o['draw']:.0%}/{o['away']:.0%}</span>"
+        else:
+            mid = "<span class='small'>—</span>"
+        inner = (f"<span class='fxt'>{html.escape(t1)}</span>"
+                 f"<span class='fxm'>{mid}</span>"
+                 f"<span class='fxt r'>{html.escape(t2)}</span>")
+        if m.num in linked:
+            rows.append(f"<a class='fx fxlink' style='grid-template-columns:1fr auto 1fr 14px' "
+                        f"href='match_{m.num}.html'>{inner}<span class='arow'>›</span></a>")
+        else:
+            rows.append(f"<div class='fx' style='grid-template-columns:1fr auto 1fr'>{inner}</div>")
+    return (f"<div class='card'><div class='sec'>📅 {label}</div>"
+            f"<div class='fxs'>{''.join(rows)}</div></div>")
 
 
 def render_worldcup_html(result, model, matches, title: str = "2026 世界盃預測",
@@ -628,6 +726,7 @@ def render_worldcup_html(result, model, matches, title: str = "2026 世界盃預
         for g in sorted(result.groups))
 
     ko_html = _render_bracket(matches, linked)
+    today_html = _today_section(matches, model, linked)
 
     return f"""<!doctype html><html lang="zh-Hant"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
@@ -644,6 +743,9 @@ th,td{{padding:6px 7px;text-align:center;border-bottom:1px solid var(--line)}}
 th{{color:var(--muted);font-size:11px}}td.tm{{text-align:left;font-weight:700}}td.rk{{color:var(--muted)}}
 .grids{{display:grid;grid-template-columns:repeat(auto-fill,minmax(310px,1fr));gap:14px}}
 .grp .fxs{{margin-top:8px}}
+.sublbl{{font-size:11px;color:var(--muted);margin:8px 0 3px;font-weight:700}}
+.stbl{{overflow-x:auto}}.stbl table{{font-size:11px;min-width:280px}}
+.stbl th,.stbl td{{padding:4px 5px}}
 .fx{{display:grid;grid-template-columns:42px 1fr auto 1fr;gap:6px;align-items:center;
 font-size:12px;padding:3px 0;border-top:1px solid #1c242d}}
 .fxt{{font-weight:600}}.fxt.r{{text-align:right}}.fxd{{color:var(--muted)}}.fxm{{text-align:center}}
@@ -657,6 +759,8 @@ a.fxlink:active{{background:#1c242d}}.arow{{color:var(--accent);text-align:right
   <h1>🏆 {html.escape(title)}</h1>
   <div class="sub">{today} · 蒙地卡羅 {result.n_sims:,} 次 · Dixon–Coles + Elo · 已踢比分納入</div>
   <div class="disc">⚠️ 純機率預測，非投注建議。最佳第三名→R32 槽位為近似指派；晉級機率為主要可信輸出。</div>
+
+  {today_html}
 
   <div class="two">
     <div class="card">
