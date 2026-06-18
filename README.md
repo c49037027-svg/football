@@ -209,6 +209,17 @@ bash scripts/update_worldcup.sh
 3. 到 **Actions** 分頁手動跑一次「部署世界盃預測網站」
 4. 完成後網址為 `https://<帳號>.github.io/football/`，手機開這個網址即可，每天自動更新。
 
+## 互動分析網頁（用下拉選單／自己輸入盤口）
+
+靜態網站無法即時重算（模型在 Python 跑）。要「**自己選陣型/陣容、輸入盤口讓球線**」就用
+本機互動網頁（零額外套件）：
+```bash
+footy serve --model models/intl.pkl --history data/intl.csv --schedule examples/wc2026.json
+# 瀏覽器開 http://localhost:8000
+```
+表單可：選主/客隊（中文下拉）、選**陣型**、填**缺陣主力人數**、**自行輸入盤口讓球線**
+（如 -1.5），或勾選「自動抓 The Odds API 盤口」（需 `ODDS_API_KEY`），按「分析」即時重算。
+
 ## 世界盃單場深度分析（像 soccermaddy 那種 UI）
 
 針對國際賽（世界盃）的單場全面分析，整合 **Poisson（解析）+ 蒙地卡羅**，

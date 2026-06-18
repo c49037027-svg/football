@@ -203,6 +203,19 @@ def analyze(ctx, model_path, home, away, history_path, neutral, knockout,
         click.echo(f"[ok] 已輸出 HTML：{html_out}")
 
 
+@cli.command("serve")
+@click.option("--model", "model_path", required=True)
+@click.option("--history", "history_path", default=None, help="國際賽歷史（狀態/H2H）")
+@click.option("--schedule", default=None, help="世界盃賽程 JSON（用其 48 隊當選單）")
+@click.option("--port", default=8000, type=int)
+@click.option("--host", default="0.0.0.0")
+def serve(model_path, history_path, schedule, port, host):
+    """啟動本機互動分析網頁：下拉選隊伍/陣型/缺陣、輸入或自動抓盤口讓球線。"""
+    from . import webapp
+    webapp.serve(model_path, history_path=history_path, schedule_path=schedule,
+                 host=host, port=port)
+
+
 @cli.command("fetch-wc")
 @click.option("--out", default="data/wc2026.json", help="賽程 JSON 輸出路徑")
 def fetch_wc(out):

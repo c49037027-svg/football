@@ -122,6 +122,56 @@ def estimate_minute(commence_iso: str | None, now: datetime | None = None) -> in
     return int(max(0, min(95, elapsed_min)))
 
 
+def find_ah_line(parsed: dict, home: str, away: str) -> "dict | None":
+    """從 parse_odds 的結果裡，找指定對戰的亞盤讓球線（主隊視角）。
+
+    用別名 + 模糊比對配對隊名。回傳 {"line", "home_odds", "away_odds"} 或 None。
+    """
+    import difflib
+
+    from ..worldcup import TEAM_ALIASES
+
+    def norm(n):
+        return TEAM_ALIASES.get(n, n)
+
+    th, ta = norm(home), norm(away)
+    best_score, best = 1.4, None  # 需雙隊合計相似度 > 1.4 才算配對
+    for info in parsed.values():
+        eh, ea = norm(info.get("home") or ""), norm(info.get("away") or "")
+        ah = [q for q in info.get("quotes", []) if q.market == "AH"]
+        if not ah:
+            continue
+        score = (difflib.SequenceMatcher(None, eh, th).ratio()
+                 + difflib.SequenceMatcher(None, ea, ta).ratio())
+        if score <= best_score:
+            continue
+        home_q = next((q for q in ah if q.selection == "home"), None)
+        away_q = next((q for q in ah if q.selection == "away"), None)
+        if home_q is not None:
+            best_score = score
+            best = {"line": home_q.line, "home_odds": home_q.odds,
+                    "away_odds": away_q.odds if away_q else None}
+    return best
+
+
+def fetch_ah_line(home: str, away: str, sport: str = "soccer_fifa_world_cup",
+                  api_key: str | None = None, regions: str = "eu",
+                  bookmaker: str | None = None, timeout: float = 15.0) -> "dict | None":
+    """從 The Odds API 抓某場的亞盤讓球線（需 ODDS_API_KEY）。失敗回 None。"""
+    import os
+
+    key = api_key or os.environ.get("ODDS_API_KEY")
+    if not key:
+        raise RuntimeError("缺少 ODDS_API_KEY")
+    r = requests.get(f"{ODDS_API_BASE}/sports/{sport}/odds",
+                     params={"regions": regions, "markets": "spreads",
+                             "oddsFormat": "decimal", "apiKey": key},
+                     timeout=timeout)
+    r.raise_for_status()
+    parsed = parse_odds(r.json(), bookmaker=bookmaker)
+    return find_ah_line(parsed, home, away)
+
+
 # ---------------- Feed 實作 ----------------
 class TheOddsApiFeed(OddsFeed):
     """The Odds API 走地/初盤盤口來源。
