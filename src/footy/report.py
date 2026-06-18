@@ -103,6 +103,20 @@ padding:4px 10px;border-radius:20px;font-size:12px}
 padding:3px 8px;margin:2px 4px 2px 0;font-size:12px}
 .form{font-family:ui-monospace,monospace;letter-spacing:2px}.W{color:#21c07a}.D{color:#c9b458}.L{color:#e07a5f}
 .foot{color:var(--muted);font-size:12px;text-align:center;margin-top:24px}
+.nav{position:sticky;top:0;z-index:9;background:rgba(15,20,25,.92);backdrop-filter:blur(8px);
+border-bottom:1px solid var(--line);display:flex;gap:6px;padding:10px 14px;margin:-24px -24px 16px}
+.nav a{color:var(--muted);text-decoration:none;font-size:14px;font-weight:700;padding:6px 12px;border-radius:8px}
+.nav a.on{background:var(--accent);color:#04130c}.nav a:not(.on):active{background:#1c242d}
+/* 淘汰賽對陣圖 */
+.bracket{display:flex;gap:14px;overflow-x:auto;padding:6px 2px 14px}
+.bcol{flex:0 0 auto;min-width:150px;display:flex;flex-direction:column;justify-content:space-around;gap:8px}
+.bcol h4{font-size:12px;color:var(--muted);text-align:center;margin:0 0 2px}
+.bm{background:#11161c;border:1px solid var(--line);border-radius:8px;padding:7px 9px;font-size:12px}
+.bm .t{display:flex;justify-content:space-between;gap:6px;padding:1px 0}
+.bm .t.win{color:#7be0b0;font-weight:700}.bm .res{color:var(--warn);font-weight:700}
+.fctrl{display:flex;gap:8px;margin:8px 0;font-size:13px}
+.fctrl button{background:#11161c;color:#cdd9e5;border:1px solid var(--line);border-radius:8px;
+padding:6px 12px;font-weight:700;cursor:pointer}.fctrl button.on{background:var(--accent);color:#04130c}
 """
 
 
@@ -495,19 +509,42 @@ def _match_pred_row(model, m, linked: set | None = None):
              f"<span class='fxt'>{html.escape(zh(t1))}</span>"
              f"<span class='fxm'>{tag}</span>"
              f"<span class='fxt r'>{html.escape(zh(t2))}</span>")
+    played = "1" if m.played else "0"
     if linked and m.num in linked:
-        return (f"<a class='fx fxlink' href='match_{m.num}.html'>{inner}"
+        body = (f"<a class='fx fxlink' href='match_{m.num}.html'>{inner}"
                 f"<span class='arow'>›</span></a>{cs5}")
-    return f"<div class='fx'>{inner}</div>{cs5}"
+    else:
+        body = f"<div class='fx'>{inner}</div>{cs5}"
+    return f"<div class='fxrow' data-played='{played}'>{body}</div>"
+
+
+def _group_points(model_matches, g):
+    """由該組已踢比賽計算目前積分（勝3平1）。回傳 {team: points}。"""
+    pts: dict[str, int] = {}
+    for m in model_matches:
+        if m.group != g or not m.played:
+            continue
+        pts.setdefault(m.team1, 0)
+        pts.setdefault(m.team2, 0)
+        if m.hg > m.ag:
+            pts[m.team1] += 3
+        elif m.ag > m.hg:
+            pts[m.team2] += 3
+        else:
+            pts[m.team1] += 1
+            pts[m.team2] += 1
+    return pts
 
 
 def _group_card(g, teams, result, model, matches, linked=None):
+    cur_pts = _group_points(matches, g)
     rows = sorted(teams, key=lambda t: result.qualify.get(t, 0), reverse=True)
     trs = []
     for rank, t in enumerate(rows, 1):
         q = result.qualify.get(t, 0)
         trs.append(
             f"<tr><td class='rk'>{rank}</td><td class='tm'>{html.escape(zh(t))}</td>"
+            f"<td class='num'>{cur_pts.get(t, 0)}</td>"
             f"<td style=\"{_heat(result.group_first.get(t,0)*100,'48')}\">{result.group_first.get(t,0):.0%}</td>"
             f"<td style=\"{_heat(result.group_top2.get(t,0)*100,'140')}\">{result.group_top2.get(t,0):.0%}</td>"
             f"<td style=\"{_heat(q*100,'140')}\">{q:.0%}</td>"
@@ -518,10 +555,50 @@ def _group_card(g, teams, result, model, matches, linked=None):
     return f"""
     <div class="card grp">
       <div class="sec">{html.escape(group_zh(g))}</div>
-      <table class="gt"><thead><tr><th>#</th><th>隊伍</th><th>首名</th><th>前二</th><th>晉級</th><th>預期分</th></tr></thead>
+      <table class="gt"><thead><tr><th>#</th><th>隊伍</th><th title='目前積分'>分</th><th>首名</th><th>前二</th><th>晉級</th><th>預期分</th></tr></thead>
       <tbody>{''.join(trs)}</tbody></table>
       <div class="fxs">{fixtures}</div>
     </div>"""
+
+
+def _navbar(active: str) -> str:
+    """頂部導覽列。active: 'home' 或 'custom'。"""
+    def cls(k):
+        return " class='on'" if k == active else ""
+    return (f"<div class='nav'><a href='/'{cls('home')}>🏆 世界盃預測</a>"
+            f"<a href='/custom'{cls('custom')}>🔧 自訂分析</a></div>")
+
+
+def _render_bracket(matches, linked=None) -> str:
+    """淘汰賽對陣圖：各輪一欄，每場一個對陣框（已賽顯示比分並標出晉級方）。"""
+    linked = linked or set()
+    cols = [("Round of 32", "32 強"), ("Round of 16", "16 強"),
+            ("Quarter-final", "8 強"), ("Semi-final", "4 強"), ("Final", "決賽")]
+    out = []
+    for rnd, label in cols:
+        rms = sorted([m for m in matches if m.round == rnd], key=lambda m: m.num)
+        if not rms:
+            continue
+        boxes = []
+        for m in rms:
+            t1, t2 = _slot_zh(m.team1), _slot_zh(m.team2)
+            c1 = c2 = ""
+            mid = ""
+            if m.played:
+                mid = f"<span class='res'>{m.hg}-{m.ag}</span>"
+                if m.hg > m.ag:
+                    c1 = " win"
+                elif m.ag > m.hg:
+                    c2 = " win"
+            inner = (f"<div class='t{c1}'><span>{html.escape(t1)}</span>{mid}</div>"
+                     f"<div class='t{c2}'><span>{html.escape(t2)}</span></div>")
+            if m.num in linked:
+                boxes.append(f"<a class='bm' style='text-decoration:none;color:inherit;display:block' "
+                             f"href='match_{m.num}.html'>{inner}</a>")
+            else:
+                boxes.append(f"<div class='bm'>{inner}</div>")
+        out.append(f"<div class='bcol'><h4>{label}</h4>{''.join(boxes)}</div>")
+    return f"<div class='bracket'>{''.join(out)}</div>"
 
 
 def render_worldcup_html(result, model, matches, title: str = "2026 世界盃預測",
@@ -550,36 +627,7 @@ def render_worldcup_html(result, model, matches, title: str = "2026 世界盃預
         _group_card(g, result.groups[g], result, model, matches, linked)
         for g in sorted(result.groups))
 
-    # 淘汰賽賽程（槽位碼；隊伍已定且有分析頁則可點）
-    ko_order = ["Round of 32", "Round of 16", "Quarter-final", "Semi-final",
-                "Match for third place", "Final"]
-    ko_names = {"Round of 32": "32 強", "Round of 16": "16 強", "Quarter-final": "8 強",
-                "Semi-final": "4 強", "Match for third place": "季軍戰", "Final": "決賽"}
-    ko_sections = []
-    for rnd in ko_order:
-        rms = sorted([m for m in matches if m.round == rnd], key=lambda m: (m.date, m.num))
-        if not rms:
-            continue
-        rows = []
-        for m in rms:
-            if m.played:
-                mid = f"<span class='res'>{m.hg}-{m.ag}</span>"
-            else:
-                mid = "<span class='small'>待定</span>"
-            t1d = _slot_zh(m.team1)
-            t2d = _slot_zh(m.team2)
-            inner = (f"<span class='fxd'>{m.date[5:]}</span>"
-                     f"<span class='fxt'>{html.escape(t1d)}</span>"
-                     f"<span class='fxm'>{mid}</span>"
-                     f"<span class='fxt r'>{html.escape(t2d)}</span>")
-            if linked and m.num in linked:
-                rows.append(f"<a class='fx fxlink' href='match_{m.num}.html'>{inner}<span class='arow'>›</span></a>")
-            else:
-                rows.append(f"<div class='fx'>{inner}</div>")
-        ko_sections.append(
-            f"<div class='card grp'><div class='sec'>{ko_names[rnd]}</div>"
-            f"<div class='fxs'>{''.join(rows)}</div></div>")
-    ko_html = "".join(ko_sections)
+    ko_html = _render_bracket(matches, linked)
 
     return f"""<!doctype html><html lang="zh-Hant"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
@@ -605,6 +653,7 @@ a.fxlink{{text-decoration:none;color:inherit;grid-template-columns:42px 1fr auto
 a.fxlink:active{{background:#1c242d}}.arow{{color:var(--accent);text-align:right}}
 </style></head>
 <body><div class="wrap">
+  {_navbar('home')}
   <h1>🏆 {html.escape(title)}</h1>
   <div class="sub">{today} · 蒙地卡羅 {result.n_sims:,} 次 · Dixon–Coles + Elo · 已踢比分納入</div>
   <div class="disc">⚠️ 純機率預測，非投注建議。最佳第三名→R32 槽位為近似指派；晉級機率為主要可信輸出。</div>
@@ -621,13 +670,26 @@ a.fxlink:active{{background:#1c242d}}.arow{{color:var(--accent);text-align:right
     </div>
   </div>
 
+  <div class="sec" style="margin-top:22px">🏟️ 淘汰賽對陣圖</div>
+  {ko_html}
+
   <div class="sec" style="margin-top:22px">📋 小組賽程與預測（點擊看單場分析）</div>
+  <div class="fctrl">
+    <button class="on" onclick="ff(this,'all')">全部</button>
+    <button onclick="ff(this,'todo')">只看未踢</button>
+  </div>
   <div class="grids">{groups_html}</div>
 
-  <div class="sec" style="margin-top:22px">🏟️ 淘汰賽賽程</div>
-  <div class="grids">{ko_html}</div>
-
   <div class="foot">Generated by footy · 研究與教育用途 · 資料：openfootball + martj42</div>
+  <script>
+  function ff(btn,mode){{
+    document.querySelectorAll('.fctrl button').forEach(b=>b.classList.remove('on'));
+    btn.classList.add('on');
+    document.querySelectorAll('.fxrow').forEach(r=>{{
+      r.style.display=(mode==='todo'&&r.dataset.played==='1')?'none':'';
+    }});
+  }}
+  </script>
 </div></body></html>"""
 
 
