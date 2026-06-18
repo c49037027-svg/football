@@ -16,8 +16,10 @@ from . import analysis, context, report
 from .i18n import zh
 from .models.dixon_coles import DixonColesModel
 
-_FORMATIONS = ["", "4-3-3", "4-2-3-1", "4-4-2", "4-1-4-1", "3-5-2", "3-4-3",
-               "4-5-1", "5-3-2", "5-4-1", "4-2-4", "4-4-1-1", "4-3-2-1"]
+_FORMATIONS = ["", "4-4-2", "4-3-3", "4-2-3-1", "4-1-4-1", "4-5-1", "4-4-1-1",
+               "4-1-2-1-2", "4-3-1-2", "4-2-2-2", "4-1-3-2", "4-3-2-1",
+               "3-5-2", "3-4-3", "3-4-2-1", "3-4-1-2", "3-1-4-2", "3-5-1-1",
+               "3-2-4-1", "5-3-2", "5-4-1", "5-2-3", "5-2-2-1", "4-2-4", "3-3-4"]
 
 
 def _team_options(teams: list[str], selected: str = "") -> str:
@@ -28,13 +30,9 @@ def _team_options(teams: list[str], selected: str = "") -> str:
     return "".join(opts)
 
 
-def _form_options(selected: str = "") -> str:
-    out = []
-    for f in _FORMATIONS:
-        label = f or "（不指定）"
-        sel = " selected" if f == selected else ""
-        out.append(f'<option value="{f}"{sel}>{label}</option>')
-    return "".join(out)
+def _form_datalist() -> str:
+    opts = "".join(f'<option value="{f}">' for f in _FORMATIONS if f)
+    return f'<datalist id="forms">{opts}</datalist>'
 
 
 def render_form(teams: list[str], q: dict | None = None) -> str:
@@ -60,14 +58,19 @@ border:0;border-radius:8px;font-size:16px;font-weight:800}}
       <div><label>主隊</label><select name="home">{_team_options(teams, home)}</select></div>
       <div><label>客隊</label><select name="away">{_team_options(teams, away)}</select></div>
     </div>
+    {_form_datalist()}
     <div class="row">
-      <div><label>主隊陣型</label><select name="hf">{_form_options(q.get('hf',''))}</select></div>
-      <div><label>客隊陣型</label><select name="af">{_form_options(q.get('af',''))}</select></div>
+      <div><label>主隊陣型（可選清單或自行輸入）</label>
+        <input name="hf" list="forms" value="{_html.escape(q.get('hf',''))}" placeholder="例：4-3-3 / 3-4-1-2"></div>
+      <div><label>客隊陣型</label>
+        <input name="af" list="forms" value="{_html.escape(q.get('af',''))}" placeholder="例：5-3-2"></div>
     </div>
     <div class="row">
-      <div><label>主隊缺陣主力</label><input type="number" name="hm" value="{q.get('hm','0')}" min="0" max="11"></div>
-      <div><label>客隊缺陣主力</label><input type="number" name="am" value="{q.get('am','0')}" min="0" max="11"></div>
+      <div><label>主隊缺陣主力（選填，不知道就留 0）</label><input type="number" name="hm" value="{q.get('hm','0')}" min="0" max="11"></div>
+      <div><label>客隊缺陣主力（選填，不知道就留 0）</label><input type="number" name="am" value="{q.get('am','0')}" min="0" max="11"></div>
     </div>
+    <div class="small" style="color:var(--muted);font-size:11px;margin-top:2px">
+      不確定誰是主力？留 0 即可——模型的球隊強度(Elo+進球史)已假設正常陣容。只有你看到傷停新聞時才填。</div>
     <div class="row">
       <div><label>盤口讓球線（主隊視角，如 -1.5；留空=模型自動開盤）</label>
         <input type="text" name="ah" value="{q.get('ah','')}" placeholder="例：-1.5"></div>

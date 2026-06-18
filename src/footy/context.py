@@ -151,26 +151,61 @@ def map_injury_counts(counts: dict[str, int], known_teams: list[str]) -> dict[st
 
 # ---------------- 陣型（formation）----------------
 # ⚠️ 啟發式先驗：陣型對進球的影響小且依情境而定，這不是資料擬合的精算值。
-# 數字代表「該陣型對自身進攻率的乘數」——越進攻的陣型自身攻擊略升、越防守則略降。
-FORMATION_ATTACK_FACTOR = {
-    "4-3-3": 1.06, "3-4-3": 1.08, "4-2-4": 1.10, "3-3-4": 1.10,
-    "4-2-3-1": 1.02, "4-1-4-1": 1.00, "4-4-2": 1.00, "3-5-2": 1.00,
-    "4-4-1-1": 0.98, "4-5-1": 0.94, "5-3-2": 0.92, "5-4-1": 0.88,
-    "3-4-2-1": 1.03, "4-3-2-1": 1.01,
+# 進攻率乘數改為「自動解析任意陣型」：由後防人數與前場壓上人數推估，
+# 不再侷限於固定清單，任何 a-b-c[-d...] 格式都算得出來。
+# 少數常見陣型保留微調覆寫，讓直覺更貼切。
+FORMATION_OVERRIDE = {
+    "4-2-4": 1.10, "3-3-4": 1.10, "3-4-3": 1.08, "4-3-3": 1.06,
+    "4-2-3-1": 1.02, "4-4-2": 1.00, "4-1-4-1": 1.00,
+    "5-4-1": 0.88, "5-3-2": 0.92, "4-5-1": 0.94, "5-2-3": 0.98,
 }
-DEFENSIVE_FORMATIONS = {"4-5-1", "5-3-2", "5-4-1", "4-4-1-1"}
 
 
 def _norm_formation(f: str | None) -> str | None:
     return f.strip().replace(" ", "") if f else None
 
 
+def _parse_formation(f: str) -> list[int]:
+    parts = []
+    for tok in f.split("-"):
+        try:
+            parts.append(int(tok))
+        except ValueError:
+            return []
+    return parts
+
+
 def formation_factor(formation: str | None) -> float:
-    """回傳陣型對自身進攻率的乘數（查不到視為 1.0）。"""
+    """回傳陣型對自身進攻率的乘數。自動解析任意陣型；常見者用覆寫值。
+
+    解析法：以後防人數（越多越保守）與前場壓上人數（前鋒＋進攻中場權重）推估。
+    """
     f = _norm_formation(formation)
     if not f:
         return 1.0
-    return FORMATION_ATTACK_FACTOR.get(f, 1.0)
+    if f in FORMATION_OVERRIDE:
+        return FORMATION_OVERRIDE[f]
+    parts = _parse_formation(f)
+    if len(parts) < 2 or sum(parts) > 11 or sum(parts) < 7:
+        return 1.0  # 格式怪異就視為中性
+    defenders = parts[0]
+    forwards = parts[-1]
+    # 進攻中場：四段以上時，倒數第二段（10 號位/邊鋒）加權
+    attack_mids = parts[-2] if len(parts) >= 4 else 0
+    attack_index = forwards + 0.4 * attack_mids
+    factor = 1.0 + 0.05 * (attack_index - 2.0) - 0.035 * (defenders - 4.0)
+    return float(min(1.12, max(0.85, factor)))
+
+
+def is_defensive_formation(formation: str | None) -> bool:
+    """是否為防守陣型（5 後衛、或進攻乘數明顯偏低）。"""
+    f = _norm_formation(formation)
+    if not f:
+        return False
+    parts = _parse_formation(f)
+    if parts and parts[0] >= 5:
+        return True
+    return formation_factor(f) <= 0.95
 
 
 def formation_adjustment(home_formation: str | None,
@@ -181,9 +216,9 @@ def formation_adjustment(home_formation: str | None,
     """
     hf = formation_factor(home_formation)
     af = formation_factor(away_formation)
-    if _norm_formation(away_formation) in DEFENSIVE_FORMATIONS:
+    if is_defensive_formation(away_formation):
         hf *= 0.96
-    if _norm_formation(home_formation) in DEFENSIVE_FORMATIONS:
+    if is_defensive_formation(home_formation):
         af *= 0.96
     return ContextAdjustment(home_attack_mult=hf, away_attack_mult=af)
 
