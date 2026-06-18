@@ -220,6 +220,18 @@ footy serve --model models/intl.pkl --history data/intl.csv --schedule examples/
 表單可：選主/客隊（中文下拉）、選**陣型**、填**缺陣主力人數**、**自行輸入盤口讓球線**
 （如 -1.5），或勾選「自動抓 The Odds API 盤口」（需 `ODDS_API_KEY`），按「分析」即時重算。
 
+### 部署到網路（手機隨時開、不用開電腦）
+
+互動網頁要有後端（Python 即時跑模型），不能放 GitHub Pages。已附好一鍵部署設定：
+- **Render（最簡單）**：到 [render.com](https://render.com) → New → **Blueprint** → 連這個 repo →
+  Apply。`render.yaml` 會自動建好免費 web 服務，幾分鐘後給你固定網址。
+- **Docker（Railway / Fly.io / 自架）**：repo 內含 `Dockerfile`，`docker build` 後即可跑；
+  或 Railway 連 repo 自動偵測 `Procfile`。
+
+已附帶預訓練模型（`models/intl.pkl`）與歷史資料（`data/intl.csv`），**啟動即用**；
+若被刪除，`--auto-prepare` 會自動下載並訓練。要自動抓盤口/傷停，在平台後台設
+`ODDS_API_KEY` / `API_FOOTBALL_KEY`（選用）。
+
 ## 世界盃單場深度分析（像 soccermaddy 那種 UI）
 
 針對國際賽（世界盃）的單場全面分析，整合 **Poisson（解析）+ 蒙地卡羅**，

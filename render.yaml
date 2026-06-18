@@ -1,0 +1,19 @@
+# Render 一鍵部署藍圖（Blueprint）
+# 用法：到 https://render.com → New → Blueprint → 連這個 repo，按 Apply 即可。
+services:
+  - type: web
+    name: footy-worldcup
+    runtime: python
+    plan: free
+    region: singapore
+    branch: claude/football-betting-predictor-y1xity
+    buildCommand: pip install -e .
+    startCommand: footy serve --schedule examples/wc2026.json --auto-prepare --port $PORT --host 0.0.0.0
+    envVars:
+      - key: PYTHON_VERSION
+        value: "3.11.9"
+      # 選用：要自動抓盤口/傷停才需要，於 Render 後台填值
+      - key: ODDS_API_KEY
+        sync: false
+      - key: API_FOOTBALL_KEY
+        sync: false

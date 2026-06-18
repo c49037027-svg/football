@@ -204,14 +204,43 @@ def analyze(ctx, model_path, home, away, history_path, neutral, knockout,
 
 
 @cli.command("serve")
-@click.option("--model", "model_path", required=True)
-@click.option("--history", "history_path", default=None, help="國際賽歷史（狀態/H2H）")
-@click.option("--schedule", default=None, help="世界盃賽程 JSON（用其 48 隊當選單）")
-@click.option("--port", default=8000, type=int)
+@click.option("--model", "model_path", default="models/intl.pkl")
+@click.option("--history", "history_path", default="data/intl.csv", help="國際賽歷史（狀態/H2H）")
+@click.option("--schedule", default="data/wc2026.json", help="世界盃賽程 JSON（用其 48 隊當選單）")
+@click.option("--port", default=8000, type=int, envvar="PORT", help="埠（雲端讀 $PORT）")
 @click.option("--host", default="0.0.0.0")
-def serve(model_path, history_path, schedule, port, host):
-    """啟動本機互動分析網頁：下拉選隊伍/陣型/缺陣、輸入或自動抓盤口讓球線。"""
+@click.option("--auto-prepare", is_flag=True, default=False,
+              help="缺模型/資料時自動下載國際賽+訓練+抓賽程（雲端部署用）")
+def serve(model_path, history_path, schedule, port, host, auto_prepare):
+    """啟動互動分析網頁：下拉選隊伍/陣型/缺陣、輸入或自動抓盤口讓球線。"""
+    import os
     from . import webapp
+
+    def _model_ok(p):
+        if not os.path.exists(p):
+            return False
+        try:
+            dc.DixonColesModel.load(p)
+            return True
+        except Exception:  # noqa: BLE001 - 版本不相容等，改為重建
+            return False
+
+    if auto_prepare and not _model_ok(model_path):
+        from pathlib import Path
+        if not os.path.exists(history_path):
+            click.echo("[serve] 下載國際賽資料…")
+            from .intl import data as intl
+            df = intl.fetch_international(out_path=None, since="2010-01-01")
+            df, _ = intl.compute_elo(df)
+            Path(history_path).parent.mkdir(parents=True, exist_ok=True)
+            df.to_csv(history_path, index=False)
+        click.echo("[serve] 訓練模型（首次啟動，約 30–60 秒）…")
+        df2 = loader.load_csv(history_path)
+        model = dc.fit(df2, half_life_days=540, use_elo=True, reg=0.5)
+        Path(model_path).parent.mkdir(parents=True, exist_ok=True)
+        model.save(model_path)
+    if schedule and not os.path.exists(schedule):
+        schedule = None
     webapp.serve(model_path, history_path=history_path, schedule_path=schedule,
                  host=host, port=port)
 
