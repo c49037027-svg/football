@@ -48,4 +48,4 @@ def test_formation_fields_on_analysis(synthetic_df):
     assert res.home_formation == "4-3-3" and res.away_formation == "5-4-1"
     html = report.render_analysis_html(res, "t")
     assert "陣型" in html and "4-3-3" in html and "5-4-1" in html
-    assert "可信度" in html
+    assert "資料樣本充足度" in html  # 可信度改為資料樣本指標 + 低資料整場提醒

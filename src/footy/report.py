@@ -226,34 +226,32 @@ def render_analysis_console(a) -> str:
     hz, az = zh(a.home), zh(a.away)
     L = []
     L.append(f"⚽ {hz} vs {az}" + ("（中立場）" if a.neutral else ""))
+    if a.data_support < 0.6:
+        L.append("  ⚠️ 兩隊近年交手樣本偏少，預測可靠度較低，僅供參考")
     L.append(f"  AI 預測比分 {a.predicted_score[0]}-{a.predicted_score[1]}"
              f"（機率 {a.predicted_score_prob:.0%}；總進球 {a.total_goals}）· xG {a.xg_low}-{a.xg_high}")
     L.append(f"  1X2     主 @{a.odds_home:.2f} / 和 @{a.odds_draw:.2f} / 客 @{a.odds_away:.2f}"
-             f"  可信度 {_conf_text(max(a.p_home, a.p_draw, a.p_away), a.data_support)}")
+             f"  主勝 {a.p_home:.0%} / 和 {a.p_draw:.0%} / 客勝 {a.p_away:.0%}")
     ouo = a.ou_odds or {}
     for ln in (1.5, 2.5, 3.5):
         d = a.over_under[ln]
         oo = ouo.get(ln, (0, 0))
         L.append(f"  大小{ln}  大 @{oo[0]:.2f} / 小 @{oo[1]:.2f}  "
-                 f"{'買大' if d['over']>=0.5 else '買小'}"
-                 f"  可信度 {_conf_text(max(d['over'], d['under']), a.data_support)}")
-    L.append(f"  BTTS    {'買是' if a.btts_yes>=0.5 else '買否'}"
-             f"（{hz} 進球 {a.p_home_scores:.0%} × {az} 進球 {a.p_away_scores:.0%}）"
-             f"  可信度 {_conf_text(max(a.btts_yes, 1-a.btts_yes), a.data_support)}")
+                 f"大 {d['over']:.0%} → {'買大' if d['over']>=0.5 else '買小'}")
+    L.append(f"  BTTS    是 {a.btts_yes:.0%} → {'買是' if a.btts_yes>=0.5 else '買否'}"
+             f"（{hz} 進球 {a.p_home_scores:.0%} × {az} 進球 {a.p_away_scores:.0%}）")
     L.append(f"  亞盤     {hz} {a.ah_line:+g} @{a.ah_home_odds:.2f} / "
-             f"{az} {-a.ah_line:+g} @{a.ah_away_odds:.2f} → {a.ah_reco}"
-             f"  可信度 {_conf_text(max(a.ah_cover_prob, 1-a.ah_cover_prob), a.data_support)}")
+             f"{az} {-a.ah_line:+g} @{a.ah_away_odds:.2f} → {a.ah_reco}")
     c = a.corners
     L.append(f"  角球     合計 {c.total}（{hz} {c.home} / {az} {c.away}）"
-             f" 估線 {c.line} {c.recommend}  可信度 {_conf_text(c.confidence, a.data_support)}")
+             f" 估線 {c.line} {c.recommend}")
     k = a.cards
-    L.append(f"  黃牌     合計 {k.total} 估線 {k.line} {k.recommend}  可信度 {_conf_text(k.confidence, a.data_support)}")
+    L.append(f"  黃牌     合計 {k.total} 估線 {k.line} {k.recommend}")
     L.append(f"  上半場   主 {a.fh_home:.0%} / 平 {a.fh_draw:.0%} / 客 {a.fh_away:.0%}"
-             f"  可信度 {_conf_text(max(a.fh_home, a.fh_draw, a.fh_away), a.data_support)}"
              f"  大0.5 {a.fh_over[0.5]:.0%} / 大1.5 {a.fh_over[1.5]:.0%}")
     L.append(f"  因子     Elo {a.elo_home:.0f} vs {a.elo_away:.0f}｜陣型 "
              f"{a.home_formation or '—'} vs {a.away_formation or '—'}｜"
-             f"狀態 {a.home_form or '-'}/{a.away_form or '-'}｜資料可信度 {a.data_support*100:.0f}%")
+             f"狀態 {a.home_form or '-'}/{a.away_form or '-'}")
     return "\n".join(L)
 
 
@@ -291,11 +289,17 @@ def _conf_text(p: float, support: float = 1.0) -> str:
     return f"{'★' * stars}{'☆' * (5 - stars)} {tier}"
 
 
-def _conf_label(p: float, support: float = 1.0) -> str:
-    """可信度徽章（HTML 用）：★星 + 分級（與機率分開，避免循環）。"""
-    stars, tier = _conf_tier(p, support)
-    return (f"<div class='cf'>可信度 <span class='stars'>{'★' * stars}"
-            f"<span class='dim'>{'★' * (5 - stars)}</span></span> {tier}</div>")
+def _conf_label(p: float = 0.0, support: float = 1.0) -> str:
+    """（已停用）為了直觀，每個欄位不再各自顯示可信度星等——只保留機率/賠率。
+    改在資料太少時，整場顯示一次提醒（見 render_analysis_html / console）。"""
+    return ""
+
+
+def _low_data_note_html(support: float) -> str:
+    if support < 0.6:
+        return ('<div class="disc" style="background:#2a1410;border-color:#e07a5f;'
+                'color:#f0b8a0">⚠️ 兩隊近年交手樣本偏少，預測可靠度較低，僅供參考。</div>')
+    return ""
 
 
 def _odds(o: float) -> str:
@@ -364,7 +368,8 @@ font-size:15px;font-weight:700;font-variant-numeric:tabular-nums}}
   {nav}
   <h1>⚽ {html.escape(zh(a.home))} <span style="color:#8a97a6">vs</span> {html.escape(zh(a.away))}</h1>
   <div class="sub">{today} · {venue} · 蒙地卡羅 {a.n_sims:,} 次 + Poisson · Dixon–Coles</div>
-  <div class="disc">⚠️ 純機率分析，非投注建議。可信度 = 決斷度 × 資料量支撐（與機率/賠率分開，避免循環）。角球/黃牌為先驗近似。投注有風險。</div>
+  <div class="disc">⚠️ 純機率分析，非投注建議。角球/黃牌為先驗近似。投注有風險。</div>
+  {_low_data_note_html(a.data_support)}
 
   <div class="card">
     <div class="head"><div class="teams">AI 預測比分 {a.predicted_score[0]}-{a.predicted_score[1]}
@@ -440,7 +445,7 @@ font-size:15px;font-weight:700;font-variant-numeric:tabular-nums}}
   <div class="card">
     <div class="grid">
       <div class="box"><div class="k">Elo 評分</div><div class="v">{a.elo_home:.0f} vs {a.elo_away:.0f}</div></div>
-      <div class="box"><div class="k">資料量可信度</div><div class="v">{a.data_support*100:.0f}%</div></div>
+      <div class="box"><div class="k">資料樣本充足度</div><div class="v">{a.data_support*100:.0f}%</div></div>
       <div class="box"><div class="k">陣型 {html.escape(zh(a.home))}</div><div class="v">{html.escape(hf)}</div></div>
       <div class="box"><div class="k">陣型 {html.escape(zh(a.away))}</div><div class="v">{html.escape(af)}</div></div>
       <div class="box"><div class="k">先發/缺陣 {html.escape(zh(a.home))}</div><div class="v" style="font-size:12px">{html.escape(a.player_note_home)}</div></div>
