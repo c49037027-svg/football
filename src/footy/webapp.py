@@ -90,6 +90,7 @@ class _Handler(BaseHTTPRequestHandler):
     model: DixonColesModel = None
     history = None
     teams: list[str] = []
+    site_dir: str | None = None  # 啟動時產生的世界盃靜態網站目錄
 
     def _send(self, body: str, code: int = 200):
         data = body.encode("utf-8")
@@ -104,18 +105,33 @@ class _Handler(BaseHTTPRequestHandler):
 
     def do_GET(self):
         parsed = urlparse(self.path)
-        if parsed.path in ("/", "/index.html"):
+        path = parsed.path
+        # 自訂分析表單
+        if path == "/custom":
             self._send(render_form(self.teams))
             return
-        if parsed.path != "/analyze":
-            self._send("<p>Not found</p>", 404)
+        # 互動分析結果
+        if path == "/analyze":
+            q = {k: v[0] for k, v in parse_qs(parsed.query).items()}
+            try:
+                self._send(self._analyze(q))
+            except Exception as e:  # noqa: BLE001
+                self._send(f"<div class='wrap'><p>分析失敗：{_html.escape(str(e))}</p>"
+                           f"<a href='/custom'>← 返回</a></div>", 500)
             return
-        q = {k: v[0] for k, v in parse_qs(parsed.query).items()}
-        try:
-            self._send(self._analyze(q))
-        except Exception as e:  # noqa: BLE001
-            self._send(f"<div class='wrap'><p>分析失敗：{_html.escape(str(e))}</p>"
-                       f"<a href='/'>← 返回</a></div>", 500)
+        # 世界盃首頁 + 各場靜態分析頁（啟動時已產生）
+        if self.site_dir:
+            from pathlib import Path
+            name = "index.html" if path in ("/", "/index.html") else path.lstrip("/")
+            f = Path(self.site_dir) / name
+            if name.endswith(".html") and f.is_file() and self.site_dir in str(f.resolve()):
+                self._send(f.read_text(encoding="utf-8"))
+                return
+        # 沒有賽程網站時，首頁退回自訂表單
+        if path in ("/", "/index.html"):
+            self._send(render_form(self.teams))
+            return
+        self._send("<p>Not found</p>", 404)
 
     def _analyze(self, q: dict) -> str:
         home, away = q.get("home"), q.get("away")
@@ -155,8 +171,34 @@ class _Handler(BaseHTTPRequestHandler):
             a.player_note_home = f"缺主力 {hm} 人" if hm else "主力盡出"
             a.player_note_away = f"缺主力 {am} 人" if am else "主力盡出"
         page = report.render_analysis_html(a, f"{zh(home)} vs {zh(away)}{note}",
-                                           back_href="/")
+                                           back_href="/custom")
         return page
+
+
+def _build_site(model, history, schedule_path, n_sims=12000, match_sims=8000):
+    """啟動時產生世界盃靜態網站（首頁含奪冠/晉級/小組排名 + 各場分析頁），
+    並在首頁注入「自訂分析」入口。回傳目錄路徑；失敗回 None。"""
+    import tempfile
+    from pathlib import Path
+    from . import report, worldcup as wc
+    try:
+        result = wc.simulate_worldcup(model, schedule_path, n_sims=n_sims)
+        _, matches, _ = wc.parse_wc_json(schedule_path)
+        outdir = tempfile.mkdtemp(prefix="footy_wc_")
+        report.write_worldcup_site(result, model, matches, outdir,
+                                   history=history, n_sims=match_sims)
+        # 在首頁頂部注入「自訂分析」按鈕
+        idx = Path(outdir) / "index.html"
+        htmldoc = idx.read_text(encoding="utf-8")
+        nav = ('<a href="/custom" style="display:inline-block;background:#21c07a;'
+               'color:#04130c;font-weight:800;padding:8px 14px;border-radius:8px;'
+               'text-decoration:none;margin-bottom:14px">🔧 自訂單場分析（選隊伍/陣型/盤口）</a>')
+        htmldoc = htmldoc.replace('<div class="wrap">', f'<div class="wrap">{nav}', 1)
+        idx.write_text(htmldoc, encoding="utf-8")
+        return outdir
+    except Exception as e:  # noqa: BLE001
+        print(f"[serve] 產生世界盃首頁失敗（改用自訂表單為首頁）：{e}")
+        return None
 
 
 def serve(model_path: str, history_path: str | None = None,
@@ -165,10 +207,12 @@ def serve(model_path: str, history_path: str | None = None,
     model = DixonColesModel.load(model_path)
     _Handler.model = model
     _Handler.history = _load_history(history_path)
-    teams = _server_teams(model, schedule_path)
-    _Handler.teams = teams
+    _Handler.teams = _server_teams(model, schedule_path)
+    if schedule_path:
+        print("[serve] 產生世界盃首頁（奪冠/晉級/小組排名 + 各場分析）…")
+        _Handler.site_dir = _build_site(model, _Handler.history, schedule_path)
     srv = ThreadingHTTPServer((host, port), _Handler)
-    print(f"[serve] 互動分析網頁：http://localhost:{port} （Ctrl-C 結束）")
+    print(f"[serve] 網站：http://localhost:{port} （首頁=世界盃預測，/custom=自訂分析）")
     try:
         srv.serve_forever()
     except KeyboardInterrupt:
