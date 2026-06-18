@@ -482,9 +482,11 @@ def check_injuries(league, season):
 @click.option("--half-life", default=540.0, type=float)
 @click.option("--reg", default=2.0, type=float)
 @click.option("--use-elo/--no-elo", default=True)
+@click.option("--model-kind", default="dc", type=click.Choice(["dc", "elo_poisson"]),
+              help="dc=每隊攻防；elo_poisson=純 Elo 驅動(公開方法論變體)")
 @click.option("--refit-every", default=200, type=int)
 @click.pass_context
-def eval_intl(ctx, data_path, since, half_life, reg, use_elo, refit_every):
+def eval_intl(ctx, data_path, since, half_life, reg, use_elo, model_kind, refit_every):
     """國際賽（世界盃）模型校準：無賠率，基準為均勻(1/3)。"""
     from . import evaluation
     cfg: Config = ctx.obj["cfg"]
@@ -492,9 +494,10 @@ def eval_intl(ctx, data_path, since, half_life, reg, use_elo, refit_every):
     cfg.model.reg = reg
     cfg.model.use_elo = use_elo
     df = loader.load_csv(data_path)
-    click.echo(f"[eval-intl] {len(df)} 場，計分自 {since}（half_life={half_life}, "
-               f"reg={reg}, elo={use_elo}）…")
-    res = evaluation.run_intl(df, cfg, test_since=since, refit_every=refit_every)
+    click.echo(f"[eval-intl] {len(df)} 場，計分自 {since}（model={model_kind}, "
+               f"half_life={half_life}, reg={reg}, elo={use_elo}）…")
+    res = evaluation.run_intl(df, cfg, test_since=since, refit_every=refit_every,
+                              model_kind=model_kind)
     click.echo(res.summary(cfg))
 
 

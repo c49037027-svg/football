@@ -165,9 +165,11 @@ class EvalResult:
 
 def run_intl(df: pd.DataFrame, cfg: Config, test_since: str | None = "2018-01-01",
              refit_every: int = 200, min_train_matches: int = 1000,
-             neutral_default: bool = False, verbose: bool = False) -> EvalResult:
+             neutral_default: bool = False, model_kind: str = "dc",
+             verbose: bool = False) -> EvalResult:
     """國際賽校準（無賠率）：walk-forward 評估模型 1X2 校準，基準為均勻(1/3)。
 
+    model_kind："dc"=Dixon–Coles(每隊攻防)；"elo_poisson"=純 Elo 驅動(無隊參數)。
     df 需含內部欄位與（選用）home_elo/away_elo、neutral。只對 test_since 之後的
     比賽計分（但仍用其之前全部資料擬合，避免洩漏）。
     """
@@ -184,10 +186,15 @@ def run_intl(df: pd.DataFrame, cfg: Config, test_since: str | None = "2018-01-01
         row = df.iloc[i]
         if model is None or since_refit >= refit_every:
             try:
-                model = dc.fit(df.iloc[:i], half_life_days=cfg.model.half_life_days,
-                               max_goals=cfg.model.max_goals, rho_init=cfg.model.rho_init,
-                               xg_weight=cfg.model.xg_weight, use_elo=cfg.model.use_elo,
-                               reg=cfg.model.reg, reference_date=row[S.DATE])
+                if model_kind == 'elo_poisson':
+                    from .models.elo_poisson import fit_elo_poisson
+                    model = fit_elo_poisson(df.iloc[:i], half_life_days=cfg.model.half_life_days,
+                                            max_goals=cfg.model.max_goals, reference_date=row[S.DATE])
+                else:
+                    model = dc.fit(df.iloc[:i], half_life_days=cfg.model.half_life_days,
+                                   max_goals=cfg.model.max_goals, rho_init=cfg.model.rho_init,
+                                   xg_weight=cfg.model.xg_weight, use_elo=cfg.model.use_elo,
+                                   reg=cfg.model.reg, reference_date=row[S.DATE])
             except Exception as e:  # noqa: BLE001
                 if verbose:
                     print(f"[warn] 第 {i} 場擬合失敗：{e}")
