@@ -171,7 +171,7 @@ class _Handler(BaseHTTPRequestHandler):
             a.player_note_home = f"缺主力 {hm} 人" if hm else "主力盡出"
             a.player_note_away = f"缺主力 {am} 人" if am else "主力盡出"
         page = report.render_analysis_html(a, f"{zh(home)} vs {zh(away)}{note}",
-                                           back_href="/custom")
+                                           back_href="/", interactive=True)
         return page
 
 
@@ -186,15 +186,7 @@ def _build_site(model, history, schedule_path, n_sims=12000, match_sims=8000):
         _, matches, _ = wc.parse_wc_json(schedule_path)
         outdir = tempfile.mkdtemp(prefix="footy_wc_")
         report.write_worldcup_site(result, model, matches, outdir,
-                                   history=history, n_sims=match_sims)
-        # 在首頁頂部注入「自訂分析」按鈕
-        idx = Path(outdir) / "index.html"
-        htmldoc = idx.read_text(encoding="utf-8")
-        nav = ('<a href="/custom" style="display:inline-block;background:#21c07a;'
-               'color:#04130c;font-weight:800;padding:8px 14px;border-radius:8px;'
-               'text-decoration:none;margin-bottom:14px">🔧 自訂單場分析（選隊伍/陣型/盤口）</a>')
-        htmldoc = htmldoc.replace('<div class="wrap">', f'<div class="wrap">{nav}', 1)
-        idx.write_text(htmldoc, encoding="utf-8")
+                                   history=history, n_sims=match_sims, interactive=True)
         return outdir
     except Exception as e:  # noqa: BLE001
         print(f"[serve] 產生世界盃首頁失敗（改用自訂表單為首頁）：{e}")

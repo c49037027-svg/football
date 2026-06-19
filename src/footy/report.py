@@ -309,6 +309,27 @@ def _conf_label(p: float = 0.0, support: float = 1.0) -> str:
     return ""
 
 
+_FORMS = ["", "4-3-3", "4-2-3-1", "4-4-2", "4-1-4-1", "4-5-1", "4-1-2-1-2",
+          "4-3-1-2", "3-5-2", "3-4-3", "3-4-1-2", "3-1-4-2", "5-3-2", "5-4-1", "5-2-3"]
+
+
+def _reanalyze_bar(a) -> str:
+    """分析頁上的「調整後重新分析」互動列：陣型下拉、缺陣、盤口線 → 送 /analyze。"""
+    opts = "".join(f"<option value='{f}'>" for f in _FORMS if f)
+    hf, af = a.home_formation or "", a.away_formation or ""
+    return f"""
+    <form action="/analyze" method="get" class="rebar">
+      <input type="hidden" name="home" value="{html.escape(a.home)}">
+      <input type="hidden" name="away" value="{html.escape(a.away)}">
+      <input type="hidden" name="neutral" value="{1 if a.neutral else 0}">
+      <datalist id="rf">{opts}</datalist>
+      <span>陣型 {html.escape(zh(a.home))}<input name="hf" list="rf" value="{html.escape(hf)}" placeholder="如 4-3-3"></span>
+      <span>陣型 {html.escape(zh(a.away))}<input name="af" list="rf" value="{html.escape(af)}" placeholder="如 5-4-1"></span>
+      <span>盤口讓球線<input name="ah" placeholder="如 -1.5（留空=自動）"></span>
+      <button type="submit">重新分析</button>
+    </form>"""
+
+
 def _low_data_note_html(support: float) -> str:
     if support < 0.6:
         return ('<div class="disc" style="background:#2a1410;border-color:#e07a5f;'
@@ -320,32 +341,43 @@ def _odds(o: float) -> str:
     return f"{o:.2f}" if o and o < 50 else "—"
 
 
+def _ou_reco(over_p: float) -> tuple[str, str]:
+    """大小球建議＋顏色：接近 50% 時用「接近五五/略偏」避免與低比分眾數矛盾的觀感。"""
+    if over_p >= 0.62:
+        return "買大", "#21c07a"
+    if over_p >= 0.55:
+        return "略偏大", "#7fae6a"
+    if over_p > 0.45:
+        return "接近五五", "#e0b341"
+    if over_p > 0.38:
+        return "略偏小", "#cf8a6a"
+    return "買小", "#e07a5f"
+
+
 def _ou_box(line, d, odds=None, support=1.0):
-    reco = "買大" if d["over"] >= 0.5 else "買小"
-    col = _reco_color(reco)
+    reco, col = _ou_reco(d["over"])
     price = ""
     if odds:
         price = (f"<div class='price'>大 {_odds(odds[0])} ／ 小 {_odds(odds[1])}</div>")
     return (f"<div class='box'><div class='k'>線 {line}</div>"
             f"<div class='v'>大 {d['over']:.0%}</div>"
             f"{price}"
-            f"<div style='color:{col};font-weight:700;margin-top:4px'>{reco}</div>"
-            f"{_conf_label(d['over'], support)}</div>")
+            f"<div style='color:{col};font-weight:700;margin-top:4px'>{reco}</div></div>")
 
 
 def _fh_ou_box(line, p, support=1.0):
-    reco = "買大" if p >= 0.5 else "買小"
-    col = _reco_color(reco)
+    reco, col = _ou_reco(p)
     return (f"<div class='box'><div class='k'>上半場線 {line}</div>"
             f"<div class='v'>大 {p:.0%}</div>"
-            f"<div style='color:{col};font-weight:700;margin-top:4px'>{reco}</div>"
-            f"{_conf_label(p, support)}</div>")
+            f"<div style='color:{col};font-weight:700;margin-top:4px'>{reco}</div></div>")
 
 
-def render_analysis_html(a, title: str = "單場分析", back_href: str | None = None) -> str:
+def render_analysis_html(a, title: str = "單場分析", back_href: str | None = None,
+                         interactive: bool = False) -> str:
     import datetime as _dt
     today = _dt.date.today().isoformat()
     venue = "中立場" if a.neutral else "主客場"
+    rebar = _reanalyze_bar(a) if interactive else ""
     sup = a.data_support
     ou_odds = a.ou_odds or {}
     ou_boxes = "".join(_ou_box(ln, a.over_under[ln], ou_odds.get(ln), sup)
@@ -376,6 +408,11 @@ def render_analysis_html(a, title: str = "單場分析", back_href: str | None =
 .line-row{{display:flex;justify-content:space-between;gap:10px;margin:6px 0;
 font-size:15px;font-weight:700;font-variant-numeric:tabular-nums}}
 .line-row .o{{color:#7be0b0}}
+.rebar{{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 12px;
+margin-bottom:14px;display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end}}
+.rebar span{{display:flex;flex-direction:column;font-size:11px;color:var(--muted);gap:3px}}
+.rebar input{{background:#11161c;color:#e6edf3;border:1px solid var(--line);border-radius:6px;padding:6px;width:130px}}
+.rebar button{{background:var(--accent);color:#04130c;border:0;border-radius:8px;padding:8px 16px;font-weight:800}}
 @media(max-width:560px){{.split{{grid-template-columns:1fr}}}}
 </style></head>
 <body><div class="wrap">
@@ -384,12 +421,14 @@ font-size:15px;font-weight:700;font-variant-numeric:tabular-nums}}
   <div class="sub">{today} · {venue} · 蒙地卡羅 {a.n_sims:,} 次 + Poisson · Dixon–Coles</div>
   <div class="disc">⚠️ 純機率分析，非投注建議。角球/黃牌為先驗近似。投注有風險。</div>
   {_low_data_note_html(a.data_support)}
+  {rebar}
 
   <div class="card">
-    <div class="head"><div class="teams">AI 預測比分 {a.predicted_score[0]}-{a.predicted_score[1]}
-      <span class="small">（機率 {a.predicted_score_prob:.0%}）</span></div>
-      <div class="small">總進球 {a.total_goals} · xG {a.xg_low}–{a.xg_high}</div>
-      <div class="cf">最可能比分機率 {a.predicted_score_prob:.0%}</div></div>
+    <div class="head"><div class="teams">AI 最可能比分 {a.predicted_score[0]}-{a.predicted_score[1]}
+      <span class="small">（僅 {a.predicted_score_prob:.0%}，眾數非平均）</span></div>
+      <div class="small">期望總進球 <b style="color:#cdd9e5">{a.total_goals}</b> · xG {a.xg_low}–{a.xg_high}</div></div>
+    <div class="small" style="margin:-4px 0 8px;color:var(--muted)">
+      註：最可能比分是「機率最高的單一比分」（偏低），但大小球看的是<b>期望總進球 {a.total_goals}</b> 與整體分布，故兩者可能方向不同。</div>
     <div class="bar">
       <div class="h" style="width:{h*100:.1f}%">{h:.0%}</div>
       <div class="d" style="width:{d*100:.1f}%">{d:.0%}</div>
@@ -466,7 +505,7 @@ font-size:15px;font-weight:700;font-variant-numeric:tabular-nums}}
       <div class="box"><div class="k">先發/缺陣 {html.escape(zh(a.away))}</div><div class="v" style="font-size:12px">{html.escape(a.player_note_away)}</div></div>
       <div class="box"><div class="k">近5場 {html.escape(zh(a.home))}</div><div class="v form">{_form_html(a.home_form)}</div></div>
       <div class="box"><div class="k">近5場 {html.escape(zh(a.away))}</div><div class="v form">{_form_html(a.away_form)}</div></div>
-      <div class="box"><div class="k">戰術風格</div><div class="v" style="font-size:13px">{a.home_style} / {a.away_style}</div></div>
+      <div class="box"><div class="k" title="由模型擬合的攻防強度推得，非真實陣型戰術">攻守傾向 ⓘ</div><div class="v" style="font-size:13px">{a.home_style} / {a.away_style}</div></div>
     </div>
     <div class="small" style="margin-top:8px">歷史交手：{html.escape(a.h2h or '無紀錄')}</div>
   </div>
@@ -807,7 +846,8 @@ def write_worldcup_html(result, model, matches, out_path, title="2026 世界盃�
 
 
 def write_worldcup_site(result, model, matches, outdir, history=None,
-                        title="2026 世界盃預測", n_sims=20000, injury_counts=None):
+                        title="2026 世界盃預測", n_sims=20000, injury_counts=None,
+                        interactive=False):
     """產生多頁網站：index.html + 每場可分析的 match_<num>.html。
 
     可分析 = 雙方皆為模型已知球隊（小組賽全部；淘汰賽待隊伍確定後）。
@@ -836,7 +876,8 @@ def write_worldcup_site(result, model, matches, outdir, history=None,
                 a.player_note_away = f"缺陣 {ca} 人" if ca else "無重大缺陣"
             rnd_label = m.group or m.round
             page_title = f"{zh(t1)} vs {zh(t2)}｜{group_zh(rnd_label)}"
-            html_doc = render_analysis_html(a, page_title, back_href="index.html")
+            html_doc = render_analysis_html(a, page_title, back_href="index.html",
+                                            interactive=interactive)
             (outdir / f"match_{m.num}.html").write_text(html_doc, encoding="utf-8")
             linked.add(m.num)
 
