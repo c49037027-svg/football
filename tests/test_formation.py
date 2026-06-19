@@ -68,3 +68,25 @@ def test_formation_changes_expected_goals(synthetic_df):
     adj = context.formation_adjustment("4-3-3", "4-4-2")
     lam1, _ = adj.apply(lam0, mu0)
     assert lam1 > lam0  # 主隊用進攻陣型，預期進球升
+
+
+def test_formation_style_from_formation():
+    from footy import context as c
+    assert c.formation_style("3-1-4-2") == "強攻壓上"
+    assert c.formation_style("4-3-3") == "攻擊型"
+    assert c.formation_style("4-4-2") == "均衡"
+    assert c.formation_style("5-3-2") == "防守反擊"
+    assert c.formation_style("5-4-1") == "大巴防守"
+    assert c.formation_style("") is None
+
+
+def test_analyze_formation_drives_style_and_goals(synthetic_df):
+    from footy import analysis
+    model = dc.fit(synthetic_df, half_life_days=10_000)
+    h, a = model.teams[0], model.teams[1]
+    base = analysis.analyze(model, h, a, neutral=True, n_sims=3000)
+    dfn = analysis.analyze(model, h, a, neutral=True, n_sims=3000,
+                           home_formation="5-4-1")
+    # 風格依陣型 + 進球下降（防守陣型）
+    assert dfn.home_style == "大巴防守"
+    assert dfn.exp_home_goals < base.exp_home_goals

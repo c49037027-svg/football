@@ -505,7 +505,7 @@ margin-bottom:14px;display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end}}
       <div class="box"><div class="k">先發/缺陣 {html.escape(zh(a.away))}</div><div class="v" style="font-size:12px">{html.escape(a.player_note_away)}</div></div>
       <div class="box"><div class="k">近5場 {html.escape(zh(a.home))}</div><div class="v form">{_form_html(a.home_form)}</div></div>
       <div class="box"><div class="k">近5場 {html.escape(zh(a.away))}</div><div class="v form">{_form_html(a.away_form)}</div></div>
-      <div class="box"><div class="k" title="由模型擬合的攻防強度推得，非真實陣型戰術">攻守傾向 ⓘ</div><div class="v" style="font-size:13px">{a.home_style} / {a.away_style}</div></div>
+      <div class="box"><div class="k" title="有填陣型→依陣型；否則由模型擬合的攻防強度推得">攻守傾向 ⓘ</div><div class="v" style="font-size:13px">{a.home_style} / {a.away_style}</div></div>
     </div>
     <div class="small" style="margin-top:8px">歷史交手：{html.escape(a.h2h or '無紀錄')}</div>
   </div>

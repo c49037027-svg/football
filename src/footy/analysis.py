@@ -24,6 +24,7 @@ import pandas as pd
 
 from . import counts
 from .context import ContextAdjustment
+from .context import formation_style as _formation_style
 from .data import schema as S
 from .models import markets
 from .models.dixon_coles import DixonColesModel
@@ -151,8 +152,12 @@ def analyze(model: DixonColesModel, home: str, away: str,
             ah_line_override: float | None = None,
             seed: int | None = 42) -> MatchAnalysis:
     lam, mu = model.expected_goals(home, away, neutral=neutral)
-    if adjustment is not None:
-        lam, mu = adjustment.apply(lam, mu)
+    # 陣型調整在此內部套用（呼叫端只需傳 home_formation/away_formation，不需自行併入 adjustment）
+    from .context import combine_adjustments, formation_adjustment
+    total_adj = combine_adjustments(
+        formation_adjustment(home_formation or None, away_formation or None),
+        adjustment)
+    lam, mu = total_adj.apply(lam, mu)
     mat = model.score_matrix(home, away, lam=lam, mu=mu)
 
     # ---- 解析面板 ----
@@ -217,8 +222,11 @@ def analyze(model: DixonColesModel, home: str, away: str,
         fh_home=fh_home_p, fh_draw=fh_draw_p, fh_away=fh_away_p, fh_over=fh_over,
         elo_home=round(model.team_elo.get(home, 0.0), 0) if model.team_elo else 0.0,
         elo_away=round(model.team_elo.get(away, 0.0), 0) if model.team_elo else 0.0,
-        home_style=_style(model.attack.get(home, 0), model.defence.get(home, 0)),
-        away_style=_style(model.attack.get(away, 0), model.defence.get(away, 0)),
+        # 有指定陣型 → 戰術風格由陣型決定；否則用模型攻防強度推得
+        home_style=(_formation_style(home_formation)
+                    or _style(model.attack.get(home, 0), model.defence.get(home, 0))),
+        away_style=(_formation_style(away_formation)
+                    or _style(model.attack.get(away, 0), model.defence.get(away, 0))),
         home_formation=home_formation, away_formation=away_formation,
         data_support=_data_support(history, home, away),
         n_sims=n_sims,

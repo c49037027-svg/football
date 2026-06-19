@@ -197,6 +197,26 @@ def formation_factor(formation: str | None) -> float:
     return float(min(1.12, max(0.85, factor)))
 
 
+def formation_style(formation: str | None) -> str | None:
+    """由陣型推「戰術風格」標籤（與進攻乘數一致；無陣型回 None）。
+
+    強攻壓上 / 攻擊型 / 均衡 / 防守反擊 / 大巴防守。
+    """
+    f = _norm_formation(formation)
+    if not f or not _parse_formation(f):
+        return None
+    fac = formation_factor(f)
+    if fac >= 1.07:
+        return "強攻壓上"
+    if fac >= 1.02:
+        return "攻擊型"
+    if fac <= 0.90:
+        return "大巴防守"
+    if fac <= 0.97:
+        return "防守反擊"
+    return "均衡"
+
+
 def is_defensive_formation(formation: str | None) -> bool:
     """是否為防守陣型（5 後衛、或進攻乘數明顯偏低）。"""
     f = _norm_formation(formation)

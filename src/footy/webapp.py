@@ -159,10 +159,8 @@ class _Handler(BaseHTTPRequestHandler):
             except Exception as e:  # noqa: BLE001
                 note = f"（抓盤口失敗：{e}）"
 
-        adj = context.combine_adjustments(
-            context.formation_adjustment(hf or None, af or None),
-            context.injuries_to_adjustment(hm, am) if (hm or am) else None,
-        )
+        # 陣型由 analyze 內部依 hf/af 套用；這裡只給缺陣調整
+        adj = context.injuries_to_adjustment(hm, am) if (hm or am) else None
         a = analysis.analyze(self.model, home, away, history=self.history,
                              neutral=neutral, knockout=knockout, n_sims=20000,
                              adjustment=adj, home_formation=hf, away_formation=af,

@@ -183,12 +183,9 @@ def analyze(ctx, model_path, home, away, history_path, neutral, knockout,
     if home not in model.attack or away not in model.attack:
         raise click.ClickException(f"模型未包含 {home} 或 {away}")
     hist = loader.load_csv(history_path) if history_path else None
-    # 陣型 + 缺陣 合併成情境調整
-    adj = context.combine_adjustments(
-        context.formation_adjustment(home_formation, away_formation),
-        context.injuries_to_adjustment(home_missing, away_missing)
-        if (home_missing or away_missing) else None,
-    )
+    # 缺陣調整（陣型由 analyze 內部依 home/away_formation 套用，不在此重複）
+    adj = (context.injuries_to_adjustment(home_missing, away_missing)
+           if (home_missing or away_missing) else None)
     a = analysis.analyze(model, home, away, history=hist, neutral=neutral,
                          knockout=knockout, n_sims=n_sims, adjustment=adj,
                          home_formation=home_formation or "",
