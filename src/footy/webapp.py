@@ -184,15 +184,15 @@ def _build_site(model, history, schedule_path, n_sims=12000, match_sims=8000):
         _, matches, _ = wc.parse_wc_json(schedule_path)
         # 戰績：記錄推薦 + 用賽果結算（帳本放 data/bets.csv，部署重啟仍累積）
         track_text = None
+        odds_index = None
+        try:  # 有 ODDS_API_KEY 才抓真實盤口 → 盤口讓球線 + +EV 推薦 + ROI/CLV
+            from .live.providers import fetch_wc_odds
+            odds_index = fetch_wc_odds(matches)
+            print(f"[serve] 已抓盤口：{len(odds_index)} 場有 +EV 候選", flush=True)
+        except Exception as e:  # noqa: BLE001
+            print(f"[serve] 無真實盤口（改記勝率自我校驗）：{e}", flush=True)
         try:
             from . import tracker
-            odds_index = None
-            try:  # 有 ODDS_API_KEY 才抓真實盤口 → +EV 推薦 + 實際 ROI/CLV
-                from .live.providers import fetch_wc_odds
-                odds_index = fetch_wc_odds(matches)
-                print(f"[serve] 已抓盤口：{len(odds_index)} 場有 +EV 候選", flush=True)
-            except Exception as e:  # noqa: BLE001
-                print(f"[serve] 無真實盤口（改記勝率自我校驗）：{e}", flush=True)
             track_text = tracker.prepare(matches, model, "data/bets.csv",
                                          odds_index=odds_index).text()
         except Exception:  # noqa: BLE001
@@ -200,7 +200,8 @@ def _build_site(model, history, schedule_path, n_sims=12000, match_sims=8000):
         outdir = tempfile.mkdtemp(prefix="footy_wc_")
         report.write_worldcup_site(result, model, matches, outdir, history=history,
                                    n_sims=match_sims, interactive=True,
-                                   track_text=track_text, ledger_path="data/bets.csv")
+                                   track_text=track_text, ledger_path="data/bets.csv",
+                                   odds_index=odds_index)
         return outdir
     except Exception as e:  # noqa: BLE001
         print(f"[serve] 產生世界盃首頁失敗（改用自訂表單為首頁）：{e}")

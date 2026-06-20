@@ -470,7 +470,7 @@ margin-bottom:14px;display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end}}
       {_conf_label(conf_btts, sup)}
     </div>
     <div class="card">
-      <div class="sec">⚖️ 亞盤讓球（模型開盤）</div>
+      <div class="sec">⚖️ 亞盤讓球（{'真實盤口' if a.ah_from_market else '模型開盤'}）</div>
       <div class="line-row">
         <span>{html.escape(zh(a.home))} {a.ah_line:+g} <span class="o">{_odds(a.ah_home_odds)}</span></span>
         <span>{html.escape(zh(a.away))} {-a.ah_line:+g} <span class="o">{_odds(a.ah_away_odds)}</span></span>
@@ -1026,7 +1026,7 @@ th{{color:var(--muted);font-size:11px}}td.tm{{text-align:left;font-weight:600}}
 
 def write_worldcup_site(result, model, matches, outdir, history=None,
                         title="2026 世界盃預測", n_sims=20000, injury_counts=None,
-                        track_text=None, ledger_path=None,
+                        track_text=None, ledger_path=None, odds_index=None,
                         interactive=False):
     """產生多頁網站：index.html + 每場可分析的 match_<num>.html。
 
@@ -1049,8 +1049,17 @@ def write_worldcup_site(result, model, matches, outdir, history=None,
             knockout = m.round in ko_rounds
             ch, ca = injury_counts.get(t1, 0), injury_counts.get(t2, 0)
             adj = injuries_to_adjustment(ch, ca) if (ch or ca) else None
+            # 有真實盤口就用盤口的主讓球線開盤（否則模型自行開盤）
+            ah_override = None
+            if odds_index and m.num in odds_index:
+                try:
+                    from . import tracker
+                    ah_override = tracker.main_ah_line(odds_index[m.num])
+                except Exception:  # noqa: BLE001
+                    ah_override = None
             a = analysis.analyze(model, t1, t2, history=history, neutral=True,
-                                 knockout=knockout, n_sims=n_sims, adjustment=adj)
+                                 knockout=knockout, n_sims=n_sims, adjustment=adj,
+                                 ah_line_override=ah_override)
             if injury_counts:
                 a.player_note_home = f"缺陣 {ch} 人" if ch else "無重大缺陣"
                 a.player_note_away = f"缺陣 {ca} 人" if ca else "無重大缺陣"

@@ -76,6 +76,7 @@ class MatchAnalysis:
     odds_away: float = 0.0
     ou_odds: dict = None       # line -> (over_odds, under_odds)
     top_scores: list = None    # 前 N 個最可能比分 [((h,a), prob), ...]
+    ah_from_market: bool = False  # 讓球線是否來自真實盤口（否則為模型開盤）
     # 影響因子
     elo_home: float = 0.0
     elo_away: float = 0.0
@@ -217,6 +218,7 @@ def analyze(model: DixonColesModel, home: str, away: str,
         ah_fav=fav, ah_line=bet_line, ah_supremacy=round(supremacy, 2),
         ah_cover_prob=cover, ah_reco=ah_reco,
         ah_home_odds=round(ah_o_home, 2), ah_away_odds=round(ah_o_away, 2),
+        ah_from_market=ah_line_override is not None,
         odds_home=round(o1x2["home"], 2), odds_draw=round(o1x2["draw"], 2),
         odds_away=round(o1x2["away"], 2),
         ou_odds={k: (round(v[0], 2), round(v[1], 2)) for k, v in ou_odds.items()},

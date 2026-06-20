@@ -36,6 +36,20 @@ def _ev_no_push(p: float, odds: float) -> float:
     return p * odds - 1.0
 
 
+def main_ah_line(quotes):
+    """從報價挑「主盤」亞盤讓球線：主客賠率最接近(最均衡)的那條。回傳 line 或 None。"""
+    lines = _group_quotes(quotes, "AH")
+    best, best_gap = None, 1e9
+    for line, sides in lines.items():
+        if "home" in sides and "away" in sides:
+            gap = abs(sides["home"] - sides["away"])
+            if gap < best_gap:
+                best, best_gap = line, gap
+        elif best is None:
+            best = line  # 只有單邊時退而求其次
+    return _to_float(best) if best is not None else None
+
+
 def _group_quotes(quotes, market):
     """把某盤口的報價依 line 分組：{line: {selection: odds}}。1X2 的 line 用 ""。"""
     out: dict = {}
