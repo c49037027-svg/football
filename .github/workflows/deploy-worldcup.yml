@@ -47,9 +47,10 @@ jobs:
       - name: 下載最新世界盃賽程與比分
         run: footy fetch-wc --out data/wc2026.json
 
-      - name: 產生多頁網站（含 api-football 傷停，失敗自動略過）
+      - name: 產生多頁網站（含 api-football 傷停 + the-odds-api 盤口，失敗自動略過）
         env:
           API_FOOTBALL_KEY: ${{ secrets.API_FOOTBALL_KEY }}
+          ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
         run: |
           footy wc-site \
             --model models/intl.pkl \
