@@ -206,6 +206,14 @@ def serve(model_path: str, history_path: str | None = None,
     model = DixonColesModel.load(model_path)
     _Handler.model = model
     _Handler.history = _load_history(history_path)
+    if schedule_path:
+        # 啟動時抓最新賽程與比分（覆寫，失敗則沿用既有檔）
+        try:
+            from . import worldcup as wc
+            wc.fetch_schedule(schedule_path)
+            print(f"[serve] 已抓最新賽程：{schedule_path}")
+        except Exception as e:  # noqa: BLE001
+            print(f"[serve] 抓最新賽程失敗，沿用既有檔：{e}")
     _Handler.teams = _server_teams(model, schedule_path)
     if schedule_path:
         print("[serve] 產生世界盃首頁（奪冠/晉級/小組排名 + 各場分析）…")
