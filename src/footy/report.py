@@ -537,7 +537,6 @@ def _match_pred_row(model, m, linked: set | None = None):
     """
     from .models import markets
     t1, t2 = m.team1, m.team2
-    cs5 = ""
     if m.played:
         tag = f"<span class='res'>{m.hg}-{m.ag}</span> <span class='small'>(已賽)</span>"
     elif t1 in model.attack and t2 in model.attack:
@@ -547,9 +546,6 @@ def _match_pred_row(model, m, linked: set | None = None):
         o = markets.outcome_1x2(mat)
         tag = (f"<span class='pred'>{s[0]}-{s[1]}</span><span class='small'>（{sp:.0%}）</span> "
                f"<span class='small'>{o['home']:.0%}/{o['draw']:.0%}/{o['away']:.0%}</span>")
-        top = markets.correct_score(mat, top_n=5)
-        cs5 = ("<div class='cs5'>正確比分：" +
-               " · ".join(f"{a}-{b} {p*100:.0f}%" for (a, b), p in top) + "</div>")
     else:
         tag = "<span class='small'>—</span>"
     inner = (f"<span class='fxd'>{m.date[5:]}</span>"
@@ -559,9 +555,9 @@ def _match_pred_row(model, m, linked: set | None = None):
     played = "1" if m.played else "0"
     if linked and m.num in linked:
         body = (f"<a class='fx fxlink' href='match_{m.num}.html'>{inner}"
-                f"<span class='arow'>›</span></a>{cs5}")
+                f"<span class='arow'>›</span></a>")
     else:
-        body = f"<div class='fx'>{inner}</div>{cs5}"
+        body = f"<div class='fx'>{inner}</div>"
     return f"<div class='fxrow' data-played='{played}'>{body}</div>"
 
 
