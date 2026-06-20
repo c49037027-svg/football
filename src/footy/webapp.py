@@ -182,9 +182,18 @@ def _build_site(model, history, schedule_path, n_sims=12000, match_sims=8000):
     try:
         result = wc.simulate_worldcup(model, schedule_path, n_sims=n_sims)
         _, matches, _ = wc.parse_wc_json(schedule_path)
+        # 戰績：記錄推薦 + 用賽果結算（帳本放 data/bets.csv，部署重啟仍累積）
+        track_text = None
+        try:
+            from . import tracker
+            tracker.log_upcoming(matches, model, "data/bets.csv", min_prob=0.5)
+            tracker.settle("data/bets.csv", {m.num: (m.hg, m.ag) for m in matches if m.played})
+            track_text = tracker.summary("data/bets.csv").text()
+        except Exception:  # noqa: BLE001
+            track_text = None
         outdir = tempfile.mkdtemp(prefix="footy_wc_")
-        report.write_worldcup_site(result, model, matches, outdir,
-                                   history=history, n_sims=match_sims, interactive=True)
+        report.write_worldcup_site(result, model, matches, outdir, history=history,
+                                   n_sims=match_sims, interactive=True, track_text=track_text)
         return outdir
     except Exception as e:  # noqa: BLE001
         print(f"[serve] 產生世界盃首頁失敗（改用自訂表單為首頁）：{e}")

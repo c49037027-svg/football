@@ -200,6 +200,23 @@ def analyze(ctx, model_path, home, away, history_path, neutral, knockout,
         click.echo(f"[ok] 已輸出 HTML：{html_out}")
 
 
+@cli.command("track")
+@click.option("--model", "model_path", default="models/intl.pkl")
+@click.option("--schedule", default="data/wc2026.json", help="賽程 JSON（取賽果結算）")
+@click.option("--ledger", default="data/bets.csv", help="戰績帳本 CSV")
+@click.option("--min-prob", default=0.5, type=float, help="只記錄推薦機率≥此值的場次")
+def track(model_path, schedule, ledger, min_prob):
+    """記錄模型推薦(1X2)、用賽果結算、印出均注戰績(命中率/損益/ROI)。"""
+    from . import tracker, worldcup as wc
+    model = dc.DixonColesModel.load(model_path)
+    _, matches, _ = wc.parse_wc_json(schedule)
+    added = tracker.log_upcoming(matches, model, ledger, min_prob=min_prob)
+    results = {m.num: (m.hg, m.ag) for m in matches if m.played}
+    settled = tracker.settle(ledger, results)
+    click.echo(f"[track] 新記錄 {added} 注、結算 {settled} 注")
+    click.echo(tracker.summary(ledger).text())
+
+
 @cli.command("serve")
 @click.option("--model", "model_path", default="models/intl.pkl")
 @click.option("--history", "history_path", default="data/intl.csv", help="國際賽歷史（狀態/H2H）")
@@ -286,9 +303,10 @@ def worldcup(ctx, model_path, schedule, n_sims, html_out, title):
               help="抓 api-football 傷停納入（需環境變數 API_FOOTBALL_KEY；失敗則略過）")
 @click.option("--wc-season", default=2026, type=int, help="api-football 賽季")
 @click.option("--wc-league", default=1, type=int, help="api-football 賽事 id（世界盃=1）")
+@click.option("--ledger", default=None, help="戰績帳本 CSV（記錄推薦+結算+首頁顯示）")
 @click.pass_context
 def wc_site(ctx, model_path, schedule, history_path, outdir, n_sims, match_sims, title,
-            use_injuries, wc_season, wc_league):
+            use_injuries, wc_season, wc_league, ledger):
     """產生整屆世界盃多頁網站：首頁 + 每場可點進的單場分析頁。"""
     from . import report, worldcup as wc
     from .i18n import zh
@@ -297,6 +315,13 @@ def wc_site(ctx, model_path, schedule, history_path, outdir, n_sims, match_sims,
     click.echo(f"[wc] 模擬整屆 {n_sims:,} 次…")
     result = wc.simulate_worldcup(model, schedule, n_sims=n_sims)
     _, matches, _ = wc.parse_wc_json(schedule)
+
+    track_text = None
+    if ledger:
+        from . import tracker
+        tracker.log_upcoming(matches, model, ledger, min_prob=0.5)
+        tracker.settle(ledger, {m.num: (m.hg, m.ag) for m in matches if m.played})
+        track_text = tracker.summary(ledger).text()
 
     injury_counts = None
     if use_injuries:
@@ -314,7 +339,7 @@ def wc_site(ctx, model_path, schedule, history_path, outdir, n_sims, match_sims,
     click.echo("[wc] 產生首頁與各場分析頁…")
     out, n = report.write_worldcup_site(result, model, matches, outdir,
                                         history=hist, title=title, n_sims=match_sims,
-                                        injury_counts=injury_counts)
+                                        injury_counts=injury_counts, track_text=track_text)
     champ = sorted(result.champion.items(), key=lambda x: x[1], reverse=True)[:5]
     click.echo("奪冠機率前五：" + "  ".join(f"{zh(t)} {p:.1%}" for t, p in champ))
     click.echo(f"[ok] 網站已輸出到 {out}/（首頁 index.html，{n} 場分析頁）")

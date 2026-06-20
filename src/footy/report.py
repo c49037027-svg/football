@@ -383,6 +383,9 @@ def render_analysis_html(a, title: str = "單場分析", back_href: str | None =
     ou_boxes = "".join(_ou_box(ln, a.over_under[ln], ou_odds.get(ln), sup)
                        for ln in (1.5, 2.5, 3.5))
     fh_ou = "".join(_fh_ou_box(ln, p, sup) for ln, p in a.fh_over.items())
+    top4 = "".join(
+        f"<span class='ts'>{s[0]}-{s[1]} <b>{p*100:.0f}%</b></span>"
+        for s, p in (a.top_scores or [])[:4])
     c, k = a.corners, a.cards
     ah_col = _reco_color("大")
     h, d, aw = a.p_home, a.p_draw, a.p_away
@@ -408,6 +411,10 @@ def render_analysis_html(a, title: str = "單場分析", back_href: str | None =
 .line-row{{display:flex;justify-content:space-between;gap:10px;margin:6px 0;
 font-size:15px;font-weight:700;font-variant-numeric:tabular-nums}}
 .line-row .o{{color:#7be0b0}}
+.topscores{{margin-top:8px;font-size:13px;color:var(--muted)}}
+.ts{{display:inline-block;background:#11161c;border:1px solid var(--line);border-radius:6px;
+padding:3px 9px;margin:2px 6px 2px 0;color:#e6edf3;font-variant-numeric:tabular-nums}}
+.ts b{{color:#7be0b0}}
 .rebar{{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 12px;
 margin-bottom:14px;display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end}}
 .rebar span{{display:flex;flex-direction:column;font-size:11px;color:var(--muted);gap:3px}}
@@ -427,8 +434,9 @@ margin-bottom:14px;display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end}}
     <div class="head"><div class="teams">AI 最可能比分 {a.predicted_score[0]}-{a.predicted_score[1]}
       <span class="small">（僅 {a.predicted_score_prob:.0%}，眾數非平均）</span></div>
       <div class="small">期望總進球 <b style="color:#cdd9e5">{a.total_goals}</b> · xG {a.xg_low}–{a.xg_high}</div></div>
-    <div class="small" style="margin:-4px 0 8px;color:var(--muted)">
-      註：最可能比分是「機率最高的單一比分」（偏低），但大小球看的是<b>期望總進球 {a.total_goals}</b> 與整體分布，故兩者可能方向不同。</div>
+    <div class="topscores">最可能比分 Top4：{top4}</div>
+    <div class="small" style="margin:4px 0 8px;color:var(--muted)">
+      註：單一比分機率都偏低，大小球看的是<b>期望總進球 {a.total_goals}</b> 與整體分布，故方向可能不同。</div>
     <div class="bar">
       <div class="h" style="width:{h*100:.1f}%">{h:.0%}</div>
       <div class="d" style="width:{d*100:.1f}%">{d:.0%}</div>
@@ -739,7 +747,7 @@ def _today_section(matches, model, linked=None):
 
 
 def render_worldcup_html(result, model, matches, title: str = "2026 世界盃預測",
-                         linked: set | None = None) -> str:
+                         linked: set | None = None, track_text: str | None = None) -> str:
     import datetime as _dt
     today = _dt.date.today().isoformat()
     # 冠軍機率前 16
@@ -766,6 +774,11 @@ def render_worldcup_html(result, model, matches, title: str = "2026 世界盃預
 
     ko_html = _render_bracket(matches, linked)
     today_html = _today_section(matches, model, linked)
+    track_html = (f"<div class='card'><div class='sec'>📒 模型推薦戰績（均注）</div>"
+                  f"<div class='small' style='white-space:pre-line;color:#cdd9e5'>"
+                  f"{html.escape(track_text)}</div>"
+                  f"<div class='small' style='margin-top:6px'>以模型公平賠率記錄，僅供自我校驗；"
+                  f"非真實盤口損益。</div></div>") if track_text else ""
 
     return f"""<!doctype html><html lang="zh-Hant"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
@@ -800,6 +813,7 @@ a.fxlink:active{{background:#1c242d}}.arow{{color:var(--accent);text-align:right
   <div class="disc">⚠️ 純機率預測，非投注建議。最佳第三名→R32 槽位為近似指派；晉級機率為主要可信輸出。</div>
 
   {today_html}
+  {track_html}
 
   <div class="two">
     <div class="card">
@@ -837,16 +851,18 @@ a.fxlink:active{{background:#1c242d}}.arow{{color:var(--accent);text-align:right
 
 
 def write_worldcup_html(result, model, matches, out_path, title="2026 世界盃預測",
-                        linked=None):
+                        linked=None, track_text=None):
     out_path = Path(out_path)
     out_path.parent.mkdir(parents=True, exist_ok=True)
-    out_path.write_text(render_worldcup_html(result, model, matches, title, linked),
-                        encoding="utf-8")
+    out_path.write_text(
+        render_worldcup_html(result, model, matches, title, linked, track_text),
+        encoding="utf-8")
     return out_path
 
 
 def write_worldcup_site(result, model, matches, outdir, history=None,
                         title="2026 世界盃預測", n_sims=20000, injury_counts=None,
+                        track_text=None,
                         interactive=False):
     """產生多頁網站：index.html + 每場可分析的 match_<num>.html。
 
@@ -881,5 +897,6 @@ def write_worldcup_site(result, model, matches, outdir, history=None,
             (outdir / f"match_{m.num}.html").write_text(html_doc, encoding="utf-8")
             linked.add(m.num)
 
-    write_worldcup_html(result, model, matches, outdir / "index.html", title, linked)
+    write_worldcup_html(result, model, matches, outdir / "index.html", title, linked,
+                        track_text=track_text)
     return outdir, len(linked)

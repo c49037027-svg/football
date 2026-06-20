@@ -75,6 +75,7 @@ class MatchAnalysis:
     odds_draw: float = 0.0
     odds_away: float = 0.0
     ou_odds: dict = None       # line -> (over_odds, under_odds)
+    top_scores: list = None    # 前 N 個最可能比分 [((h,a), prob), ...]
     # 影響因子
     elo_home: float = 0.0
     elo_away: float = 0.0
@@ -208,6 +209,7 @@ def analyze(model: DixonColesModel, home: str, away: str,
         home=home, away=away, neutral=neutral,
         exp_home_goals=round(eh, 2), exp_away_goals=round(ea, 2),
         predicted_score=ml, predicted_score_prob=ml_prob, total_goals=round(total, 1),
+        top_scores=markets.correct_score(mat, top_n=4),
         xg_low=round(min(eh, ea), 1), xg_high=round(max(eh, ea), 1),
         p_home=o["home"], p_draw=o["draw"], p_away=o["away"],
         over_under=ou, btts_yes=bt["yes"],

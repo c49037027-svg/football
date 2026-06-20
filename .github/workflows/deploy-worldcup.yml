@@ -12,9 +12,9 @@ on:
       - "src/footy/**"
       - ".github/workflows/deploy-worldcup.yml"
 
-# GitHub Pages 部署所需權限
+# GitHub Pages 部署 + 回寫帳本所需權限
 permissions:
-  contents: read
+  contents: write
   pages: write
   id-token: write
 
@@ -57,7 +57,16 @@ jobs:
             --history data/intl.csv \
             --outdir out/wc \
             --n-sims 20000 --match-sims 12000 \
-            --use-injuries
+            --use-injuries \
+            --ledger data/bets.csv
+
+      - name: 回寫戰績帳本（每日累積推薦與結算）
+        run: |
+          git config user.name "github-actions"
+          git config user.email "actions@github.com"
+          git add -f data/bets.csv || true
+          git commit -m "chore: 更新推薦戰績帳本 [skip ci]" || echo "無變更"
+          git push || echo "推送略過"
 
       - name: 設定 Pages
         uses: actions/configure-pages@v5

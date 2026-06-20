@@ -33,6 +33,8 @@ footy fetch-wc --out "$SCHEDULE"
 echo "[update] 重建世界盃網站…"
 footy wc-site --model "$MODEL" --schedule "$SCHEDULE" --history "$HISTORY" \
               --outdir "$OUTDIR" --n-sims 20000 --match-sims 20000 \
-              --use-injuries   # 需 export API_FOOTBALL_KEY；抓不到會自動略過
+              --use-injuries \
+              --ledger data/bets.csv   # 記錄推薦+結算，首頁顯示戰績
 
 echo "[update] 完成：$OUTDIR/index.html （更新於 $(date '+%Y-%m-%d %H:%M')）"
+echo "[update] 模型已用最新賽果重新訓練（Elo 隨之更新）＝每日賽後優化"
