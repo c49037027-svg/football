@@ -33,6 +33,7 @@ class WCMatch:
     hg: int = 0
     ag: int = 0
     num: int = 0     # 官方場次編號（用於 W{num} 引用）
+    time: str = ""   # 開球時間（場地當地），形如 "19:00 UTC-6"
 
 
 # 賽程 JSON 隊名 → 模型/國際賽資料隊名（martj42 命名）。
@@ -50,6 +51,31 @@ TEAM_ALIASES = {
 
 def _alias(name: str) -> str:
     return TEAM_ALIASES.get(name, name)
+
+
+def kickoff_utc(date: str, time: str):
+    """把場地當地開球時間（"19:00 UTC-6"）+ 日期換成 UTC datetime。失敗回 None。"""
+    import datetime as _dt
+    if not date or not time:
+        return None
+    try:
+        parts = time.split()
+        h, m = (int(x) for x in parts[0].split(":"))
+        off = 0
+        if len(parts) > 1 and parts[1].upper().startswith("UTC"):
+            off = int(parts[1][3:] or 0)
+        y, mo, d = (int(x) for x in date.split("-"))
+        local = _dt.datetime(y, mo, d, h, m)
+        return local - _dt.timedelta(hours=off)
+    except Exception:  # noqa: BLE001
+        return None
+
+
+def kickoff_taipei(date: str, time: str):
+    """回傳台北時間（UTC+8）datetime；失敗回 None。"""
+    import datetime as _dt
+    u = kickoff_utc(date, time)
+    return u + _dt.timedelta(hours=8) if u else None
 
 
 WC2026_SCHEDULE_URL = (
@@ -95,6 +121,7 @@ def parse_wc_json(path: str | Path) -> tuple[dict[str, list[str]], list[WCMatch]
             round=rnd, group=grp, date=x.get("date", ""),
             team1=t1, team2=t2,
             played=bool(ft), hg=ft[0] if ft else 0, ag=ft[1] if ft else 0,
+            time=str(x.get("time", "")),
         )
         matches.append(m)
         if grp and rnd in GROUP_ROUNDS:

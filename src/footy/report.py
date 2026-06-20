@@ -9,6 +9,15 @@ from .predict import MatchPrediction
 from .i18n import zh, group_zh
 
 
+def _tpe_label(m, with_date: bool = True) -> str:
+    """場次開球時間轉台北時間（UTC+8）短字串。無時間資料則退回場地日期 MM-DD。"""
+    from . import worldcup as wc
+    dt = wc.kickoff_taipei(getattr(m, "date", ""), getattr(m, "time", ""))
+    if not dt:
+        return m.date[5:] if getattr(m, "date", "") else ""
+    return f"{dt.month}/{dt.day} {dt:%H:%M}" if with_date else f"{dt:%H:%M}"
+
+
 def _slot_zh(token: str) -> str:
     """淘汰賽槽位碼轉中文：1A→A組#1、3A/B/C→A/B/C組第三、W74→#74勝者。"""
     import re
@@ -543,7 +552,7 @@ def _match_pred_row(model, m, linked: set | None = None):
         tag = "<span class='small'>預測 ›</span>"
     else:
         tag = ""
-    inner = (f"<span class='fxd'>{m.date[5:]}</span>"
+    inner = (f"<span class='fxd'>{_tpe_label(m)}</span>"
              f"<span class='fxt'>{html.escape(zh(t1))}</span>"
              f"<span class='fxm'>{tag}</span>"
              f"<span class='fxt r'>{html.escape(zh(t2))}</span>")
@@ -630,9 +639,11 @@ def _group_card(g, teams, result, model, matches, linked=None):
             f"<td style=\"{_heat(q*100,'140')}\">{q:.0%}</td>"
             f"<td class='num'>{result.exp_points.get(t,0):.1f}</td></tr>")
     standings = _standings_table_html(matches, g, teams)
+    from . import worldcup as wc
     fixtures = "".join(_match_pred_row(model, m, linked)
                        for m in sorted([mm for mm in matches if mm.group == g],
-                                       key=lambda mm: mm.date))
+                                       key=lambda mm: wc.kickoff_utc(mm.date, getattr(mm, "time", ""))
+                                       or _dt.datetime.max))
     return f"""
     <div class="card grp">
       <div class="sec">{html.escape(group_zh(g))}</div>
@@ -713,7 +724,10 @@ def _today_section(matches, model, linked=None):
     if not day:
         return ""  # 賽事已全部結束
     label = "今日比賽" if day == today else f"接下來（{day[5:]}）"
-    rms = sorted([m for m in matches if m.date == day], key=lambda m: m.num)
+    from . import worldcup as wc
+    rms = sorted([m for m in matches if m.date == day],
+                 key=lambda m: (wc.kickoff_utc(m.date, getattr(m, "time", ""))
+                                or _dt.datetime.max, m.num))
     rows = []
     for m in rms:
         from .models import markets
@@ -725,15 +739,17 @@ def _today_section(matches, model, linked=None):
             mid = f"<span class='small'>{o['home']:.0%}/{o['draw']:.0%}/{o['away']:.0%}</span>"
         else:
             mid = "<span class='small'>—</span>"
-        inner = (f"<span class='fxt'>{html.escape(t1)}</span>"
+        ko = _tpe_label(m, with_date=False)
+        inner = (f"<span class='fxk'>{ko}</span>"
+                 f"<span class='fxt'>{html.escape(t1)}</span>"
                  f"<span class='fxm'>{mid}</span>"
                  f"<span class='fxt r'>{html.escape(t2)}</span>")
         if m.num in linked:
-            rows.append(f"<a class='fx fxlink' style='grid-template-columns:1fr auto 1fr 14px' "
+            rows.append(f"<a class='fx fxlink' style='grid-template-columns:auto 1fr auto 1fr 14px' "
                         f"href='match_{m.num}.html'>{inner}<span class='arow'>›</span></a>")
         else:
-            rows.append(f"<div class='fx' style='grid-template-columns:1fr auto 1fr'>{inner}</div>")
-    return (f"<div class='card'><div class='sec'>📅 {label}</div>"
+            rows.append(f"<div class='fx' style='grid-template-columns:auto 1fr auto 1fr'>{inner}</div>")
+    return (f"<div class='card'><div class='sec'>📅 {label}（台北時間）</div>"
             f"<div class='fxs'>{''.join(rows)}</div></div>")
 
 
@@ -781,12 +797,13 @@ font-weight:700;list-style:none}}.stbl>summary::-webkit-details-marker{{display:
 .stbl>summary::before{{content:'▸ '}}.stbl[open]>summary::before{{content:'▾ '}}
 .stbl table{{font-size:11px;min-width:280px;display:block;overflow-x:auto;margin-top:4px}}
 .stbl th,.stbl td{{padding:4px 5px}}
-.fx{{display:grid;grid-template-columns:42px 1fr auto 1fr;gap:6px;align-items:center;
+.fx{{display:grid;grid-template-columns:64px 1fr auto 1fr;gap:6px;align-items:center;
 font-size:12px;padding:3px 0;border-top:1px solid #1c242d}}
 .fxt{{font-weight:600}}.fxt.r{{text-align:right}}.fxd{{color:var(--muted)}}.fxm{{text-align:center}}
+.fxk{{color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap}}
 .pred{{color:#7be0b0;font-weight:700}}.res{{color:#e0b341;font-weight:700}}
-.cs5{{font-size:11px;color:var(--muted);padding:0 0 5px 42px;letter-spacing:.02em}}
-a.fxlink{{text-decoration:none;color:inherit;grid-template-columns:42px 1fr auto 1fr 14px}}
+.cs5{{font-size:11px;color:var(--muted);padding:0 0 5px 64px;letter-spacing:.02em}}
+a.fxlink{{text-decoration:none;color:inherit;grid-template-columns:64px 1fr auto 1fr 14px}}
 a.fxlink:active{{background:#1c242d}}.arow{{color:var(--accent);text-align:right}}
 </style></head>
 <body><div class="wrap">
