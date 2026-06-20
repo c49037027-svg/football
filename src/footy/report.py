@@ -617,9 +617,10 @@ def _standings_table_html(matches, g, teams):
             f"<td>{s['P']}</td><td>{s['W']}</td><td>{s['D']}</td><td>{s['L']}</td>"
             f"<td>{s['GF']}-{s['GA']}</td><td>{gd:+d}</td>"
             f"<td class='num'><b>{pts}</b></td></tr>")
-    return (f"<div class='stbl'><table><thead><tr><th>#</th><th>隊伍</th>"
+    return (f"<details class='stbl'><summary>目前積分榜（點開）</summary>"
+            f"<table><thead><tr><th>#</th><th>隊伍</th>"
             f"<th>賽</th><th>勝</th><th>平</th><th>負</th><th>進失</th><th>淨</th>"
-            f"<th>分</th></tr></thead><tbody>{''.join(trs)}</tbody></table></div>")
+            f"<th>分</th></tr></thead><tbody>{''.join(trs)}</tbody></table></details>")
 
 
 def _group_card(g, teams, result, model, matches, linked=None):
@@ -634,8 +635,6 @@ def _group_card(g, teams, result, model, matches, linked=None):
             f"<td style=\"{_heat(q*100,'140')}\">{q:.0%}</td>"
             f"<td class='num'>{result.exp_points.get(t,0):.1f}</td></tr>")
     standings = _standings_table_html(matches, g, teams)
-    if standings:
-        standings = "<div class='sublbl'>目前積分榜</div>" + standings + "<div class='sublbl'>晉級預測</div>"
     fixtures = "".join(_match_pred_row(model, m, linked)
                        for m in sorted([mm for mm in matches if mm.group == g],
                                        key=lambda mm: mm.date))
@@ -791,8 +790,10 @@ th,td{{padding:6px 7px;text-align:center;border-bottom:1px solid var(--line)}}
 th{{color:var(--muted);font-size:11px}}td.tm{{text-align:left;font-weight:700}}td.rk{{color:var(--muted)}}
 .grids{{display:grid;grid-template-columns:repeat(auto-fill,minmax(310px,1fr));gap:14px}}
 .grp .fxs{{margin-top:8px}}
-.sublbl{{font-size:11px;color:var(--muted);margin:8px 0 3px;font-weight:700}}
-.stbl{{overflow-x:auto}}.stbl table{{font-size:11px;min-width:280px}}
+.stbl{{margin:4px 0 8px}}.stbl>summary{{cursor:pointer;font-size:11px;color:var(--muted);
+font-weight:700;list-style:none}}.stbl>summary::-webkit-details-marker{{display:none}}
+.stbl>summary::before{{content:'▸ '}}.stbl[open]>summary::before{{content:'▾ '}}
+.stbl table{{font-size:11px;min-width:280px;display:block;overflow-x:auto;margin-top:4px}}
 .stbl th,.stbl td{{padding:4px 5px}}
 .fx{{display:grid;grid-template-columns:42px 1fr auto 1fr;gap:6px;align-items:center;
 font-size:12px;padding:3px 0;border-top:1px solid #1c242d}}
