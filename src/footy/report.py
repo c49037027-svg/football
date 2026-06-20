@@ -771,11 +771,16 @@ def render_worldcup_html(result, model, matches, title: str = "2026 世界盃預
         for g in sorted(result.groups))
 
     today_html = _today_section(matches, model, linked)
+    has_roi = bool(track_text) and "ROI" in track_text
+    track_note = ("均注 1 單位。有真實盤口時只記模型相對市場有正期望值(+EV)的推薦，"
+                  "並以下注/收盤賠率算實際 ROI 與 CLV（CLV>0 表示拿到的賠率優於收盤，"
+                  "是長期正收益的領先指標）。" if has_roi else
+                  "每場各推薦項目逐一記錄過/沒過；以模型機率為基準的自我校驗，"
+                  "尚無真實盤口故未計損益（勝率高 ≠ 賺錢）。")
     track_html = (f"<div class='card'><div class='sec'>📒 模型推薦戰績</div>"
                   f"<div class='small' style='white-space:pre-line;color:#cdd9e5'>"
                   f"{html.escape(track_text)}</div>"
-                  f"<div class='small' style='margin-top:6px'>每場各推薦項目逐一記錄過/沒過；"
-                  f"以模型機率為基準的自我校驗，非真實盤口損益。</div></div>") if track_text else ""
+                  f"<div class='small' style='margin-top:6px'>{track_note}</div></div>") if track_text else ""
 
     return f"""<!doctype html><html lang="zh-Hant"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">

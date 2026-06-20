@@ -49,6 +49,58 @@ def test_log_settle_summary(tmp_path, synthetic_df):
     assert "1X2" in s.by_market
 
 
+def test_pl_half_outcomes():
+    # 亞盤 quarter 線：主 -0.75，主隊贏 1 球 → 半贏（賠率 2.0 → +0.5u）
+    w = tracker._settle_outcome("AH", "主", -0.75, 1, 0)
+    assert abs(tracker._pl(w, 2.0) - 0.5) < 1e-9
+    # 主 -0.25 主隊和局 → 半輸（-0.5u）
+    w = tracker._settle_outcome("AH", "主", -0.25, 1, 1)
+    assert abs(tracker._pl(w, 2.0) + 0.5) < 1e-9
+    # 1X2 命中：賠率 2.5 → +1.5u；落空 → -1u
+    assert abs(tracker._pl(tracker._settle_outcome("1X2", "home", "", 2, 0), 2.5) - 1.5) < 1e-9
+    assert abs(tracker._pl(tracker._settle_outcome("1X2", "home", "", 0, 1), 2.5) + 1.0) < 1e-9
+
+
+def test_market_mode_ev_filter_and_roi(tmp_path, synthetic_df):
+    from footy.live.feed import MarketQuote
+    from footy.models import dixon_coles as dc
+    model = dc.fit(synthetic_df, half_life_days=10_000)
+    h, a = model.teams[0], model.teams[1]
+    o = tracker.markets.outcome_1x2(model.score_matrix(h, a, neutral=True))
+    # 給主勝一個「高到必為 +EV」的賠率，客勝給很爛的賠率
+    big = round(2.0 / max(o["home"], 1e-6), 3)  # p*odds = 2 → edge ~ +100%
+    quotes = [MarketQuote("1X2", "home", big),
+              MarketQuote("1X2", "away", 1.01)]
+    led = tmp_path / "m.csv"
+    n = tracker.log_upcoming([_M(1, h, a)], model, led, odds_index={1: quotes})
+    assert n == 1  # 只記 +EV 的主勝，不記爛賠率客勝
+    dfx = tracker.load_ledger(led)
+    assert dfx.iloc[0]["selection"] == "home" and dfx.iloc[0]["source"] == "market"
+    # 結算：主勝 2-0 命中 → pl = big-1
+    tracker.settle(led, {1: (2, 0)})
+    s = tracker.summary(led)
+    assert s.market_bets == 1
+    assert abs(s.pl_units - (big - 1)) < 1e-6
+    assert s.roi > 0 and "ROI" in s.text()
+
+
+def test_clv_recorded(tmp_path):
+    from footy.live.feed import MarketQuote
+    import pandas as pd
+    led = tmp_path / "c.csv"
+    df = pd.DataFrame([dict(date="d", match_num=1, home="A", away="B",
+                            market="1X2", selection="home", line="", odds=2.10,
+                            edge=0.05, source="market", close_odds=2.10,
+                            result="pending", pl="")])
+    tracker.save_ledger(df, led)
+    # 收盤跌到 1.90（我們 2.10 拿得比收盤好）→ CLV 正
+    tracker.refresh_close(led, {1: [MarketQuote("1X2", "home", 1.90)]})
+    tracker.settle(led, {1: (1, 0)})
+    s = tracker.summary(led)
+    assert s.clv_n == 1 and s.clv > 0
+    assert abs(s.clv - (2.10 / 1.90 - 1)) < 1e-9
+
+
 def test_summary_counts(tmp_path):
     import pandas as pd
     led = tmp_path / "l.csv"

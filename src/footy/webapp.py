@@ -186,9 +186,15 @@ def _build_site(model, history, schedule_path, n_sims=12000, match_sims=8000):
         track_text = None
         try:
             from . import tracker
-            tracker.log_upcoming(matches, model, "data/bets.csv")
-            tracker.settle("data/bets.csv", {m.num: (m.hg, m.ag) for m in matches if m.played})
-            track_text = tracker.summary("data/bets.csv").text()
+            odds_index = None
+            try:  # 有 ODDS_API_KEY 才抓真實盤口 → +EV 推薦 + 實際 ROI/CLV
+                from .live.providers import fetch_wc_odds
+                odds_index = fetch_wc_odds(matches)
+                print(f"[serve] 已抓盤口：{len(odds_index)} 場有 +EV 候選")
+            except Exception as e:  # noqa: BLE001
+                print(f"[serve] 無真實盤口（改記勝率自我校驗）：{e}")
+            track_text = tracker.prepare(matches, model, "data/bets.csv",
+                                         odds_index=odds_index).text()
         except Exception:  # noqa: BLE001
             track_text = None
         outdir = tempfile.mkdtemp(prefix="footy_wc_")

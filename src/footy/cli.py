@@ -204,16 +204,22 @@ def analyze(ctx, model_path, home, away, history_path, neutral, knockout,
 @click.option("--model", "model_path", default="models/intl.pkl")
 @click.option("--schedule", default="data/wc2026.json", help="賽程 JSON（取賽果結算）")
 @click.option("--ledger", default="data/bets.csv", help="戰績帳本 CSV")
-def track(model_path, schedule, ledger):
-    """記錄各推薦項目(1X2/大小/BTTS/亞盤)、用賽果結算每項過/沒過、印出總勝率與勝敗。"""
+@click.option("--odds/--no-odds", default=True, help="抓真實盤口記 +EV 推薦與 ROI/CLV（需 ODDS_API_KEY）")
+def track(model_path, schedule, ledger, odds):
+    """記錄各推薦項目、用賽果結算過/沒過；有盤口時另算實際 ROI 與 CLV。"""
     from . import tracker, worldcup as wc
     model = dc.DixonColesModel.load(model_path)
     _, matches, _ = wc.parse_wc_json(schedule)
-    added = tracker.log_upcoming(matches, model, ledger)
-    results = {m.num: (m.hg, m.ag) for m in matches if m.played}
-    settled = tracker.settle(ledger, results)
-    click.echo(f"[track] 新記錄 {added} 項、結算 {settled} 項")
-    click.echo(tracker.summary(ledger).text())
+    odds_index = None
+    if odds:
+        try:
+            from .live.providers import fetch_wc_odds
+            odds_index = fetch_wc_odds(matches)
+            click.echo(f"[track] 已抓盤口：{len(odds_index)} 場有 +EV 候選")
+        except Exception as e:  # noqa: BLE001
+            click.echo(f"[track] 無真實盤口（改記勝率自我校驗）：{e}")
+    s = tracker.prepare(matches, model, ledger, odds_index=odds_index)
+    click.echo(s.text())
 
 
 @cli.command("serve")
@@ -318,9 +324,14 @@ def wc_site(ctx, model_path, schedule, history_path, outdir, n_sims, match_sims,
     track_text = None
     if ledger:
         from . import tracker
-        tracker.log_upcoming(matches, model, ledger)
-        tracker.settle(ledger, {m.num: (m.hg, m.ag) for m in matches if m.played})
-        track_text = tracker.summary(ledger).text()
+        odds_index = None
+        try:  # 有 ODDS_API_KEY 才抓真實盤口 → +EV 推薦 + 實際 ROI/CLV
+            from .live.providers import fetch_wc_odds
+            odds_index = fetch_wc_odds(matches)
+            click.echo(f"[wc-site] 已抓盤口：{len(odds_index)} 場有 +EV 候選")
+        except Exception as e:  # noqa: BLE001
+            click.echo(f"[wc-site] 無真實盤口（改記勝率自我校驗）：{e}")
+        track_text = tracker.prepare(matches, model, ledger, odds_index=odds_index).text()
 
     injury_counts = None
     if use_injuries:

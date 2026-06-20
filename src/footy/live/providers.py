@@ -154,6 +154,53 @@ def find_ah_line(parsed: dict, home: str, away: str) -> "dict | None":
     return best
 
 
+def find_quotes(parsed: dict, home: str, away: str) -> "list | None":
+    """從 parse_odds 結果裡，找指定對戰的全部盤口報價（模糊比對隊名）。"""
+    import difflib
+
+    from ..worldcup import TEAM_ALIASES
+
+    def norm(n):
+        return TEAM_ALIASES.get(n, n)
+
+    th, ta = norm(home), norm(away)
+    best_score, best = 1.4, None
+    for info in parsed.values():
+        eh, ea = norm(info.get("home") or ""), norm(info.get("away") or "")
+        score = (difflib.SequenceMatcher(None, eh, th).ratio()
+                 + difflib.SequenceMatcher(None, ea, ta).ratio())
+        if score > best_score and info.get("quotes"):
+            best_score, best = score, info["quotes"]
+    return best
+
+
+def fetch_wc_odds(matches, sport: str = "soccer_fifa_world_cup",
+                  api_key: str | None = None, regions: str = "eu",
+                  markets: str = "h2h,totals,spreads", bookmaker: str | None = None,
+                  timeout: float = 20.0) -> dict:
+    """抓世界盃各場盤口，配對成 {match_num: [MarketQuote...]}（需 ODDS_API_KEY）。
+
+    抓不到 key／網路被擋／無對應賽事時，個別略過；整體失敗則拋例外由呼叫端處理。
+    """
+    key = api_key or os.environ.get("ODDS_API_KEY")
+    if not key:
+        raise RuntimeError("缺少 ODDS_API_KEY")
+    r = requests.get(f"{ODDS_API_BASE}/sports/{sport}/odds",
+                     params={"regions": regions, "markets": markets,
+                             "oddsFormat": "decimal", "apiKey": key},
+                     timeout=timeout)
+    r.raise_for_status()
+    parsed = parse_odds(r.json(), bookmaker=bookmaker)
+    index: dict = {}
+    for m in matches:
+        if getattr(m, "played", False):
+            continue
+        q = find_quotes(parsed, m.team1, m.team2)
+        if q:
+            index[m.num] = q
+    return index
+
+
 def fetch_ah_line(home: str, away: str, sport: str = "soccer_fifa_world_cup",
                   api_key: str | None = None, regions: str = "eu",
                   bookmaker: str | None = None, timeout: float = 15.0) -> "dict | None":
