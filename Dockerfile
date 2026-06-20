@@ -6,6 +6,8 @@ COPY . .
 RUN pip install --no-cache-dir -e .
 
 ENV PORT=8000
+# 即時輸出日誌（不緩衝），啟動訊息（[serve] 已抓盤口…）才即時可見
+ENV PYTHONUNBUFFERED=1
 EXPOSE 8000
 
 # 已附帶預訓練模型(models/intl.pkl)與歷史(data/intl.csv)，啟動即用；

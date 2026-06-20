@@ -12,6 +12,9 @@ services:
     envVars:
       - key: PYTHON_VERSION
         value: "3.11.9"
+      # 即時輸出日誌（不緩衝），才看得到 [serve] 已抓盤口… 等啟動訊息
+      - key: PYTHONUNBUFFERED
+        value: "1"
       # 選用：要自動抓盤口/傷停才需要，於 Render 後台填值
       - key: ODDS_API_KEY
         sync: false

@@ -190,9 +190,9 @@ def _build_site(model, history, schedule_path, n_sims=12000, match_sims=8000):
             try:  # 有 ODDS_API_KEY 才抓真實盤口 → +EV 推薦 + 實際 ROI/CLV
                 from .live.providers import fetch_wc_odds
                 odds_index = fetch_wc_odds(matches)
-                print(f"[serve] 已抓盤口：{len(odds_index)} 場有 +EV 候選")
+                print(f"[serve] 已抓盤口：{len(odds_index)} 場有 +EV 候選", flush=True)
             except Exception as e:  # noqa: BLE001
-                print(f"[serve] 無真實盤口（改記勝率自我校驗）：{e}")
+                print(f"[serve] 無真實盤口（改記勝率自我校驗）：{e}", flush=True)
             track_text = tracker.prepare(matches, model, "data/bets.csv",
                                          odds_index=odds_index).text()
         except Exception:  # noqa: BLE001
@@ -218,15 +218,15 @@ def serve(model_path: str, history_path: str | None = None,
         try:
             from . import worldcup as wc
             wc.fetch_schedule(schedule_path)
-            print(f"[serve] 已抓最新賽程：{schedule_path}")
+            print(f"[serve] 已抓最新賽程：{schedule_path}", flush=True)
         except Exception as e:  # noqa: BLE001
-            print(f"[serve] 抓最新賽程失敗，沿用既有檔：{e}")
+            print(f"[serve] 抓最新賽程失敗，沿用既有檔：{e}", flush=True)
     _Handler.teams = _server_teams(model, schedule_path)
     if schedule_path:
-        print("[serve] 產生世界盃首頁（奪冠/晉級/小組排名 + 各場分析）…")
+        print("[serve] 產生世界盃首頁（奪冠/晉級/小組排名 + 各場分析）…", flush=True)
         _Handler.site_dir = _build_site(model, _Handler.history, schedule_path)
     srv = ThreadingHTTPServer((host, port), _Handler)
-    print(f"[serve] 網站：http://localhost:{port} （首頁=世界盃預測，/custom=自訂分析）")
+    print(f"[serve] 網站：http://localhost:{port} （首頁=世界盃預測，/custom=自訂分析）", flush=True)
     try:
         srv.serve_forever()
     except KeyboardInterrupt:
