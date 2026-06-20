@@ -1,12 +1,12 @@
 date,match_num,home,away,market,selection,line,result
-2026-06-18,26,Czech Republic,South Africa,1X2,home,,pending
-2026-06-18,26,Czech Republic,South Africa,OU,小,2.5,pending
-2026-06-18,26,Czech Republic,South Africa,BTTS,否,,pending
-2026-06-18,26,Czech Republic,South Africa,AH,客,-0.5,pending
-2026-06-18,27,Mexico,South Korea,1X2,home,,pending
-2026-06-18,27,Mexico,South Korea,OU,小,2.5,pending
-2026-06-18,27,Mexico,South Korea,BTTS,否,,pending
-2026-06-18,27,Mexico,South Korea,AH,客,-0.25,pending
+2026-06-18,26,Czech Republic,South Africa,1X2,home,,loss
+2026-06-18,26,Czech Republic,South Africa,OU,小,2.5,win
+2026-06-18,26,Czech Republic,South Africa,BTTS,否,,loss
+2026-06-18,26,Czech Republic,South Africa,AH,客,-0.5,win
+2026-06-18,27,Mexico,South Korea,1X2,home,,win
+2026-06-18,27,Mexico,South Korea,OU,小,2.5,win
+2026-06-18,27,Mexico,South Korea,BTTS,否,,win
+2026-06-18,27,Mexico,South Korea,AH,客,-0.25,loss
 2026-06-24,50,Czech Republic,Mexico,1X2,away,,pending
 2026-06-24,50,Czech Republic,Mexico,OU,小,2.5,pending
 2026-06-24,50,Czech Republic,Mexico,BTTS,否,,pending
@@ -15,14 +15,14 @@ date,match_num,home,away,market,selection,line,result
 2026-06-24,53,South Africa,South Korea,OU,小,2.5,pending
 2026-06-24,53,South Africa,South Korea,BTTS,否,,pending
 2026-06-24,53,South Africa,South Korea,AH,客,0.75,pending
-2026-06-18,28,Switzerland,Bosnia and Herzegovina,1X2,home,,pending
-2026-06-18,28,Switzerland,Bosnia and Herzegovina,OU,小,2.5,pending
-2026-06-18,28,Switzerland,Bosnia and Herzegovina,BTTS,否,,pending
-2026-06-18,28,Switzerland,Bosnia and Herzegovina,AH,客,-1.25,pending
-2026-06-18,25,Canada,Qatar,1X2,home,,pending
-2026-06-18,25,Canada,Qatar,OU,大,2.5,pending
-2026-06-18,25,Canada,Qatar,BTTS,否,,pending
-2026-06-18,25,Canada,Qatar,AH,主,-1.75,pending
+2026-06-18,28,Switzerland,Bosnia and Herzegovina,1X2,home,,win
+2026-06-18,28,Switzerland,Bosnia and Herzegovina,OU,小,2.5,loss
+2026-06-18,28,Switzerland,Bosnia and Herzegovina,BTTS,否,,loss
+2026-06-18,28,Switzerland,Bosnia and Herzegovina,AH,客,-1.25,loss
+2026-06-18,25,Canada,Qatar,1X2,home,,win
+2026-06-18,25,Canada,Qatar,OU,大,2.5,win
+2026-06-18,25,Canada,Qatar,BTTS,否,,win
+2026-06-18,25,Canada,Qatar,AH,主,-1.75,win
 2026-06-24,54,Switzerland,Canada,1X2,home,,pending
 2026-06-24,54,Switzerland,Canada,OU,小,2.5,pending
 2026-06-24,54,Switzerland,Canada,BTTS,否,,pending
@@ -31,13 +31,13 @@ date,match_num,home,away,market,selection,line,result
 2026-06-24,49,Bosnia and Herzegovina,Qatar,OU,小,2.5,pending
 2026-06-24,49,Bosnia and Herzegovina,Qatar,BTTS,否,,pending
 2026-06-24,49,Bosnia and Herzegovina,Qatar,AH,主,-0.75,pending
-2026-06-19,30,Scotland,Morocco,1X2,away,,pending
-2026-06-19,30,Scotland,Morocco,OU,小,2.5,pending
-2026-06-19,30,Scotland,Morocco,BTTS,否,,pending
-2026-06-19,30,Scotland,Morocco,AH,客,0.75,pending
-2026-06-19,29,Brazil,Haiti,1X2,home,,pending
-2026-06-19,29,Brazil,Haiti,OU,大,2.5,pending
-2026-06-19,29,Brazil,Haiti,AH,客,-2.25,pending
+2026-06-19,30,Scotland,Morocco,1X2,away,,win
+2026-06-19,30,Scotland,Morocco,OU,小,2.5,win
+2026-06-19,30,Scotland,Morocco,BTTS,否,,win
+2026-06-19,30,Scotland,Morocco,AH,客,0.75,win
+2026-06-19,29,Brazil,Haiti,1X2,home,,win
+2026-06-19,29,Brazil,Haiti,OU,大,2.5,win
+2026-06-19,29,Brazil,Haiti,AH,客,-2.25,loss
 2026-06-24,52,Scotland,Brazil,1X2,away,,pending
 2026-06-24,52,Scotland,Brazil,OU,大,2.5,pending
 2026-06-24,52,Scotland,Brazil,AH,客,1.0,pending
@@ -45,14 +45,14 @@ date,match_num,home,away,market,selection,line,result
 2026-06-24,51,Morocco,Haiti,OU,小,2.5,pending
 2026-06-24,51,Morocco,Haiti,BTTS,否,,pending
 2026-06-24,51,Morocco,Haiti,AH,客,-1.5,pending
-2026-06-19,32,United States,Australia,1X2,away,,pending
-2026-06-19,32,United States,Australia,OU,小,2.5,pending
-2026-06-19,32,United States,Australia,BTTS,否,,pending
-2026-06-19,32,United States,Australia,AH,主,0.5,pending
-2026-06-19,31,Turkey,Paraguay,1X2,away,,pending
-2026-06-19,31,Turkey,Paraguay,OU,小,2.5,pending
-2026-06-19,31,Turkey,Paraguay,BTTS,否,,pending
-2026-06-19,31,Turkey,Paraguay,AH,客,0.0,pending
+2026-06-19,32,United States,Australia,1X2,away,,loss
+2026-06-19,32,United States,Australia,OU,小,2.5,win
+2026-06-19,32,United States,Australia,BTTS,否,,win
+2026-06-19,32,United States,Australia,AH,主,0.5,win
+2026-06-19,31,Turkey,Paraguay,1X2,away,,win
+2026-06-19,31,Turkey,Paraguay,OU,小,2.5,win
+2026-06-19,31,Turkey,Paraguay,BTTS,否,,win
+2026-06-19,31,Turkey,Paraguay,AH,客,0.0,win
 2026-06-25,60,Turkey,United States,1X2,home,,pending
 2026-06-25,60,Turkey,United States,OU,大,2.5,pending
 2026-06-25,60,Turkey,United States,BTTS,是,,pending
@@ -145,14 +145,14 @@ date,match_num,home,away,market,selection,line,result
 2026-06-27,71,Jordan,Argentina,OU,大,2.5,pending
 2026-06-27,71,Jordan,Argentina,BTTS,否,,pending
 2026-06-27,71,Jordan,Argentina,AH,主,2.25,pending
-2026-06-17,23,Portugal,DR Congo,1X2,home,,pending
-2026-06-17,23,Portugal,DR Congo,OU,小,2.5,pending
-2026-06-17,23,Portugal,DR Congo,BTTS,否,,pending
-2026-06-17,23,Portugal,DR Congo,AH,客,-0.5,pending
-2026-06-17,24,Uzbekistan,Colombia,1X2,away,,pending
-2026-06-17,24,Uzbekistan,Colombia,OU,小,2.5,pending
-2026-06-17,24,Uzbekistan,Colombia,BTTS,否,,pending
-2026-06-17,24,Uzbekistan,Colombia,AH,主,1.0,pending
+2026-06-17,23,Portugal,DR Congo,1X2,home,,loss
+2026-06-17,23,Portugal,DR Congo,OU,小,2.5,win
+2026-06-17,23,Portugal,DR Congo,BTTS,否,,loss
+2026-06-17,23,Portugal,DR Congo,AH,客,-0.5,win
+2026-06-17,24,Uzbekistan,Colombia,1X2,away,,win
+2026-06-17,24,Uzbekistan,Colombia,OU,小,2.5,loss
+2026-06-17,24,Uzbekistan,Colombia,BTTS,否,,loss
+2026-06-17,24,Uzbekistan,Colombia,AH,主,1.0,loss
 2026-06-23,48,Portugal,Uzbekistan,1X2,home,,pending
 2026-06-23,48,Portugal,Uzbekistan,OU,小,2.5,pending
 2026-06-23,48,Portugal,Uzbekistan,BTTS,否,,pending
@@ -168,13 +168,13 @@ date,match_num,home,away,market,selection,line,result
 2026-06-27,70,DR Congo,Uzbekistan,OU,小,2.5,pending
 2026-06-27,70,DR Congo,Uzbekistan,BTTS,否,,pending
 2026-06-27,70,DR Congo,Uzbekistan,AH,主,-0.0,pending
-2026-06-17,21,England,Croatia,1X2,home,,pending
-2026-06-17,21,England,Croatia,OU,小,2.5,pending
-2026-06-17,21,England,Croatia,BTTS,否,,pending
-2026-06-17,21,England,Croatia,AH,主,-0.75,pending
-2026-06-17,22,Ghana,Panama,1X2,away,,pending
-2026-06-17,22,Ghana,Panama,OU,小,2.5,pending
-2026-06-17,22,Ghana,Panama,AH,主,0.5,pending
+2026-06-17,21,England,Croatia,1X2,home,,win
+2026-06-17,21,England,Croatia,OU,小,2.5,loss
+2026-06-17,21,England,Croatia,BTTS,否,,loss
+2026-06-17,21,England,Croatia,AH,主,-0.75,win
+2026-06-17,22,Ghana,Panama,1X2,away,,loss
+2026-06-17,22,Ghana,Panama,OU,小,2.5,win
+2026-06-17,22,Ghana,Panama,AH,主,0.5,win
 2026-06-23,46,England,Ghana,1X2,home,,pending
 2026-06-23,46,England,Ghana,OU,小,2.5,pending
 2026-06-23,46,England,Ghana,BTTS,否,,pending
@@ -190,3 +190,21 @@ date,match_num,home,away,market,selection,line,result
 2026-06-27,69,Croatia,Ghana,OU,小,2.5,pending
 2026-06-27,69,Croatia,Ghana,BTTS,否,,pending
 2026-06-27,69,Croatia,Ghana,AH,客,-1.0,pending
+2026-06-24,49,Bosnia and Herzegovina,Qatar,AH,客,-1.0,pending
+2026-06-24,52,Scotland,Brazil,AH,主,1.0,pending
+2026-06-24,51,Morocco,Haiti,AH,主,-1.75,pending
+2026-06-25,58,Paraguay,Australia,AH,客,0.0,pending
+2026-06-20,35,Netherlands,Sweden,AH,客,-1.25,pending
+2026-06-26,62,Egypt,Iran,AH,客,0.0,pending
+2026-06-26,63,New Zealand,Belgium,OU,大,2.5,pending
+2026-06-21,39,Spain,Saudi Arabia,OU,大,2.5,pending
+2026-06-21,40,Uruguay,Cape Verde,AH,主,-0.75,pending
+2026-06-26,61,Cape Verde,Saudi Arabia,1X2,draw,,pending
+2026-06-22,43,Jordan,Algeria,AH,客,1.0,pending
+2026-06-27,67,Algeria,Austria,BTTS,否,,pending
+2026-06-27,67,Algeria,Austria,AH,主,-0.0,pending
+2026-06-23,48,Portugal,Uzbekistan,AH,客,-1.0,pending
+2026-06-23,45,Colombia,DR Congo,AH,客,-1.0,pending
+2026-06-27,68,Colombia,Portugal,BTTS,是,,pending
+2026-06-27,72,Panama,England,OU,大,2.5,pending
+2026-06-27,72,Panama,England,AH,客,1.75,pending
