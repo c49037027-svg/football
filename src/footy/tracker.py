@@ -1,87 +1,122 @@
-"""推薦投注戰績追蹤（均注）。
+"""推薦戰績追蹤：每個推薦項目分別記錄「過/沒過」，統整總勝率與勝敗。
 
-記錄模型對每場的推薦（預設 1X2 取機率最高那邊），賽後用真實賽果結算，
-以「每場固定 1 注」計算命中率、損益、ROI。
-
-賠率：預設用模型公平賠率(1/機率)當基準——此時長期 ROI 應趨近 0（這其實是
-校準/紀律檢驗，不是獲利）。若要追蹤「真實獲利」，把 odds 欄換成實際盤口賠率即可。
+對每場記錄模型的多個推薦項目：1X2、大小2.5、兩隊進球(BTTS)、亞盤讓球。
+賽後用真實比分判定每項 win/loss/push，彙整總勝率與各盤口別的勝敗。
+只記「事前」推薦（未開賽前），不馬後砲。
 """
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
 
+import numpy as np
 import pandas as pd
 
 from .models import markets
 
 LEDGER_COLS = ["date", "match_num", "home", "away", "market", "selection",
-               "odds", "stake", "result", "pnl"]
+               "line", "result"]
+_MARKET_ZH = {"1X2": "勝平負", "OU": "大小2.5", "BTTS": "兩隊進球", "AH": "亞盤"}
+_1X2_ZH = {"home": "主勝", "draw": "和", "away": "客勝"}
 
 
-def _pick_1x2(model, home, away, neutral=True):
-    """回傳模型 1X2 推薦：(selection, 公平賠率, 機率)。"""
-    o = markets.outcome_1x2(model.score_matrix(home, away, neutral=neutral))
-    sel = max(o, key=o.get)
-    p = o[sel]
-    return sel, (1.0 / p if p > 0 else 99.0), p
+def _recommendations(model, home, away, neutral=True, min_lean=0.03):
+    """回傳該場推薦項目清單 [(market, selection, line), ...]。"""
+    mat = model.score_matrix(home, away, neutral=neutral)
+    recs = []
+    o = markets.outcome_1x2(mat)
+    recs.append(("1X2", max(o, key=o.get), ""))      # 1X2 一定有最高那邊
+    ou = markets.over_under(mat, 2.5)
+    if abs(ou["over_win"] - 0.5) >= min_lean:          # 有明顯方向才推薦
+        recs.append(("OU", "大" if ou["over_win"] >= 0.5 else "小", 2.5))
+    bt = markets.btts(mat)
+    if abs(bt["yes"] - 0.5) >= min_lean:
+        recs.append(("BTTS", "是" if bt["yes"] >= 0.5 else "否", ""))
+    lam, mu = model.expected_goals(home, away, neutral=neutral)
+    hl = markets.main_handicap_line(lam - mu)
+    ah_h = markets.asian_handicap(mat, hl, "home")
+    cover_h = ah_h.p_win + ah_h.p_half_win + 0.5 * ah_h.p_push
+    recs.append(("AH", "主" if cover_h >= 0.5 else "客", hl))
+    return recs
+
+
+def _settle_one(market, selection, line, hg, ag) -> str:
+    """單一推薦項目用真實比分判定 win/loss/push。"""
+    total = hg + ag
+    if market == "1X2":
+        actual = "home" if hg > ag else "away" if hg < ag else "draw"
+        return "win" if selection == actual else "loss"
+    if market == "OU":
+        line = float(line)
+        if line.is_integer() and total == line:
+            return "push"
+        over = total > line
+        return "win" if (selection == "大") == over else "loss"
+    if market == "BTTS":
+        both = hg > 0 and ag > 0
+        return "win" if (selection == "是") == both else "loss"
+    if market == "AH":
+        side = "home" if selection == "主" else "away"
+        n = max(hg, ag) + 2
+        mat = np.zeros((n, n))
+        mat[hg, ag] = 1.0
+        ah = markets.asian_handicap(mat, float(line), side)
+        if ah.p_push >= 0.999:
+            return "push"
+        win = ah.p_win + 0.5 * ah.p_half_win
+        loss = ah.p_loss + 0.5 * ah.p_half_loss
+        if abs(win - loss) < 1e-9:
+            return "push"
+        return "win" if win > loss else "loss"
+    return "push"
 
 
 def load_ledger(path) -> pd.DataFrame:
     path = Path(path)
     if path.exists():
-        return pd.read_csv(path)
+        df = pd.read_csv(path)
+        for c in LEDGER_COLS:
+            if c not in df.columns:
+                df[c] = ""
+        return df[LEDGER_COLS]
     return pd.DataFrame(columns=LEDGER_COLS)
 
 
-def save_ledger(df: pd.DataFrame, path):
+def save_ledger(df, path):
     path = Path(path)
     path.parent.mkdir(parents=True, exist_ok=True)
     df.to_csv(path, index=False)
 
 
-def log_upcoming(matches, model, ledger_path, neutral=True, min_prob=0.0):
-    """把尚未記錄、未開賽、雙方已知的比賽，記入模型 1X2 推薦（均注 1）。
-
-    min_prob：只記錄推薦機率 >= 此門檻者（例如 0.5 只記較有把握的）。
-    回傳新增筆數。
-    """
+def log_upcoming(matches, model, ledger_path, neutral=True):
+    """把未開賽、雙方已知的比賽各推薦項目記入帳本（已存在的不重複）。回傳新增筆數。"""
     df = load_ledger(ledger_path)
-    seen = set(zip(df["match_num"], df["market"])) if len(df) else set()
+    seen = set(zip(df["match_num"].astype(str), df["market"], df["selection"].astype(str)))
     rows = []
     for m in matches:
-        if m.played or (m.num, "1X2") in seen:
+        if m.played or m.team1 not in model.attack or m.team2 not in model.attack:
             continue
-        if m.team1 not in model.attack or m.team2 not in model.attack:
-            continue
-        sel, odds, p = _pick_1x2(model, m.team1, m.team2, neutral=neutral)
-        if p < min_prob:
-            continue
-        rows.append(dict(date=m.date, match_num=m.num, home=m.team1, away=m.team2,
-                         market="1X2", selection=sel, odds=round(odds, 3),
-                         stake=1.0, result="pending", pnl=0.0))
+        for market, sel, line in _recommendations(model, m.team1, m.team2, neutral):
+            if (str(m.num), market, str(sel)) in seen:
+                continue
+            rows.append(dict(date=m.date, match_num=m.num, home=m.team1, away=m.team2,
+                             market=market, selection=sel, line=line, result="pending"))
     if rows:
         df = pd.concat([df, pd.DataFrame(rows)], ignore_index=True)
         save_ledger(df, ledger_path)
     return len(rows)
 
 
-def settle(ledger_path, results: dict[int, tuple[int, int]]):
-    """用真實賽果（{match_num: (home_goals, away_goals)}）結算 pending 注單。
-
-    回傳結算筆數。
-    """
+def settle(ledger_path, results: dict):
+    """用真實賽果 {match_num: (hg, ag)} 結算所有 pending 項目。回傳結算筆數。"""
     df = load_ledger(ledger_path)
     n = 0
     for i, r in df[df["result"] == "pending"].iterrows():
         res = results.get(int(r["match_num"]))
         if res is None:
             continue
-        hg, ag = res
-        actual = "home" if hg > ag else "away" if hg < ag else "draw"
-        won = r["selection"] == actual
-        df.at[i, "result"] = "win" if won else "loss"
-        df.at[i, "pnl"] = (r["odds"] - 1.0) * r["stake"] if won else -r["stake"]
+        df.at[i, "result"] = _settle_one(r["market"], r["selection"], r["line"],
+                                         int(res[0]), int(res[1]))
         n += 1
     if n:
         save_ledger(df, ledger_path)
@@ -90,34 +125,45 @@ def settle(ledger_path, results: dict[int, tuple[int, int]]):
 
 @dataclass
 class TrackSummary:
-    n: int
-    settled: int
-    pending: int
-    wins: int
-    staked: float
-    pnl: float
+    wins: int = 0
+    losses: int = 0
+    pushes: int = 0
+    pending: int = 0
+    by_market: dict = field(default_factory=dict)  # market -> (w, l, p)
 
     @property
-    def hit_rate(self):
-        return self.wins / self.settled if self.settled else 0.0
+    def settled(self):
+        return self.wins + self.losses + self.pushes
 
     @property
-    def roi(self):
-        return self.pnl / self.staked if self.staked else 0.0
+    def win_rate(self):
+        denom = self.wins + self.losses
+        return self.wins / denom if denom else 0.0
 
     def text(self) -> str:
-        return (f"推薦戰績（均注 1）｜已結算 {self.settled} 注（待結 {self.pending}）\n"
-                f"  命中率 {self.hit_rate:.1%}｜總下注 {self.staked:.0f}｜"
-                f"損益 {self.pnl:+.2f}｜ROI {self.roi:+.1%}")
+        parts = []
+        for mk, (w, l, p) in self.by_market.items():
+            d = w + l
+            rt = f"{w/d:.0%}" if d else "—"
+            parts.append(f"{_MARKET_ZH.get(mk, mk)} {w}–{l}（{rt}）")
+        head = (f"推薦戰績｜總計 {self.wins} 勝 {self.losses} 敗"
+                f"{f' {self.pushes} 走盤' if self.pushes else ''}"
+                f"｜勝率 {self.win_rate:.1%}（待結 {self.pending}）")
+        return head + ("\n  " + "　".join(parts) if parts else "")
 
 
 def summary(ledger_path) -> TrackSummary:
     df = load_ledger(ledger_path)
-    settled = df[df["result"].isin(["win", "loss"])]
-    return TrackSummary(
-        n=len(df), settled=len(settled),
-        pending=int((df["result"] == "pending").sum()),
-        wins=int((df["result"] == "win").sum()),
-        staked=float(settled["stake"].sum()),
-        pnl=float(settled["pnl"].sum()),
-    )
+    s = TrackSummary()
+    s.pending = int((df["result"] == "pending").sum())
+    s.wins = int((df["result"] == "win").sum())
+    s.losses = int((df["result"] == "loss").sum())
+    s.pushes = int((df["result"] == "push").sum())
+    for mk in ["1X2", "OU", "BTTS", "AH"]:
+        sub = df[df["market"] == mk]
+        w = int((sub["result"] == "win").sum())
+        l = int((sub["result"] == "loss").sum())
+        p = int((sub["result"] == "push").sum())
+        if w + l + p:
+            s.by_market[mk] = (w, l, p)
+    return s

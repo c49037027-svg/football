@@ -29,7 +29,9 @@ def test_write_worldcup_site(tmp_path):
     assert len(pages) == 72
     # 首頁含可點連結與淘汰賽區塊
     html = index.read_text(encoding="utf-8")
-    assert "match_" in html and "淘汰賽對陣圖" in html and "bracket" in html
+    assert "match_" in html and "晉級&對陣" in html  # 對陣圖移到 knockout 頁
+    ko = (Path(outdir) / "knockout.html").read_text(encoding="utf-8")
+    assert "淘汰賽對陣圖" in ko and "bracket" in ko and "晉級展望" in ko
     # 分析頁含返回首頁與行動裝置 viewport
     sample = pages[0].read_text(encoding="utf-8")
     assert "返回首頁" in sample and "width=device-width" in sample

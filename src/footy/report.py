@@ -649,10 +649,11 @@ def _group_card(g, teams, result, model, matches, linked=None):
 
 
 def _navbar(active: str) -> str:
-    """頂部導覽列。active: 'home' 或 'custom'。"""
+    """頂部導覽列。active: 'home' / 'knockout' / 'custom'。"""
     def cls(k):
         return " class='on'" if k == active else ""
-    return (f"<div class='nav'><a href='/'{cls('home')}>🏆 世界盃預測</a>"
+    return (f"<div class='nav'><a href='index.html'{cls('home')}>🏆 首頁</a>"
+            f"<a href='knockout.html'{cls('knockout')}>🏟️ 晉級&對陣</a>"
             f"<a href='/custom'{cls('custom')}>🔧 自訂分析</a></div>")
 
 
@@ -754,26 +755,16 @@ def render_worldcup_html(result, model, matches, title: str = "2026 世界盃預
         f"<span class='cbar'><span style='width:{p/maxp*100:.1f}%'></span></span>"
         f"<span class='cp'>{p:.1%}</span></div>" for t, p in top)
 
-    # 晉級展望表（前 16 依冠軍機率）
-    ko_rows = "".join(
-        f"<tr><td class='tm'>{html.escape(zh(t))}</td>"
-        f"<td>{result.qualify.get(t,0):.0%}</td><td>{result.r16.get(t,0):.0%}</td>"
-        f"<td>{result.quarter.get(t,0):.0%}</td><td>{result.semi.get(t,0):.0%}</td>"
-        f"<td>{result.final.get(t,0):.0%}</td>"
-        f"<td style=\"{_heat(p*100,'48')}\"><b>{p:.1%}</b></td></tr>"
-        for t, p in top)
-
     groups_html = "".join(
         _group_card(g, result.groups[g], result, model, matches, linked)
         for g in sorted(result.groups))
 
-    ko_html = _render_bracket(matches, linked)
     today_html = _today_section(matches, model, linked)
-    track_html = (f"<div class='card'><div class='sec'>📒 模型推薦戰績（均注）</div>"
+    track_html = (f"<div class='card'><div class='sec'>📒 模型推薦戰績</div>"
                   f"<div class='small' style='white-space:pre-line;color:#cdd9e5'>"
                   f"{html.escape(track_text)}</div>"
-                  f"<div class='small' style='margin-top:6px'>以模型公平賠率記錄，僅供自我校驗；"
-                  f"非真實盤口損益。</div></div>") if track_text else ""
+                  f"<div class='small' style='margin-top:6px'>每場各推薦項目逐一記錄過/沒過；"
+                  f"以模型機率為基準的自我校驗，非真實盤口損益。</div></div>") if track_text else ""
 
     return f"""<!doctype html><html lang="zh-Hant"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
@@ -812,20 +803,11 @@ a.fxlink:active{{background:#1c242d}}.arow{{color:var(--accent);text-align:right
   {today_html}
   {track_html}
 
-  <div class="two">
-    <div class="card">
-      <div class="sec">🥇 奪冠機率</div>
-      {champ_bars}
-    </div>
-    <div class="card">
-      <div class="sec">📈 晉級展望</div>
-      <table><thead><tr><th>隊伍</th><th>晉級</th><th>16強</th><th>8強</th><th>4強</th><th>決賽</th><th>奪冠</th></tr></thead>
-      <tbody>{ko_rows}</tbody></table>
-    </div>
+  <div class="card">
+    <div class="sec">🥇 奪冠機率</div>
+    {champ_bars}
+    <div class="small" style="margin-top:8px"><a href="knockout.html" style="color:var(--accent)">→ 看完整晉級展望與淘汰賽對陣圖</a></div>
   </div>
-
-  <div class="sec" style="margin-top:22px">🏟️ 淘汰賽對陣圖</div>
-  {ko_html}
 
   <div class="sec" style="margin-top:22px">📋 小組賽程與預測（點擊看單場分析）</div>
   <div class="fctrl">
@@ -855,6 +837,41 @@ def write_worldcup_html(result, model, matches, out_path, title="2026 世界盃�
         render_worldcup_html(result, model, matches, title, linked, track_text),
         encoding="utf-8")
     return out_path
+
+
+def render_knockout_page(result, model, matches, linked=None,
+                         title="晉級展望 & 淘汰賽對陣") -> str:
+    """獨立頁面：完整晉級展望表 + 淘汰賽對陣圖。"""
+    import datetime as _dt
+    today = _dt.date.today().isoformat()
+    champ = sorted(result.champion.items(), key=lambda x: x[1], reverse=True)
+    top = [(t, p) for t, p in champ if p > 0][:24]
+    ko_rows = "".join(
+        f"<tr><td class='rk'>{i}</td><td class='tm'>{html.escape(zh(t))}</td>"
+        f"<td>{result.qualify.get(t,0):.0%}</td><td>{result.r16.get(t,0):.0%}</td>"
+        f"<td>{result.quarter.get(t,0):.0%}</td><td>{result.semi.get(t,0):.0%}</td>"
+        f"<td>{result.final.get(t,0):.0%}</td>"
+        f"<td style=\"{_heat(p*100,'48')}\"><b>{p:.1%}</b></td></tr>"
+        for i, (t, p) in enumerate(top, 1))
+    bracket = _render_bracket(matches, linked or set())
+    return f"""<!doctype html><html lang="zh-Hant"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>{html.escape(title)}</title><style>{_CSS}
+table{{width:100%;border-collapse:collapse;font-size:13px;background:var(--card);border-radius:12px;overflow:hidden}}
+th,td{{padding:7px 8px;text-align:center;border-bottom:1px solid var(--line)}}
+th{{color:var(--muted);font-size:11px}}td.tm{{text-align:left;font-weight:700}}td.rk{{color:var(--muted)}}
+</style></head>
+<body><div class="wrap">
+  {_navbar('knockout')}
+  <h1>🏟️ {html.escape(title)}</h1>
+  <div class="sub">{today} · 蒙地卡羅 {result.n_sims:,} 次 · 晉級機率為主要可信輸出</div>
+  <div class="sec">📈 晉級展望（依奪冠機率）</div>
+  <table><thead><tr><th>#</th><th>隊伍</th><th>晉級</th><th>16強</th><th>8強</th>
+  <th>4強</th><th>決賽</th><th>奪冠</th></tr></thead><tbody>{ko_rows}</tbody></table>
+  <div class="sec" style="margin-top:22px">🏟️ 淘汰賽對陣圖</div>
+  {bracket}
+  <div class="foot">Generated by footy · 研究與教育用途</div>
+</div></body></html>"""
 
 
 def write_worldcup_site(result, model, matches, outdir, history=None,
@@ -896,4 +913,6 @@ def write_worldcup_site(result, model, matches, outdir, history=None,
 
     write_worldcup_html(result, model, matches, outdir / "index.html", title, linked,
                         track_text=track_text)
+    (outdir / "knockout.html").write_text(
+        render_knockout_page(result, model, matches, linked), encoding="utf-8")
     return outdir, len(linked)

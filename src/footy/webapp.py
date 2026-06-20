@@ -186,7 +186,7 @@ def _build_site(model, history, schedule_path, n_sims=12000, match_sims=8000):
         track_text = None
         try:
             from . import tracker
-            tracker.log_upcoming(matches, model, "data/bets.csv", min_prob=0.5)
+            tracker.log_upcoming(matches, model, "data/bets.csv")
             tracker.settle("data/bets.csv", {m.num: (m.hg, m.ag) for m in matches if m.played})
             track_text = tracker.summary("data/bets.csv").text()
         except Exception:  # noqa: BLE001
