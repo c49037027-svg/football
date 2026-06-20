@@ -56,6 +56,48 @@ def _blended(model_ps: dict, sides: dict, order: list, weight: float) -> dict:
     return {s: model_ps[s] for s in order}
 
 
+_SEL_ZH = {"home": "主", "away": "客", "over": "大", "under": "小",
+           "yes": "是", "no": "否"}
+_MARKET_ORDER = {"1X2": ["home", "draw", "away"], "OU": ["over", "under"],
+                 "AH": ["home", "away"], "BTTS": ["yes", "no"]}
+
+
+def _model_market_probs(model, home, away, quotes, neutral=True):
+    """對 quotes 出現的每個盤口/線，算模型機率。
+
+    回傳 {(market, line): {selection: p}}，selection 用原生英文鍵
+    （home/draw/away、over/under、home/away、yes/no）。
+    """
+    mat = model.score_matrix(home, away, neutral=neutral)
+    out: dict = {}
+    if _group_quotes(quotes, "1X2").get("", {}):
+        out[("1X2", "")] = markets.outcome_1x2(mat)
+    for line in _group_quotes(quotes, "OU"):
+        ou = markets.over_under(mat, line)
+        out[("OU", line)] = {"over": ou["over_win"], "under": ou["under_win"]}
+    for line in _group_quotes(quotes, "AH"):
+        ah = markets.asian_handicap(mat, float(line), "home")
+        cov = ah.p_win + ah.p_half_win + 0.5 * ah.p_push
+        out[("AH", line)] = {"home": cov, "away": 1.0 - cov}
+    if _group_quotes(quotes, "BTTS").get("", {}):
+        bt = markets.btts(mat)
+        out[("BTTS", "")] = {"yes": bt["yes"], "no": bt["no"]}
+    return out
+
+
+def _pick_bet(model_ps, sides, order, weight, min_edge):
+    """某盤口去 vig + 融合後，回傳 +EV 最高的 (selection, odds, edge, p) 或 None。"""
+    bl = _blended(model_ps, sides, order, weight)
+    best = None
+    for s, odds in sides.items():
+        if s not in bl:
+            continue
+        edge = _ev_no_push(bl[s], odds)
+        if edge > min_edge and (best is None or edge > best[2]):
+            best = (s, odds, edge, bl[s])
+    return best
+
+
 def _market_edges(model, home, away, quotes, neutral=True, min_edge=0.0,
                   weight=None):
     """市場去 vig + 模型融合後，挑出每個盤口期望值最高且 > min_edge 的推薦。
@@ -64,54 +106,16 @@ def _market_edges(model, home, away, quotes, neutral=True, min_edge=0.0,
     回傳 [dict(market, selection, line, odds, edge, p)]，p 為融合後機率。
     """
     w = BLEND_WEIGHT if weight is None else weight
-    mat = model.score_matrix(home, away, neutral=neutral)
-    best: dict[str, dict] = {}
-
-    def offer(market, sel, line, odds, p):
-        edge = _ev_no_push(p, odds)
-        if edge <= min_edge:
-            return
-        cur = best.get(market)
-        if cur is None or edge > cur["edge"]:
-            best[market] = dict(market=market, selection=sel, line=line,
-                                odds=float(odds), edge=float(edge), p=float(p))
-
-    # 1X2
-    h2h = _group_quotes(quotes, "1X2").get("", {})
-    if h2h:
-        o = markets.outcome_1x2(mat)
-        bl = _blended(o, h2h, ["home", "draw", "away"], w)
-        for s, odds in h2h.items():
-            if s in bl:
-                offer("1X2", s, "", odds, bl[s])
-
-    # 大小（逐線）
-    for line, sides in _group_quotes(quotes, "OU").items():
-        ou = markets.over_under(mat, line)
-        model_ps = {"over": ou["over_win"], "under": ou["under_win"]}
-        bl = _blended(model_ps, sides, ["over", "under"], w)
-        for s, odds in sides.items():
-            offer("OU", "大" if s == "over" else "小", line, odds, bl[s])
-
-    # 亞盤（逐線；用覆蓋率近似 edge，結算仍精算半輸半贏）
-    for line, sides in _group_quotes(quotes, "AH").items():
-        ah_h = markets.asian_handicap(mat, float(line), "home")
-        cov_h = ah_h.p_win + ah_h.p_half_win + 0.5 * ah_h.p_push
-        model_ps = {"home": cov_h, "away": 1.0 - cov_h}
-        bl = _blended(model_ps, sides, ["home", "away"], w)
-        for s, odds in sides.items():
-            offer("AH", "主" if s == "home" else "客", line, odds, bl[s])
-
-    # 兩隊進球
-    bt_sides = _group_quotes(quotes, "BTTS").get("", {})
-    if bt_sides:
-        bt = markets.btts(mat)
-        model_ps = {"yes": bt["yes"], "no": bt["no"]}
-        bl = _blended(model_ps, bt_sides, ["yes", "no"], w)
-        for s, odds in bt_sides.items():
-            offer("BTTS", "是" if s == "yes" else "否", "", odds, bl[s])
-
-    return list(best.values())
+    mprobs = _model_market_probs(model, home, away, quotes, neutral)
+    out = []
+    for (market, line), model_ps in mprobs.items():
+        sides = _group_quotes(quotes, market).get(line, {})
+        r = _pick_bet(model_ps, sides, _MARKET_ORDER[market], w, min_edge)
+        if r:
+            sel = r[0] if market == "1X2" else _SEL_ZH[r[0]]
+            out.append(dict(market=market, selection=sel, line=line,
+                            odds=r[1], edge=r[2], p=r[3]))
+    return out
 
 
 def _recommendations(model, home, away, neutral=True, min_lean=0.03):
@@ -145,7 +149,7 @@ def _settle_outcome(market, selection, line, hg, ag):
         line = float(line)
         if float(line).is_integer() and total == line:
             return (0, 0, 1, 0, 0)
-        win = (selection == "大") == (total > line)
+        win = (selection in ("大", "over")) == (total > line)
         return (1, 0, 0, 0, 0) if win else (0, 0, 0, 0, 1)
     if market == "BTTS":
         both = hg > 0 and ag > 0
@@ -386,11 +390,184 @@ def summary(ledger_path) -> TrackSummary:
     return s
 
 
-def prepare(matches, model, ledger_path, odds_index=None, min_edge=0.0, weight=None):
-    """一站式：記推薦 → 更新收盤賠率 → 用已踢賽果結算 → 回傳 summary。"""
+def prepare(matches, model, ledger_path, odds_index=None, min_edge=0.0,
+            weight=None, snap_path=None):
+    """一站式：記推薦 → 更新收盤賠率 → 用已踢賽果結算 → 回傳 summary。
+
+    snap_path：若給定且有 odds_index，另存「全選項快照」供日後權重校準
+    （見 tune_weight）。預設取 ledger 同目錄的 odds_log.csv。
+    """
     log_upcoming(matches, model, ledger_path, odds_index=odds_index,
                  min_edge=min_edge, weight=weight)
     if odds_index:
         refresh_close(ledger_path, odds_index)
+        snap = snap_path or str(Path(ledger_path).with_name("odds_log.csv"))
+        try:
+            log_snapshots(matches, model, odds_index, snap)
+            settle_snapshots(snap, {m.num: (m.hg, m.ag) for m in matches if m.played})
+        except Exception:  # noqa: BLE001 - 快照失敗不影響主流程
+            pass
     settle(ledger_path, {m.num: (m.hg, m.ag) for m in matches if m.played})
     return summary(ledger_path)
+
+
+# ================= CLV 歷史 + 權重校準 =================
+SNAP_COLS = ["date", "match_num", "home", "away", "market", "selection",
+             "line", "model_p", "odds", "close_odds", "hg", "ag", "played"]
+
+
+def load_snapshots(path) -> pd.DataFrame:
+    path = Path(path)
+    if path.exists():
+        df = pd.read_csv(path)
+        for c in SNAP_COLS:
+            if c not in df.columns:
+                df[c] = ""
+        return df[SNAP_COLS]
+    return pd.DataFrame(columns=SNAP_COLS)
+
+
+def log_snapshots(matches, model, odds_index, snap_path, neutral=True):
+    """把每場每盤口的「全部選項」模型機率 + 市場賠率存成快照（不過濾 +EV）。
+
+    這是權重校準的原料：之後可用任意融合權重重放，看哪個權重 ROI/CLV 最佳。
+    """
+    df = load_snapshots(snap_path)
+    seen = set(zip(df["match_num"].astype(str), df["market"],
+                   df["selection"].astype(str), df["line"].astype(str)))
+    rows = []
+    for m in matches:
+        if m.played or m.team1 not in model.attack or m.team2 not in model.attack:
+            continue
+        quotes = odds_index.get(m.num)
+        if not quotes:
+            continue
+        mprobs = _model_market_probs(model, m.team1, m.team2, quotes, neutral)
+        for (market, line), model_ps in mprobs.items():
+            sides = _group_quotes(quotes, market).get(line, {})
+            for sel, odds in sides.items():
+                if sel not in model_ps:
+                    continue
+                key = (str(m.num), market, sel, str(line))
+                if key in seen:
+                    continue
+                rows.append(dict(date=m.date, match_num=m.num, home=m.team1,
+                                 away=m.team2, market=market, selection=sel,
+                                 line=line, model_p=round(model_ps[sel], 5),
+                                 odds=round(odds, 3), close_odds=round(odds, 3),
+                                 hg="", ag="", played=0))
+    if rows:
+        df = pd.concat([df, pd.DataFrame(rows)], ignore_index=True)
+        save_ledger(df, snap_path)
+    # 更新未結算快照的收盤賠率
+    refresh = False
+    for i, r in df[df["played"].astype(str).isin(["0", "0.0", "", "nan"])].iterrows():
+        quotes = odds_index.get(int(r["match_num"])) if odds_index else None
+        if not quotes:
+            continue
+        od = _lookup_odds(quotes, r["market"],
+                          _SEL_ZH.get(r["selection"], r["selection"]), r["line"])
+        if od:
+            df.at[i, "close_odds"] = round(od, 3)
+            refresh = True
+    if refresh:
+        save_ledger(df, snap_path)
+    return len(rows)
+
+
+def settle_snapshots(snap_path, results: dict):
+    """把已踢賽果填入快照（hg/ag/played）。"""
+    df = load_snapshots(snap_path)
+    n = 0
+    for i, r in df[~df["played"].astype(str).isin(["1", "1.0"])].iterrows():
+        res = results.get(int(r["match_num"]))
+        if res is None:
+            continue
+        df.at[i, "hg"], df.at[i, "ag"], df.at[i, "played"] = int(res[0]), int(res[1]), 1
+        n += 1
+    if n:
+        save_ledger(df, snap_path)
+    return n
+
+
+def tune_weight(snap_path, grid=None, min_edge=0.0):
+    """用快照重放不同融合權重，回傳各權重的 (注數, ROI, CLV) 與建議權重。
+
+    對每個權重 w：重做「去 vig + 融合 + 挑 +EV」決策，用真實賽果結算，
+    累計 ROI（總損益/注數）與 CLV。回傳 dict（含 'rows' 與 'best_roi'）。
+    """
+    import numpy as _np
+    df = load_snapshots(snap_path)
+    df = df[df["played"].astype(str).isin(["1", "1.0"])]
+    if df.empty:
+        return {"rows": [], "best_roi": None, "n_matches": 0}
+    grid = grid if grid is not None else [round(x, 2) for x in _np.arange(0, 1.01, 0.1)]
+    # 依 (match, market, line) 聚成決策單位
+    groups: dict = {}
+    for _, r in df.iterrows():
+        key = (int(r["match_num"]), r["market"], str(r["line"]))
+        g = groups.setdefault(key, {"sides": {}, "model": {}, "line": r["line"],
+                                    "market": r["market"],
+                                    "hg": int(r["hg"]), "ag": int(r["ag"])})
+        g["sides"][r["selection"]] = _to_float(r["odds"])
+        g["model"][r["selection"]] = _to_float(r["model_p"])
+        g["close"] = g.get("close", {})
+        g["close"][r["selection"]] = _to_float(r["close_odds"])
+
+    rows = []
+    for w in grid:
+        pl, clv_sum, clv_n, nbet = 0.0, 0.0, 0, 0
+        for g in groups.values():
+            order = _MARKET_ORDER[g["market"]]
+            pick = _pick_bet(g["model"], g["sides"], order, w, min_edge)
+            if not pick:
+                continue
+            sel, odds, _edge, _p = pick
+            nbet += 1
+            zsel = sel if g["market"] == "1X2" else _SEL_ZH[sel]
+            ow = _settle_outcome(g["market"], zsel, g["line"], g["hg"], g["ag"])
+            pl += _pl(ow, odds)
+            close = g.get("close", {}).get(sel)
+            if close and close > 1.0:
+                clv_sum += odds / close - 1.0
+                clv_n += 1
+        roi = pl / nbet if nbet else 0.0
+        clv = clv_sum / clv_n if clv_n else 0.0
+        rows.append({"weight": w, "n_bets": nbet, "pl": round(pl, 3),
+                     "roi": roi, "clv": clv})
+    scored = [r for r in rows if r["n_bets"] > 0]
+    best = max(scored, key=lambda r: r["roi"]) if scored else None
+    return {"rows": rows, "best_roi": best, "n_matches": len(groups)}
+
+
+def history(ledger_path):
+    """已結算的真實盤口下注，依日期排序的累積績效序列（給績效頁畫圖/列表）。"""
+    df = load_ledger(ledger_path)
+    df = df[(df["source"] == "market") & df["result"].isin(["win", "loss", "push"])]
+    if df.empty:
+        return []
+    df = df.copy()
+    df["_pl"] = df["pl"].map(_to_float)
+    df = df[df["_pl"].notna()].sort_values(["date", "match_num"])
+    out, cum_pl, n, clv_sum, clv_n, beat = [], 0.0, 0, 0.0, 0, 0
+    for _, r in df.iterrows():
+        n += 1
+        cum_pl += r["_pl"]
+        taken, close = _to_float(r["odds"]), _to_float(r["close_odds"])
+        clv = None
+        if taken and close and close > 1.0:
+            clv = taken / close - 1.0
+            clv_sum += clv
+            clv_n += 1
+            beat += clv > 0
+        out.append({
+            "date": r["date"], "match_num": int(r["match_num"]),
+            "home": r["home"], "away": r["away"], "market": r["market"],
+            "selection": r["selection"], "line": r["line"],
+            "odds": taken, "close_odds": close, "clv": clv,
+            "result": r["result"], "pl": r["_pl"],
+            "cum_pl": round(cum_pl, 3), "n": n,
+            "cum_roi": cum_pl / n, "cum_clv": (clv_sum / clv_n) if clv_n else 0.0,
+            "beat_rate": beat / clv_n if clv_n else 0.0,
+        })
+    return out

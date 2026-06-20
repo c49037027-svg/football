@@ -222,6 +222,30 @@ def track(model_path, schedule, ledger, odds):
     click.echo(s.text())
 
 
+@cli.command("tune-blend")
+@click.option("--snap", default="data/odds_log.csv", help="賠率快照（由 track/wc-site 累積）")
+def tune_blend(snap):
+    """用歷史賠率快照回測各融合權重的 ROI/CLV，建議 BLEND_WEIGHT。"""
+    from . import tracker
+    res = tracker.tune_weight(snap)
+    if not res["rows"]:
+        click.echo(f"[tune] {snap} 尚無『已結算』快照——需先累積有真實盤口的"
+                   "已踢比賽。設好 ODDS_API_KEY 跑幾天 track/wc-site 後再試。")
+        return
+    click.echo(f"回測 {res['n_matches']} 個決策單位：")
+    click.echo(f"{'權重':>4} {'注數':>4} {'損益':>8} {'ROI':>8} {'CLV':>8}")
+    for r in res["rows"]:
+        if r["n_bets"] == 0:
+            continue
+        star = " ★" if res["best_roi"] and abs(r["weight"] - res["best_roi"]["weight"]) < 1e-9 else ""
+        click.echo(f"{r['weight']:>4.1f} {r['n_bets']:>4} {r['pl']:>+8.2f} "
+                   f"{r['roi']:>+8.1%} {r['clv']:>+8.1%}{star}")
+    b = res["best_roi"]
+    if b:
+        click.echo(f"\n建議：BLEND_WEIGHT={b['weight']:.1f}（ROI {b['roi']:+.1%}）。"
+                   "樣本少時 CLV 比 ROI 可靠；以環境變數設定即可生效。")
+
+
 @cli.command("serve")
 @click.option("--model", "model_path", default="models/intl.pkl")
 @click.option("--history", "history_path", default="data/intl.csv", help="國際賽歷史（狀態/H2H）")
@@ -349,7 +373,8 @@ def wc_site(ctx, model_path, schedule, history_path, outdir, n_sims, match_sims,
     click.echo("[wc] 產生首頁與各場分析頁…")
     out, n = report.write_worldcup_site(result, model, matches, outdir,
                                         history=hist, title=title, n_sims=match_sims,
-                                        injury_counts=injury_counts, track_text=track_text)
+                                        injury_counts=injury_counts, track_text=track_text,
+                                        ledger_path=ledger)
     champ = sorted(result.champion.items(), key=lambda x: x[1], reverse=True)[:5]
     click.echo("奪冠機率前五：" + "  ".join(f"{zh(t)} {p:.1%}" for t, p in champ))
     click.echo(f"[ok] 網站已輸出到 {out}/（首頁 index.html，{n} 場分析頁）")

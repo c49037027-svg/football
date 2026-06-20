@@ -660,6 +660,7 @@ def _navbar(active: str) -> str:
         return " class='on'" if k == active else ""
     return (f"<div class='nav'><a href='index.html'{cls('home')}>🏆 首頁</a>"
             f"<a href='knockout.html'{cls('knockout')}>🏟️ 晉級&對陣</a>"
+            f"<a href='performance.html'{cls('perf')}>📈 績效</a>"
             f"<a href='/custom'{cls('custom')}>🔧 自訂分析</a></div>")
 
 
@@ -891,9 +892,141 @@ th{{color:var(--muted);font-size:11px}}td.tm{{text-align:left;font-weight:700}}t
 </div></body></html>"""
 
 
+def _line_svg(points, w=320, h=90, color="#7be0b0", zero=True):
+    """把數列畫成折線 SVG（零依賴）。points 為 y 值序列。"""
+    if not points:
+        return ""
+    n = len(points)
+    lo, hi = min(points), max(points)
+    if zero:
+        lo, hi = min(lo, 0.0), max(hi, 0.0)
+    span = (hi - lo) or 1.0
+    pad = 6
+
+    def xy(i, v):
+        x = pad + (w - 2 * pad) * (i / max(n - 1, 1))
+        y = pad + (h - 2 * pad) * (1 - (v - lo) / span)
+        return x, y
+    pts = " ".join(f"{x:.1f},{y:.1f}" for i, v in enumerate(points)
+                   for x, y in [xy(i, v)])
+    zero_line = ""
+    if zero and lo <= 0 <= hi:
+        _, zy = xy(0, 0.0)
+        zero_line = (f"<line x1='{pad}' y1='{zy:.1f}' x2='{w - pad}' y2='{zy:.1f}' "
+                     f"stroke='#3a4654' stroke-dasharray='3 3'/>")
+    last_x, last_y = xy(n - 1, points[-1])
+    return (f"<svg viewBox='0 0 {w} {h}' width='100%' height='{h}' "
+            f"preserveAspectRatio='none' style='display:block'>{zero_line}"
+            f"<polyline fill='none' stroke='{color}' stroke-width='2' points='{pts}'/>"
+            f"<circle cx='{last_x:.1f}' cy='{last_y:.1f}' r='3' fill='{color}'/></svg>")
+
+
+def render_performance_page(hist, summary_obj=None, tune=None,
+                            title="下注績效 & CLV") -> str:
+    """獨立績效頁：累積損益/CLV 折線、權重校準表、逐注紀錄。"""
+    today = _dt.date.today().isoformat()
+    if not hist:
+        body = ("<div class='card'><div class='sec'>📈 尚無真實盤口下注紀錄</div>"
+                "<div class='small' style='color:var(--muted);line-height:1.7'>"
+                "需要部署環境設定 <code>ODDS_API_KEY</code>，系統才會抓真實盤口、"
+                "只記模型相對市場有正期望值(+EV)的推薦，並在賽後用下注/收盤賠率"
+                "算實際 ROI 與 CLV。<br>累積足夠注數後，這裡會出現："
+                "累積損益曲線、CLV 走勢、勝過收盤比例，以及用歷史快照回測的"
+                "<b>最佳融合權重建議</b>（把 <code>BLEND_WEIGHT</code> 從預設值校準成回測結果）。"
+                "</div></div>")
+        return _perf_doc(title, today, body)
+
+    last = hist[-1]
+    pl_pts = [r["cum_pl"] for r in hist]
+    clv_pts = [r["cum_clv"] * 100 for r in hist]
+    pl_color = "#7be0b0" if last["cum_pl"] >= 0 else "#e06a6a"
+    kpis = (
+        f"<div class='kpis'>"
+        f"<div class='kpi'><span>累積損益</span><b style='color:{pl_color}'>{last['cum_pl']:+.2f}u</b></div>"
+        f"<div class='kpi'><span>ROI</span><b style='color:{pl_color}'>{last['cum_roi']:+.1%}</b></div>"
+        f"<div class='kpi'><span>注數</span><b>{last['n']}</b></div>"
+        f"<div class='kpi'><span>平均 CLV</span><b>{last['cum_clv']:+.1%}</b></div>"
+        f"<div class='kpi'><span>勝過收盤</span><b>{last['beat_rate']:.0%}</b></div>"
+        f"</div>")
+    charts = (
+        f"<div class='card'><div class='sec'>💰 累積損益（單位）</div>"
+        f"{_line_svg(pl_pts, color=pl_color)}</div>"
+        f"<div class='card'><div class='sec'>🎯 累積平均 CLV（%，&gt;0 長期領先指標）</div>"
+        f"{_line_svg(clv_pts, color='#6ea8fe')}</div>")
+    # 權重校準表
+    tune_html = ""
+    if tune and tune.get("rows"):
+        best = tune.get("best_roi")
+        trs = ""
+        for r in tune["rows"]:
+            if r["n_bets"] == 0:
+                continue
+            mark = " ★" if best and abs(r["weight"] - best["weight"]) < 1e-9 else ""
+            hot = _heat(max(min(r["roi"] * 100 + 20, 100), 0), '140')
+            trs += (f"<tr><td>{r['weight']:.1f}{mark}</td><td>{r['n_bets']}</td>"
+                    f"<td>{r['pl']:+.2f}</td><td style=\"{hot}\">{r['roi']:+.1%}</td>"
+                    f"<td>{r['clv']:+.1%}</td></tr>")
+        rec = (f"<div class='small' style='margin-top:6px'>回測 {tune['n_matches']} 個"
+               f"決策單位：ROI 最佳權重 <b>BLEND_WEIGHT={best['weight']:.1f}</b>"
+               f"（ROI {best['roi']:+.1%}）。樣本少時僅供參考，CLV 比 ROI 更穩。</div>"
+               ) if best else ""
+        tune_html = (f"<div class='card'><div class='sec'>⚖️ 融合權重校準（回測）</div>"
+                     f"<table><thead><tr><th>權重</th><th>注數</th><th>損益</th>"
+                     f"<th>ROI</th><th>CLV</th></tr></thead><tbody>{trs}</tbody></table>"
+                     f"{rec}</div>")
+    # 逐注紀錄（最近 40 筆）
+    log_trs = ""
+    for r in reversed(hist[-40:]):
+        rc = {"win": "#7be0b0", "loss": "#e06a6a", "push": "var(--muted)"}.get(r["result"], "")
+        clv = f"{r['clv']:+.1%}" if r["clv"] is not None else "—"
+        line = f" {r['line']}" if str(r["line"]) not in ("", "nan") else ""
+        log_trs += (
+            f"<tr><td>{str(r['date'])[5:]}</td>"
+            f"<td class='tm'>{html.escape(zh(r['home']))} v {html.escape(zh(r['away']))}</td>"
+            f"<td>{_MK_ZH.get(r['market'], r['market'])} {html.escape(str(r['selection']))}{line}</td>"
+            f"<td>{r['odds']:.2f}</td><td>{clv}</td>"
+            f"<td style='color:{rc};font-weight:700'>{_RES_ZH.get(r['result'], r['result'])}</td>"
+            f"<td style='color:{rc}'>{r['pl']:+.2f}</td></tr>")
+    log_html = (f"<div class='card'><div class='sec'>📜 逐注紀錄（近 {min(len(hist),40)} 筆）</div>"
+                f"<table><thead><tr><th>日期</th><th>對戰</th><th>下注</th><th>賠率</th>"
+                f"<th>CLV</th><th>結果</th><th>損益</th></tr></thead>"
+                f"<tbody>{log_trs}</tbody></table></div>")
+    sub = (f"{today} · 均注 1 單位 · 只計有真實盤口、模型 +EV 的下注")
+    note = ("<div class='small' style='color:var(--muted);margin-top:4px'>"
+            "CLV（closing line value）= 你拿到的賠率 vs 收盤賠率；長期 CLV&gt;0 是"
+            "判斷模型能否真正贏過市場最可靠的領先指標，比短期勝率/ROI 抗雜訊。</div>")
+    return _perf_doc(title, sub, kpis + note + charts + tune_html + log_html)
+
+
+_MK_ZH = {"1X2": "勝平負", "OU": "大小", "BTTS": "兩隊進球", "AH": "亞盤"}
+_RES_ZH = {"win": "過", "loss": "沒過", "push": "走盤"}
+
+
+def _perf_doc(title, sub, body):
+    return f"""<!doctype html><html lang="zh-Hant"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>{html.escape(title)}</title><style>{_CSS}
+table{{width:100%;border-collapse:collapse;font-size:12px;background:var(--card);border-radius:12px;overflow:hidden}}
+th,td{{padding:6px 7px;text-align:center;border-bottom:1px solid var(--line)}}
+th{{color:var(--muted);font-size:11px}}td.tm{{text-align:left;font-weight:600}}
+.kpis{{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin:4px 0}}
+.kpi{{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:8px 6px;text-align:center}}
+.kpi span{{display:block;color:var(--muted);font-size:10px;margin-bottom:3px}}
+.kpi b{{font-size:15px}}
+@media(max-width:480px){{.kpis{{grid-template-columns:repeat(3,1fr)}}}}
+</style></head>
+<body><div class="wrap">
+  {_navbar('perf')}
+  <h1>📈 {html.escape(title)}</h1>
+  <div class="sub">{sub}</div>
+  {body}
+  <div class="foot">Generated by footy · 研究與教育用途，非投注建議</div>
+</div></body></html>"""
+
+
 def write_worldcup_site(result, model, matches, outdir, history=None,
                         title="2026 世界盃預測", n_sims=20000, injury_counts=None,
-                        track_text=None,
+                        track_text=None, ledger_path=None,
                         interactive=False):
     """產生多頁網站：index.html + 每場可分析的 match_<num>.html。
 
@@ -932,4 +1065,17 @@ def write_worldcup_site(result, model, matches, outdir, history=None,
                         track_text=track_text)
     (outdir / "knockout.html").write_text(
         render_knockout_page(result, model, matches, linked), encoding="utf-8")
+    # 績效頁：累積損益/CLV + 權重校準（有帳本才有資料，否則顯示引導訊息）
+    hist, tune_res = [], None
+    if ledger_path:
+        try:
+            from . import tracker
+            hist = tracker.history(ledger_path)
+            snap = str(Path(ledger_path).with_name("odds_log.csv"))
+            if Path(snap).exists():
+                tune_res = tracker.tune_weight(snap)
+        except Exception:  # noqa: BLE001
+            hist, tune_res = [], None
+    (outdir / "performance.html").write_text(
+        render_performance_page(hist, tune=tune_res), encoding="utf-8")
     return outdir, len(linked)

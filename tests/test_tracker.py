@@ -107,6 +107,36 @@ def test_blending_shrinks_fake_edge(tmp_path, synthetic_df):
     assert n_model <= n_market + 1  # 純市場下注數不多於純模型
 
 
+def test_history_and_tune_weight(tmp_path, synthetic_df):
+    from footy.live.feed import MarketQuote
+    from footy.models import dixon_coles as dc
+    model = dc.fit(synthetic_df, half_life_days=10_000)
+    h, a = model.teams[0], model.teams[1]
+    o = tracker.markets.outcome_1x2(model.score_matrix(h, a, neutral=True))
+    # 灌水主勝賠率 → 在高權重會被選為 +EV
+    quotes = [MarketQuote("1X2", "home", round(1.0 / o["home"] * 1.25, 3)),
+              MarketQuote("1X2", "draw", round(1.0 / o["draw"] * 0.97, 3)),
+              MarketQuote("1X2", "away", round(1.0 / o["away"] * 0.97, 3))]
+    led, snap = tmp_path / "b.csv", tmp_path / "odds_log.csv"
+    ms = [_M(1, h, a)]
+    tracker.log_upcoming(ms, model, led, odds_index={1: quotes}, weight=1.0)
+    tracker.log_snapshots(ms, model, {1: quotes}, snap)
+    # 快照含全部三柱（不過濾）
+    assert len(tracker.load_snapshots(snap)) == 3
+    tracker.settle(led, {1: (2, 0)})
+    tracker.settle_snapshots(snap, {1: (2, 0)})
+    # history：一筆已結算、累積損益>0
+    hrows = tracker.history(led)
+    assert len(hrows) == 1 and hrows[0]["cum_pl"] > 0
+    assert hrows[0]["n"] == 1 and "cum_clv" in hrows[0]
+    # tune_weight：回傳各權重列與最佳
+    res = tracker.tune_weight(snap)
+    assert res["n_matches"] == 1 and res["rows"]
+    assert res["best_roi"]["n_bets"] >= 1
+    # 空快照 → 安全回傳
+    assert tracker.tune_weight(tmp_path / "none.csv")["rows"] == []
+
+
 def test_clv_recorded(tmp_path):
     from footy.live.feed import MarketQuote
     import pandas as pd

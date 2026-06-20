@@ -199,7 +199,8 @@ def _build_site(model, history, schedule_path, n_sims=12000, match_sims=8000):
             track_text = None
         outdir = tempfile.mkdtemp(prefix="footy_wc_")
         report.write_worldcup_site(result, model, matches, outdir, history=history,
-                                   n_sims=match_sims, interactive=True, track_text=track_text)
+                                   n_sims=match_sims, interactive=True,
+                                   track_text=track_text, ledger_path="data/bets.csv")
         return outdir
     except Exception as e:  # noqa: BLE001
         print(f"[serve] 產生世界盃首頁失敗（改用自訂表單為首頁）：{e}")

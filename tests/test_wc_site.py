@@ -32,6 +32,9 @@ def test_write_worldcup_site(tmp_path):
     assert "match_" in html and "晉級&對陣" in html  # 對陣圖移到 knockout 頁
     ko = (Path(outdir) / "knockout.html").read_text(encoding="utf-8")
     assert "淘汰賽對陣圖" in ko and "bracket" in ko and "晉級展望" in ko
+    # 績效頁存在（無帳本時顯示引導訊息）且首頁導覽列有連結
+    perf = (Path(outdir) / "performance.html").read_text(encoding="utf-8")
+    assert "尚無真實盤口" in perf and "performance.html" in html
     # 分析頁含返回首頁與行動裝置 viewport
     sample = pages[0].read_text(encoding="utf-8")
     assert "返回首頁" in sample and "width=device-width" in sample
