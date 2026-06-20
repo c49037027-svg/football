@@ -535,19 +535,14 @@ def _match_pred_row(model, m, linked: set | None = None):
 
     若該場有分析頁（m.num in linked），整列可點進去。
     """
-    from .models import markets
+    from .models import markets  # noqa: F401 (保留供未來用)
     t1, t2 = m.team1, m.team2
     if m.played:
-        tag = f"<span class='res'>{m.hg}-{m.ag}</span> <span class='small'>(已賽)</span>"
-    elif t1 in model.attack and t2 in model.attack:
-        mat = model.score_matrix(t1, t2, neutral=True)
-        s = markets.most_likely_score(mat)
-        sp = float(mat[s[0], s[1]])
-        o = markets.outcome_1x2(mat)
-        tag = (f"<span class='pred'>{s[0]}-{s[1]}</span><span class='small'>（{sp:.0%}）</span> "
-               f"<span class='small'>{o['home']:.0%}/{o['draw']:.0%}/{o['away']:.0%}</span>")
+        tag = f"<span class='res'>{m.hg}-{m.ag}</span>"
+    elif linked and m.num in linked:
+        tag = "<span class='small'>預測 ›</span>"
     else:
-        tag = "<span class='small'>—</span>"
+        tag = ""
     inner = (f"<span class='fxd'>{m.date[5:]}</span>"
              f"<span class='fxt'>{html.escape(zh(t1))}</span>"
              f"<span class='fxm'>{tag}</span>"
