@@ -72,7 +72,9 @@ def test_market_mode_ev_filter_and_roi(tmp_path, synthetic_df):
     quotes = [MarketQuote("1X2", "home", big),
               MarketQuote("1X2", "away", 1.01)]
     led = tmp_path / "m.csv"
-    n = tracker.log_upcoming([_M(1, h, a)], model, led, odds_index={1: quotes})
+    # weight=1 純模型，讓 pl 與賠率精確對得上（融合行為另測）
+    n = tracker.log_upcoming([_M(1, h, a)], model, led,
+                             odds_index={1: quotes}, weight=1.0)
     assert n == 1  # 只記 +EV 的主勝，不記爛賠率客勝
     dfx = tracker.load_ledger(led)
     assert dfx.iloc[0]["selection"] == "home" and dfx.iloc[0]["source"] == "market"
@@ -82,6 +84,27 @@ def test_market_mode_ev_filter_and_roi(tmp_path, synthetic_df):
     assert s.market_bets == 1
     assert abs(s.pl_units - (big - 1)) < 1e-6
     assert s.roi > 0 and "ROI" in s.text()
+
+
+def test_blending_shrinks_fake_edge(tmp_path, synthetic_df):
+    """融合：純市場(weight=0)時，市場兩邊去 vig 後不該有正 edge → 不下注。"""
+    from footy.live.feed import MarketQuote
+    from footy.models import dixon_coles as dc
+    model = dc.fit(synthetic_df, half_life_days=10_000)
+    h, a = model.teams[0], model.teams[1]
+    o = tracker.markets.outcome_1x2(model.score_matrix(h, a, neutral=True))
+    # 給一組「公平」三柱賠率（模型機率取倒數，無 vig）
+    quotes = [MarketQuote("1X2", s, round(1.0 / o[s], 3)) for s in ("home", "draw", "away")]
+    led = tmp_path / "b.csv"
+    # weight=1 純模型：edge≈0（賠率正好等於模型公平價）→ 不超過門檻
+    n_model = tracker.log_upcoming([_M(1, h, a)], model, led,
+                                   odds_index={1: quotes}, weight=1.0, min_edge=0.0)
+    # weight=0 純市場：去 vig 後 p·odds=1 → edge≤0 → 必不下注
+    led2 = tmp_path / "b2.csv"
+    n_market = tracker.log_upcoming([_M(1, h, a)], model, led2,
+                                    odds_index={1: quotes}, weight=0.0, min_edge=0.0)
+    assert n_market == 0
+    assert n_model <= n_market + 1  # 純市場下注數不多於純模型
 
 
 def test_clv_recorded(tmp_path):

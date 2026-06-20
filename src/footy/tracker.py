@@ -10,6 +10,7 @@
 """
 from __future__ import annotations
 
+import os
 from dataclasses import dataclass, field
 from pathlib import Path
 
@@ -17,37 +18,57 @@ import numpy as np
 import pandas as pd
 
 from .models import markets
+from .value.odds import blend_probs, remove_vig_proportional
 
 LEDGER_COLS = ["date", "match_num", "home", "away", "market", "selection",
                "line", "odds", "edge", "source", "close_odds", "result", "pl"]
 _MARKET_ZH = {"1X2": "勝平負", "OU": "大小2.5", "BTTS": "兩隊進球", "AH": "亞盤"}
 _1X2_ZH = {"home": "主勝", "draw": "和", "away": "客勝"}
 STAKE = 1.0  # 均注：每注 1 單位
+# 市場融合權重（模型佔比）：1=純模型、0=純市場。可用環境變數覆寫。
+# 實證上純模型贏不過效率市場，故預設拉一半向市場，只賭真正的分歧。
+BLEND_WEIGHT = float(os.environ.get("BLEND_WEIGHT", "0.5"))
 
 
 # ------------- 模型 vs 市場：找正期望值(+EV)推薦 -------------
 def _ev_no_push(p: float, odds: float) -> float:
-    """無走盤市場（1X2/大小非整數線/BTTS）的單位期望值。"""
+    """單位期望值 = 機率·賠率 − 1（決策用估計）。"""
     return p * odds - 1.0
 
 
-def _ev_ah(ah, odds: float) -> float:
-    """亞盤（含 quarter 半輸半贏）單位期望值。"""
-    return (ah.p_win * (odds - 1.0) + ah.p_half_win * (odds - 1.0) / 2.0
-            - ah.p_half_loss * 0.5 - ah.p_loss * 1.0)
+def _group_quotes(quotes, market):
+    """把某盤口的報價依 line 分組：{line: {selection: odds}}。1X2 的 line 用 ""。"""
+    out: dict = {}
+    for q in quotes:
+        if q.market != market or not q.odds or q.odds <= 1.0:
+            continue
+        line = "" if market in ("1X2", "BTTS") else q.line
+        out.setdefault(line, {})[q.selection] = float(q.odds)
+    return out
 
 
-def _market_edges(model, home, away, quotes, neutral=True, min_edge=0.0):
-    """用市場賠率 + 模型機率，挑出每個盤口期望值最高且 > min_edge 的推薦。
+def _blended(model_ps: dict, sides: dict, order: list, weight: float) -> dict:
+    """sides={selection:odds}。兩邊齊全 → 去 vig 後與模型融合；否則退回純模型。"""
+    if all(s in sides for s in order):
+        fair = remove_vig_proportional([sides[s] for s in order])
+        bl = blend_probs([model_ps[s] for s in order], fair, weight)
+        return dict(zip(order, bl))
+    return {s: model_ps[s] for s in order}
+
+
+def _market_edges(model, home, away, quotes, neutral=True, min_edge=0.0,
+                  weight=None):
+    """市場去 vig + 模型融合後，挑出每個盤口期望值最高且 > min_edge 的推薦。
 
     quotes：MarketQuote 清單（.market/.selection/.odds/.line）。
-    回傳 [dict(market, selection, line, odds, edge, p)]。
+    回傳 [dict(market, selection, line, odds, edge, p)]，p 為融合後機率。
     """
+    w = BLEND_WEIGHT if weight is None else weight
     mat = model.score_matrix(home, away, neutral=neutral)
-    o = markets.outcome_1x2(mat)
     best: dict[str, dict] = {}
 
-    def offer(market, sel, line, odds, edge, p):
+    def offer(market, sel, line, odds, p):
+        edge = _ev_no_push(p, odds)
         if edge <= min_edge:
             return
         cur = best.get(market)
@@ -55,33 +76,41 @@ def _market_edges(model, home, away, quotes, neutral=True, min_edge=0.0):
             best[market] = dict(market=market, selection=sel, line=line,
                                 odds=float(odds), edge=float(edge), p=float(p))
 
-    for q in quotes:
-        if q.odds is None or q.odds <= 1.0:
-            continue
-        if q.market == "1X2":
-            p = o.get(q.selection)
-            if p is not None:
-                offer("1X2", q.selection, "", q.odds, _ev_no_push(p, q.odds), p)
-        elif q.market == "OU":
-            ou = markets.over_under(mat, q.line)
-            if q.selection == "over":
-                p, sel = ou["over_win"], "大"
-            else:
-                p, sel = ou["under_win"], "小"
-            offer("OU", sel, q.line, q.odds, _ev_no_push(p, q.odds), p)
-        elif q.market == "AH":
-            side = q.selection if q.selection in ("home", "away") else "home"
-            ah = markets.asian_handicap(mat, float(q.line), side)
-            p = ah.p_win + ah.p_half_win + 0.5 * ah.p_push  # 覆蓋率（展示用）
-            sel = "主" if side == "home" else "客"
-            offer("AH", sel, q.line, q.odds, _ev_ah(ah, q.odds), p)
-        elif q.market == "BTTS":
-            bt = markets.btts(mat)
-            if q.selection in ("yes", "是"):
-                p, sel = bt["yes"], "是"
-            else:
-                p, sel = bt["no"], "否"
-            offer("BTTS", sel, "", q.odds, _ev_no_push(p, q.odds), p)
+    # 1X2
+    h2h = _group_quotes(quotes, "1X2").get("", {})
+    if h2h:
+        o = markets.outcome_1x2(mat)
+        bl = _blended(o, h2h, ["home", "draw", "away"], w)
+        for s, odds in h2h.items():
+            if s in bl:
+                offer("1X2", s, "", odds, bl[s])
+
+    # 大小（逐線）
+    for line, sides in _group_quotes(quotes, "OU").items():
+        ou = markets.over_under(mat, line)
+        model_ps = {"over": ou["over_win"], "under": ou["under_win"]}
+        bl = _blended(model_ps, sides, ["over", "under"], w)
+        for s, odds in sides.items():
+            offer("OU", "大" if s == "over" else "小", line, odds, bl[s])
+
+    # 亞盤（逐線；用覆蓋率近似 edge，結算仍精算半輸半贏）
+    for line, sides in _group_quotes(quotes, "AH").items():
+        ah_h = markets.asian_handicap(mat, float(line), "home")
+        cov_h = ah_h.p_win + ah_h.p_half_win + 0.5 * ah_h.p_push
+        model_ps = {"home": cov_h, "away": 1.0 - cov_h}
+        bl = _blended(model_ps, sides, ["home", "away"], w)
+        for s, odds in sides.items():
+            offer("AH", "主" if s == "home" else "客", line, odds, bl[s])
+
+    # 兩隊進球
+    bt_sides = _group_quotes(quotes, "BTTS").get("", {})
+    if bt_sides:
+        bt = markets.btts(mat)
+        model_ps = {"yes": bt["yes"], "no": bt["no"]}
+        bl = _blended(model_ps, bt_sides, ["yes", "no"], w)
+        for s, odds in bt_sides.items():
+            offer("BTTS", "是" if s == "yes" else "否", "", odds, bl[s])
+
     return list(best.values())
 
 
@@ -179,11 +208,12 @@ def _to_float(x):
 
 
 def log_upcoming(matches, model, ledger_path, neutral=True,
-                 odds_index=None, min_edge=0.0):
+                 odds_index=None, min_edge=0.0, weight=None):
     """記錄未開賽推薦（已存在不重複）。回傳新增筆數。
 
     odds_index：{match_num: [MarketQuote...]}。給定時走「+EV 真實盤口」模式
-    （只記模型相對市場有正期望值的推薦，存下注賠率）；None 則走勝率模式。
+    （市場去 vig 後與模型融合，只記仍有正期望值的推薦）；None 則走勝率模式。
+    weight：模型融合權重（None=用 BLEND_WEIGHT）。
     """
     df = load_ledger(ledger_path)
     seen = set(zip(df["match_num"].astype(str), df["market"], df["selection"].astype(str)))
@@ -195,7 +225,8 @@ def log_upcoming(matches, model, ledger_path, neutral=True,
             quotes = odds_index.get(m.num)
             if not quotes:
                 continue  # 沒盤口 → 不下注
-            for r in _market_edges(model, m.team1, m.team2, quotes, neutral, min_edge):
+            for r in _market_edges(model, m.team1, m.team2, quotes, neutral,
+                                   min_edge, weight):
                 if (str(m.num), r["market"], str(r["selection"])) in seen:
                     continue
                 rows.append(dict(date=m.date, match_num=m.num, home=m.team1,
@@ -355,9 +386,10 @@ def summary(ledger_path) -> TrackSummary:
     return s
 
 
-def prepare(matches, model, ledger_path, odds_index=None, min_edge=0.0):
+def prepare(matches, model, ledger_path, odds_index=None, min_edge=0.0, weight=None):
     """一站式：記推薦 → 更新收盤賠率 → 用已踢賽果結算 → 回傳 summary。"""
-    log_upcoming(matches, model, ledger_path, odds_index=odds_index, min_edge=min_edge)
+    log_upcoming(matches, model, ledger_path, odds_index=odds_index,
+                 min_edge=min_edge, weight=weight)
     if odds_index:
         refresh_close(ledger_path, odds_index)
     settle(ledger_path, {m.num: (m.hg, m.ag) for m in matches if m.played})

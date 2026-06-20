@@ -57,3 +57,17 @@ def remove_vig_shin(odds_list: list[float], max_iter: int = 100,
 def fair_odds(prob: float) -> float:
     """公平機率 -> 公平賠率（無 vig）。"""
     return float("inf") if prob <= 0 else 1.0 / prob
+
+
+def blend_probs(model_p: list[float], market_fair_p: list[float],
+                weight: float) -> list[float]:
+    """市場融合：回傳 weight·模型 +(1-weight)·市場公平機率，重新正規化。
+
+    weight=1 純模型、weight=0 純市場。實證上純模型常贏不過市場（見 FINDINGS），
+    故融合可把「模型雜訊誤判成 edge」往市場拉回，只留真正的分歧。
+    """
+    m = np.array(model_p, dtype=float)
+    k = np.array(market_fair_p, dtype=float)
+    b = weight * m + (1.0 - weight) * k
+    s = b.sum()
+    return (b / s).tolist() if s > 0 else list(model_p)
