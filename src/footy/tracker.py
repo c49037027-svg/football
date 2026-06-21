@@ -271,6 +271,32 @@ def log_upcoming(matches, model, ledger_path, neutral=True,
     return len(rows)
 
 
+def backfill_played(matches, model, ledger_path, neutral=True):
+    """整屆回填：把已開賽、但帳本沒記過的比賽補記模型推薦並立即用真實比分結算。
+
+    僅 source='model'（無賠率→只計勝率，不進 ROI/CLV）。供「開賽至今」回顧用，
+    非真實盤口下注。注意：每日重訓的模型可能已把這些賽果學進去，屬事後回顧、偏樂觀。
+    回傳新增筆數。
+    """
+    df = load_ledger(ledger_path)
+    seen = set(zip(df["match_num"].astype(str), df["market"], df["selection"].astype(str)))
+    rows = []
+    for m in matches:
+        if not m.played or m.team1 not in model.attack or m.team2 not in model.attack:
+            continue
+        for market, sel, line in _recommendations(model, m.team1, m.team2, neutral):
+            if (str(m.num), market, str(sel)) in seen:
+                continue
+            w = _settle_outcome(market, sel, line, int(m.hg), int(m.ag))
+            rows.append(dict(date=m.date, match_num=m.num, home=m.team1, away=m.team2,
+                             market=market, selection=sel, line=line, odds="", edge="",
+                             source="model", close_odds="", result=_label(w), pl=""))
+    if rows:
+        df = pd.concat([df, pd.DataFrame(rows)], ignore_index=True)
+        save_ledger(df, ledger_path)
+    return len(rows)
+
+
 def refresh_close(ledger_path, odds_index):
     """把未結算 market 推薦的 close_odds 更新成目前最新賠率（逼近收盤）。"""
     df = load_ledger(ledger_path)

@@ -193,6 +193,7 @@ def _build_site(model, history, schedule_path, n_sims=12000, match_sims=8000):
             print(f"[serve] 無真實盤口（改記勝率自我校驗）：{e}", flush=True)
         try:
             from . import tracker
+            tracker.backfill_played(matches, model, "data/bets.csv")
             track_text = tracker.prepare(matches, model, "data/bets.csv",
                                          odds_index=odds_index).text()
         except Exception:  # noqa: BLE001

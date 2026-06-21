@@ -222,6 +222,20 @@ def track(model_path, schedule, ledger, odds):
     click.echo(s.text())
 
 
+@cli.command("backfill")
+@click.option("--model", "model_path", default="models/intl.pkl")
+@click.option("--schedule", default="data/wc2026.json", help="賽程 JSON")
+@click.option("--ledger", default="data/bets.csv", help="戰績帳本 CSV")
+def backfill(model_path, schedule, ledger):
+    """整屆回填：把開賽至今所有已踢比賽補記模型推薦並結算（只計勝率，非盤口損益）。"""
+    from . import tracker, worldcup as wc
+    model = dc.DixonColesModel.load(model_path)
+    _, matches, _ = wc.parse_wc_json(schedule)
+    n = tracker.backfill_played(matches, model, ledger)
+    click.echo(f"[backfill] 回填 {n} 筆已踢比賽的模型推薦（已結算）")
+    click.echo(tracker.summary(ledger).text())
+
+
 @cli.command("tune-blend")
 @click.option("--snap", default="data/odds_log.csv", help="賠率快照（由 track/wc-site 累積）")
 def tune_blend(snap):
@@ -355,6 +369,7 @@ def wc_site(ctx, model_path, schedule, history_path, outdir, n_sims, match_sims,
             click.echo(f"[wc-site] 已抓盤口：{len(odds_index)} 場有 +EV 候選")
         except Exception as e:  # noqa: BLE001
             click.echo(f"[wc-site] 無真實盤口（改記勝率自我校驗）：{e}")
+        tracker.backfill_played(matches, model, ledger)  # 整屆已踢補記（勝率回顧）
         track_text = tracker.prepare(matches, model, ledger, odds_index=odds_index).text()
 
     injury_counts = None

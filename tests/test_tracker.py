@@ -124,6 +124,25 @@ def test_garbage_odds_rejected(tmp_path, synthetic_df):
     assert not ((df["market"] == "1X2") & (df["selection"] == "draw")).any()
 
 
+def test_backfill_played(tmp_path, synthetic_df):
+    from footy.models import dixon_coles as dc
+    model = dc.fit(synthetic_df, half_life_days=10_000)
+    h, a = model.teams[0], model.teams[1]
+    led = tmp_path / "b.csv"
+    # 已踢比賽 → 回填並立即結算
+    played = [_M(1, h, a, played=True, hg=2, ag=0),
+              _M(2, a, h, played=True, hg=1, ag=1)]
+    n = tracker.backfill_played(played, model, led)
+    assert n >= 4  # 至少 1X2+亞盤 ×2 場
+    df = tracker.load_ledger(led)
+    assert (df["source"] == "model").all()
+    assert (df["result"] != "pending").all()   # 全部已結算
+    # 不重複
+    assert tracker.backfill_played(played, model, led) == 0
+    s = tracker.summary(led)
+    assert s.settled == n and s.market_bets == 0   # 不進 ROI
+
+
 def test_history_and_tune_weight(tmp_path, synthetic_df):
     from footy.live.feed import MarketQuote
     from footy.models import dixon_coles as dc
