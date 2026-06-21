@@ -4,8 +4,8 @@ date,match_num,home,away,market,selection,line,model_p,odds,close_odds,hg,ag,pla
 2026-06-24,50,Czech Republic,Mexico,1X2,draw,,0.26309,4.0,4.0,,,0
 2026-06-24,50,Czech Republic,Mexico,OU,over,2.5,0.40408,2.22,2.22,,,0
 2026-06-24,50,Czech Republic,Mexico,OU,under,2.5,0.59592,1.71,1.71,,,0
-2026-06-24,50,Czech Republic,Mexico,AH,home,0.5,0.4219,1.77,1.83,,,0
-2026-06-24,50,Czech Republic,Mexico,AH,away,0.5,0.5781,2.02,1.99,,,0
+2026-06-24,50,Czech Republic,Mexico,AH,home,0.5,0.4219,1.77,1.87,,,0
+2026-06-24,50,Czech Republic,Mexico,AH,away,0.5,0.5781,2.02,1.94,,,0
 2026-06-24,53,South Africa,South Korea,1X2,home,,0.15854,5.85,5.85,,,0
 2026-06-24,53,South Africa,South Korea,1X2,away,,0.57037,1.64,1.64,,,0
 2026-06-24,53,South Africa,South Korea,1X2,draw,,0.2711,3.95,3.95,,,0
@@ -18,43 +18,43 @@ date,match_num,home,away,market,selection,line,model_p,odds,close_odds,hg,ag,pla
 2026-06-24,54,Switzerland,Canada,1X2,draw,,0.29884,3.05,3.05,,,0
 2026-06-24,54,Switzerland,Canada,OU,over,2.5,0.40039,2.12,2.12,,,0
 2026-06-24,54,Switzerland,Canada,OU,under,2.5,0.59961,1.73,1.73,,,0
-2026-06-24,54,Switzerland,Canada,AH,away,-0.0,0.45644,2.24,2.24,,,0
-2026-06-24,54,Switzerland,Canada,AH,home,-0.0,0.54356,1.7,1.7,,,0
-2026-06-24,49,Bosnia and Herzegovina,Qatar,1X2,home,,0.57661,1.47,1.47,,,0
-2026-06-24,49,Bosnia and Herzegovina,Qatar,1X2,away,,0.17683,7.25,7.25,,,0
+2026-06-24,54,Switzerland,Canada,AH,away,-0.0,0.45644,2.24,2.22,,,0
+2026-06-24,54,Switzerland,Canada,AH,home,-0.0,0.54356,1.7,1.71,,,0
+2026-06-24,49,Bosnia and Herzegovina,Qatar,1X2,home,,0.57661,1.47,1.44,,,0
+2026-06-24,49,Bosnia and Herzegovina,Qatar,1X2,away,,0.17683,7.25,7.75,,,0
 2026-06-24,49,Bosnia and Herzegovina,Qatar,1X2,draw,,0.24656,4.75,4.75,,,0
 2026-06-24,49,Bosnia and Herzegovina,Qatar,OU,over,3.0,0.26794,2.08,2.08,,,0
 2026-06-24,49,Bosnia and Herzegovina,Qatar,OU,under,3.0,0.5139,1.76,1.76,,,0
 2026-06-24,49,Bosnia and Herzegovina,Qatar,AH,home,-1.5,0.33056,2.19,2.19,,,0
 2026-06-24,49,Bosnia and Herzegovina,Qatar,AH,away,-1.5,0.66944,1.73,1.73,,,0
-2026-06-24,52,Scotland,Brazil,1X2,away,,0.60656,1.36,1.36,,,0
-2026-06-24,52,Scotland,Brazil,1X2,home,,0.16056,7.0,7.5,,,0
-2026-06-24,52,Scotland,Brazil,1X2,draw,,0.23288,5.1,4.9,,,0
-2026-06-24,52,Scotland,Brazil,OU,over,2.5,0.51276,1.73,1.73,,,0
-2026-06-24,52,Scotland,Brazil,OU,under,2.5,0.48724,1.96,1.95,,,0
+2026-06-24,52,Scotland,Brazil,1X2,away,,0.60656,1.36,1.33,,,0
+2026-06-24,52,Scotland,Brazil,1X2,home,,0.16056,7.0,8.0,,,0
+2026-06-24,52,Scotland,Brazil,1X2,draw,,0.23288,5.1,5.1,,,0
+2026-06-24,52,Scotland,Brazil,OU,over,2.5,0.51276,1.73,1.7,,,0
+2026-06-24,52,Scotland,Brazil,OU,under,2.5,0.48724,1.96,2.0,,,0
 2026-06-24,52,Scotland,Brazil,AH,away,1.5,0.36237,2.13,2.13,,,0
-2026-06-24,52,Scotland,Brazil,AH,home,1.5,0.63763,1.69,1.75,,,0
+2026-06-24,52,Scotland,Brazil,AH,home,1.5,0.63763,1.69,1.69,,,0
 2026-06-24,51,Morocco,Haiti,1X2,away,,0.05336,17.0,17.0,,,0
 2026-06-24,51,Morocco,Haiti,1X2,home,,0.77215,1.16,1.16,,,0
 2026-06-24,51,Morocco,Haiti,1X2,draw,,0.17448,7.5,7.5,,,0
-2026-06-24,51,Morocco,Haiti,OU,over,3.0,0.24078,1.94,1.96,,,0
-2026-06-24,51,Morocco,Haiti,OU,under,3.0,0.54578,1.87,1.85,,,0
-2026-06-24,51,Morocco,Haiti,AH,away,-2.5,0.71752,1.59,1.6,,,0
-2026-06-24,51,Morocco,Haiti,AH,home,-2.5,0.28248,2.38,2.36,,,0
+2026-06-24,51,Morocco,Haiti,OU,over,3.0,0.24078,1.94,1.94,,,0
+2026-06-24,51,Morocco,Haiti,OU,under,3.0,0.54578,1.87,1.93,,,0
+2026-06-24,51,Morocco,Haiti,AH,away,-2.5,0.71752,1.59,1.61,,,0
+2026-06-24,51,Morocco,Haiti,AH,home,-2.5,0.28248,2.38,2.34,,,0
 2026-06-25,60,Turkey,United States,1X2,home,,0.39094,2.8,3.1,,,0
 2026-06-25,60,Turkey,United States,1X2,away,,0.34788,2.05,1.96,,,0
-2026-06-25,60,Turkey,United States,1X2,draw,,0.26117,4.2,4.2,,,0
+2026-06-25,60,Turkey,United States,1X2,draw,,0.26117,4.2,4.1,,,0
 2026-06-25,60,Turkey,United States,OU,over,2.5,0.5536,1.73,1.73,,,0
 2026-06-25,60,Turkey,United States,OU,under,2.5,0.4464,2.08,2.15,,,0
-2026-06-25,60,Turkey,United States,AH,home,0.5,0.65212,1.7,1.79,,,0
+2026-06-25,60,Turkey,United States,AH,home,0.5,0.65212,1.7,1.78,,,0
 2026-06-25,60,Turkey,United States,AH,away,0.5,0.34788,2.16,2.04,,,0
-2026-06-25,58,Paraguay,Australia,1X2,away,,0.36554,3.95,3.95,,,0
+2026-06-25,58,Paraguay,Australia,1X2,away,,0.36554,3.95,3.75,,,0
 2026-06-25,58,Paraguay,Australia,1X2,home,,0.28459,2.85,2.85,,,0
-2026-06-25,58,Paraguay,Australia,1X2,draw,,0.34987,2.15,2.15,,,0
+2026-06-25,58,Paraguay,Australia,1X2,draw,,0.34987,2.15,2.2,,,0
 2026-06-25,58,Paraguay,Australia,OU,over,1.5,0.52709,1.6,1.6,,,0
 2026-06-25,58,Paraguay,Australia,OU,under,1.5,0.47291,2.3,2.37,,,0
 2026-06-25,58,Paraguay,Australia,AH,away,-0.5,0.71541,1.5,1.5,,,0
-2026-06-25,58,Paraguay,Australia,AH,home,-0.5,0.28459,2.62,2.62,,,0
+2026-06-25,58,Paraguay,Australia,AH,home,-0.5,0.28459,2.62,2.63,,,0
 2026-06-20,34,Germany,Ivory Coast,1X2,home,,0.44471,1.43,2.6,2.0,1.0,1
 2026-06-20,34,Germany,Ivory Coast,1X2,away,,0.27091,7.0,2.55,2.0,1.0,1
 2026-06-20,34,Germany,Ivory Coast,1X2,draw,,0.28438,5.0,3.35,2.0,1.0,1
@@ -76,11 +76,11 @@ date,match_num,home,away,market,selection,line,model_p,odds,close_odds,hg,ag,pla
 2026-06-25,55,Curaçao,Ivory Coast,OU,under,3.0,0.48126,2.1,1.94,,,0
 2026-06-25,55,Curaçao,Ivory Coast,AH,home,2.5,0.70254,1.72,1.67,,,0
 2026-06-25,55,Curaçao,Ivory Coast,AH,away,2.5,0.29746,2.09,2.23,,,0
-2026-06-25,56,Ecuador,Germany,1X2,home,,0.41757,4.1,3.0,,,0
-2026-06-25,56,Ecuador,Germany,1X2,away,,0.26208,1.54,1.82,,,0
-2026-06-25,56,Ecuador,Germany,1X2,draw,,0.32035,3.35,3.4,,,0
-2026-06-25,56,Ecuador,Germany,OU,over,2.5,0.32044,1.87,1.88,,,0
-2026-06-25,56,Ecuador,Germany,OU,under,2.5,0.67956,1.94,1.99,,,0
+2026-06-25,56,Ecuador,Germany,1X2,home,,0.41757,4.1,3.4,,,0
+2026-06-25,56,Ecuador,Germany,1X2,away,,0.26208,1.54,1.9,,,0
+2026-06-25,56,Ecuador,Germany,1X2,draw,,0.32035,3.35,3.85,,,0
+2026-06-25,56,Ecuador,Germany,OU,over,2.5,0.32044,1.87,1.83,,,0
+2026-06-25,56,Ecuador,Germany,OU,under,2.5,0.67956,1.94,2.04,,,0
 2026-06-25,56,Ecuador,Germany,AH,home,0.5,0.73792,2.13,1.86,,,0
 2026-06-25,56,Ecuador,Germany,AH,away,0.5,0.26208,1.69,1.94,,,0
 2026-06-20,35,Netherlands,Sweden,1X2,away,,0.182,100.0,100.0,5.0,1.0,1
@@ -96,13 +96,13 @@ date,match_num,home,away,market,selection,line,model_p,odds,close_odds,hg,ag,pla
 2026-06-20,36,Tunisia,Japan,OU,under,2.5,0.54547,1.79,1.7,0.0,4.0,1
 2026-06-20,36,Tunisia,Japan,AH,away,0.5,0.72709,1.54,1.54,0.0,4.0,1
 2026-06-20,36,Tunisia,Japan,AH,home,0.5,0.27291,2.49,2.49,0.0,4.0,1
-2026-06-25,57,Japan,Sweden,1X2,home,,0.69415,2.1,2.1,,,0
-2026-06-25,57,Japan,Sweden,1X2,away,,0.11783,3.58,3.9,,,0
-2026-06-25,57,Japan,Sweden,1X2,draw,,0.18803,3.53,3.35,,,0
-2026-06-25,57,Japan,Sweden,OU,over,2.5,0.60755,1.97,1.77,,,0
-2026-06-25,57,Japan,Sweden,OU,under,2.5,0.39245,1.87,2.13,,,0
-2026-06-25,57,Japan,Sweden,AH,home,-0.5,0.69415,2.06,2.09,,,0
-2026-06-25,57,Japan,Sweden,AH,away,-0.5,0.30585,1.77,1.75,,,0
+2026-06-25,57,Japan,Sweden,1X2,home,,0.69415,2.1,2.05,,,0
+2026-06-25,57,Japan,Sweden,1X2,away,,0.11783,3.58,4.15,,,0
+2026-06-25,57,Japan,Sweden,1X2,draw,,0.18803,3.53,3.3,,,0
+2026-06-25,57,Japan,Sweden,OU,over,2.5,0.60755,1.97,1.82,,,0
+2026-06-25,57,Japan,Sweden,OU,under,2.5,0.39245,1.87,2.06,,,0
+2026-06-25,57,Japan,Sweden,AH,home,-0.5,0.69415,2.06,2.02,,,0
+2026-06-25,57,Japan,Sweden,AH,away,-0.5,0.30585,1.77,1.81,,,0
 2026-06-25,59,Tunisia,Netherlands,1X2,away,,0.66425,1.34,1.16,,,0
 2026-06-25,59,Tunisia,Netherlands,1X2,home,,0.11544,9.84,21.0,,,0
 2026-06-25,59,Tunisia,Netherlands,1X2,draw,,0.22031,5.34,8.25,,,0
@@ -110,20 +110,20 @@ date,match_num,home,away,market,selection,line,model_p,odds,close_odds,hg,ag,pla
 2026-06-25,59,Tunisia,Netherlands,OU,under,2.5,0.52785,2.24,2.24,,,0
 2026-06-25,59,Tunisia,Netherlands,AH,away,1.5,0.40973,1.87,1.87,,,0
 2026-06-25,59,Tunisia,Netherlands,AH,home,1.5,0.59027,1.92,1.92,,,0
-2026-06-21,37,Belgium,Iran,1X2,home,,0.42875,1.43,1.44,,,0
-2026-06-21,37,Belgium,Iran,1X2,away,,0.29668,7.68,7.88,,,0
-2026-06-21,37,Belgium,Iran,1X2,draw,,0.27457,4.77,4.85,,,0
-2026-06-21,37,Belgium,Iran,OU,over,2.5,0.48498,1.84,1.84,,,0
+2026-06-21,37,Belgium,Iran,1X2,home,,0.42875,1.43,1.43,,,0
+2026-06-21,37,Belgium,Iran,1X2,away,,0.29668,7.68,8.25,,,0
+2026-06-21,37,Belgium,Iran,1X2,draw,,0.27457,4.77,4.95,,,0
+2026-06-21,37,Belgium,Iran,OU,over,2.5,0.48498,1.84,1.85,,,0
 2026-06-21,37,Belgium,Iran,OU,under,2.5,0.51502,2.06,2.06,,,0
-2026-06-21,37,Belgium,Iran,AH,home,-1.25,0.2113,2.02,1.99,,,0
+2026-06-21,37,Belgium,Iran,AH,home,-1.25,0.2113,2.02,2.0,,,0
 2026-06-21,37,Belgium,Iran,AH,away,-1.25,0.7887,1.88,1.93,,,0
-2026-06-21,38,New Zealand,Egypt,1X2,away,,0.44734,1.54,1.6,,,0
-2026-06-21,38,New Zealand,Egypt,1X2,home,,0.23335,5.75,6.1,,,0
+2026-06-21,38,New Zealand,Egypt,1X2,away,,0.44734,1.54,1.56,,,0
+2026-06-21,38,New Zealand,Egypt,1X2,home,,0.23335,5.75,6.5,,,0
 2026-06-21,38,New Zealand,Egypt,1X2,draw,,0.31931,4.1,4.1,,,0
-2026-06-21,38,New Zealand,Egypt,OU,over,2.5,0.31009,2.0,2.05,,,0
-2026-06-21,38,New Zealand,Egypt,OU,under,2.5,0.68991,1.7,1.67,,,0
+2026-06-21,38,New Zealand,Egypt,OU,over,2.5,0.31009,2.0,2.02,,,0
+2026-06-21,38,New Zealand,Egypt,OU,under,2.5,0.68991,1.7,1.7,,,0
 2026-06-21,38,New Zealand,Egypt,AH,away,0.5,0.44734,1.62,1.62,,,0
-2026-06-21,38,New Zealand,Egypt,AH,home,0.5,0.55266,2.31,2.31,,,0
+2026-06-21,38,New Zealand,Egypt,AH,home,0.5,0.55266,2.31,2.4,,,0
 2026-06-26,62,Egypt,Iran,1X2,home,,0.30357,2.14,2.14,,,0
 2026-06-26,62,Egypt,Iran,1X2,away,,0.37206,3.82,3.82,,,0
 2026-06-26,62,Egypt,Iran,1X2,draw,,0.32437,3.08,3.08,,,0
@@ -138,18 +138,18 @@ date,match_num,home,away,market,selection,line,model_p,odds,close_odds,hg,ag,pla
 2026-06-26,63,New Zealand,Belgium,OU,under,3.0,0.49735,1.8,1.8,,,0
 2026-06-26,63,New Zealand,Belgium,AH,away,1.5,0.35573,1.7,1.7,,,0
 2026-06-26,63,New Zealand,Belgium,AH,home,1.5,0.64427,2.11,2.11,,,0
-2026-06-21,39,Spain,Saudi Arabia,1X2,away,,0.04984,37.0,33.0,,,0
+2026-06-21,39,Spain,Saudi Arabia,1X2,away,,0.04984,37.0,38.0,,,0
 2026-06-21,39,Spain,Saudi Arabia,1X2,home,,0.79997,1.11,1.11,,,0
 2026-06-21,39,Spain,Saudi Arabia,1X2,draw,,0.15019,11.4,11.5,,,0
-2026-06-21,39,Spain,Saudi Arabia,OU,over,3.5,0.31034,2.22,1.96,,,0
-2026-06-21,39,Spain,Saudi Arabia,OU,under,3.5,0.68966,1.71,1.91,,,0
-2026-06-21,39,Spain,Saudi Arabia,AH,away,-2.5,0.66378,1.89,2.05,,,0
-2026-06-21,39,Spain,Saudi Arabia,AH,home,-2.5,0.33622,1.98,1.82,,,0
-2026-06-21,40,Uruguay,Cape Verde,1X2,away,,0.11719,8.5,9.0,,,0
-2026-06-21,40,Uruguay,Cape Verde,1X2,home,,0.59411,1.42,1.47,,,0
-2026-06-21,40,Uruguay,Cape Verde,1X2,draw,,0.28869,4.25,4.3,,,0
-2026-06-21,40,Uruguay,Cape Verde,OU,over,2.5,0.28049,2.07,2.2,,,0
-2026-06-21,40,Uruguay,Cape Verde,OU,under,2.5,0.71951,1.66,1.57,,,0
+2026-06-21,39,Spain,Saudi Arabia,OU,over,3.5,0.31034,2.22,1.93,,,0
+2026-06-21,39,Spain,Saudi Arabia,OU,under,3.5,0.68966,1.71,1.93,,,0
+2026-06-21,39,Spain,Saudi Arabia,AH,away,-2.5,0.66378,1.89,2.09,,,0
+2026-06-21,39,Spain,Saudi Arabia,AH,home,-2.5,0.33622,1.98,1.79,,,0
+2026-06-21,40,Uruguay,Cape Verde,1X2,away,,0.11719,8.5,9.5,,,0
+2026-06-21,40,Uruguay,Cape Verde,1X2,home,,0.59411,1.42,1.45,,,0
+2026-06-21,40,Uruguay,Cape Verde,1X2,draw,,0.28869,4.25,4.35,,,0
+2026-06-21,40,Uruguay,Cape Verde,OU,over,2.5,0.28049,2.07,2.18,,,0
+2026-06-21,40,Uruguay,Cape Verde,OU,under,2.5,0.71951,1.66,1.6,,,0
 2026-06-21,40,Uruguay,Cape Verde,AH,away,-1.5,0.6963,1.55,1.55,,,0
 2026-06-21,40,Uruguay,Cape Verde,AH,home,-1.5,0.3037,2.39,2.39,,,0
 2026-06-26,61,Cape Verde,Saudi Arabia,1X2,home,,0.30128,2.85,2.85,,,0
@@ -173,9 +173,9 @@ date,match_num,home,away,market,selection,line,model_p,odds,close_odds,hg,ag,pla
 2026-06-22,42,France,Iraq,OU,under,3.5,0.77514,1.77,1.76,,,0
 2026-06-22,42,France,Iraq,AH,home,-2.5,0.21297,1.79,1.79,,,0
 2026-06-22,42,France,Iraq,AH,away,-2.5,0.78703,2.08,2.08,,,0
-2026-06-22,44,Norway,Senegal,1X2,home,,0.56417,2.34,2.34,,,0
-2026-06-22,44,Norway,Senegal,1X2,away,,0.19297,3.26,3.23,,,0
-2026-06-22,44,Norway,Senegal,1X2,draw,,0.24286,3.55,3.59,,,0
+2026-06-22,44,Norway,Senegal,1X2,home,,0.56417,2.34,2.35,,,0
+2026-06-22,44,Norway,Senegal,1X2,away,,0.19297,3.26,3.22,,,0
+2026-06-22,44,Norway,Senegal,1X2,draw,,0.24286,3.55,3.57,,,0
 2026-06-22,44,Norway,Senegal,OU,over,2.5,0.52214,1.97,1.92,,,0
 2026-06-22,44,Norway,Senegal,OU,under,2.5,0.47786,1.9,1.94,,,0
 2026-06-22,44,Norway,Senegal,AH,home,0.0,0.6856,1.67,1.68,,,0
@@ -185,8 +185,8 @@ date,match_num,home,away,market,selection,line,model_p,odds,close_odds,hg,ag,pla
 2026-06-26,64,Norway,France,1X2,draw,,0.26765,3.66,3.66,,,0
 2026-06-26,64,Norway,France,OU,over,2.5,0.51397,1.85,1.85,,,0
 2026-06-26,64,Norway,France,OU,under,2.5,0.48603,2.0,2.0,,,0
-2026-06-26,64,Norway,France,AH,away,0.5,0.30099,1.82,1.81,,,0
-2026-06-26,64,Norway,France,AH,home,0.5,0.69901,2.0,2.02,,,0
+2026-06-26,64,Norway,France,AH,away,0.5,0.30099,1.82,1.8,,,0
+2026-06-26,64,Norway,France,AH,home,0.5,0.69901,2.0,2.03,,,0
 2026-06-26,65,Senegal,Iraq,1X2,away,,0.15292,12.0,12.0,,,0
 2026-06-26,65,Senegal,Iraq,1X2,home,,0.57058,1.32,1.32,,,0
 2026-06-26,65,Senegal,Iraq,1X2,draw,,0.2765,5.25,5.25,,,0
@@ -194,13 +194,13 @@ date,match_num,home,away,market,selection,line,model_p,odds,close_odds,hg,ag,pla
 2026-06-26,65,Senegal,Iraq,OU,under,2.5,0.64374,2.0,2.0,,,0
 2026-06-26,65,Senegal,Iraq,AH,away,-1.5,0.69902,1.88,1.88,,,0
 2026-06-26,65,Senegal,Iraq,AH,home,-1.5,0.30098,1.93,1.93,,,0
-2026-06-22,41,Argentina,Austria,1X2,home,,0.63796,1.56,1.5,,,0
-2026-06-22,41,Argentina,Austria,1X2,away,,0.09888,6.0,6.5,,,0
+2026-06-22,41,Argentina,Austria,1X2,home,,0.63796,1.56,1.51,,,0
+2026-06-22,41,Argentina,Austria,1X2,away,,0.09888,6.0,6.25,,,0
 2026-06-22,41,Argentina,Austria,1X2,draw,,0.26316,3.8,3.95,,,0
-2026-06-22,41,Argentina,Austria,OU,over,2.5,0.31202,1.87,1.85,,,0
+2026-06-22,41,Argentina,Austria,OU,over,2.5,0.31202,1.87,1.83,,,0
 2026-06-22,41,Argentina,Austria,OU,under,2.5,0.68798,1.81,1.83,,,0
-2026-06-22,41,Argentina,Austria,AH,home,-0.5,0.63796,1.59,1.58,,,0
-2026-06-22,41,Argentina,Austria,AH,away,-0.5,0.36204,2.38,2.4,,,0
+2026-06-22,41,Argentina,Austria,AH,home,-0.5,0.63796,1.59,1.55,,,0
+2026-06-22,41,Argentina,Austria,AH,away,-0.5,0.36204,2.38,2.48,,,0
 2026-06-22,43,Jordan,Algeria,1X2,away,,0.6602,1.61,1.61,,,0
 2026-06-22,43,Jordan,Algeria,1X2,home,,0.13926,6.26,6.36,,,0
 2026-06-22,43,Jordan,Algeria,1X2,draw,,0.20054,4.25,4.21,,,0
@@ -228,7 +228,7 @@ date,match_num,home,away,market,selection,line,model_p,odds,close_odds,hg,ag,pla
 2026-06-23,48,Portugal,Uzbekistan,OU,over,2.5,0.40169,1.6,1.62,,,0
 2026-06-23,48,Portugal,Uzbekistan,OU,under,2.5,0.59831,2.42,2.38,,,0
 2026-06-23,48,Portugal,Uzbekistan,AH,home,-1.5,0.29601,1.65,1.68,,,0
-2026-06-23,48,Portugal,Uzbekistan,AH,away,-1.5,0.70399,2.33,2.26,,,0
+2026-06-23,48,Portugal,Uzbekistan,AH,away,-1.5,0.70399,2.33,2.27,,,0
 2026-06-23,45,Colombia,DR Congo,1X2,home,,0.58434,1.49,1.5,,,0
 2026-06-23,45,Colombia,DR Congo,1X2,away,,0.13374,7.5,8.0,,,0
 2026-06-23,45,Colombia,DR Congo,1X2,draw,,0.28191,4.35,4.35,,,0
@@ -259,7 +259,7 @@ date,match_num,home,away,market,selection,line,model_p,odds,close_odds,hg,ag,pla
 2026-06-23,46,England,Ghana,AH,away,-1.5,0.50236,2.2,2.2,,,0
 2026-06-23,47,Panama,Croatia,1X2,away,,0.5354,1.52,1.52,,,0
 2026-06-23,47,Panama,Croatia,1X2,home,,0.20822,6.0,6.0,,,0
-2026-06-23,47,Panama,Croatia,1X2,draw,,0.25639,4.0,4.0,,,0
+2026-06-23,47,Panama,Croatia,1X2,draw,,0.25639,4.0,4.1,,,0
 2026-06-23,47,Panama,Croatia,OU,over,2.5,0.4888,1.88,1.88,,,0
 2026-06-23,47,Panama,Croatia,OU,under,2.5,0.5112,1.8,1.8,,,0
 2026-06-23,47,Panama,Croatia,AH,away,0.5,0.5354,1.55,1.55,,,0
@@ -287,21 +287,21 @@ date,match_num,home,away,market,selection,line,model_p,odds,close_odds,hg,ag,pla
 2026-06-24,54,Switzerland,Canada,1X2,away,,0.30702,3.3,3.3,,,0
 2026-06-24,54,Switzerland,Canada,1X2,home,,0.39414,2.5,2.5,,,0
 2026-06-24,54,Switzerland,Canada,1X2,draw,,0.29884,3.05,3.05,,,0
-2026-06-24,49,Bosnia and Herzegovina,Qatar,1X2,home,,0.57661,1.47,1.47,,,0
-2026-06-24,49,Bosnia and Herzegovina,Qatar,1X2,away,,0.17683,7.25,7.25,,,0
+2026-06-24,49,Bosnia and Herzegovina,Qatar,1X2,home,,0.57661,1.47,1.44,,,0
+2026-06-24,49,Bosnia and Herzegovina,Qatar,1X2,away,,0.17683,7.25,7.75,,,0
 2026-06-24,49,Bosnia and Herzegovina,Qatar,1X2,draw,,0.24656,4.75,4.75,,,0
-2026-06-24,52,Scotland,Brazil,1X2,away,,0.60656,1.36,1.36,,,0
-2026-06-24,52,Scotland,Brazil,1X2,home,,0.16056,7.0,7.5,,,0
-2026-06-24,52,Scotland,Brazil,1X2,draw,,0.23288,5.1,4.9,,,0
+2026-06-24,52,Scotland,Brazil,1X2,away,,0.60656,1.36,1.33,,,0
+2026-06-24,52,Scotland,Brazil,1X2,home,,0.16056,7.0,8.0,,,0
+2026-06-24,52,Scotland,Brazil,1X2,draw,,0.23288,5.1,5.1,,,0
 2026-06-24,51,Morocco,Haiti,1X2,away,,0.05336,17.0,17.0,,,0
 2026-06-24,51,Morocco,Haiti,1X2,home,,0.77215,1.16,1.16,,,0
 2026-06-24,51,Morocco,Haiti,1X2,draw,,0.17448,7.5,7.5,,,0
 2026-06-25,60,Turkey,United States,1X2,home,,0.39094,2.85,3.1,,,0
 2026-06-25,60,Turkey,United States,1X2,away,,0.34788,2.05,1.96,,,0
-2026-06-25,60,Turkey,United States,1X2,draw,,0.26117,4.2,4.2,,,0
-2026-06-25,58,Paraguay,Australia,1X2,away,,0.36554,3.95,3.95,,,0
+2026-06-25,60,Turkey,United States,1X2,draw,,0.26117,4.2,4.1,,,0
+2026-06-25,58,Paraguay,Australia,1X2,away,,0.36554,3.95,3.75,,,0
 2026-06-25,58,Paraguay,Australia,1X2,home,,0.28459,2.85,2.85,,,0
-2026-06-25,58,Paraguay,Australia,1X2,draw,,0.34987,2.15,2.15,,,0
+2026-06-25,58,Paraguay,Australia,1X2,draw,,0.34987,2.15,2.2,,,0
 2026-06-20,34,Germany,Ivory Coast,1X2,home,,0.44471,1.47,2.6,2.0,1.0,1
 2026-06-20,34,Germany,Ivory Coast,1X2,away,,0.27091,7.0,2.55,2.0,1.0,1
 2026-06-20,34,Germany,Ivory Coast,1X2,draw,,0.28438,4.8,3.35,2.0,1.0,1
@@ -311,23 +311,23 @@ date,match_num,home,away,market,selection,line,model_p,odds,close_odds,hg,ag,pla
 2026-06-25,55,Curaçao,Ivory Coast,1X2,home,,0.06477,22.5,20.0,,,0
 2026-06-25,55,Curaçao,Ivory Coast,1X2,away,,0.76613,1.15,1.16,,,0
 2026-06-25,55,Curaçao,Ivory Coast,1X2,draw,,0.1691,8.5,8.25,,,0
-2026-06-25,56,Ecuador,Germany,1X2,home,,0.41757,4.1,3.0,,,0
-2026-06-25,56,Ecuador,Germany,1X2,away,,0.26208,1.54,1.82,,,0
-2026-06-25,56,Ecuador,Germany,1X2,draw,,0.32035,3.35,3.4,,,0
+2026-06-25,56,Ecuador,Germany,1X2,home,,0.41757,4.1,3.4,,,0
+2026-06-25,56,Ecuador,Germany,1X2,away,,0.26208,1.54,1.9,,,0
+2026-06-25,56,Ecuador,Germany,1X2,draw,,0.32035,3.35,3.85,,,0
 2026-06-20,36,Tunisia,Japan,1X2,away,,0.72709,1.44,1.5,0.0,4.0,1
 2026-06-20,36,Tunisia,Japan,1X2,home,,0.07629,8.5,8.0,0.0,4.0,1
 2026-06-20,36,Tunisia,Japan,1X2,draw,,0.19662,4.5,4.1,0.0,4.0,1
-2026-06-25,57,Japan,Sweden,1X2,home,,0.69415,1.96,2.1,,,0
-2026-06-25,57,Japan,Sweden,1X2,away,,0.11783,3.25,3.9,,,0
-2026-06-25,57,Japan,Sweden,1X2,draw,,0.18803,3.3,3.35,,,0
+2026-06-25,57,Japan,Sweden,1X2,home,,0.69415,1.96,2.05,,,0
+2026-06-25,57,Japan,Sweden,1X2,away,,0.11783,3.25,4.15,,,0
+2026-06-25,57,Japan,Sweden,1X2,draw,,0.18803,3.3,3.3,,,0
 2026-06-25,59,Tunisia,Netherlands,1X2,away,,0.66425,1.22,1.16,,,0
 2026-06-25,59,Tunisia,Netherlands,1X2,home,,0.11544,7.0,21.0,,,0
 2026-06-25,59,Tunisia,Netherlands,1X2,draw,,0.22031,4.6,8.25,,,0
-2026-06-21,37,Belgium,Iran,1X2,home,,0.42875,1.43,1.44,,,0
-2026-06-21,37,Belgium,Iran,1X2,away,,0.29668,7.7,7.88,,,0
-2026-06-21,37,Belgium,Iran,1X2,draw,,0.27457,4.78,4.85,,,0
-2026-06-21,38,New Zealand,Egypt,1X2,away,,0.44734,1.54,1.6,,,0
-2026-06-21,38,New Zealand,Egypt,1X2,home,,0.23335,5.75,6.1,,,0
+2026-06-21,37,Belgium,Iran,1X2,home,,0.42875,1.43,1.43,,,0
+2026-06-21,37,Belgium,Iran,1X2,away,,0.29668,7.7,8.25,,,0
+2026-06-21,37,Belgium,Iran,1X2,draw,,0.27457,4.78,4.95,,,0
+2026-06-21,38,New Zealand,Egypt,1X2,away,,0.44734,1.54,1.56,,,0
+2026-06-21,38,New Zealand,Egypt,1X2,home,,0.23335,5.75,6.5,,,0
 2026-06-21,38,New Zealand,Egypt,1X2,draw,,0.31931,4.0,4.1,,,0
 2026-06-26,62,Egypt,Iran,1X2,home,,0.30357,2.14,2.14,,,0
 2026-06-26,62,Egypt,Iran,1X2,away,,0.37206,3.82,3.82,,,0
@@ -335,12 +335,12 @@ date,match_num,home,away,market,selection,line,model_p,odds,close_odds,hg,ag,pla
 2026-06-26,63,New Zealand,Belgium,1X2,away,,0.60132,1.25,1.25,,,0
 2026-06-26,63,New Zealand,Belgium,1X2,home,,0.16238,14.0,14.0,,,0
 2026-06-26,63,New Zealand,Belgium,1X2,draw,,0.23631,6.25,6.25,,,0
-2026-06-21,39,Spain,Saudi Arabia,1X2,away,,0.04984,34.0,33.0,,,0
+2026-06-21,39,Spain,Saudi Arabia,1X2,away,,0.04984,34.0,38.0,,,0
 2026-06-21,39,Spain,Saudi Arabia,1X2,home,,0.79997,1.11,1.11,,,0
 2026-06-21,39,Spain,Saudi Arabia,1X2,draw,,0.15019,11.5,11.5,,,0
-2026-06-21,40,Uruguay,Cape Verde,1X2,away,,0.11719,8.5,9.0,,,0
-2026-06-21,40,Uruguay,Cape Verde,1X2,home,,0.59411,1.42,1.47,,,0
-2026-06-21,40,Uruguay,Cape Verde,1X2,draw,,0.28869,4.25,4.3,,,0
+2026-06-21,40,Uruguay,Cape Verde,1X2,away,,0.11719,8.5,9.5,,,0
+2026-06-21,40,Uruguay,Cape Verde,1X2,home,,0.59411,1.42,1.45,,,0
+2026-06-21,40,Uruguay,Cape Verde,1X2,draw,,0.28869,4.25,4.35,,,0
 2026-06-26,61,Cape Verde,Saudi Arabia,1X2,home,,0.30128,2.85,2.85,,,0
 2026-06-26,61,Cape Verde,Saudi Arabia,1X2,away,,0.35259,2.35,2.35,,,0
 2026-06-26,61,Cape Verde,Saudi Arabia,1X2,draw,,0.34613,3.6,3.6,,,0
@@ -350,17 +350,17 @@ date,match_num,home,away,market,selection,line,model_p,odds,close_odds,hg,ag,pla
 2026-06-22,42,France,Iraq,1X2,home,,0.69364,1.08,1.08,,,0
 2026-06-22,42,France,Iraq,1X2,away,,0.09161,25.0,25.0,,,0
 2026-06-22,42,France,Iraq,1X2,draw,,0.21475,10.5,10.0,,,0
-2026-06-22,44,Norway,Senegal,1X2,home,,0.56417,2.34,2.34,,,0
-2026-06-22,44,Norway,Senegal,1X2,away,,0.19297,3.26,3.23,,,0
-2026-06-22,44,Norway,Senegal,1X2,draw,,0.24286,3.55,3.59,,,0
+2026-06-22,44,Norway,Senegal,1X2,home,,0.56417,2.34,2.35,,,0
+2026-06-22,44,Norway,Senegal,1X2,away,,0.19297,3.26,3.22,,,0
+2026-06-22,44,Norway,Senegal,1X2,draw,,0.24286,3.55,3.57,,,0
 2026-06-26,64,Norway,France,1X2,away,,0.30099,1.78,1.78,,,0
 2026-06-26,64,Norway,France,1X2,home,,0.43136,4.39,4.39,,,0
 2026-06-26,64,Norway,France,1X2,draw,,0.26765,3.66,3.66,,,0
 2026-06-26,65,Senegal,Iraq,1X2,away,,0.15292,12.0,12.0,,,0
 2026-06-26,65,Senegal,Iraq,1X2,home,,0.57058,1.32,1.32,,,0
 2026-06-26,65,Senegal,Iraq,1X2,draw,,0.2765,5.25,5.25,,,0
-2026-06-22,41,Argentina,Austria,1X2,home,,0.63796,1.56,1.5,,,0
-2026-06-22,41,Argentina,Austria,1X2,away,,0.09888,6.0,6.5,,,0
+2026-06-22,41,Argentina,Austria,1X2,home,,0.63796,1.56,1.51,,,0
+2026-06-22,41,Argentina,Austria,1X2,away,,0.09888,6.0,6.25,,,0
 2026-06-22,41,Argentina,Austria,1X2,draw,,0.26316,3.8,3.95,,,0
 2026-06-22,43,Jordan,Algeria,1X2,away,,0.6602,1.61,1.61,,,0
 2026-06-22,43,Jordan,Algeria,1X2,home,,0.13926,6.26,6.36,,,0
@@ -388,7 +388,7 @@ date,match_num,home,away,market,selection,line,model_p,odds,close_odds,hg,ag,pla
 2026-06-23,46,England,Ghana,1X2,draw,,0.18445,6.75,6.75,,,0
 2026-06-23,47,Panama,Croatia,1X2,away,,0.5354,1.52,1.52,,,0
 2026-06-23,47,Panama,Croatia,1X2,home,,0.20822,6.0,6.0,,,0
-2026-06-23,47,Panama,Croatia,1X2,draw,,0.25639,4.0,4.0,,,0
+2026-06-23,47,Panama,Croatia,1X2,draw,,0.25639,4.0,4.1,,,0
 2026-06-27,72,Panama,England,1X2,away,,0.71583,1.22,1.22,,,0
 2026-06-27,72,Panama,England,1X2,home,,0.09026,10.0,9.5,,,0
 2026-06-27,72,Panama,England,1X2,draw,,0.19391,7.2,7.5,,,0
@@ -406,12 +406,12 @@ date,match_num,home,away,market,selection,line,model_p,odds,close_odds,hg,ag,pla
 2026-06-24,54,Switzerland,Canada,1X2,away,,0.30702,3.3,3.3,,,0
 2026-06-24,54,Switzerland,Canada,1X2,home,,0.39414,2.5,2.5,,,0
 2026-06-24,54,Switzerland,Canada,1X2,draw,,0.29884,3.05,3.05,,,0
-2026-06-24,49,Bosnia and Herzegovina,Qatar,1X2,home,,0.57661,1.47,1.47,,,0
-2026-06-24,49,Bosnia and Herzegovina,Qatar,1X2,away,,0.17683,7.25,7.25,,,0
+2026-06-24,49,Bosnia and Herzegovina,Qatar,1X2,home,,0.57661,1.47,1.44,,,0
+2026-06-24,49,Bosnia and Herzegovina,Qatar,1X2,away,,0.17683,7.25,7.75,,,0
 2026-06-24,49,Bosnia and Herzegovina,Qatar,1X2,draw,,0.24656,4.75,4.75,,,0
-2026-06-24,52,Scotland,Brazil,1X2,away,,0.60656,1.36,1.36,,,0
-2026-06-24,52,Scotland,Brazil,1X2,home,,0.16056,7.0,7.5,,,0
-2026-06-24,52,Scotland,Brazil,1X2,draw,,0.23288,5.1,4.9,,,0
+2026-06-24,52,Scotland,Brazil,1X2,away,,0.60656,1.36,1.33,,,0
+2026-06-24,52,Scotland,Brazil,1X2,home,,0.16056,7.0,8.0,,,0
+2026-06-24,52,Scotland,Brazil,1X2,draw,,0.23288,5.1,5.1,,,0
 2026-06-24,51,Morocco,Haiti,1X2,away,,0.05336,17.0,17.0,,,0
 2026-06-24,51,Morocco,Haiti,1X2,home,,0.77215,1.16,1.16,,,0
 2026-06-24,51,Morocco,Haiti,1X2,draw,,0.17448,7.5,7.5,,,0
@@ -419,10 +419,10 @@ date,match_num,home,away,market,selection,line,model_p,odds,close_odds,hg,ag,pla
 2026-06-24,51,Morocco,Haiti,AH,home,-1.5,0.52033,1.59,1.59,,,0
 2026-06-25,60,Turkey,United States,1X2,home,,0.39094,2.85,3.1,,,0
 2026-06-25,60,Turkey,United States,1X2,away,,0.34788,2.05,1.96,,,0
-2026-06-25,60,Turkey,United States,1X2,draw,,0.26117,4.2,4.2,,,0
-2026-06-25,58,Paraguay,Australia,1X2,away,,0.36554,3.95,3.95,,,0
+2026-06-25,60,Turkey,United States,1X2,draw,,0.26117,4.2,4.1,,,0
+2026-06-25,58,Paraguay,Australia,1X2,away,,0.36554,3.95,3.75,,,0
 2026-06-25,58,Paraguay,Australia,1X2,home,,0.28459,2.85,2.85,,,0
-2026-06-25,58,Paraguay,Australia,1X2,draw,,0.34987,2.15,2.15,,,0
+2026-06-25,58,Paraguay,Australia,1X2,draw,,0.34987,2.15,2.2,,,0
 2026-06-20,34,Germany,Ivory Coast,1X2,home,,0.44471,2.6,2.6,2.0,1.0,1
 2026-06-20,34,Germany,Ivory Coast,1X2,away,,0.27091,2.55,2.55,2.0,1.0,1
 2026-06-20,34,Germany,Ivory Coast,1X2,draw,,0.28438,3.35,3.35,2.0,1.0,1
@@ -440,27 +440,27 @@ date,match_num,home,away,market,selection,line,model_p,odds,close_odds,hg,ag,pla
 2026-06-25,55,Curaçao,Ivory Coast,1X2,draw,,0.1691,9.6,8.25,,,0
 2026-06-25,55,Curaçao,Ivory Coast,OU,over,3.5,0.29714,2.2,2.2,,,0
 2026-06-25,55,Curaçao,Ivory Coast,OU,under,3.5,0.70286,1.66,1.66,,,0
-2026-06-25,56,Ecuador,Germany,1X2,home,,0.41757,4.94,3.0,,,0
-2026-06-25,56,Ecuador,Germany,1X2,away,,0.26208,1.68,1.82,,,0
-2026-06-25,56,Ecuador,Germany,1X2,draw,,0.32035,3.73,3.4,,,0
+2026-06-25,56,Ecuador,Germany,1X2,home,,0.41757,4.94,3.4,,,0
+2026-06-25,56,Ecuador,Germany,1X2,away,,0.26208,1.68,1.9,,,0
+2026-06-25,56,Ecuador,Germany,1X2,draw,,0.32035,3.73,3.85,,,0
 2026-06-20,36,Tunisia,Japan,1X2,away,,0.72709,1.5,1.5,0.0,4.0,1
 2026-06-20,36,Tunisia,Japan,1X2,home,,0.07629,8.0,8.0,0.0,4.0,1
 2026-06-20,36,Tunisia,Japan,1X2,draw,,0.19662,4.1,4.1,0.0,4.0,1
 2026-06-20,36,Tunisia,Japan,AH,away,1.5,0.47049,2.45,2.45,0.0,4.0,1
 2026-06-20,36,Tunisia,Japan,AH,home,1.5,0.52951,1.53,1.53,0.0,4.0,1
-2026-06-25,57,Japan,Sweden,1X2,home,,0.69415,1.96,2.1,,,0
-2026-06-25,57,Japan,Sweden,1X2,away,,0.11783,3.25,3.9,,,0
-2026-06-25,57,Japan,Sweden,1X2,draw,,0.18803,3.3,3.35,,,0
+2026-06-25,57,Japan,Sweden,1X2,home,,0.69415,1.96,2.05,,,0
+2026-06-25,57,Japan,Sweden,1X2,away,,0.11783,3.25,4.15,,,0
+2026-06-25,57,Japan,Sweden,1X2,draw,,0.18803,3.3,3.3,,,0
 2026-06-25,59,Tunisia,Netherlands,1X2,away,,0.66425,1.2,1.16,,,0
 2026-06-25,59,Tunisia,Netherlands,1X2,home,,0.11544,7.25,21.0,,,0
 2026-06-25,59,Tunisia,Netherlands,1X2,draw,,0.22031,4.8,8.25,,,0
-2026-06-21,37,Belgium,Iran,1X2,home,,0.42875,1.43,1.44,,,0
-2026-06-21,37,Belgium,Iran,1X2,away,,0.29668,7.69,7.88,,,0
-2026-06-21,37,Belgium,Iran,1X2,draw,,0.27457,4.78,4.85,,,0
+2026-06-21,37,Belgium,Iran,1X2,home,,0.42875,1.43,1.43,,,0
+2026-06-21,37,Belgium,Iran,1X2,away,,0.29668,7.69,8.25,,,0
+2026-06-21,37,Belgium,Iran,1X2,draw,,0.27457,4.78,4.95,,,0
 2026-06-21,37,Belgium,Iran,OU,over,2.75,0.48498,2.06,2.04,,,0
 2026-06-21,37,Belgium,Iran,OU,under,2.75,0.51502,1.84,1.88,,,0
-2026-06-21,38,New Zealand,Egypt,1X2,away,,0.44734,1.56,1.6,,,0
-2026-06-21,38,New Zealand,Egypt,1X2,home,,0.23335,5.5,6.1,,,0
+2026-06-21,38,New Zealand,Egypt,1X2,away,,0.44734,1.56,1.56,,,0
+2026-06-21,38,New Zealand,Egypt,1X2,home,,0.23335,5.5,6.5,,,0
 2026-06-21,38,New Zealand,Egypt,1X2,draw,,0.31931,3.95,4.1,,,0
 2026-06-26,62,Egypt,Iran,1X2,home,,0.30357,2.14,2.14,,,0
 2026-06-26,62,Egypt,Iran,1X2,away,,0.37206,3.82,3.82,,,0
@@ -468,12 +468,12 @@ date,match_num,home,away,market,selection,line,model_p,odds,close_odds,hg,ag,pla
 2026-06-26,63,New Zealand,Belgium,1X2,away,,0.60132,1.25,1.25,,,0
 2026-06-26,63,New Zealand,Belgium,1X2,home,,0.16238,14.0,14.0,,,0
 2026-06-26,63,New Zealand,Belgium,1X2,draw,,0.23631,6.25,6.25,,,0
-2026-06-21,39,Spain,Saudi Arabia,1X2,away,,0.04984,35.0,33.0,,,0
+2026-06-21,39,Spain,Saudi Arabia,1X2,away,,0.04984,35.0,38.0,,,0
 2026-06-21,39,Spain,Saudi Arabia,1X2,home,,0.79997,1.11,1.11,,,0
 2026-06-21,39,Spain,Saudi Arabia,1X2,draw,,0.15019,11.4,11.5,,,0
-2026-06-21,40,Uruguay,Cape Verde,1X2,away,,0.11719,8.0,9.0,,,0
-2026-06-21,40,Uruguay,Cape Verde,1X2,home,,0.59411,1.47,1.47,,,0
-2026-06-21,40,Uruguay,Cape Verde,1X2,draw,,0.28869,3.95,4.3,,,0
+2026-06-21,40,Uruguay,Cape Verde,1X2,away,,0.11719,8.0,9.5,,,0
+2026-06-21,40,Uruguay,Cape Verde,1X2,home,,0.59411,1.47,1.45,,,0
+2026-06-21,40,Uruguay,Cape Verde,1X2,draw,,0.28869,3.95,4.35,,,0
 2026-06-26,61,Cape Verde,Saudi Arabia,1X2,home,,0.30128,2.85,2.85,,,0
 2026-06-26,61,Cape Verde,Saudi Arabia,1X2,away,,0.35259,2.35,2.35,,,0
 2026-06-26,61,Cape Verde,Saudi Arabia,1X2,draw,,0.34613,3.6,3.6,,,0
@@ -483,17 +483,17 @@ date,match_num,home,away,market,selection,line,model_p,odds,close_odds,hg,ag,pla
 2026-06-22,42,France,Iraq,1X2,home,,0.69364,1.08,1.08,,,0
 2026-06-22,42,France,Iraq,1X2,away,,0.09161,25.0,25.0,,,0
 2026-06-22,42,France,Iraq,1X2,draw,,0.21475,10.5,10.0,,,0
-2026-06-22,44,Norway,Senegal,1X2,home,,0.56417,2.34,2.34,,,0
-2026-06-22,44,Norway,Senegal,1X2,away,,0.19297,3.26,3.23,,,0
-2026-06-22,44,Norway,Senegal,1X2,draw,,0.24286,3.55,3.59,,,0
+2026-06-22,44,Norway,Senegal,1X2,home,,0.56417,2.34,2.35,,,0
+2026-06-22,44,Norway,Senegal,1X2,away,,0.19297,3.26,3.22,,,0
+2026-06-22,44,Norway,Senegal,1X2,draw,,0.24286,3.55,3.57,,,0
 2026-06-26,64,Norway,France,1X2,away,,0.30099,1.78,1.78,,,0
 2026-06-26,64,Norway,France,1X2,home,,0.43136,4.39,4.39,,,0
 2026-06-26,64,Norway,France,1X2,draw,,0.26765,3.66,3.66,,,0
 2026-06-26,65,Senegal,Iraq,1X2,away,,0.15292,12.0,12.0,,,0
 2026-06-26,65,Senegal,Iraq,1X2,home,,0.57058,1.32,1.32,,,0
 2026-06-26,65,Senegal,Iraq,1X2,draw,,0.2765,5.25,5.25,,,0
-2026-06-22,41,Argentina,Austria,1X2,home,,0.63796,1.56,1.5,,,0
-2026-06-22,41,Argentina,Austria,1X2,away,,0.09888,6.0,6.5,,,0
+2026-06-22,41,Argentina,Austria,1X2,home,,0.63796,1.56,1.51,,,0
+2026-06-22,41,Argentina,Austria,1X2,away,,0.09888,6.0,6.25,,,0
 2026-06-22,41,Argentina,Austria,1X2,draw,,0.26316,3.75,3.95,,,0
 2026-06-22,43,Jordan,Algeria,1X2,away,,0.6602,1.61,1.61,,,0
 2026-06-22,43,Jordan,Algeria,1X2,home,,0.13926,6.26,6.36,,,0
@@ -501,8 +501,8 @@ date,match_num,home,away,market,selection,line,model_p,odds,close_odds,hg,ag,pla
 2026-06-27,67,Algeria,Austria,1X2,home,,0.41501,2.6,2.6,,,0
 2026-06-27,67,Algeria,Austria,1X2,away,,0.29151,2.25,2.25,,,0
 2026-06-27,67,Algeria,Austria,1X2,draw,,0.29348,2.8,2.8,,,0
-2026-06-27,67,Algeria,Austria,AH,home,0.5,0.70849,1.56,1.56,,,0
-2026-06-27,67,Algeria,Austria,AH,away,0.5,0.29151,2.45,2.45,,,0
+2026-06-27,67,Algeria,Austria,AH,home,0.5,0.70849,1.56,1.55,,,0
+2026-06-27,67,Algeria,Austria,AH,away,0.5,0.29151,2.45,2.47,,,0
 2026-06-27,71,Jordan,Argentina,1X2,away,,0.84268,1.17,1.17,,,0
 2026-06-27,71,Jordan,Argentina,1X2,home,,0.0345,15.0,14.0,,,0
 2026-06-27,71,Jordan,Argentina,1X2,draw,,0.12281,7.5,7.8,,,0
@@ -525,7 +525,7 @@ date,match_num,home,away,market,selection,line,model_p,odds,close_odds,hg,ag,pla
 2026-06-23,46,England,Ghana,1X2,draw,,0.18445,6.75,6.75,,,0
 2026-06-23,47,Panama,Croatia,1X2,away,,0.5354,1.52,1.52,,,0
 2026-06-23,47,Panama,Croatia,1X2,home,,0.20822,6.0,6.0,,,0
-2026-06-23,47,Panama,Croatia,1X2,draw,,0.25639,4.0,4.0,,,0
+2026-06-23,47,Panama,Croatia,1X2,draw,,0.25639,4.0,4.1,,,0
 2026-06-27,72,Panama,England,1X2,away,,0.71583,1.22,1.22,,,0
 2026-06-27,72,Panama,England,1X2,home,,0.09026,9.5,9.5,,,0
 2026-06-27,72,Panama,England,1X2,draw,,0.19391,7.5,7.5,,,0
@@ -541,32 +541,32 @@ date,match_num,home,away,market,selection,line,model_p,odds,close_odds,hg,ag,pla
 2026-06-24,54,Switzerland,Canada,1X2,away,,0.28807,3.3,3.3,,,0
 2026-06-24,54,Switzerland,Canada,1X2,home,,0.41263,2.5,2.5,,,0
 2026-06-24,54,Switzerland,Canada,1X2,draw,,0.29931,3.05,3.05,,,0
-2026-06-24,49,Bosnia and Herzegovina,Qatar,1X2,home,,0.58582,1.47,1.47,,,0
-2026-06-24,49,Bosnia and Herzegovina,Qatar,1X2,away,,0.16512,7.25,7.25,,,0
+2026-06-24,49,Bosnia and Herzegovina,Qatar,1X2,home,,0.58582,1.47,1.44,,,0
+2026-06-24,49,Bosnia and Herzegovina,Qatar,1X2,away,,0.16512,7.25,7.75,,,0
 2026-06-24,49,Bosnia and Herzegovina,Qatar,1X2,draw,,0.24906,4.75,4.75,,,0
-2026-06-24,52,Scotland,Brazil,1X2,away,,0.58866,1.36,1.36,,,0
-2026-06-24,52,Scotland,Brazil,1X2,home,,0.17084,7.5,7.5,,,0
-2026-06-24,52,Scotland,Brazil,1X2,draw,,0.2405,4.9,4.9,,,0
+2026-06-24,52,Scotland,Brazil,1X2,away,,0.58866,1.36,1.33,,,0
+2026-06-24,52,Scotland,Brazil,1X2,home,,0.17084,7.5,8.0,,,0
+2026-06-24,52,Scotland,Brazil,1X2,draw,,0.2405,4.9,5.1,,,0
 2026-06-24,51,Morocco,Haiti,1X2,away,,0.05363,17.0,17.0,,,0
 2026-06-24,51,Morocco,Haiti,1X2,home,,0.76681,1.16,1.16,,,0
 2026-06-24,51,Morocco,Haiti,1X2,draw,,0.17956,7.5,7.5,,,0
 2026-06-25,60,Turkey,United States,1X2,home,,0.37649,3.1,3.1,,,0
 2026-06-25,60,Turkey,United States,1X2,away,,0.35482,1.96,1.96,,,0
-2026-06-25,60,Turkey,United States,1X2,draw,,0.2687,4.2,4.2,,,0
-2026-06-25,58,Paraguay,Australia,1X2,away,,0.37475,3.95,3.95,,,0
+2026-06-25,60,Turkey,United States,1X2,draw,,0.2687,4.2,4.1,,,0
+2026-06-25,58,Paraguay,Australia,1X2,away,,0.37475,3.95,3.75,,,0
 2026-06-25,58,Paraguay,Australia,1X2,home,,0.27851,2.85,2.85,,,0
-2026-06-25,58,Paraguay,Australia,1X2,draw,,0.34674,2.15,2.15,,,0
+2026-06-25,58,Paraguay,Australia,1X2,draw,,0.34674,2.15,2.2,,,0
 2026-06-25,58,Paraguay,Australia,AH,away,0.5,0.37475,3.42,3.42,,,0
 2026-06-25,58,Paraguay,Australia,AH,home,0.5,0.62525,1.32,1.32,,,0
 2026-06-25,55,Curaçao,Ivory Coast,1X2,home,,0.06451,20.0,20.0,,,0
 2026-06-25,55,Curaçao,Ivory Coast,1X2,away,,0.75861,1.17,1.16,,,0
 2026-06-25,55,Curaçao,Ivory Coast,1X2,draw,,0.17688,8.0,8.25,,,0
-2026-06-25,56,Ecuador,Germany,1X2,home,,0.3312,3.0,3.0,,,0
-2026-06-25,56,Ecuador,Germany,1X2,away,,0.33236,1.82,1.82,,,0
-2026-06-25,56,Ecuador,Germany,1X2,draw,,0.33644,3.4,3.4,,,0
-2026-06-25,57,Japan,Sweden,1X2,home,,0.65621,2.1,2.1,,,0
-2026-06-25,57,Japan,Sweden,1X2,away,,0.14385,3.9,3.9,,,0
-2026-06-25,57,Japan,Sweden,1X2,draw,,0.19994,3.35,3.35,,,0
+2026-06-25,56,Ecuador,Germany,1X2,home,,0.3312,3.0,3.4,,,0
+2026-06-25,56,Ecuador,Germany,1X2,away,,0.33236,1.82,1.9,,,0
+2026-06-25,56,Ecuador,Germany,1X2,draw,,0.33644,3.4,3.85,,,0
+2026-06-25,57,Japan,Sweden,1X2,home,,0.65621,2.1,2.05,,,0
+2026-06-25,57,Japan,Sweden,1X2,away,,0.14385,3.9,4.15,,,0
+2026-06-25,57,Japan,Sweden,1X2,draw,,0.19994,3.35,3.3,,,0
 2026-06-25,59,Tunisia,Netherlands,1X2,away,,0.78141,1.17,1.16,,,0
 2026-06-25,59,Tunisia,Netherlands,1X2,home,,0.06288,20.0,21.0,,,0
 2026-06-25,59,Tunisia,Netherlands,1X2,draw,,0.15571,7.75,8.25,,,0
@@ -574,11 +574,11 @@ date,match_num,home,away,market,selection,line,model_p,odds,close_odds,hg,ag,pla
 2026-06-25,59,Tunisia,Netherlands,OU,under,3.0,0.43288,2.11,2.11,,,0
 2026-06-25,59,Tunisia,Netherlands,AH,away,2.5,0.32803,2.34,2.23,,,0
 2026-06-25,59,Tunisia,Netherlands,AH,home,2.5,0.67197,1.57,1.66,,,0
-2026-06-21,37,Belgium,Iran,1X2,home,,0.43422,1.46,1.44,,,0
-2026-06-21,37,Belgium,Iran,1X2,away,,0.29052,7.68,7.88,,,0
-2026-06-21,37,Belgium,Iran,1X2,draw,,0.27526,4.79,4.85,,,0
-2026-06-21,38,New Zealand,Egypt,1X2,away,,0.41669,1.56,1.6,,,0
-2026-06-21,38,New Zealand,Egypt,1X2,home,,0.25471,5.8,6.1,,,0
+2026-06-21,37,Belgium,Iran,1X2,home,,0.43422,1.46,1.43,,,0
+2026-06-21,37,Belgium,Iran,1X2,away,,0.29052,7.68,8.25,,,0
+2026-06-21,37,Belgium,Iran,1X2,draw,,0.27526,4.79,4.95,,,0
+2026-06-21,38,New Zealand,Egypt,1X2,away,,0.41669,1.56,1.56,,,0
+2026-06-21,38,New Zealand,Egypt,1X2,home,,0.25471,5.8,6.5,,,0
 2026-06-21,38,New Zealand,Egypt,1X2,draw,,0.3286,3.9,4.1,,,0
 2026-06-26,62,Egypt,Iran,1X2,home,,0.29146,2.14,2.14,,,0
 2026-06-26,62,Egypt,Iran,1X2,away,,0.37963,3.82,3.82,,,0
@@ -586,12 +586,12 @@ date,match_num,home,away,market,selection,line,model_p,odds,close_odds,hg,ag,pla
 2026-06-26,63,New Zealand,Belgium,1X2,away,,0.58923,1.25,1.25,,,0
 2026-06-26,63,New Zealand,Belgium,1X2,home,,0.17034,14.0,14.0,,,0
 2026-06-26,63,New Zealand,Belgium,1X2,draw,,0.24043,6.25,6.25,,,0
-2026-06-21,39,Spain,Saudi Arabia,1X2,away,,0.04685,30.0,33.0,,,0
+2026-06-21,39,Spain,Saudi Arabia,1X2,away,,0.04685,30.0,38.0,,,0
 2026-06-21,39,Spain,Saudi Arabia,1X2,home,,0.80866,1.12,1.11,,,0
 2026-06-21,39,Spain,Saudi Arabia,1X2,draw,,0.14449,10.6,11.5,,,0
-2026-06-21,40,Uruguay,Cape Verde,1X2,away,,0.11395,8.0,9.0,,,0
-2026-06-21,40,Uruguay,Cape Verde,1X2,home,,0.60303,1.45,1.47,,,0
-2026-06-21,40,Uruguay,Cape Verde,1X2,draw,,0.28302,4.0,4.3,,,0
+2026-06-21,40,Uruguay,Cape Verde,1X2,away,,0.11395,8.0,9.5,,,0
+2026-06-21,40,Uruguay,Cape Verde,1X2,home,,0.60303,1.45,1.45,,,0
+2026-06-21,40,Uruguay,Cape Verde,1X2,draw,,0.28302,4.0,4.35,,,0
 2026-06-26,61,Cape Verde,Saudi Arabia,1X2,home,,0.29669,2.85,2.85,,,0
 2026-06-26,61,Cape Verde,Saudi Arabia,1X2,away,,0.35655,2.35,2.35,,,0
 2026-06-26,61,Cape Verde,Saudi Arabia,1X2,draw,,0.34675,3.6,3.6,,,0
@@ -603,17 +603,17 @@ date,match_num,home,away,market,selection,line,model_p,odds,close_odds,hg,ag,pla
 2026-06-22,42,France,Iraq,1X2,home,,0.69566,1.08,1.08,,,0
 2026-06-22,42,France,Iraq,1X2,away,,0.09011,25.0,25.0,,,0
 2026-06-22,42,France,Iraq,1X2,draw,,0.21424,10.0,10.0,,,0
-2026-06-22,44,Norway,Senegal,1X2,home,,0.57124,2.34,2.34,,,0
-2026-06-22,44,Norway,Senegal,1X2,away,,0.18919,3.23,3.23,,,0
-2026-06-22,44,Norway,Senegal,1X2,draw,,0.23957,3.59,3.59,,,0
+2026-06-22,44,Norway,Senegal,1X2,home,,0.57124,2.34,2.35,,,0
+2026-06-22,44,Norway,Senegal,1X2,away,,0.18919,3.23,3.22,,,0
+2026-06-22,44,Norway,Senegal,1X2,draw,,0.23957,3.59,3.57,,,0
 2026-06-26,64,Norway,France,1X2,away,,0.31528,1.78,1.78,,,0
 2026-06-26,64,Norway,France,1X2,home,,0.41571,4.39,4.39,,,0
 2026-06-26,64,Norway,France,1X2,draw,,0.26901,3.66,3.66,,,0
 2026-06-26,65,Senegal,Iraq,1X2,away,,0.16165,12.0,12.0,,,0
 2026-06-26,65,Senegal,Iraq,1X2,home,,0.55608,1.32,1.32,,,0
 2026-06-26,65,Senegal,Iraq,1X2,draw,,0.28228,5.25,5.25,,,0
-2026-06-22,41,Argentina,Austria,1X2,home,,0.64252,1.51,1.5,,,0
-2026-06-22,41,Argentina,Austria,1X2,away,,0.09795,6.4,6.5,,,0
+2026-06-22,41,Argentina,Austria,1X2,home,,0.64252,1.51,1.51,,,0
+2026-06-22,41,Argentina,Austria,1X2,away,,0.09795,6.4,6.25,,,0
 2026-06-22,41,Argentina,Austria,1X2,draw,,0.25953,3.9,3.95,,,0
 2026-06-22,43,Jordan,Algeria,1X2,away,,0.62755,1.61,1.61,,,0
 2026-06-22,43,Jordan,Algeria,1X2,home,,0.15681,6.36,6.36,,,0
@@ -641,7 +641,7 @@ date,match_num,home,away,market,selection,line,model_p,odds,close_odds,hg,ag,pla
 2026-06-23,46,England,Ghana,1X2,draw,,0.18139,6.75,6.75,,,0
 2026-06-23,47,Panama,Croatia,1X2,away,,0.52757,1.52,1.52,,,0
 2026-06-23,47,Panama,Croatia,1X2,home,,0.20873,6.0,6.0,,,0
-2026-06-23,47,Panama,Croatia,1X2,draw,,0.2637,4.0,4.0,,,0
+2026-06-23,47,Panama,Croatia,1X2,draw,,0.2637,4.0,4.1,,,0
 2026-06-27,72,Panama,England,1X2,away,,0.72001,1.22,1.22,,,0
 2026-06-27,72,Panama,England,1X2,home,,0.08687,9.5,9.5,,,0
 2026-06-27,72,Panama,England,1X2,draw,,0.19312,7.5,7.5,,,0
@@ -657,40 +657,40 @@ date,match_num,home,away,market,selection,line,model_p,odds,close_odds,hg,ag,pla
 2026-06-24,54,Switzerland,Canada,1X2,away,,0.28807,3.3,3.3,,,0
 2026-06-24,54,Switzerland,Canada,1X2,home,,0.41263,2.5,2.5,,,0
 2026-06-24,54,Switzerland,Canada,1X2,draw,,0.29931,3.05,3.05,,,0
-2026-06-24,49,Bosnia and Herzegovina,Qatar,1X2,home,,0.58582,1.47,1.47,,,0
-2026-06-24,49,Bosnia and Herzegovina,Qatar,1X2,away,,0.16512,7.25,7.25,,,0
+2026-06-24,49,Bosnia and Herzegovina,Qatar,1X2,home,,0.58582,1.47,1.44,,,0
+2026-06-24,49,Bosnia and Herzegovina,Qatar,1X2,away,,0.16512,7.25,7.75,,,0
 2026-06-24,49,Bosnia and Herzegovina,Qatar,1X2,draw,,0.24906,4.75,4.75,,,0
-2026-06-24,52,Scotland,Brazil,1X2,away,,0.58866,1.36,1.36,,,0
-2026-06-24,52,Scotland,Brazil,1X2,home,,0.17084,7.5,7.5,,,0
-2026-06-24,52,Scotland,Brazil,1X2,draw,,0.2405,4.9,4.9,,,0
+2026-06-24,52,Scotland,Brazil,1X2,away,,0.58866,1.36,1.33,,,0
+2026-06-24,52,Scotland,Brazil,1X2,home,,0.17084,7.5,8.0,,,0
+2026-06-24,52,Scotland,Brazil,1X2,draw,,0.2405,4.9,5.1,,,0
 2026-06-24,51,Morocco,Haiti,1X2,away,,0.05363,17.0,17.0,,,0
 2026-06-24,51,Morocco,Haiti,1X2,home,,0.76681,1.16,1.16,,,0
 2026-06-24,51,Morocco,Haiti,1X2,draw,,0.17956,7.5,7.5,,,0
 2026-06-25,60,Turkey,United States,1X2,home,,0.37649,3.1,3.1,,,0
 2026-06-25,60,Turkey,United States,1X2,away,,0.35482,1.96,1.96,,,0
-2026-06-25,60,Turkey,United States,1X2,draw,,0.2687,4.2,4.2,,,0
-2026-06-25,58,Paraguay,Australia,1X2,away,,0.37475,3.95,3.95,,,0
+2026-06-25,60,Turkey,United States,1X2,draw,,0.2687,4.2,4.1,,,0
+2026-06-25,58,Paraguay,Australia,1X2,away,,0.37475,3.95,3.75,,,0
 2026-06-25,58,Paraguay,Australia,1X2,home,,0.27851,2.85,2.85,,,0
-2026-06-25,58,Paraguay,Australia,1X2,draw,,0.34674,2.15,2.15,,,0
+2026-06-25,58,Paraguay,Australia,1X2,draw,,0.34674,2.15,2.2,,,0
 2026-06-25,55,Curaçao,Ivory Coast,1X2,home,,0.06451,20.0,20.0,,,0
 2026-06-25,55,Curaçao,Ivory Coast,1X2,away,,0.75861,1.16,1.16,,,0
 2026-06-25,55,Curaçao,Ivory Coast,1X2,draw,,0.17688,8.25,8.25,,,0
-2026-06-25,56,Ecuador,Germany,1X2,home,,0.3312,3.0,3.0,,,0
-2026-06-25,56,Ecuador,Germany,1X2,away,,0.33236,1.82,1.82,,,0
-2026-06-25,56,Ecuador,Germany,1X2,draw,,0.33644,3.4,3.4,,,0
-2026-06-25,57,Japan,Sweden,1X2,home,,0.65621,2.1,2.1,,,0
-2026-06-25,57,Japan,Sweden,1X2,away,,0.14385,3.9,3.9,,,0
-2026-06-25,57,Japan,Sweden,1X2,draw,,0.19994,3.35,3.35,,,0
+2026-06-25,56,Ecuador,Germany,1X2,home,,0.3312,3.0,3.4,,,0
+2026-06-25,56,Ecuador,Germany,1X2,away,,0.33236,1.82,1.9,,,0
+2026-06-25,56,Ecuador,Germany,1X2,draw,,0.33644,3.4,3.85,,,0
+2026-06-25,57,Japan,Sweden,1X2,home,,0.65621,2.1,2.05,,,0
+2026-06-25,57,Japan,Sweden,1X2,away,,0.14385,3.9,4.15,,,0
+2026-06-25,57,Japan,Sweden,1X2,draw,,0.19994,3.35,3.3,,,0
 2026-06-25,59,Tunisia,Netherlands,1X2,away,,0.78141,1.16,1.16,,,0
 2026-06-25,59,Tunisia,Netherlands,1X2,home,,0.06288,21.0,21.0,,,0
 2026-06-25,59,Tunisia,Netherlands,1X2,draw,,0.15571,8.25,8.25,,,0
 2026-06-25,59,Tunisia,Netherlands,OU,over,3.5,0.34314,2.18,2.18,,,0
 2026-06-25,59,Tunisia,Netherlands,OU,under,3.5,0.65686,1.74,1.74,,,0
-2026-06-21,37,Belgium,Iran,1X2,home,,0.43422,1.44,1.44,,,0
-2026-06-21,37,Belgium,Iran,1X2,away,,0.29052,7.88,7.88,,,0
-2026-06-21,37,Belgium,Iran,1X2,draw,,0.27526,4.85,4.85,,,0
-2026-06-21,38,New Zealand,Egypt,1X2,away,,0.41669,1.6,1.6,,,0
-2026-06-21,38,New Zealand,Egypt,1X2,home,,0.25471,6.1,6.1,,,0
+2026-06-21,37,Belgium,Iran,1X2,home,,0.43422,1.44,1.43,,,0
+2026-06-21,37,Belgium,Iran,1X2,away,,0.29052,7.88,8.25,,,0
+2026-06-21,37,Belgium,Iran,1X2,draw,,0.27526,4.85,4.95,,,0
+2026-06-21,38,New Zealand,Egypt,1X2,away,,0.41669,1.6,1.56,,,0
+2026-06-21,38,New Zealand,Egypt,1X2,home,,0.25471,6.1,6.5,,,0
 2026-06-21,38,New Zealand,Egypt,1X2,draw,,0.3286,4.1,4.1,,,0
 2026-06-26,62,Egypt,Iran,1X2,home,,0.29146,2.14,2.14,,,0
 2026-06-26,62,Egypt,Iran,1X2,away,,0.37963,3.82,3.82,,,0
@@ -698,12 +698,12 @@ date,match_num,home,away,market,selection,line,model_p,odds,close_odds,hg,ag,pla
 2026-06-26,63,New Zealand,Belgium,1X2,away,,0.58923,1.25,1.25,,,0
 2026-06-26,63,New Zealand,Belgium,1X2,home,,0.17034,14.0,14.0,,,0
 2026-06-26,63,New Zealand,Belgium,1X2,draw,,0.24043,6.25,6.25,,,0
-2026-06-21,39,Spain,Saudi Arabia,1X2,away,,0.04685,33.0,33.0,,,0
+2026-06-21,39,Spain,Saudi Arabia,1X2,away,,0.04685,33.0,38.0,,,0
 2026-06-21,39,Spain,Saudi Arabia,1X2,home,,0.80866,1.11,1.11,,,0
 2026-06-21,39,Spain,Saudi Arabia,1X2,draw,,0.14449,11.5,11.5,,,0
-2026-06-21,40,Uruguay,Cape Verde,1X2,away,,0.11395,9.0,9.0,,,0
-2026-06-21,40,Uruguay,Cape Verde,1X2,home,,0.60303,1.47,1.47,,,0
-2026-06-21,40,Uruguay,Cape Verde,1X2,draw,,0.28302,4.3,4.3,,,0
+2026-06-21,40,Uruguay,Cape Verde,1X2,away,,0.11395,9.0,9.5,,,0
+2026-06-21,40,Uruguay,Cape Verde,1X2,home,,0.60303,1.47,1.45,,,0
+2026-06-21,40,Uruguay,Cape Verde,1X2,draw,,0.28302,4.3,4.35,,,0
 2026-06-26,61,Cape Verde,Saudi Arabia,1X2,home,,0.29669,2.85,2.85,,,0
 2026-06-26,61,Cape Verde,Saudi Arabia,1X2,away,,0.35655,2.35,2.35,,,0
 2026-06-26,61,Cape Verde,Saudi Arabia,1X2,draw,,0.34675,3.6,3.6,,,0
@@ -713,17 +713,17 @@ date,match_num,home,away,market,selection,line,model_p,odds,close_odds,hg,ag,pla
 2026-06-22,42,France,Iraq,1X2,home,,0.69566,1.08,1.08,,,0
 2026-06-22,42,France,Iraq,1X2,away,,0.09011,25.0,25.0,,,0
 2026-06-22,42,France,Iraq,1X2,draw,,0.21424,10.0,10.0,,,0
-2026-06-22,44,Norway,Senegal,1X2,home,,0.57124,2.34,2.34,,,0
-2026-06-22,44,Norway,Senegal,1X2,away,,0.18919,3.23,3.23,,,0
-2026-06-22,44,Norway,Senegal,1X2,draw,,0.23957,3.59,3.59,,,0
+2026-06-22,44,Norway,Senegal,1X2,home,,0.57124,2.34,2.35,,,0
+2026-06-22,44,Norway,Senegal,1X2,away,,0.18919,3.23,3.22,,,0
+2026-06-22,44,Norway,Senegal,1X2,draw,,0.23957,3.59,3.57,,,0
 2026-06-26,64,Norway,France,1X2,away,,0.31528,1.78,1.78,,,0
 2026-06-26,64,Norway,France,1X2,home,,0.41571,4.39,4.39,,,0
 2026-06-26,64,Norway,France,1X2,draw,,0.26901,3.66,3.66,,,0
 2026-06-26,65,Senegal,Iraq,1X2,away,,0.16165,12.0,12.0,,,0
 2026-06-26,65,Senegal,Iraq,1X2,home,,0.55608,1.32,1.32,,,0
 2026-06-26,65,Senegal,Iraq,1X2,draw,,0.28228,5.25,5.25,,,0
-2026-06-22,41,Argentina,Austria,1X2,home,,0.64252,1.5,1.5,,,0
-2026-06-22,41,Argentina,Austria,1X2,away,,0.09795,6.5,6.5,,,0
+2026-06-22,41,Argentina,Austria,1X2,home,,0.64252,1.5,1.51,,,0
+2026-06-22,41,Argentina,Austria,1X2,away,,0.09795,6.5,6.25,,,0
 2026-06-22,41,Argentina,Austria,1X2,draw,,0.25953,3.95,3.95,,,0
 2026-06-22,43,Jordan,Algeria,1X2,away,,0.62755,1.61,1.61,,,0
 2026-06-22,43,Jordan,Algeria,1X2,home,,0.15681,6.36,6.36,,,0
@@ -751,7 +751,117 @@ date,match_num,home,away,market,selection,line,model_p,odds,close_odds,hg,ag,pla
 2026-06-23,46,England,Ghana,1X2,draw,,0.18139,6.75,6.75,,,0
 2026-06-23,47,Panama,Croatia,1X2,away,,0.52757,1.52,1.52,,,0
 2026-06-23,47,Panama,Croatia,1X2,home,,0.20873,6.0,6.0,,,0
-2026-06-23,47,Panama,Croatia,1X2,draw,,0.2637,4.0,4.0,,,0
+2026-06-23,47,Panama,Croatia,1X2,draw,,0.2637,4.0,4.1,,,0
+2026-06-27,72,Panama,England,1X2,away,,0.72001,1.22,1.22,,,0
+2026-06-27,72,Panama,England,1X2,home,,0.08687,9.5,9.5,,,0
+2026-06-27,72,Panama,England,1X2,draw,,0.19312,7.5,7.5,,,0
+2026-06-27,69,Croatia,Ghana,1X2,home,,0.58462,1.6,1.6,,,0
+2026-06-27,69,Croatia,Ghana,1X2,away,,0.1545,6.0,6.0,,,0
+2026-06-27,69,Croatia,Ghana,1X2,draw,,0.26088,3.8,3.8,,,0
+2026-06-24,50,Czech Republic,Mexico,1X2,home,,0.17318,3.55,3.55,,,0
+2026-06-24,50,Czech Republic,Mexico,1X2,away,,0.55724,2.04,2.04,,,0
+2026-06-24,50,Czech Republic,Mexico,1X2,draw,,0.26958,4.0,4.0,,,0
+2026-06-24,53,South Africa,South Korea,1X2,home,,0.1535,5.85,5.85,,,0
+2026-06-24,53,South Africa,South Korea,1X2,away,,0.57868,1.64,1.64,,,0
+2026-06-24,53,South Africa,South Korea,1X2,draw,,0.26782,3.95,3.95,,,0
+2026-06-24,54,Switzerland,Canada,1X2,away,,0.28807,3.3,3.3,,,0
+2026-06-24,54,Switzerland,Canada,1X2,home,,0.41263,2.5,2.5,,,0
+2026-06-24,54,Switzerland,Canada,1X2,draw,,0.29931,3.05,3.05,,,0
+2026-06-24,49,Bosnia and Herzegovina,Qatar,1X2,home,,0.58582,1.44,1.44,,,0
+2026-06-24,49,Bosnia and Herzegovina,Qatar,1X2,away,,0.16512,7.75,7.75,,,0
+2026-06-24,49,Bosnia and Herzegovina,Qatar,1X2,draw,,0.24906,4.75,4.75,,,0
+2026-06-24,52,Scotland,Brazil,1X2,away,,0.58866,1.33,1.33,,,0
+2026-06-24,52,Scotland,Brazil,1X2,home,,0.17084,8.0,8.0,,,0
+2026-06-24,52,Scotland,Brazil,1X2,draw,,0.2405,5.1,5.1,,,0
+2026-06-24,51,Morocco,Haiti,1X2,away,,0.05363,17.0,17.0,,,0
+2026-06-24,51,Morocco,Haiti,1X2,home,,0.76681,1.16,1.16,,,0
+2026-06-24,51,Morocco,Haiti,1X2,draw,,0.17956,7.5,7.5,,,0
+2026-06-25,60,Turkey,United States,1X2,home,,0.37649,3.1,3.1,,,0
+2026-06-25,60,Turkey,United States,1X2,away,,0.35482,1.96,1.96,,,0
+2026-06-25,60,Turkey,United States,1X2,draw,,0.2687,4.1,4.1,,,0
+2026-06-25,58,Paraguay,Australia,1X2,away,,0.37475,3.75,3.75,,,0
+2026-06-25,58,Paraguay,Australia,1X2,home,,0.27851,2.85,2.85,,,0
+2026-06-25,58,Paraguay,Australia,1X2,draw,,0.34674,2.2,2.2,,,0
+2026-06-25,55,Curaçao,Ivory Coast,1X2,home,,0.06451,20.0,20.0,,,0
+2026-06-25,55,Curaçao,Ivory Coast,1X2,away,,0.75861,1.16,1.16,,,0
+2026-06-25,55,Curaçao,Ivory Coast,1X2,draw,,0.17688,8.25,8.25,,,0
+2026-06-25,56,Ecuador,Germany,1X2,home,,0.3312,3.4,3.4,,,0
+2026-06-25,56,Ecuador,Germany,1X2,away,,0.33236,1.9,1.9,,,0
+2026-06-25,56,Ecuador,Germany,1X2,draw,,0.33644,3.85,3.85,,,0
+2026-06-25,57,Japan,Sweden,1X2,home,,0.65621,2.05,2.05,,,0
+2026-06-25,57,Japan,Sweden,1X2,away,,0.14385,4.15,4.15,,,0
+2026-06-25,57,Japan,Sweden,1X2,draw,,0.19994,3.3,3.3,,,0
+2026-06-25,59,Tunisia,Netherlands,1X2,away,,0.78141,1.16,1.16,,,0
+2026-06-25,59,Tunisia,Netherlands,1X2,home,,0.06288,21.0,21.0,,,0
+2026-06-25,59,Tunisia,Netherlands,1X2,draw,,0.15571,8.25,8.25,,,0
+2026-06-21,37,Belgium,Iran,1X2,home,,0.43422,1.43,1.43,,,0
+2026-06-21,37,Belgium,Iran,1X2,away,,0.29052,8.25,8.25,,,0
+2026-06-21,37,Belgium,Iran,1X2,draw,,0.27526,4.95,4.95,,,0
+2026-06-21,38,New Zealand,Egypt,1X2,away,,0.41669,1.56,1.56,,,0
+2026-06-21,38,New Zealand,Egypt,1X2,home,,0.25471,6.5,6.5,,,0
+2026-06-21,38,New Zealand,Egypt,1X2,draw,,0.3286,4.1,4.1,,,0
+2026-06-26,62,Egypt,Iran,1X2,home,,0.29146,2.14,2.14,,,0
+2026-06-26,62,Egypt,Iran,1X2,away,,0.37963,3.82,3.82,,,0
+2026-06-26,62,Egypt,Iran,1X2,draw,,0.32891,3.08,3.08,,,0
+2026-06-26,63,New Zealand,Belgium,1X2,away,,0.58923,1.25,1.25,,,0
+2026-06-26,63,New Zealand,Belgium,1X2,home,,0.17034,14.0,14.0,,,0
+2026-06-26,63,New Zealand,Belgium,1X2,draw,,0.24043,6.25,6.25,,,0
+2026-06-21,39,Spain,Saudi Arabia,1X2,away,,0.04685,38.0,38.0,,,0
+2026-06-21,39,Spain,Saudi Arabia,1X2,home,,0.80866,1.11,1.11,,,0
+2026-06-21,39,Spain,Saudi Arabia,1X2,draw,,0.14449,11.5,11.5,,,0
+2026-06-21,40,Uruguay,Cape Verde,1X2,away,,0.11395,9.5,9.5,,,0
+2026-06-21,40,Uruguay,Cape Verde,1X2,home,,0.60303,1.45,1.45,,,0
+2026-06-21,40,Uruguay,Cape Verde,1X2,draw,,0.28302,4.35,4.35,,,0
+2026-06-26,61,Cape Verde,Saudi Arabia,1X2,home,,0.29669,2.85,2.85,,,0
+2026-06-26,61,Cape Verde,Saudi Arabia,1X2,away,,0.35655,2.35,2.35,,,0
+2026-06-26,61,Cape Verde,Saudi Arabia,1X2,draw,,0.34675,3.6,3.6,,,0
+2026-06-26,66,Uruguay,Spain,1X2,away,,0.52328,1.5,1.5,,,0
+2026-06-26,66,Uruguay,Spain,1X2,home,,0.17731,6.5,6.5,,,0
+2026-06-26,66,Uruguay,Spain,1X2,draw,,0.2994,4.3,4.3,,,0
+2026-06-22,42,France,Iraq,1X2,home,,0.69566,1.08,1.08,,,0
+2026-06-22,42,France,Iraq,1X2,away,,0.09011,25.0,25.0,,,0
+2026-06-22,42,France,Iraq,1X2,draw,,0.21424,10.0,10.0,,,0
+2026-06-22,44,Norway,Senegal,1X2,home,,0.57124,2.35,2.35,,,0
+2026-06-22,44,Norway,Senegal,1X2,away,,0.18919,3.22,3.22,,,0
+2026-06-22,44,Norway,Senegal,1X2,draw,,0.23957,3.57,3.57,,,0
+2026-06-26,64,Norway,France,1X2,away,,0.31528,1.78,1.78,,,0
+2026-06-26,64,Norway,France,1X2,home,,0.41571,4.39,4.39,,,0
+2026-06-26,64,Norway,France,1X2,draw,,0.26901,3.66,3.66,,,0
+2026-06-26,65,Senegal,Iraq,1X2,away,,0.16165,12.0,12.0,,,0
+2026-06-26,65,Senegal,Iraq,1X2,home,,0.55608,1.32,1.32,,,0
+2026-06-26,65,Senegal,Iraq,1X2,draw,,0.28228,5.25,5.25,,,0
+2026-06-22,41,Argentina,Austria,1X2,home,,0.64252,1.51,1.51,,,0
+2026-06-22,41,Argentina,Austria,1X2,away,,0.09795,6.25,6.25,,,0
+2026-06-22,41,Argentina,Austria,1X2,draw,,0.25953,3.95,3.95,,,0
+2026-06-22,43,Jordan,Algeria,1X2,away,,0.62755,1.61,1.61,,,0
+2026-06-22,43,Jordan,Algeria,1X2,home,,0.15681,6.36,6.36,,,0
+2026-06-22,43,Jordan,Algeria,1X2,draw,,0.21564,4.21,4.21,,,0
+2026-06-27,67,Algeria,Austria,1X2,home,,0.39355,2.6,2.6,,,0
+2026-06-27,67,Algeria,Austria,1X2,away,,0.30915,2.25,2.25,,,0
+2026-06-27,67,Algeria,Austria,1X2,draw,,0.29729,2.8,2.8,,,0
+2026-06-27,71,Jordan,Argentina,1X2,away,,0.83964,1.17,1.17,,,0
+2026-06-27,71,Jordan,Argentina,1X2,home,,0.03528,14.0,14.0,,,0
+2026-06-27,71,Jordan,Argentina,1X2,draw,,0.12507,7.8,7.8,,,0
+2026-06-23,48,Portugal,Uzbekistan,1X2,home,,0.56389,1.18,1.18,,,0
+2026-06-23,48,Portugal,Uzbekistan,1X2,away,,0.16557,12.5,12.5,,,0
+2026-06-23,48,Portugal,Uzbekistan,1X2,draw,,0.27054,7.0,7.0,,,0
+2026-06-23,45,Colombia,DR Congo,1X2,home,,0.58802,1.5,1.5,,,0
+2026-06-23,45,Colombia,DR Congo,1X2,away,,0.13437,8.0,8.0,,,0
+2026-06-23,45,Colombia,DR Congo,1X2,draw,,0.27762,4.35,4.35,,,0
+2026-06-23,45,Colombia,DR Congo,AH,home,-0.5,0.58802,1.53,1.53,,,0
+2026-06-23,45,Colombia,DR Congo,AH,away,-0.5,0.41198,2.52,2.52,,,0
+2026-06-27,68,Colombia,Portugal,1X2,home,,0.46835,3.55,3.55,,,0
+2026-06-27,68,Colombia,Portugal,1X2,away,,0.26417,2.12,2.12,,,0
+2026-06-27,68,Colombia,Portugal,1X2,draw,,0.26748,3.45,3.45,,,0
+2026-06-27,70,DR Congo,Uzbekistan,1X2,home,,0.33589,2.1,2.1,,,0
+2026-06-27,70,DR Congo,Uzbekistan,1X2,away,,0.27488,3.6,3.6,,,0
+2026-06-27,70,DR Congo,Uzbekistan,1X2,draw,,0.38924,3.6,3.6,,,0
+2026-06-23,46,England,Ghana,1X2,home,,0.75594,1.2,1.2,,,0
+2026-06-23,46,England,Ghana,1X2,away,,0.06267,11.5,11.5,,,0
+2026-06-23,46,England,Ghana,1X2,draw,,0.18139,6.75,6.75,,,0
+2026-06-23,47,Panama,Croatia,1X2,away,,0.52757,1.52,1.52,,,0
+2026-06-23,47,Panama,Croatia,1X2,home,,0.20873,6.0,6.0,,,0
+2026-06-23,47,Panama,Croatia,1X2,draw,,0.2637,4.1,4.1,,,0
 2026-06-27,72,Panama,England,1X2,away,,0.72001,1.22,1.22,,,0
 2026-06-27,72,Panama,England,1X2,home,,0.08687,9.5,9.5,,,0
 2026-06-27,72,Panama,England,1X2,draw,,0.19312,7.5,7.5,,,0
