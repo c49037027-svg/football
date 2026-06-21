@@ -173,6 +173,19 @@ def test_history_and_tune_weight(tmp_path, synthetic_df):
     assert tracker.tune_weight(tmp_path / "none.csv")["rows"] == []
 
 
+def test_tune_weight_incomplete_snapshot(tmp_path):
+    """快照某盤口只有單邊（缺一個選項）時，tune_weight 不該丟例外。"""
+    import pandas as pd
+    snap = tmp_path / "odds_log.csv"
+    # AH 只記了 home 一邊（缺 away）→ 舊版會 KeyError
+    df = pd.DataFrame([dict(date="d", match_num=1, home="A", away="B", market="AH",
+                            selection="home", line=-0.5, model_p=0.55, odds=1.95,
+                            close_odds=1.95, hg=2, ag=0, played=1)])
+    tracker.save_ledger(df, snap)
+    res = tracker.tune_weight(snap)   # 不丟例外
+    assert "rows" in res and res["n_matches"] == 1
+
+
 def test_clv_recorded(tmp_path):
     from footy.live.feed import MarketQuote
     import pandas as pd

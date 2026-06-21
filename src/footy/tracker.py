@@ -65,12 +65,13 @@ def _group_quotes(quotes, market):
 
 
 def _blended(model_ps: dict, sides: dict, order: list, weight: float) -> dict:
-    """sides={selection:odds}。兩邊齊全 → 去 vig 後與模型融合；否則退回純模型。"""
-    if all(s in sides for s in order):
+    """sides={selection:odds}。各邊齊全（含模型機率）→ 去 vig 後與模型融合；
+    否則退回純模型（只回有資料的選項，缺項略過，不丟例外）。"""
+    if all(s in sides for s in order) and all(s in model_ps for s in order):
         fair = remove_vig_proportional([sides[s] for s in order])
         bl = blend_probs([model_ps[s] for s in order], fair, weight)
         return dict(zip(order, bl))
-    return {s: model_ps[s] for s in order}
+    return {s: model_ps[s] for s in order if s in model_ps}
 
 
 _SEL_ZH = {"home": "主", "away": "客", "over": "大", "under": "小",

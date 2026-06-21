@@ -772,16 +772,11 @@ def render_worldcup_html(result, model, matches, title: str = "2026 世界盃預
         for g in sorted(result.groups))
 
     today_html = _today_section(matches, model, linked)
-    has_roi = bool(track_text) and "ROI" in track_text
-    track_note = ("均注 1 單位。有真實盤口時只記模型相對市場有正期望值(+EV)的推薦，"
-                  "並以下注/收盤賠率算實際 ROI 與 CLV（CLV>0 表示拿到的賠率優於收盤，"
-                  "是長期正收益的領先指標）。" if has_roi else
-                  "每場各推薦項目逐一記錄過/沒過；以模型機率為基準的自我校驗，"
-                  "尚無真實盤口故未計損益（勝率高 ≠ 賺錢）。")
-    track_html = (f"<div class='card'><div class='sec'>📒 模型推薦戰績</div>"
-                  f"<div class='small' style='white-space:pre-line;color:#cdd9e5'>"
-                  f"{html.escape(track_text)}</div>"
-                  f"<div class='small' style='margin-top:6px'>{track_note}</div></div>") if track_text else ""
+    # 推薦戰績/ROI/CLV 已移至「績效」頁；首頁僅給一個入口連結
+    track_html = ("<div class='card'><div class='sec'>📒 模型推薦戰績 & 下注績效</div>"
+                  "<div class='small' style='color:var(--muted)'>推薦勝率、真實盤口 ROI/CLV "
+                  "與權重校準都在 <a href='performance.html' style='color:var(--accent)'>"
+                  "→ 績效頁</a>。</div></div>")
 
     return f"""<!doctype html><html lang="zh-Hant"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
@@ -953,17 +948,31 @@ def _pending_body(pending):
         "務必等 CLV 累積出來驗證是否真有 value。</div></div>")
 
 
+def _track_card(track_text):
+    """模型推薦勝率卡（自我校驗，無賠率→只計勝率）。"""
+    if not track_text:
+        return ""
+    return (f"<div class='card'><div class='sec'>📒 模型推薦戰績（勝率自我校驗）</div>"
+            f"<div class='small' style='white-space:pre-line;color:#cdd9e5'>"
+            f"{html.escape(track_text)}</div>"
+            f"<div class='small' style='color:var(--muted);margin-top:6px'>"
+            f"涵蓋整屆（含已踢回填）的模型推薦過/沒過。<b>只計勝率、不含賠率</b>，"
+            f"故不代表損益（勝率高 ≠ 賺錢）；且回填場次模型可能已學進賽果，偏樂觀。"
+            f"真正的賺賠看下方真實盤口 ROI/CLV。</div></div>")
+
+
 def render_performance_page(hist, summary_obj=None, tune=None, pending=None,
-                            title="下注績效 & CLV") -> str:
-    """獨立績效頁：累積損益/CLV 折線、權重校準表、逐注紀錄。
+                            track_text=None, title="下注績效 & CLV") -> str:
+    """獨立績效頁：模型勝率卡 + 真實盤口累積損益/CLV 折線、權重校準、逐注紀錄。
 
     三種狀態：已有結算→完整圖表；已連結但全待結算→列出待結算 +EV 推薦；
-    完全沒有真實盤口下注→引導設定 ODDS_API_KEY。
+    完全沒有真實盤口下注→引導設定 ODDS_API_KEY。模型勝率卡三態皆顯示。
     """
     today = _dt.date.today().isoformat()
+    track_card = _track_card(track_text)
     if not hist:
         if pending:
-            return _perf_doc(title, today, _pending_body(pending))
+            return _perf_doc(title, today, track_card + _pending_body(pending))
         body = ("<div class='card'><div class='sec'>📈 尚無真實盤口下注紀錄</div>"
                 "<div class='small' style='color:var(--muted);line-height:1.7'>"
                 "需要部署環境設定 <code>ODDS_API_KEY</code>，系統才會抓真實盤口、"
@@ -972,7 +981,7 @@ def render_performance_page(hist, summary_obj=None, tune=None, pending=None,
                 "累積損益曲線、CLV 走勢、勝過收盤比例，以及用歷史快照回測的"
                 "<b>最佳融合權重建議</b>（把 <code>BLEND_WEIGHT</code> 從預設值校準成回測結果）。"
                 "</div></div>")
-        return _perf_doc(title, today, body)
+        return _perf_doc(title, today, track_card + body)
 
     last = hist[-1]
     pl_pts = [r["cum_pl"] for r in hist]
@@ -1033,7 +1042,7 @@ def render_performance_page(hist, summary_obj=None, tune=None, pending=None,
     note = ("<div class='small' style='color:var(--muted);margin-top:4px'>"
             "CLV（closing line value）= 你拿到的賠率 vs 收盤賠率；長期 CLV&gt;0 是"
             "判斷模型能否真正贏過市場最可靠的領先指標，比短期勝率/ROI 抗雜訊。</div>")
-    return _perf_doc(title, sub, kpis + note + charts + tune_html + log_html)
+    return _perf_doc(title, sub, track_card + kpis + note + charts + tune_html + log_html)
 
 
 _MK_ZH = {"1X2": "勝平負", "OU": "大小", "BTTS": "兩隊進球", "AH": "亞盤"}
@@ -1115,12 +1124,14 @@ def write_worldcup_site(result, model, matches, outdir, history=None,
     # 績效頁：已結算→圖表；已連結待結算→列出 +EV 推薦；皆無→引導訊息
     hist, tune_res, pending = [], None, []
     if ledger_path:
+        from . import tracker
+        if track_text is None:  # 勝率卡：呼叫端沒給就從帳本自算（獨立 try，不被其他步驟拖累）
+            try:
+                track_text = tracker.summary(ledger_path).text()
+            except Exception:  # noqa: BLE001
+                track_text = None
         try:
-            from . import tracker
             hist = tracker.history(ledger_path)
-            snap = str(Path(ledger_path).with_name("odds_log.csv"))
-            if Path(snap).exists():
-                tune_res = tracker.tune_weight(snap)
             df = tracker.load_ledger(ledger_path)
             pend = df[(df["source"] == "market") & (df["result"] == "pending")]
             for _, r in pend.iterrows():
@@ -1129,7 +1140,14 @@ def write_worldcup_site(result, model, matches, outdir, history=None,
                                 "line": r["line"], "odds": tracker._to_float(r["odds"]),
                                 "edge": tracker._to_float(r["edge"])})
         except Exception:  # noqa: BLE001
-            hist, tune_res, pending = [], None, []
+            hist, pending = [], []
+        snap = str(Path(ledger_path).with_name("odds_log.csv"))
+        if Path(snap).exists():
+            try:
+                tune_res = tracker.tune_weight(snap)
+            except Exception:  # noqa: BLE001
+                tune_res = None
     (outdir / "performance.html").write_text(
-        render_performance_page(hist, tune=tune_res, pending=pending), encoding="utf-8")
+        render_performance_page(hist, tune=tune_res, pending=pending,
+                                track_text=track_text), encoding="utf-8")
     return outdir, len(linked)
