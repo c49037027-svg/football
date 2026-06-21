@@ -921,11 +921,49 @@ def _line_svg(points, w=320, h=90, color="#7be0b0", zero=True):
             f"<circle cx='{last_x:.1f}' cy='{last_y:.1f}' r='3' fill='{color}'/></svg>")
 
 
-def render_performance_page(hist, summary_obj=None, tune=None,
+def _pending_body(pending):
+    """已連結真實盤口、但下注尚未結算時的頁面內容（列出待結算 +EV 推薦）。"""
+    rows = sorted(pending, key=lambda r: -(r.get("edge") or 0))
+    trs = ""
+    for r in rows[:60]:
+        line = f" {r['line']}" if str(r.get("line", "")) not in ("", "nan") else ""
+        edge = r.get("edge")
+        edge_s = f"{edge:+.1%}" if isinstance(edge, (int, float)) else "—"
+        odds = r.get("odds")
+        odds_s = f"{odds:.2f}" if isinstance(odds, (int, float)) else "—"
+        trs += (f"<tr><td>{str(r.get('date',''))[5:]}</td>"
+                f"<td class='tm'>{html.escape(zh(str(r.get('home',''))))} v "
+                f"{html.escape(zh(str(r.get('away',''))))}</td>"
+                f"<td>{_MK_ZH.get(r.get('market'), r.get('market'))} "
+                f"{html.escape(str(r.get('selection','')))}{line}</td>"
+                f"<td>{odds_s}</td>"
+                f"<td style='color:#7be0b0'>{edge_s}</td></tr>")
+    return (
+        "<div class='card'><div class='sec'>✅ 已連結真實盤口</div>"
+        f"<div class='small' style='color:#cdd9e5;line-height:1.7'>"
+        f"系統已抓盤口並記錄 <b>{len(pending)}</b> 注模型 +EV 推薦（均注 1 單位），"
+        "但這些比賽<b>尚未開賽</b>，所以還沒有損益。賽後每日建站會自動用"
+        "下注/收盤賠率結算，這裡就會出現累積損益曲線、CLV 走勢、勝過收盤比例，"
+        "以及回測的最佳融合權重建議。</div></div>"
+        "<div class='card'><div class='sec'>🎯 待結算的 +EV 推薦（依 edge 排序）</div>"
+        "<table><thead><tr><th>日期</th><th>對戰</th><th>下注</th><th>賠率</th>"
+        f"<th>edge</th></tr></thead><tbody>{trs}</tbody></table>"
+        "<div class='small' style='color:var(--muted);margin-top:6px'>"
+        "edge = 模型(融合市場後)機率 × 賠率 − 1，&gt;0 才下注。edge 高不代表穩贏，"
+        "務必等 CLV 累積出來驗證是否真有 value。</div></div>")
+
+
+def render_performance_page(hist, summary_obj=None, tune=None, pending=None,
                             title="下注績效 & CLV") -> str:
-    """獨立績效頁：累積損益/CLV 折線、權重校準表、逐注紀錄。"""
+    """獨立績效頁：累積損益/CLV 折線、權重校準表、逐注紀錄。
+
+    三種狀態：已有結算→完整圖表；已連結但全待結算→列出待結算 +EV 推薦；
+    完全沒有真實盤口下注→引導設定 ODDS_API_KEY。
+    """
     today = _dt.date.today().isoformat()
     if not hist:
+        if pending:
+            return _perf_doc(title, today, _pending_body(pending))
         body = ("<div class='card'><div class='sec'>📈 尚無真實盤口下注紀錄</div>"
                 "<div class='small' style='color:var(--muted);line-height:1.7'>"
                 "需要部署環境設定 <code>ODDS_API_KEY</code>，系統才會抓真實盤口、"
@@ -1074,8 +1112,8 @@ def write_worldcup_site(result, model, matches, outdir, history=None,
                         track_text=track_text)
     (outdir / "knockout.html").write_text(
         render_knockout_page(result, model, matches, linked), encoding="utf-8")
-    # 績效頁：累積損益/CLV + 權重校準（有帳本才有資料，否則顯示引導訊息）
-    hist, tune_res = [], None
+    # 績效頁：已結算→圖表；已連結待結算→列出 +EV 推薦；皆無→引導訊息
+    hist, tune_res, pending = [], None, []
     if ledger_path:
         try:
             from . import tracker
@@ -1083,8 +1121,15 @@ def write_worldcup_site(result, model, matches, outdir, history=None,
             snap = str(Path(ledger_path).with_name("odds_log.csv"))
             if Path(snap).exists():
                 tune_res = tracker.tune_weight(snap)
+            df = tracker.load_ledger(ledger_path)
+            pend = df[(df["source"] == "market") & (df["result"] == "pending")]
+            for _, r in pend.iterrows():
+                pending.append({"date": r["date"], "home": r["home"], "away": r["away"],
+                                "market": r["market"], "selection": r["selection"],
+                                "line": r["line"], "odds": tracker._to_float(r["odds"]),
+                                "edge": tracker._to_float(r["edge"])})
         except Exception:  # noqa: BLE001
-            hist, tune_res = [], None
+            hist, tune_res, pending = [], None, []
     (outdir / "performance.html").write_text(
-        render_performance_page(hist, tune=tune_res), encoding="utf-8")
+        render_performance_page(hist, tune=tune_res, pending=pending), encoding="utf-8")
     return outdir, len(linked)

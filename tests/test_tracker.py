@@ -67,8 +67,8 @@ def test_market_mode_ev_filter_and_roi(tmp_path, synthetic_df):
     model = dc.fit(synthetic_df, half_life_days=10_000)
     h, a = model.teams[0], model.teams[1]
     o = tracker.markets.outcome_1x2(model.score_matrix(h, a, neutral=True))
-    # 給主勝一個「高到必為 +EV」的賠率，客勝給很爛的賠率
-    big = round(2.0 / max(o["home"], 1e-6), 3)  # p*odds = 2 → edge ~ +100%
+    # 給主勝一個合理的 +EV 賠率（edge≈+30%，在 MAX_EDGE 內），客勝給很爛的賠率
+    big = round(1.3 / max(o["home"], 1e-6), 3)  # p*odds = 1.3 → edge ~ +30%
     quotes = [MarketQuote("1X2", "home", big),
               MarketQuote("1X2", "away", 1.01)]
     led = tmp_path / "m.csv"
@@ -105,6 +105,23 @@ def test_blending_shrinks_fake_edge(tmp_path, synthetic_df):
                                     odds_index={1: quotes}, weight=0.0, min_edge=0.0)
     assert n_market == 0
     assert n_model <= n_market + 1  # 純市場下注數不多於純模型
+
+
+def test_garbage_odds_rejected(tmp_path, synthetic_df):
+    """劣質賠率（和局 100.0）與超大 edge 不該被當 +EV 下注。"""
+    from footy.live.feed import MarketQuote
+    from footy.models import dixon_coles as dc
+    model = dc.fit(synthetic_df, half_life_days=10_000)
+    h, a = model.teams[0], model.teams[1]
+    quotes = [MarketQuote("1X2", "home", 1.80),
+              MarketQuote("1X2", "draw", 100.0),   # 髒資料
+              MarketQuote("1X2", "away", 1.05)]
+    led = tmp_path / "g.csv"
+    tracker.log_upcoming([_M(1, h, a)], model, led,
+                         odds_index={1: quotes}, weight=1.0, min_edge=0.0)
+    df = tracker.load_ledger(led)
+    # 不該出現對「和局 @100」的下注
+    assert not ((df["market"] == "1X2") & (df["selection"] == "draw")).any()
 
 
 def test_history_and_tune_weight(tmp_path, synthetic_df):
