@@ -67,8 +67,8 @@ def test_market_mode_ev_filter_and_roi(tmp_path, synthetic_df):
     model = dc.fit(synthetic_df, half_life_days=10_000)
     h, a = model.teams[0], model.teams[1]
     o = tracker.markets.outcome_1x2(model.score_matrix(h, a, neutral=True))
-    # 給主勝一個合理的 +EV 賠率（edge≈+30%，在 MAX_EDGE 內），客勝給很爛的賠率
-    big = round(1.3 / max(o["home"], 1e-6), 3)  # p*odds = 1.3 → edge ~ +30%
+    # 給主勝一個合理的 +EV 賠率（edge≈+18%，在 MAX_EDGE 內），客勝給很爛的賠率
+    big = round(1.18 / max(o["home"], 1e-6), 3)  # p*odds = 1.18 → edge ~ +18%
     quotes = [MarketQuote("1X2", "home", big),
               MarketQuote("1X2", "away", 1.01)]
     led = tmp_path / "m.csv"
@@ -149,8 +149,8 @@ def test_history_and_tune_weight(tmp_path, synthetic_df):
     model = dc.fit(synthetic_df, half_life_days=10_000)
     h, a = model.teams[0], model.teams[1]
     o = tracker.markets.outcome_1x2(model.score_matrix(h, a, neutral=True))
-    # 灌水主勝賠率 → 在高權重會被選為 +EV
-    quotes = [MarketQuote("1X2", "home", round(1.0 / o["home"] * 1.25, 3)),
+    # 灌水主勝賠率 → 在高權重會被選為 +EV（edge 在 MAX_EDGE 內）
+    quotes = [MarketQuote("1X2", "home", round(1.0 / o["home"] * 1.18, 3)),
               MarketQuote("1X2", "draw", round(1.0 / o["draw"] * 0.97, 3)),
               MarketQuote("1X2", "away", round(1.0 / o["away"] * 0.97, 3))]
     led, snap = tmp_path / "b.csv", tmp_path / "odds_log.csv"

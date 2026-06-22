@@ -25,9 +25,10 @@ LEDGER_COLS = ["date", "match_num", "home", "away", "market", "selection",
 _MARKET_ZH = {"1X2": "勝平負", "OU": "大小2.5", "BTTS": "兩隊進球", "AH": "亞盤"}
 _1X2_ZH = {"home": "主勝", "draw": "和", "away": "客勝"}
 STAKE = 1.0  # 均注：每注 1 單位
-# 盤口/期望值健全性過濾：擋掉劣質資料（如和局賠率 100.0 這種明顯異常價）
+# 盤口/期望值健全性過濾：擋掉劣質資料與「模型高估冷門」的假 value
 MAX_ODDS = 41.0   # 賠率 > 此值（隱含 < ~2.4%）視為髒資料，不採用
-MAX_EDGE = 0.50   # edge > 50% 幾乎必是壞資料或模型異常，不下注
+MAX_EDGE = 0.25   # edge > 25%：模型跟流動市場嚴重分歧，幾乎都是模型錯（含 longshot bias），不下注
+MIN_PROB = 0.08   # 融合後機率 < 8% 的極端冷門不下注（模型在尾端不可靠）
 # 市場融合權重（模型佔比）：1=純模型、0=純市場。可用環境變數覆寫。
 # 實證上純模型贏不過效率市場，故預設拉一半向市場，只賭真正的分歧。
 BLEND_WEIGHT = float(os.environ.get("BLEND_WEIGHT", "0.5"))
@@ -111,8 +112,9 @@ def _pick_bet(model_ps, sides, order, weight, min_edge):
         if s not in bl:
             continue
         edge = _ev_no_push(bl[s], odds)
-        # min_edge < edge <= MAX_EDGE：擋掉壞資料/模型異常造成的假高 edge
-        if min_edge < edge <= MAX_EDGE and (best is None or edge > best[2]):
+        # 過濾：min_edge < edge <= MAX_EDGE（擋假高 edge）且機率 >= MIN_PROB（擋極端冷門）
+        if (min_edge < edge <= MAX_EDGE and bl[s] >= MIN_PROB
+                and (best is None or edge > best[2])):
             best = (s, odds, edge, bl[s])
     return best
 
