@@ -949,16 +949,26 @@ def _pending_body(pending):
 
 
 def _track_card(track_text):
-    """模型推薦勝率卡（自我校驗，無賠率→只計勝率）。"""
+    """模型推薦勝率卡（次要：收合，自我校驗、無賠率→只計勝率，不代表收益）。"""
     if not track_text:
         return ""
-    return (f"<div class='card'><div class='sec'>📒 模型推薦戰績（勝率自我校驗）</div>"
-            f"<div class='small' style='white-space:pre-line;color:#cdd9e5'>"
+    return (f"<details class='card sec-collapse'><summary>📒 模型推薦勝率（參考用，非收益）</summary>"
+            f"<div class='small' style='white-space:pre-line;color:#cdd9e5;margin-top:8px'>"
             f"{html.escape(track_text)}</div>"
             f"<div class='small' style='color:var(--muted);margin-top:6px'>"
-            f"涵蓋整屆（含已踢回填）的模型推薦過/沒過。<b>只計勝率、不含賠率</b>，"
-            f"故不代表損益（勝率高 ≠ 賺錢）；且回填場次模型可能已學進賽果，偏樂觀。"
-            f"真正的賺賠看下方真實盤口 ROI/CLV。</div></div>")
+            f"涵蓋整屆（含已踢回填）的模型推薦過/沒過。<b>只計勝率、不含賠率，不代表收益</b>"
+            f"（勝率高 ≠ 賺錢）；回填場次模型可能已學進賽果，偏樂觀。收益看上方真實盤口 ROI/CLV。"
+            f"</div></details>")
+
+
+def _pl_hero(last):
+    """收益主視覺：大字累積損益 + ROI。"""
+    c = "#7be0b0" if last["cum_pl"] >= 0 else "#e06a6a"
+    return (f"<div class='hero'>"
+            f"<div class='hero-main'><span>累積收益（{last['n']} 注 · 均注 1 單位）</span>"
+            f"<b style='color:{c}'>{last['cum_pl']:+.2f}u</b></div>"
+            f"<div class='hero-side'><span>ROI</span><b style='color:{c}'>{last['cum_roi']:+.1%}</b></div>"
+            f"</div>")
 
 
 def render_performance_page(hist, summary_obj=None, tune=None, pending=None,
@@ -969,34 +979,32 @@ def render_performance_page(hist, summary_obj=None, tune=None, pending=None,
     完全沒有真實盤口下注→引導設定 ODDS_API_KEY。模型勝率卡三態皆顯示。
     """
     today = _dt.date.today().isoformat()
-    track_card = _track_card(track_text)
+    track_card = _track_card(track_text)  # 次要，放最下面
     if not hist:
         if pending:
-            return _perf_doc(title, today, track_card + _pending_body(pending))
-        body = ("<div class='card'><div class='sec'>📈 尚無真實盤口下注紀錄</div>"
+            return _perf_doc(title, today, _pending_body(pending) + track_card)
+        body = ("<div class='card'><div class='sec'>📈 尚無收益紀錄（無已結算的真實盤口下注）</div>"
                 "<div class='small' style='color:var(--muted);line-height:1.7'>"
                 "需要部署環境設定 <code>ODDS_API_KEY</code>，系統才會抓真實盤口、"
                 "只記模型相對市場有正期望值(+EV)的推薦，並在賽後用下注/收盤賠率"
                 "算實際 ROI 與 CLV。<br>累積足夠注數後，這裡會出現："
-                "累積損益曲線、CLV 走勢、勝過收盤比例，以及用歷史快照回測的"
-                "<b>最佳融合權重建議</b>（把 <code>BLEND_WEIGHT</code> 從預設值校準成回測結果）。"
-                "</div></div>")
-        return _perf_doc(title, today, track_card + body)
+                "<b>累積收益曲線、ROI、CLV 走勢</b>、勝過收盤比例，以及用歷史快照回測的"
+                "最佳融合權重建議。</div></div>")
+        return _perf_doc(title, today, body + track_card)
 
     last = hist[-1]
     pl_pts = [r["cum_pl"] for r in hist]
     clv_pts = [r["cum_clv"] * 100 for r in hist]
     pl_color = "#7be0b0" if last["cum_pl"] >= 0 else "#e06a6a"
+    hero = _pl_hero(last)
     kpis = (
         f"<div class='kpis'>"
-        f"<div class='kpi'><span>累積損益</span><b style='color:{pl_color}'>{last['cum_pl']:+.2f}u</b></div>"
-        f"<div class='kpi'><span>ROI</span><b style='color:{pl_color}'>{last['cum_roi']:+.1%}</b></div>"
         f"<div class='kpi'><span>注數</span><b>{last['n']}</b></div>"
         f"<div class='kpi'><span>平均 CLV</span><b>{last['cum_clv']:+.1%}</b></div>"
         f"<div class='kpi'><span>勝過收盤</span><b>{last['beat_rate']:.0%}</b></div>"
         f"</div>")
     charts = (
-        f"<div class='card'><div class='sec'>💰 累積損益（單位）</div>"
+        f"<div class='card'><div class='sec'>💰 累積收益（單位）</div>"
         f"{_line_svg(pl_pts, color=pl_color)}</div>"
         f"<div class='card'><div class='sec'>🎯 累積平均 CLV（%，&gt;0 長期領先指標）</div>"
         f"{_line_svg(clv_pts, color='#6ea8fe')}</div>")
@@ -1042,7 +1050,7 @@ def render_performance_page(hist, summary_obj=None, tune=None, pending=None,
     note = ("<div class='small' style='color:var(--muted);margin-top:4px'>"
             "CLV（closing line value）= 你拿到的賠率 vs 收盤賠率；長期 CLV&gt;0 是"
             "判斷模型能否真正贏過市場最可靠的領先指標，比短期勝率/ROI 抗雜訊。</div>")
-    return _perf_doc(title, sub, track_card + kpis + note + charts + tune_html + log_html)
+    return _perf_doc(title, sub, hero + kpis + charts + note + tune_html + log_html + track_card)
 
 
 _MK_ZH = {"1X2": "勝平負", "OU": "大小", "BTTS": "兩隊進球", "AH": "亞盤"}
@@ -1056,11 +1064,21 @@ def _perf_doc(title, sub, body):
 table{{width:100%;border-collapse:collapse;font-size:12px;background:var(--card);border-radius:12px;overflow:hidden}}
 th,td{{padding:6px 7px;text-align:center;border-bottom:1px solid var(--line)}}
 th{{color:var(--muted);font-size:11px}}td.tm{{text-align:left;font-weight:600}}
-.kpis{{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin:4px 0}}
+.kpis{{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:4px 0}}
 .kpi{{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:8px 6px;text-align:center}}
 .kpi span{{display:block;color:var(--muted);font-size:10px;margin-bottom:3px}}
 .kpi b{{font-size:15px}}
-@media(max-width:480px){{.kpis{{grid-template-columns:repeat(3,1fr)}}}}
+.hero{{display:flex;align-items:center;justify-content:space-between;gap:12px;
+background:linear-gradient(135deg,#11161c,#161d26);border:1px solid var(--line);
+border-radius:14px;padding:16px 18px;margin:4px 0 10px}}
+.hero-main span,.hero-side span{{display:block;color:var(--muted);font-size:12px;margin-bottom:4px}}
+.hero-main b{{font-size:34px;font-weight:800;line-height:1}}
+.hero-side{{text-align:right}}.hero-side b{{font-size:22px;font-weight:800}}
+.sec-collapse{{margin-top:14px}}
+.sec-collapse>summary{{cursor:pointer;font-weight:700;color:var(--muted);list-style:none}}
+.sec-collapse>summary::-webkit-details-marker{{display:none}}
+.sec-collapse>summary::before{{content:'▸ '}}.sec-collapse[open]>summary::before{{content:'▾ '}}
+@media(max-width:480px){{.kpis{{grid-template-columns:repeat(3,1fr)}}.hero-main b{{font-size:28px}}}}
 </style></head>
 <body><div class="wrap">
   {_navbar('perf')}
