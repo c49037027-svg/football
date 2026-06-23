@@ -548,6 +548,41 @@ def check_injuries(league, season):
         click.echo(f"[warn] 取 injuries 失敗：{e}")
 
 
+@cli.command("check-lineups")
+@click.option("--date", default=None, help="日期 YYYY-MM-DD（預設今天 UTC）")
+@click.option("--league", default=1, type=int, help="賽事 id（世界盃通常是 1）")
+@click.option("--season", default=2026, type=int)
+def check_lineups(date, league, season):
+    """診斷 api-football 是否涵蓋世界盃先發：印出某日各場 formation 與先發人數。"""
+    import datetime as _dt
+    from . import context
+    date = date or _dt.datetime.utcnow().strftime("%Y-%m-%d")
+    try:
+        fixtures = context.fetch_fixtures_by_date(date, league=league, season=season)
+    except Exception as e:  # noqa: BLE001
+        raise click.ClickException(str(e))
+    click.echo(f"{date}　league={league} season={season}：{len(fixtures)} 場")
+    if not fixtures:
+        click.echo("（當日無比賽，或方案不涵蓋此賽事）")
+        return
+    got = 0
+    for (h, a), fid in fixtures.items():
+        try:
+            lu = context.fetch_lineups(fid)
+        except Exception as e:  # noqa: BLE001
+            click.echo(f"  {h} vs {a}（fixture {fid}）：取先發失敗 {e}")
+            continue
+        if lu:
+            got += 1
+            desc = "　".join(f"{t}:{d.get('formation') or '?'}"
+                             f"({len(d.get('starters') or [])}人)" for t, d in lu.items())
+            click.echo(f"  ✅ {h} vs {a}：{desc}")
+        else:
+            click.echo(f"  ⏳ {h} vs {a}：先發未公布（通常開賽前 ~40 分才有）")
+    click.echo(f"\n結論：{got}/{len(fixtures)} 場已取得先發。"
+               f"{'先發資料可用 → 可建自動管線。' if got else '尚無先發（可能還太早、或方案不涵蓋世界盃）。'}")
+
+
 @cli.command("eval-intl")
 @click.option("--data", "data_path", default="data/intl.csv", help="國際賽 CSV（含 Elo/neutral）")
 @click.option("--since", default="2018-01-01", help="只對此日期後的比賽計分")

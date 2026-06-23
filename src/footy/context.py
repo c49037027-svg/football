@@ -263,6 +263,45 @@ def parse_lineups(payload: dict) -> dict[str, dict]:
     return out
 
 
+def fetch_fixtures_by_date(date: str, api_key: str | None = None,
+                           league: int = 1, season: int = 2026,
+                           timeout: float = 20.0) -> dict:
+    """抓某日該賽事所有比賽，回傳 {(home_name, away_name): fixture_id}（需 API_FOOTBALL_KEY）。"""
+    api_key = api_key or os.environ.get("API_FOOTBALL_KEY")
+    if not api_key:
+        raise RuntimeError("缺少 api-football key。請設環境變數 API_FOOTBALL_KEY。")
+    r = requests.get(f"{API_FOOTBALL_BASE}/fixtures",
+                     params={"league": league, "season": season, "date": date},
+                     headers={"x-apisports-key": api_key}, timeout=timeout)
+    r.raise_for_status()
+    out: dict = {}
+    for item in r.json().get("response", []):
+        teams = item.get("teams") or {}
+        h = (teams.get("home") or {}).get("name")
+        a = (teams.get("away") or {}).get("name")
+        fid = (item.get("fixture") or {}).get("id")
+        if h and a and fid is not None:
+            out[(h, a)] = fid
+    return out
+
+
+def fetch_lineups(fixture_id: int, api_key: str | None = None,
+                  timeout: float = 15.0) -> dict[str, dict]:
+    """抓某場比賽的先發陣容（formation + startXI）。需 API_FOOTBALL_KEY。
+
+    回傳 parse_lineups 的結果 {隊名: {formation, starters, start_ids}}；
+    先發未公布（通常開賽前 ~40 分才有）時回空 dict。
+    """
+    api_key = api_key or os.environ.get("API_FOOTBALL_KEY")
+    if not api_key:
+        raise RuntimeError("缺少 api-football key。請設環境變數 API_FOOTBALL_KEY。")
+    r = requests.get(f"{API_FOOTBALL_BASE}/fixtures/lineups",
+                     params={"fixture": fixture_id},
+                     headers={"x-apisports-key": api_key}, timeout=timeout)
+    r.raise_for_status()
+    return parse_lineups(r.json())
+
+
 def lineup_strength_adjustment(start_ids: list[int], baseline_ids: list[int],
                                player_rating: dict[int, float] | None = None,
                                max_swing: float = 0.20) -> float:
