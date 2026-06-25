@@ -236,6 +236,17 @@ def backfill(model_path, schedule, ledger):
     click.echo(tracker.summary(ledger).text())
 
 
+@cli.command("rebuild-ledger")
+@click.option("--ledger", default="data/bets.csv", help="戰績帳本 CSV")
+@click.option("--snap", default="data/odds_log.csv", help="賠率快照 CSV")
+def rebuild_ledger(ledger, snap):
+    """用賠率快照重建真實盤口戰績（模型推薦+快照賠率，已踢者結算收益）。"""
+    from . import tracker
+    n = tracker.rebuild_market_from_snapshots(ledger, snap)
+    click.echo(f"[rebuild] 由快照重建 {n} 筆真實盤口推薦")
+    click.echo(tracker.summary(ledger).text())
+
+
 @cli.command("tune-blend")
 @click.option("--snap", default="data/odds_log.csv", help="賠率快照（由 track/wc-site 累積）")
 def tune_blend(snap):

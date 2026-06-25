@@ -306,6 +306,86 @@ def backfill_played(matches, model, ledger_path, neutral=True):
     return len(rows)
 
 
+def _picks_from_snapshot_rows(rows):
+    """從某場的快照列（含賽前 model_p + 賠率），重建模型『最看好的一邊』。
+
+    用快照當時的 model_p（賽前機率，無 look-ahead）挑選；回傳 [(market, sel, line, odds)]。
+    """
+    from collections import defaultdict
+    by_mkt = defaultdict(list)
+    for r in rows:
+        od, mp = _to_float(r["odds"]), _to_float(r["model_p"])
+        if od is None or mp is None or not (1.0 < od <= MAX_ODDS):
+            continue
+        cl = _to_float(r["close_odds"]) or od
+        line = _to_float(r["line"])
+        by_mkt[r["market"]].append((r["selection"], line, od, mp, cl))
+    out = []  # (market, sel, line, odds, close_odds)
+    if by_mkt.get("1X2"):
+        s, _l, od, _mp, cl = max(by_mkt["1X2"], key=lambda x: x[3])
+        out.append(("1X2", s, "", od, cl))
+    ou = [x for x in by_mkt.get("OU", []) if x[1] == 2.5]
+    if ou:
+        s, _l, od, _mp, cl = max(ou, key=lambda x: x[3])
+        out.append(("OU", "大" if s == "over" else "小", 2.5, od, cl))
+    if by_mkt.get("BTTS"):
+        s, _l, od, _mp, cl = max(by_mkt["BTTS"], key=lambda x: x[3])
+        out.append(("BTTS", "是" if s == "yes" else "否", "", od, cl))
+    ah = by_mkt.get("AH", [])
+    if ah:
+        lines = defaultdict(dict)
+        for s, line, od, mp, cl in ah:
+            lines[line][s] = (od, mp, cl)
+        main, gap = None, 1e9
+        for line, sd in lines.items():
+            if "home" in sd and "away" in sd:
+                g = abs(sd["home"][0] - sd["away"][0])
+                if g < gap:
+                    gap, main = g, line
+        if main is None:
+            main = next(iter(lines))
+        sd = lines[main]
+        side = max(sd, key=lambda s: sd[s][1])  # 覆蓋機率較高側
+        out.append(("AH", "主" if side == "home" else "客", main, sd[side][0], sd[side][2]))
+    return out
+
+
+def rebuild_market_from_snapshots(ledger_path, snap_path):
+    """用賠率快照重建『真實盤口』戰績：丟掉舊 market 列，依模型推薦+快照賠率重記，
+    已踢者用快照賽果結算。回傳重建筆數。source=model（無快照場次）保留。"""
+    snaps = load_snapshots(snap_path)
+    if snaps.empty:
+        return 0
+    df = load_ledger(ledger_path)
+    df = df[df["source"] != "market"].copy()  # 移除舊的（冷門）市場列
+    new_rows, covered = [], set()
+    for num, g in snaps.groupby("match_num"):
+        rows = g.to_dict("records")
+        r0 = rows[0]
+        played = str(r0.get("played")) in ("1", "1.0")
+        hg, ag = _to_float(r0.get("hg")), _to_float(r0.get("ag"))
+        for market, sel, line, odds, close in _picks_from_snapshot_rows(rows):
+            result, pl = "pending", ""
+            if played and hg is not None and ag is not None:
+                w = _settle_outcome(market, sel, line, int(hg), int(ag))
+                result, pl = _label(w), round(_pl(w, odds), 4)
+            new_rows.append(dict(date=r0["date"], match_num=int(num),
+                                 home=r0["home"], away=r0["away"], market=market,
+                                 selection=sel, line=line, odds=round(odds, 3), edge="",
+                                 source="market", close_odds=round(close, 3),
+                                 result=result, pl=pl))
+            covered.add((int(num), market))
+    # 移除被市場列取代的 model 列（同場同盤口）
+    if covered and not df.empty:
+        keep = ~df.apply(lambda r: (int(r["match_num"]), r["market"]) in covered
+                         if str(r["match_num"]).strip() not in ("", "nan") else False, axis=1)
+        df = df[keep]
+    if new_rows:
+        df = pd.concat([df, pd.DataFrame(new_rows)], ignore_index=True)
+    save_ledger(df, ledger_path)
+    return len(new_rows)
+
+
 def refresh_close(ledger_path, odds_index):
     """把未結算 market 推薦的 close_odds 更新成目前最新賠率（逼近收盤）。"""
     df = load_ledger(ledger_path)
@@ -452,15 +532,20 @@ def prepare(matches, model, ledger_path, odds_index=None, min_edge=0.0,
     """
     log_upcoming(matches, model, ledger_path, odds_index=odds_index,
                  min_edge=min_edge, weight=weight)
+    results = {m.num: (m.hg, m.ag) for m in matches if m.played}
     if odds_index:
         refresh_close(ledger_path, odds_index)
         snap = snap_path or str(Path(ledger_path).with_name("odds_log.csv"))
         try:
             log_snapshots(matches, model, odds_index, snap)
-            settle_snapshots(snap, {m.num: (m.hg, m.ag) for m in matches if m.played})
-        except Exception:  # noqa: BLE001 - 快照失敗不影響主流程
+            settle_snapshots(snap, results)
+            settle(ledger_path, results)
+            # 由快照重建真實盤口戰績（模型推薦+快照賠率），自我修復、一致
+            rebuild_market_from_snapshots(ledger_path, snap)
+            return summary(ledger_path)
+        except Exception:  # noqa: BLE001 - 快照/重建失敗不影響主流程
             pass
-    settle(ledger_path, {m.num: (m.hg, m.ag) for m in matches if m.played})
+    settle(ledger_path, results)
     return summary(ledger_path)
 
 
