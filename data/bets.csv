@@ -222,18 +222,18 @@ date,match_num,home,away,market,selection,line,odds,edge,source,close_odds,resul
 2026-06-24,49,Bosnia and Herzegovina,Qatar,1X2,away,,7.25,0.1271,market,7.55,loss,-1.0
 2026-06-24,52,Scotland,Brazil,1X2,draw,,5.1,0.0593,market,5.6,loss,-1.0
 2026-06-24,51,Morocco,Haiti,1X2,draw,,7.5,0.1286,market,7.5,loss,-1.0
-2026-06-25,60,Turkey,United States,1X2,draw,,4.2,0.0101,market,4.1,pending,
+2026-06-25,60,Turkey,United States,1X2,draw,,4.2,0.0101,market,4.2,pending,
 2026-06-20,34,Germany,Ivory Coast,1X2,away,,7.0,0.428,market,2.55,loss,-1.0
 2026-06-20,33,Ecuador,Curaçao,1X2,draw,,10.0,0.0948,market,8.5,win,9.0
 2026-06-25,55,Curaçao,Ivory Coast,1X2,home,,22.5,0.2133,market,19.0,pending,
 2026-06-25,55,Curaçao,Ivory Coast,OU,小,3.0,2.1,0.1034,market,2.14,pending,
 2026-06-25,55,Curaçao,Ivory Coast,AH,主,2.5,1.72,0.0759,market,1.67,pending,
-2026-06-25,56,Ecuador,Germany,AH,主,0.5,2.13,0.257,market,1.93,pending,
+2026-06-25,56,Ecuador,Germany,AH,主,0.5,2.13,0.257,market,2.42,pending,
 2026-06-20,35,Netherlands,Sweden,1X2,draw,,100.0,19.9875,market,100.0,loss,-1.0
 2026-06-20,35,Netherlands,Sweden,OU,小,6.5,1.21,0.028,market,1.21,win,0.21
 2026-06-20,36,Tunisia,Japan,AH,客,0.5,1.54,0.0356,market,1.54,win,0.54
 2026-06-25,57,Japan,Sweden,AH,主,-0.5,2.06,0.191,market,1.89,pending,
-2026-06-25,59,Tunisia,Netherlands,1X2,draw,,5.34,0.0712,market,11.0,pending,
+2026-06-25,59,Tunisia,Netherlands,1X2,draw,,5.34,0.0712,market,11.5,pending,
 2026-06-21,37,Belgium,Iran,1X2,away,,7.68,0.6204,market,8.25,loss,-1.0
 2026-06-21,37,Belgium,Iran,OU,小,2.5,2.06,0.0164,market,2.06,win,1.06
 2026-06-21,38,New Zealand,Egypt,1X2,home,,5.75,0.1394,market,6.5,loss,-1.0
@@ -242,15 +242,15 @@ date,match_num,home,away,market,selection,line,odds,edge,source,close_odds,resul
 2026-06-21,39,Spain,Saudi Arabia,1X2,away,,37.0,0.4144,market,38.0,loss,-1.0
 2026-06-21,39,Spain,Saudi Arabia,OU,小,3.5,1.71,0.0726,market,1.93,loss,-1.0
 2026-06-21,40,Uruguay,Cape Verde,1X2,draw,,4.25,0.0864,market,4.35,win,3.25
-2026-06-26,66,Uruguay,Spain,1X2,draw,,4.4,0.1468,market,4.3,pending,
+2026-06-26,66,Uruguay,Spain,1X2,draw,,4.4,0.1468,market,4.2,pending,
 2026-06-26,66,Uruguay,Spain,AH,主,1.5,1.52,0.0467,market,1.59,pending,
 2026-06-22,42,France,Iraq,1X2,away,,25.0,0.6162,market,30.0,loss,-1.0
-2026-06-26,64,Norway,France,AH,主,0.5,2.0,0.1755,market,2.23,pending,
+2026-06-26,64,Norway,France,AH,主,0.5,2.0,0.1755,market,2.28,pending,
 2026-06-26,65,Senegal,Iraq,1X2,away,,12.0,0.4023,market,14.0,pending,
 2026-06-26,65,Senegal,Iraq,AH,客,-1.5,1.88,0.1332,market,2.2,pending,
 2026-06-23,48,Portugal,Uzbekistan,1X2,away,,13.5,0.6526,market,17.0,loss,-1.0
 2026-06-23,45,Colombia,DR Congo,1X2,draw,,4.35,0.0966,market,4.1,loss,-1.0
-2026-06-27,68,Colombia,Portugal,AH,主,0.5,1.81,0.1437,market,1.89,pending,
+2026-06-27,68,Colombia,Portugal,AH,主,0.5,1.81,0.1437,market,1.98,pending,
 2026-06-23,46,England,Ghana,1X2,draw,,6.75,0.0921,market,8.0,win,5.75
 2026-06-23,47,Panama,Croatia,1X2,home,,6.0,0.09,market,6.75,loss,-1.0
 2026-06-23,47,Panama,Croatia,AH,主,0.5,2.48,0.053,market,2.49,loss,-1.0
@@ -260,10 +260,10 @@ date,match_num,home,away,market,selection,line,odds,edge,source,close_odds,resul
 2026-06-25,55,Curaçao,Ivory Coast,1X2,draw,,9.6,0.3037,market,8.2,pending,
 2026-06-27,70,DR Congo,Uzbekistan,AH,客,-0.5,1.75,0.0654,market,2.06,pending,
 2026-06-24,52,Scotland,Brazil,1X2,home,,7.5,0.1068,market,9.5,loss,-1.0
-2026-06-25,59,Tunisia,Netherlands,1X2,home,,20.0,0.1125,market,25.0,pending,
+2026-06-25,59,Tunisia,Netherlands,1X2,home,,20.0,0.1125,market,30.0,pending,
 2026-06-21,37,Belgium,Iran,1X2,draw,,4.79,0.1476,market,4.95,win,3.79
 2026-06-26,63,New Zealand,Belgium,1X2,draw,,6.25,0.2361,market,8.35,pending,
-2026-06-27,71,Jordan,Argentina,OU,小,3.0,1.91,0.006,market,1.87,pending,
+2026-06-27,71,Jordan,Argentina,OU,小,3.0,1.91,0.006,market,1.89,pending,
 2026-06-27,71,Jordan,Argentina,AH,客,1.5,1.65,0.0007,market,1.65,pending,
 2026-06-23,48,Portugal,Uzbekistan,1X2,draw,,7.0,0.414,market,9.5,loss,-1.0
 2026-06-11,1,Mexico,South Africa,1X2,home,,,,model,,win,
@@ -349,7 +349,7 @@ date,match_num,home,away,market,selection,line,odds,edge,source,close_odds,resul
 2026-06-14,12,Sweden,Tunisia,OU,大,2.5,,,model,,win,
 2026-06-15,14,Iran,New Zealand,OU,小,2.5,,,model,,loss,
 2026-06-17,22,Ghana,Panama,BTTS,否,,,,model,,win,
-2026-06-25,56,Ecuador,Germany,1X2,draw,,3.85,0.1105,market,5.2,pending,
+2026-06-25,56,Ecuador,Germany,1X2,draw,,3.85,0.1105,market,4.8,pending,
 2026-06-13,6,Brazil,Morocco,AH,主,0.25,,,model,,win,
 2026-06-19,31,Turkey,Paraguay,1X2,home,,,,model,,loss,
 2026-06-19,31,Turkey,Paraguay,AH,主,-0.0,,,model,,loss,
@@ -365,7 +365,7 @@ date,match_num,home,away,market,selection,line,odds,edge,source,close_odds,resul
 2026-06-26,64,Norway,France,OU,小,2.5,2.2,0.0246,market,2.2,pending,
 2026-06-22,42,France,Iraq,AH,主,-1.75,,,model,,win,
 2026-06-24,54,Switzerland,Canada,1X2,away,,3.45,0.0066,market,3.45,loss,-1.0
-2026-06-26,66,Uruguay,Spain,1X2,home,,7.5,0.1085,market,7.5,pending,
+2026-06-26,66,Uruguay,Spain,1X2,home,,7.5,0.1085,market,7.8,pending,
 2026-06-27,67,Algeria,Austria,OU,大,2.0,1.92,0.0067,market,2.02,pending,
 2026-06-18,25,Canada,Qatar,AH,客,-2.0,,,model,,loss,
 2026-06-20,36,Tunisia,Japan,OU,大,2.5,,,model,,win,
@@ -383,3 +383,12 @@ date,match_num,home,away,market,selection,line,odds,edge,source,close_odds,resul
 2026-06-24,51,Morocco,Haiti,OU,大,2.5,,,model,,win,
 2026-06-22,42,France,Iraq,OU,大,2.5,,,model,,win,
 2026-06-17,22,Ghana,Panama,AH,客,-0.25,,,model,,loss,
+2026-06-12,3,Canada,Bosnia and Herzegovina,AH,客,-1.0,,,model,,win,
+2026-06-13,6,Brazil,Morocco,1X2,draw,,,,model,,win,
+2026-06-16,18,Austria,Jordan,BTTS,否,,,,model,,loss,
+2026-06-25,57,Japan,Sweden,BTTS,是,,,,model,,pending,
+2026-06-25,59,Tunisia,Netherlands,OU,大,2.5,,,model,,pending,
+2026-06-26,62,Egypt,Iran,1X2,draw,,2.74,,market,2.74,pending,
+2026-06-26,61,Cape Verde,Saudi Arabia,1X2,home,,2.65,,market,2.65,pending,
+2026-06-26,64,Norway,France,OU,大,2.5,1.67,,market,1.67,pending,
+2026-06-27,70,DR Congo,Uzbekistan,1X2,home,,1.78,,market,1.78,pending,
