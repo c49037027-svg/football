@@ -139,23 +139,41 @@ def _market_edges(model, home, away, quotes, neutral=True, min_edge=0.0,
     return out
 
 
-def _recommendations(model, home, away, neutral=True, min_lean=0.03):
-    """無盤口模式：回傳該場模型推薦項目 [(market, selection, line), ...]。"""
+def _recommendations(model, home, away, neutral=True, min_lean=0.03, quotes=None):
+    """模型對該場的推薦（它最看好的一邊，非 +EV 冷門）。
+
+    回傳 [(market, selection, line, odds_or_None), ...]。
+    quotes 給定時附上該選項的真實賠率（亞盤用市場主盤線）；劣質賠率(>MAX_ODDS)當無賠率。
+    """
     mat = model.score_matrix(home, away, neutral=neutral)
+
+    def odds_for(market, sel, line):
+        if not quotes:
+            return None
+        od = _lookup_odds(quotes, market, sel, line)
+        return od if (od and 1.0 < od <= MAX_ODDS) else None
+
     recs = []
     o = markets.outcome_1x2(mat)
-    recs.append(("1X2", max(o, key=o.get), ""))
+    s = max(o, key=o.get)                         # 1X2：模型機率最高（通常是熱門）
+    recs.append(("1X2", s, "", odds_for("1X2", s, "")))
     ou = markets.over_under(mat, 2.5)
-    if abs(ou["over_win"] - 0.5) >= min_lean:
-        recs.append(("OU", "大" if ou["over_win"] >= 0.5 else "小", 2.5))
+    if abs(ou["over_win"] - 0.5) >= min_lean:     # 有明顯方向才推
+        sel = "大" if ou["over_win"] >= 0.5 else "小"
+        recs.append(("OU", sel, 2.5, odds_for("OU", sel, 2.5)))
     bt = markets.btts(mat)
     if abs(bt["yes"] - 0.5) >= min_lean:
-        recs.append(("BTTS", "是" if bt["yes"] >= 0.5 else "否", ""))
-    lam, mu = model.expected_goals(home, away, neutral=neutral)
-    hl = markets.main_handicap_line(lam - mu)
-    ah_h = markets.asian_handicap(mat, hl, "home")
+        sel = "是" if bt["yes"] >= 0.5 else "否"
+        recs.append(("BTTS", sel, "", odds_for("BTTS", sel, "")))
+    # 亞盤：有盤口用市場主盤線，否則用模型自開線；取模型覆蓋的一邊
+    line = main_ah_line(quotes) if quotes else None
+    if line is None:
+        lam, mu = model.expected_goals(home, away, neutral=neutral)
+        line = markets.main_handicap_line(lam - mu)
+    ah_h = markets.asian_handicap(mat, float(line), "home")
     cover_h = ah_h.p_win + ah_h.p_half_win + 0.5 * ah_h.p_push
-    recs.append(("AH", "主" if cover_h >= 0.5 else "客", hl))
+    side = "主" if cover_h >= 0.5 else "客"
+    recs.append(("AH", side, line, odds_for("AH", side, line)))
     return recs
 
 
@@ -234,11 +252,11 @@ def _to_float(x):
 
 def log_upcoming(matches, model, ledger_path, neutral=True,
                  odds_index=None, min_edge=0.0, weight=None):
-    """記錄未開賽推薦（已存在不重複）。回傳新增筆數。
+    """記錄未開賽的模型推薦（它最看好的一邊；已存在不重複）。回傳新增筆數。
 
-    odds_index：{match_num: [MarketQuote...]}。給定時走「+EV 真實盤口」模式
-    （市場去 vig 後與模型融合，只記仍有正期望值的推薦）；None 則走勝率模式。
-    weight：模型融合權重（None=用 BLEND_WEIGHT）。
+    記的是模型的真實推薦（1X2 取機率最高、OU/BTTS 取明顯偏向、AH 取覆蓋側），
+    用來追蹤「推薦準確度 + 收益」。odds_index 給定時附真實賠率→可算損益/CLV
+    （source=market）；否則只計勝率（source=model）。
     """
     df = load_ledger(ledger_path)
     seen = set(zip(df["match_num"].astype(str), df["market"], df["selection"].astype(str)))
@@ -246,28 +264,16 @@ def log_upcoming(matches, model, ledger_path, neutral=True,
     for m in matches:
         if m.played or m.team1 not in model.attack or m.team2 not in model.attack:
             continue
-        if odds_index is not None:
-            quotes = odds_index.get(m.num)
-            if not quotes:
-                continue  # 沒盤口 → 不下注
-            for r in _market_edges(model, m.team1, m.team2, quotes, neutral,
-                                   min_edge, weight):
-                if (str(m.num), r["market"], str(r["selection"])) in seen:
-                    continue
-                rows.append(dict(date=m.date, match_num=m.num, home=m.team1,
-                                 away=m.team2, market=r["market"],
-                                 selection=r["selection"], line=r["line"],
-                                 odds=round(r["odds"], 3), edge=round(r["edge"], 4),
-                                 source="market", close_odds=round(r["odds"], 3),
-                                 result="pending", pl=""))
-        else:
-            for market, sel, line in _recommendations(model, m.team1, m.team2, neutral):
-                if (str(m.num), market, str(sel)) in seen:
-                    continue
-                rows.append(dict(date=m.date, match_num=m.num, home=m.team1,
-                                 away=m.team2, market=market, selection=sel,
-                                 line=line, odds="", edge="", source="model",
-                                 close_odds="", result="pending", pl=""))
+        quotes = odds_index.get(m.num) if odds_index else None
+        for market, sel, line, odds in _recommendations(model, m.team1, m.team2,
+                                                         neutral, quotes=quotes):
+            if (str(m.num), market, str(sel)) in seen:
+                continue
+            od = round(odds, 3) if odds else ""
+            rows.append(dict(date=m.date, match_num=m.num, home=m.team1, away=m.team2,
+                             market=market, selection=sel, line=line, odds=od, edge="",
+                             source="market" if odds else "model",
+                             close_odds=od, result="pending", pl=""))
     if rows:
         df = pd.concat([df, pd.DataFrame(rows)], ignore_index=True)
         save_ledger(df, ledger_path)
@@ -287,7 +293,7 @@ def backfill_played(matches, model, ledger_path, neutral=True):
     for m in matches:
         if not m.played or m.team1 not in model.attack or m.team2 not in model.attack:
             continue
-        for market, sel, line in _recommendations(model, m.team1, m.team2, neutral):
+        for market, sel, line, _odds in _recommendations(model, m.team1, m.team2, neutral):
             if (str(m.num), market, str(sel)) in seen:
                 continue
             w = _settle_outcome(market, sel, line, int(m.hg), int(m.ag))

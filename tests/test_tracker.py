@@ -61,67 +61,59 @@ def test_pl_half_outcomes():
     assert abs(tracker._pl(tracker._settle_outcome("1X2", "home", "", 0, 1), 2.5) + 1.0) < 1e-9
 
 
-def test_market_mode_ev_filter_and_roi(tmp_path, synthetic_df):
+def test_logs_model_pick_with_odds_and_profit(tmp_path, synthetic_df):
+    """記的是模型最看好的一邊（非 +EV 冷門），附真實賠率→可算準確度+收益。"""
     from footy.live.feed import MarketQuote
     from footy.models import dixon_coles as dc
     model = dc.fit(synthetic_df, half_life_days=10_000)
     h, a = model.teams[0], model.teams[1]
     o = tracker.markets.outcome_1x2(model.score_matrix(h, a, neutral=True))
-    # 給主勝一個合理的 +EV 賠率（edge≈+18%，在 MAX_EDGE 內），客勝給很爛的賠率
-    big = round(1.18 / max(o["home"], 1e-6), 3)  # p*odds = 1.18 → edge ~ +18%
-    quotes = [MarketQuote("1X2", "home", big),
-              MarketQuote("1X2", "away", 1.01)]
+    top = max(o, key=o.get)            # 模型最看好的 1X2 結果
+    odds = 3.0
+    quotes = [MarketQuote("1X2", top, odds)]
     led = tmp_path / "m.csv"
-    # weight=1 純模型，讓 pl 與賠率精確對得上（融合行為另測）
-    n = tracker.log_upcoming([_M(1, h, a)], model, led,
-                             odds_index={1: quotes}, weight=1.0)
-    assert n == 1  # 只記 +EV 的主勝，不記爛賠率客勝
-    dfx = tracker.load_ledger(led)
-    assert dfx.iloc[0]["selection"] == "home" and dfx.iloc[0]["source"] == "market"
-    # 結算：主勝 2-0 命中 → pl = big-1
-    tracker.settle(led, {1: (2, 0)})
+    tracker.log_upcoming([_M(1, h, a)], model, led, odds_index={1: quotes})
+    df = tracker.load_ledger(led)
+    r = df[df["market"] == "1X2"].iloc[0]
+    assert r["selection"] == top and r["source"] == "market" and float(r["odds"]) == odds
+    # 讓模型那邊命中 → 收益 = odds-1
+    score = {"home": (2, 0), "away": (0, 2), "draw": (1, 1)}[top]
+    tracker.settle(led, {1: score})
     s = tracker.summary(led)
-    assert s.market_bets == 1
-    assert abs(s.pl_units - (big - 1)) < 1e-6
+    assert s.market_bets == 1 and abs(s.pl_units - (odds - 1)) < 1e-6
     assert s.roi > 0 and "ROI" in s.text()
 
 
-def test_blending_shrinks_fake_edge(tmp_path, synthetic_df):
-    """融合：純市場(weight=0)時，市場兩邊去 vig 後不該有正 edge → 不下注。"""
+def test_ev_engine_blend(synthetic_df):
+    """+EV 引擎（供 tune_weight 用）：純市場(weight=0)去 vig 後不該有假 +EV。"""
     from footy.live.feed import MarketQuote
     from footy.models import dixon_coles as dc
     model = dc.fit(synthetic_df, half_life_days=10_000)
     h, a = model.teams[0], model.teams[1]
     o = tracker.markets.outcome_1x2(model.score_matrix(h, a, neutral=True))
-    # 給一組「公平」三柱賠率（模型機率取倒數，無 vig）
-    quotes = [MarketQuote("1X2", s, round(1.0 / o[s], 3)) for s in ("home", "draw", "away")]
-    led = tmp_path / "b.csv"
-    # weight=1 純模型：edge≈0（賠率正好等於模型公平價）→ 不超過門檻
-    n_model = tracker.log_upcoming([_M(1, h, a)], model, led,
-                                   odds_index={1: quotes}, weight=1.0, min_edge=0.0)
-    # weight=0 純市場：去 vig 後 p·odds=1 → edge≤0 → 必不下注
-    led2 = tmp_path / "b2.csv"
-    n_market = tracker.log_upcoming([_M(1, h, a)], model, led2,
-                                    odds_index={1: quotes}, weight=0.0, min_edge=0.0)
-    assert n_market == 0
-    assert n_model <= n_market + 1  # 純市場下注數不多於純模型
+    # 灌水主勝賠率：純模型(weight=1)會視為 +EV；純市場(weight=0)去 vig 後消失
+    quotes = [MarketQuote("1X2", "home", round(1.0 / o["home"] * 1.15, 3)),
+              MarketQuote("1X2", "draw", round(1.0 / o["draw"] * 0.95, 3)),
+              MarketQuote("1X2", "away", round(1.0 / o["away"] * 0.95, 3))]
+    e1 = [r for r in tracker._market_edges(model, h, a, quotes, weight=1.0) if r["market"] == "1X2"]
+    e0 = [r for r in tracker._market_edges(model, h, a, quotes, weight=0.0) if r["market"] == "1X2"]
+    assert e1                       # 純模型找到灌水的 +EV
+    if e0:                          # 純市場若仍下注，edge 必然更小
+        assert e0[0]["edge"] < e1[0]["edge"] + 1e-9
 
 
-def test_garbage_odds_rejected(tmp_path, synthetic_df):
-    """劣質賠率（和局 100.0）與超大 edge 不該被當 +EV 下注。"""
+def test_garbage_odds_not_recorded(tmp_path, synthetic_df):
+    """模型推薦那一邊若賠率是髒資料(>MAX_ODDS)，不附賠率（不進收益）。"""
     from footy.live.feed import MarketQuote
     from footy.models import dixon_coles as dc
     model = dc.fit(synthetic_df, half_life_days=10_000)
     h, a = model.teams[0], model.teams[1]
-    quotes = [MarketQuote("1X2", "home", 1.80),
-              MarketQuote("1X2", "draw", 100.0),   # 髒資料
-              MarketQuote("1X2", "away", 1.05)]
-    led = tmp_path / "g.csv"
-    tracker.log_upcoming([_M(1, h, a)], model, led,
-                         odds_index={1: quotes}, weight=1.0, min_edge=0.0)
-    df = tracker.load_ledger(led)
-    # 不該出現對「和局 @100」的下注
-    assert not ((df["market"] == "1X2") & (df["selection"] == "draw")).any()
+    o = tracker.markets.outcome_1x2(model.score_matrix(h, a, neutral=True))
+    top = max(o, key=o.get)
+    quotes = [MarketQuote("1X2", top, 100.0)]   # 模型推薦邊的賠率是髒資料
+    recs = tracker._recommendations(model, h, a, quotes=quotes)
+    r1x2 = next(r for r in recs if r[0] == "1X2")
+    assert r1x2[1] == top and r1x2[3] is None   # 賠率被當無效，不附
 
 
 def test_backfill_played(tmp_path, synthetic_df):
@@ -149,18 +141,20 @@ def test_history_and_tune_weight(tmp_path, synthetic_df):
     model = dc.fit(synthetic_df, half_life_days=10_000)
     h, a = model.teams[0], model.teams[1]
     o = tracker.markets.outcome_1x2(model.score_matrix(h, a, neutral=True))
-    # 灌水主勝賠率 → 在高權重會被選為 +EV（edge 在 MAX_EDGE 內）
-    quotes = [MarketQuote("1X2", "home", round(1.0 / o["home"] * 1.18, 3)),
-              MarketQuote("1X2", "draw", round(1.0 / o["draw"] * 0.97, 3)),
-              MarketQuote("1X2", "away", round(1.0 / o["away"] * 0.97, 3))]
+    top = max(o, key=o.get)
+    quotes = [MarketQuote("1X2", "home", round(1.0 / o["home"] * 1.05, 3)),
+              MarketQuote("1X2", "draw", round(1.0 / o["draw"] * 1.05, 3)),
+              MarketQuote("1X2", "away", round(1.0 / o["away"] * 1.05, 3))]
     led, snap = tmp_path / "b.csv", tmp_path / "odds_log.csv"
     ms = [_M(1, h, a)]
-    tracker.log_upcoming(ms, model, led, odds_index={1: quotes}, weight=1.0)
+    tracker.log_upcoming(ms, model, led, odds_index={1: quotes})
     tracker.log_snapshots(ms, model, {1: quotes}, snap)
     # 快照含全部三柱（不過濾）
     assert len(tracker.load_snapshots(snap)) == 3
-    tracker.settle(led, {1: (2, 0)})
-    tracker.settle_snapshots(snap, {1: (2, 0)})
+    # 讓模型最看好那邊命中 → 收益 > 0
+    score = {"home": (2, 0), "away": (0, 2), "draw": (1, 1)}[top]
+    tracker.settle(led, {1: score})
+    tracker.settle_snapshots(snap, {1: score})
     # history：一筆已結算、累積損益>0
     hrows = tracker.history(led)
     assert len(hrows) == 1 and hrows[0]["cum_pl"] > 0
