@@ -271,6 +271,124 @@ def tune_blend(snap):
                    "樣本少時 CLV 比 ROI 可靠；以環境變數設定即可生效。")
 
 
+@cli.group("agent")
+def agent():
+    """AI agents（賽前分析/辯論/風控/賽後檢討/新聞抽取）。需設 GEMINI_API_KEY。"""
+
+
+def _analyze_one(model_path, schedule, home, away):
+    from . import analysis, worldcup as wc
+    from .models import dixon_coles as dc
+    model = dc.DixonColesModel.load(model_path)
+    if home not in model.attack or away not in model.attack:
+        raise click.ClickException(f"球隊不在模型中：{home} / {away}")
+    hist = None
+    try:
+        from .data import loader
+        hist = loader.load_csv("data/intl.csv")
+    except Exception:  # noqa: BLE001
+        pass
+    return analysis.analyze(model, home, away, history=hist, neutral=True, n_sims=10000)
+
+
+@agent.command("check")
+def agent_check():
+    """印出目前 LLM 設定與是否可用。"""
+    from .agents import llm
+    c = llm.config()
+    click.echo(f"base_url：{c['base']}\nmodel：{c['model']}\n"
+               f"金鑰：{'已設定' if c['key'] else '未設定（agent 會略過）'}")
+
+
+@agent.command("preview")
+@click.option("--model", "model_path", default="models/intl.pkl")
+@click.option("--schedule", default="data/wc2026.json")
+@click.argument("home")
+@click.argument("away")
+def agent_preview(model_path, schedule, home, away):
+    """賽前分析：footy agent preview Brazil Croatia"""
+    from .agents import roles
+    a = _analyze_one(model_path, schedule, home, away)
+    out = roles.preview(a)
+    click.echo(out or "（未設金鑰或產生失敗）")
+
+
+@agent.command("debate")
+@click.option("--model", "model_path", default="models/intl.pkl")
+@click.option("--schedule", default="data/wc2026.json")
+@click.argument("home")
+@click.argument("away")
+def agent_debate(model_path, schedule, home, away):
+    """多代理辯論 + 裁判綜合。"""
+    from .agents import roles
+    a = _analyze_one(model_path, schedule, home, away)
+    res = roles.debate(a)
+    if not res:
+        click.echo("（未設金鑰或產生失敗）")
+        return
+    for x in res["analysts"]:
+        click.echo(f"[{x['role']}] {x['view']}")
+    v = res.get("verdict") or {}
+    click.echo(f"\n裁判：{v.get('lean','?')}（信心 {v.get('confidence','?')}）"
+               f"— {v.get('summary','')}")
+
+
+@agent.command("risk")
+@click.option("--ledger", default="data/bets.csv")
+def agent_risk(ledger):
+    """風控：檢視待結算的推薦清單。"""
+    from . import tracker
+    from .agents import roles
+    df = tracker.load_ledger(ledger)
+    pend = df[df["result"] == "pending"].to_dict("records")
+    out = roles.risk_review(pend)
+    click.echo(out or "（未設金鑰、無待結算推薦或產生失敗）")
+
+
+@agent.command("postmortem")
+@click.option("--ledger", default="data/bets.csv")
+@click.option("--n", default=40, type=int, help="取最近 N 筆已結算")
+def agent_postmortem(ledger, n):
+    """賽後檢討：分析最近已結算的推薦結果。"""
+    from . import tracker
+    from .agents import roles
+    df = tracker.load_ledger(ledger)
+    rows = df[df["result"].isin(["win", "loss", "push"])].tail(n).to_dict("records")
+    out = roles.postmortem(rows)
+    click.echo(out or "（未設金鑰、無已結算紀錄或產生失敗）")
+
+
+@agent.command("news")
+@click.option("--model", "model_path", default="models/intl.pkl")
+@click.option("--schedule", default="data/wc2026.json")
+@click.option("--file", "news_file", required=True, help="新聞文字檔（不上網，只讀此檔）")
+@click.argument("home")
+@click.argument("away")
+def agent_news(model_path, schedule, news_file, home, away):
+    """從新聞文字抽出缺陣/陣型，並用模型重算（套用調整）。"""
+    from pathlib import Path
+
+    from . import analysis, context
+    from .agents import roles
+    from .models import dixon_coles as dc
+    text = Path(news_file).read_text(encoding="utf-8")
+    info = roles.extract_news(home, away, text)
+    if not info:
+        click.echo("（未設金鑰、新聞空白或產生失敗）")
+        return
+    click.echo(f"抽取結果：{info}")
+    hm = int((info.get("home") or {}).get("missing", 0) or 0)
+    am = int((info.get("away") or {}).get("missing", 0) or 0)
+    hf = (info.get("home") or {}).get("formation", "") or ""
+    af = (info.get("away") or {}).get("formation", "") or ""
+    model = dc.DixonColesModel.load(model_path)
+    adj = context.injuries_to_adjustment(hm, am) if (hm or am) else None
+    a = analysis.analyze(model, home, away, neutral=True, n_sims=10000,
+                         adjustment=adj, home_formation=hf, away_formation=af)
+    click.echo(f"套用後 1X2：主 {a.odds_home:.0%} / 和 {a.odds_draw:.0%} / 客 {a.odds_away:.0%}"
+               f"；讓盤 {a.ah_line:+g}")
+
+
 @cli.command("serve")
 @click.option("--model", "model_path", default="models/intl.pkl")
 @click.option("--history", "history_path", default="data/intl.csv", help="國際賽歷史（狀態/H2H）")

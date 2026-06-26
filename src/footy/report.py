@@ -382,7 +382,7 @@ def _fh_ou_box(line, p, support=1.0):
 
 
 def render_analysis_html(a, title: str = "單場分析", back_href: str | None = None,
-                         interactive: bool = False) -> str:
+                         interactive: bool = False, ai_html: str = "") -> str:
     import datetime as _dt
     today = _dt.date.today().isoformat()
     venue = "中立場" if a.neutral else "主客場"
@@ -438,6 +438,7 @@ margin-bottom:14px;display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end}}
   <div class="disc">⚠️ 純機率分析，非投注建議。角球/黃牌為先驗近似。投注有風險。</div>
   {_low_data_note_html(a.data_support)}
   {rebar}
+  {ai_html}
 
   <div class="card">
     <div class="head"><div class="teams">AI 最可能比分 {a.predicted_score[0]}-{a.predicted_score[1]}
