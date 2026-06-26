@@ -37,17 +37,17 @@ date,match_num,home,away,market,selection,line,odds,edge,source,close_odds,resul
 2026-06-19,31,Turkey,Paraguay,OU,小,2.5,,,,,win,
 2026-06-19,31,Turkey,Paraguay,BTTS,否,,,,,,win,
 2026-06-19,31,Turkey,Paraguay,AH,客,0.0,,,,,win,
-2026-06-25,60,Turkey,United States,BTTS,是,,,,,,pending,
-2026-06-25,58,Paraguay,Australia,OU,小,2.5,,,,,pending,
-2026-06-25,58,Paraguay,Australia,BTTS,否,,,,,,pending,
+2026-06-25,60,Turkey,United States,BTTS,是,,,,,,win,
+2026-06-25,58,Paraguay,Australia,OU,小,2.5,,,,,win,
+2026-06-25,58,Paraguay,Australia,BTTS,否,,,,,,win,
 2026-06-20,33,Ecuador,Curaçao,BTTS,否,,,,,,win,
-2026-06-25,55,Curaçao,Ivory Coast,BTTS,否,,,,,,pending,
-2026-06-25,56,Ecuador,Germany,BTTS,否,,,,,,pending,
+2026-06-25,55,Curaçao,Ivory Coast,BTTS,否,,,,,,win,
+2026-06-25,56,Ecuador,Germany,BTTS,否,,,,,,loss,
 2026-06-20,35,Netherlands,Sweden,1X2,home,,,,,,win,
 2026-06-20,35,Netherlands,Sweden,OU,大,2.5,,,,,win,
 2026-06-20,35,Netherlands,Sweden,BTTS,是,,,,,,win,
 2026-06-20,36,Tunisia,Japan,BTTS,否,,,,,,win,
-2026-06-25,59,Tunisia,Netherlands,BTTS,否,,,,,,pending,
+2026-06-25,59,Tunisia,Netherlands,BTTS,否,,,,,,loss,
 2026-06-21,37,Belgium,Iran,BTTS,是,,,,,,loss,
 2026-06-21,38,New Zealand,Egypt,BTTS,否,,,,,,loss,
 2026-06-26,62,Egypt,Iran,BTTS,否,,,,,,pending,
@@ -194,8 +194,9 @@ date,match_num,home,away,market,selection,line,odds,edge,source,close_odds,resul
 2026-06-12,3,Canada,Bosnia and Herzegovina,AH,客,-1.0,,,model,,win,
 2026-06-13,6,Brazil,Morocco,1X2,draw,,,,model,,win,
 2026-06-16,18,Austria,Jordan,BTTS,否,,,,model,,loss,
-2026-06-25,57,Japan,Sweden,BTTS,是,,,,model,,pending,
+2026-06-25,57,Japan,Sweden,BTTS,是,,,,model,,win,
 2026-06-28,73,South Africa,Canada,BTTS,否,,,,model,,pending,
+2026-06-19,32,United States,Australia,AH,客,0.0,,,model,,loss,
 2026-06-20,33,Ecuador,Curaçao,1X2,home,,1.12,,market,1.16,loss,-1.0
 2026-06-20,33,Ecuador,Curaçao,OU,大,2.5,1.54,,market,1.54,loss,-1.0
 2026-06-20,33,Ecuador,Curaçao,AH,客,-2.5,1.69,,market,1.64,win,0.69
@@ -256,56 +257,56 @@ date,match_num,home,away,market,selection,line,odds,edge,source,close_odds,resul
 2026-06-24,54,Switzerland,Canada,1X2,home,,2.5,,market,2.4,win,1.5
 2026-06-24,54,Switzerland,Canada,OU,小,2.5,1.73,,market,1.78,loss,-1.0
 2026-06-24,54,Switzerland,Canada,AH,主,-0.0,1.7,,market,1.65,win,0.7
-2026-06-25,55,Curaçao,Ivory Coast,1X2,away,,1.18,,market,1.2,pending,
-2026-06-25,55,Curaçao,Ivory Coast,AH,主,2.5,1.72,,market,1.67,pending,
-2026-06-25,56,Ecuador,Germany,1X2,home,,4.1,,market,4.7,pending,
-2026-06-25,56,Ecuador,Germany,OU,小,2.5,1.94,,market,2.14,pending,
-2026-06-25,56,Ecuador,Germany,AH,主,0.5,2.13,,market,2.35,pending,
-2026-06-25,57,Japan,Sweden,1X2,home,,2.1,,market,2.02,pending,
-2026-06-25,57,Japan,Sweden,OU,大,2.5,1.97,,market,1.91,pending,
-2026-06-25,57,Japan,Sweden,AH,主,-0.5,2.06,,market,1.94,pending,
-2026-06-25,58,Paraguay,Australia,1X2,away,,3.95,,market,4.1,pending,
-2026-06-25,58,Paraguay,Australia,AH,客,-0.5,1.5,,market,1.54,pending,
-2026-06-25,59,Tunisia,Netherlands,1X2,away,,1.12,,market,1.12,pending,
-2026-06-25,59,Tunisia,Netherlands,OU,小,2.5,2.24,,market,2.24,pending,
-2026-06-25,59,Tunisia,Netherlands,AH,主,1.5,1.92,,market,1.92,pending,
-2026-06-25,60,Turkey,United States,1X2,home,,3.25,,market,3.8,pending,
-2026-06-25,60,Turkey,United States,OU,大,2.5,1.73,,market,1.68,pending,
-2026-06-25,60,Turkey,United States,AH,主,0.5,1.7,,market,1.93,pending,
+2026-06-25,55,Curaçao,Ivory Coast,1X2,away,,1.18,,market,1.2,win,0.18
+2026-06-25,55,Curaçao,Ivory Coast,AH,主,2.5,1.72,,market,1.67,win,0.72
+2026-06-25,56,Ecuador,Germany,1X2,home,,4.1,,market,4.7,win,3.1
+2026-06-25,56,Ecuador,Germany,OU,小,2.5,1.94,,market,2.14,loss,-1.0
+2026-06-25,56,Ecuador,Germany,AH,主,0.5,2.13,,market,2.35,win,1.13
+2026-06-25,57,Japan,Sweden,1X2,home,,2.1,,market,2.02,loss,-1.0
+2026-06-25,57,Japan,Sweden,OU,大,2.5,1.97,,market,1.91,loss,-1.0
+2026-06-25,57,Japan,Sweden,AH,主,-0.5,2.06,,market,1.94,loss,-1.0
+2026-06-25,58,Paraguay,Australia,1X2,away,,3.95,,market,4.1,loss,-1.0
+2026-06-25,58,Paraguay,Australia,AH,客,-0.5,1.5,,market,1.54,win,0.5
+2026-06-25,59,Tunisia,Netherlands,1X2,away,,1.12,,market,1.12,win,0.12
+2026-06-25,59,Tunisia,Netherlands,OU,小,2.5,2.24,,market,2.24,loss,-1.0
+2026-06-25,59,Tunisia,Netherlands,AH,主,1.5,1.92,,market,1.92,loss,-1.0
+2026-06-25,60,Turkey,United States,1X2,home,,3.25,,market,3.8,win,2.25
+2026-06-25,60,Turkey,United States,OU,大,2.5,1.73,,market,1.68,win,0.73
+2026-06-25,60,Turkey,United States,AH,主,0.5,1.7,,market,1.93,win,0.7
 2026-06-26,61,Cape Verde,Saudi Arabia,1X2,away,,2.35,,market,2.75,pending,
-2026-06-26,61,Cape Verde,Saudi Arabia,OU,小,2.5,1.78,,market,1.76,pending,
-2026-06-26,61,Cape Verde,Saudi Arabia,AH,客,-0.5,1.65,,market,1.54,pending,
-2026-06-26,62,Egypt,Iran,1X2,away,,3.82,,market,3.63,pending,
+2026-06-26,61,Cape Verde,Saudi Arabia,OU,小,2.5,1.78,,market,1.71,pending,
+2026-06-26,61,Cape Verde,Saudi Arabia,AH,客,-0.5,1.65,,market,1.52,pending,
+2026-06-26,62,Egypt,Iran,1X2,away,,3.82,,market,3.82,pending,
 2026-06-26,62,Egypt,Iran,OU,小,2.5,1.5,,market,1.5,pending,
-2026-06-26,62,Egypt,Iran,AH,客,-0.5,1.79,,market,1.57,pending,
-2026-06-26,63,New Zealand,Belgium,1X2,away,,1.18,,market,1.18,pending,
+2026-06-26,62,Egypt,Iran,AH,客,-0.5,1.79,,market,1.58,pending,
+2026-06-26,63,New Zealand,Belgium,1X2,away,,1.18,,market,1.19,pending,
 2026-06-26,63,New Zealand,Belgium,OU,大,2.5,1.65,,market,1.65,pending,
 2026-06-26,63,New Zealand,Belgium,AH,主,1.5,2.11,,market,2.35,pending,
 2026-06-26,64,Norway,France,1X2,home,,4.39,,market,4.7,pending,
 2026-06-26,64,Norway,France,OU,大,2.5,1.85,,market,1.67,pending,
-2026-06-26,64,Norway,France,AH,主,0.5,2.0,,market,2.28,pending,
-2026-06-26,65,Senegal,Iraq,1X2,home,,1.25,,market,1.25,pending,
+2026-06-26,64,Norway,France,AH,主,0.5,2.0,,market,2.37,pending,
+2026-06-26,65,Senegal,Iraq,1X2,home,,1.24,,market,1.24,pending,
 2026-06-26,65,Senegal,Iraq,OU,小,2.5,2.0,,market,2.0,pending,
 2026-06-26,65,Senegal,Iraq,AH,客,-1.5,1.88,,market,2.2,pending,
-2026-06-26,66,Uruguay,Spain,1X2,away,,1.45,,market,1.5,pending,
-2026-06-26,66,Uruguay,Spain,OU,小,2.5,1.96,,market,1.92,pending,
-2026-06-26,66,Uruguay,Spain,AH,客,0.5,1.54,,market,1.54,pending,
-2026-06-27,67,Algeria,Austria,1X2,home,,2.6,,market,3.75,pending,
+2026-06-26,66,Uruguay,Spain,1X2,away,,1.45,,market,1.57,pending,
+2026-06-26,66,Uruguay,Spain,OU,小,2.5,1.96,,market,1.73,pending,
+2026-06-26,66,Uruguay,Spain,AH,客,0.5,1.54,,market,1.57,pending,
+2026-06-27,67,Algeria,Austria,1X2,home,,2.6,,market,3.95,pending,
 2026-06-27,67,Algeria,Austria,OU,小,2.5,1.73,,market,1.73,pending,
-2026-06-27,67,Algeria,Austria,AH,主,0.5,1.56,,market,1.5,pending,
+2026-06-27,67,Algeria,Austria,AH,主,0.5,1.56,,market,1.51,pending,
 2026-06-27,68,Colombia,Portugal,1X2,home,,3.85,,market,4.1,pending,
-2026-06-27,68,Colombia,Portugal,OU,小,2.5,1.77,,market,1.85,pending,
+2026-06-27,68,Colombia,Portugal,OU,小,2.5,1.77,,market,1.82,pending,
 2026-06-27,68,Colombia,Portugal,AH,主,0.5,1.81,,market,1.98,pending,
 2026-06-27,69,Croatia,Ghana,1X2,home,,1.6,,market,1.7,pending,
 2026-06-27,69,Croatia,Ghana,OU,小,2.5,1.76,,market,1.79,pending,
 2026-06-27,69,Croatia,Ghana,AH,主,-0.5,1.6,,market,1.78,pending,
-2026-06-27,70,DR Congo,Uzbekistan,1X2,home,,1.8,,market,1.78,pending,
+2026-06-27,70,DR Congo,Uzbekistan,1X2,home,,1.78,,market,1.78,pending,
 2026-06-27,70,DR Congo,Uzbekistan,OU,小,2.5,1.73,,market,1.96,pending,
-2026-06-27,70,DR Congo,Uzbekistan,AH,客,-0.5,1.75,,market,2.06,pending,
-2026-06-27,71,Jordan,Argentina,1X2,away,,1.17,,market,1.16,pending,
-2026-06-27,71,Jordan,Argentina,AH,客,1.5,1.65,,market,1.65,pending,
+2026-06-27,70,DR Congo,Uzbekistan,AH,客,-0.5,1.75,,market,2.09,pending,
+2026-06-27,71,Jordan,Argentina,1X2,away,,1.15,,market,1.15,pending,
+2026-06-27,71,Jordan,Argentina,AH,客,1.5,1.65,,market,1.6,pending,
 2026-06-27,72,Panama,England,1X2,away,,1.15,,market,1.15,pending,
 2026-06-27,72,Panama,England,AH,主,1.5,2.12,,market,2.34,pending,
-2026-06-28,73,South Africa,Canada,1X2,away,,1.72,,market,1.72,pending,
-2026-06-28,73,South Africa,Canada,OU,小,2.5,1.61,,market,1.61,pending,
-2026-06-28,73,South Africa,Canada,AH,客,0.5,1.69,,market,1.69,pending,
+2026-06-28,73,South Africa,Canada,1X2,away,,1.68,,market,1.68,pending,
+2026-06-28,73,South Africa,Canada,OU,小,2.5,1.61,,market,1.65,pending,
+2026-06-28,73,South Africa,Canada,AH,客,0.5,1.69,,market,1.65,pending,
