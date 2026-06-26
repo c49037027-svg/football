@@ -50,6 +50,7 @@ jobs:
       - name: AI 連線自我檢查（非必須，失敗不中斷）
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          LLM_MODEL: claude-haiku-4-5
         run: footy agent check --live || true
 
       - name: 產生多頁網站（含 api-football 傷停 + the-odds-api 盤口，失敗自動略過）
@@ -57,6 +58,7 @@ jobs:
           API_FOOTBALL_KEY: ${{ secrets.API_FOOTBALL_KEY }}
           ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          LLM_MODEL: claude-haiku-4-5
         run: |
           footy wc-site \
             --model models/intl.pkl \
