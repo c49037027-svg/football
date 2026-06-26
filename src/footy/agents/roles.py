@@ -47,13 +47,16 @@ def preview(a, complete=llm.complete) -> str | None:
     """把模型數字寫成白話賽前分析（120~200 字）。未設金鑰回 None。"""
     if not llm.available():
         return None
+    home, away = _g(a, "home", ""), _g(a, "away", "")
     prompt = (
+        f"這場比賽是「{home}」對「{away}」。務必只用這兩個隊名，"
+        "嚴禁提到任何其他球隊（如出現別隊名即為錯誤）。\n"
         "根據以下模型輸出，寫一段 120~200 字的繁體中文賽前分析，"
         "點出：誰較被看好與幅度、預期比分樣貌、大小球與讓盤傾向、以及一個值得注意的變數。"
         "只用下列數字，不要編造傷停或新聞。不要逐項複述機率，要有解讀。\n\n"
         f"{match_facts(a)}")
     try:
-        return complete(prompt, system=SYSTEM, max_tokens=500)
+        return complete(prompt, system=SYSTEM, max_tokens=1200)
     except Exception:  # noqa: BLE001
         return None
 
@@ -75,7 +78,7 @@ def extract_news(home: str, away: str, news_text: str,
         '"away":{"missing":0,"formation":"","note":""}}\n\n'
         f"新聞：\n{news_text[:6000]}")
     try:
-        return complete_json(prompt, system=SYSTEM, max_tokens=400, temperature=0.1)
+        return complete_json(prompt, system=SYSTEM, max_tokens=700, temperature=0.1)
     except Exception:  # noqa: BLE001
         return None
 
@@ -94,12 +97,14 @@ def debate(a, complete=llm.complete, complete_json=llm.complete_json,
     if not llm.available():
         return None
     facts = match_facts(a)
+    home, away = _g(a, "home", ""), _g(a, "away", "")
+    rule = (f"這場是「{home}」對「{away}」，只能用這兩個隊名，不得提到其他球隊。")
     analysts = []
     for role, lens in lenses:
-        p = (f"你是「{role}」分析師，{lens}。根據以下數字，用 1~2 句給出你的傾向"
+        p = (f"你是「{role}」分析師，{lens}。{rule}根據以下數字，用 1~2 句給出你的傾向"
              f"（主勝/和/客勝其一）與理由，不得編造資訊：\n\n{facts}")
         try:
-            txt = complete(p, system=SYSTEM, max_tokens=200, temperature=0.5)
+            txt = complete(p, system=SYSTEM, max_tokens=600, temperature=0.5)
         except Exception:  # noqa: BLE001
             return None
         analysts.append({"role": role, "view": txt})
@@ -107,10 +112,10 @@ def debate(a, complete=llm.complete, complete_json=llm.complete_json,
     judge_prompt = (
         "你是裁判。綜合以下分析師意見與原始數字，輸出 JSON："
         '{"lean":"主勝|和|客勝","confidence":"低|中|高","summary":"40字內結論"}。'
-        "若分析師與數據矛盾，以數據為準。\n\n"
+        f"{rule}若分析師與數據矛盾，以數據為準。\n\n"
         f"數字：\n{facts}\n\n分析師：\n{panel}")
     try:
-        verdict = complete_json(judge_prompt, system=SYSTEM, max_tokens=300,
+        verdict = complete_json(judge_prompt, system=SYSTEM, max_tokens=600,
                                 temperature=0.2)
     except Exception:  # noqa: BLE001
         verdict = None
@@ -130,7 +135,7 @@ def risk_review(picks: list[dict], complete=llm.complete) -> str | None:
         "是否過度集中同隊/同時段、是否多筆高賠率冷門、是否有相關性高的重複曝險、"
         "整體建議曝險。務實中立，不保證獲利。\n\n" + "\n".join(lines))
     try:
-        return complete(prompt, system=SYSTEM, max_tokens=500)
+        return complete(prompt, system=SYSTEM, max_tokens=900)
     except Exception:  # noqa: BLE001
         return None
 
@@ -147,6 +152,6 @@ def postmortem(rows: list[dict], complete=llm.complete) -> str | None:
         "命中與失誤的型態（哪類盤口/哪種對戰較準或較差）、可能原因、"
         "對模型或選注的 2~3 點具體建議。中立務實。\n\n" + "\n".join(lines))
     try:
-        return complete(prompt, system=SYSTEM, max_tokens=600)
+        return complete(prompt, system=SYSTEM, max_tokens=1000)
     except Exception:  # noqa: BLE001
         return None
