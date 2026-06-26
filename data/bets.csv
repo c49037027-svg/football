@@ -274,12 +274,12 @@ date,match_num,home,away,market,selection,line,odds,edge,source,close_odds,resul
 2026-06-25,60,Turkey,United States,1X2,home,,3.25,,market,3.8,win,2.25
 2026-06-25,60,Turkey,United States,OU,大,2.5,1.73,,market,1.68,win,0.73
 2026-06-25,60,Turkey,United States,AH,主,0.5,1.7,,market,1.93,win,0.7
-2026-06-26,61,Cape Verde,Saudi Arabia,1X2,away,,2.35,,market,2.75,pending,
+2026-06-26,61,Cape Verde,Saudi Arabia,1X2,away,,2.35,,market,2.7,pending,
 2026-06-26,61,Cape Verde,Saudi Arabia,OU,小,2.5,1.78,,market,1.71,pending,
 2026-06-26,61,Cape Verde,Saudi Arabia,AH,客,-0.5,1.65,,market,1.52,pending,
 2026-06-26,62,Egypt,Iran,1X2,away,,3.82,,market,3.82,pending,
 2026-06-26,62,Egypt,Iran,OU,小,2.5,1.5,,market,1.5,pending,
-2026-06-26,62,Egypt,Iran,AH,客,-0.5,1.79,,market,1.58,pending,
+2026-06-26,62,Egypt,Iran,AH,客,-0.5,1.79,,market,1.57,pending,
 2026-06-26,63,New Zealand,Belgium,1X2,away,,1.18,,market,1.19,pending,
 2026-06-26,63,New Zealand,Belgium,OU,大,2.5,1.65,,market,1.65,pending,
 2026-06-26,63,New Zealand,Belgium,AH,主,1.5,2.11,,market,2.35,pending,
@@ -306,7 +306,7 @@ date,match_num,home,away,market,selection,line,odds,edge,source,close_odds,resul
 2026-06-27,70,DR Congo,Uzbekistan,AH,客,-0.5,1.75,,market,2.03,pending,
 2026-06-27,71,Jordan,Argentina,1X2,away,,1.15,,market,1.16,pending,
 2026-06-27,71,Jordan,Argentina,AH,客,1.5,1.65,,market,1.6,pending,
-2026-06-27,72,Panama,England,1X2,away,,1.15,,market,1.14,pending,
+2026-06-27,72,Panama,England,1X2,away,,1.15,,market,1.15,pending,
 2026-06-27,72,Panama,England,AH,主,1.5,2.12,,market,2.34,pending,
 2026-06-28,73,South Africa,Canada,1X2,away,,1.68,,market,1.67,pending,
 2026-06-28,73,South Africa,Canada,OU,小,2.5,1.61,,market,1.64,pending,
