@@ -305,8 +305,9 @@ def agent_check(live):
         click.echo("[ai-check] 未設金鑰，略過實測。")
         return
     try:
-        out = llm.complete("回覆兩個字：可用", max_tokens=10, timeout=30)
-        click.echo(f"[ai-check] PASS（model={c['model']}）回覆：{out[:40]}")
+        out = llm.complete("用繁體中文回覆「可用」兩個字。", max_tokens=80, timeout=30)
+        status = "PASS" if out else "PASS(但回覆為空，可調高 max_tokens 或換非思考型模型)"
+        click.echo(f"[ai-check] {status}（model={c['model']}）回覆：{out[:60]}")
     except Exception as e:  # noqa: BLE001
         click.echo(f"[ai-check] FAIL：{str(e)[:300]}")
 

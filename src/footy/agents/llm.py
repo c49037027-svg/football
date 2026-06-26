@@ -20,6 +20,8 @@ def config() -> dict:
         "base": os.environ.get("LLM_BASE_URL", DEFAULT_BASE).rstrip("/"),
         "model": os.environ.get("LLM_MODEL", DEFAULT_MODEL),
         "key": os.environ.get("LLM_API_KEY") or os.environ.get("GEMINI_API_KEY"),
+        # 思考型模型（Gemini 2.5）會吃光輸出額度；工具型 agent 預設關小思考。
+        "reasoning": os.environ.get("LLM_REASONING_EFFORT", "low"),
     }
 
 
@@ -38,15 +40,29 @@ def complete(prompt: str, system: str | None = None, temperature: float = 0.4,
     if system:
         messages.append({"role": "system", "content": system})
     messages.append({"role": "user", "content": prompt})
+    payload = {"model": c["model"], "messages": messages,
+               "temperature": temperature, "max_tokens": max_tokens}
+    if c.get("reasoning"):  # 思考型模型關小思考，避免吃光輸出
+        payload["reasoning_effort"] = c["reasoning"]
     r = requests.post(
         f"{c['base']}/chat/completions",
         headers={"Authorization": f"Bearer {c['key']}",
                  "Content-Type": "application/json"},
-        json={"model": c["model"], "messages": messages,
-              "temperature": temperature, "max_tokens": max_tokens},
-        timeout=timeout)
+        json=payload, timeout=timeout)
     r.raise_for_status()
-    return r.json()["choices"][0]["message"]["content"].strip()
+    return _extract_text(r.json())
+
+
+def _extract_text(data: dict) -> str:
+    """防呆抽出回覆文字（content 可能缺、為 None 或為 parts 陣列）。"""
+    try:
+        msg = data["choices"][0]["message"]
+    except (KeyError, IndexError, TypeError):
+        return ""
+    content = msg.get("content")
+    if isinstance(content, list):  # 某些端點回 [{type,text},...]
+        content = "".join(p.get("text", "") for p in content if isinstance(p, dict))
+    return (content or "").strip()
 
 
 def complete_json(prompt: str, system: str | None = None, **kw):
