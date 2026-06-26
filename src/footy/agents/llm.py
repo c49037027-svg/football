@@ -17,8 +17,9 @@ DEFAULT_MODEL = "gemini-2.5-flash"
 
 def config() -> dict:
     return {
-        "base": os.environ.get("LLM_BASE_URL", DEFAULT_BASE).rstrip("/"),
-        "model": os.environ.get("LLM_MODEL", DEFAULT_MODEL),
+        # 空字串（如 CI 傳入未設定的變數）視為未提供 → 用預設
+        "base": (os.environ.get("LLM_BASE_URL") or DEFAULT_BASE).rstrip("/"),
+        "model": os.environ.get("LLM_MODEL") or DEFAULT_MODEL,
         "key": os.environ.get("LLM_API_KEY") or os.environ.get("GEMINI_API_KEY"),
         # 思考型模型（Gemini 2.5）會吃光輸出額度；工具型 agent 預設關小思考。
         "reasoning": os.environ.get("LLM_REASONING_EFFORT", "low"),
