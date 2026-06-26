@@ -292,12 +292,23 @@ def _analyze_one(model_path, schedule, home, away):
 
 
 @agent.command("check")
-def agent_check():
-    """印出目前 LLM 設定與是否可用。"""
+@click.option("--live/--no-live", default=False, help="實際呼叫一次確認 key/model 可用")
+def agent_check(live):
+    """印出目前 LLM 設定；--live 會真的呼叫一次驗證連線。"""
     from .agents import llm
     c = llm.config()
-    click.echo(f"base_url：{c['base']}\nmodel：{c['model']}\n"
+    click.echo(f"base_url：{c['base']}　model：{c['model']}　"
                f"金鑰：{'已設定' if c['key'] else '未設定（agent 會略過）'}")
+    if not live:
+        return
+    if not c["key"]:
+        click.echo("[ai-check] 未設金鑰，略過實測。")
+        return
+    try:
+        out = llm.complete("回覆兩個字：可用", max_tokens=10, timeout=30)
+        click.echo(f"[ai-check] PASS（model={c['model']}）回覆：{out[:40]}")
+    except Exception as e:  # noqa: BLE001
+        click.echo(f"[ai-check] FAIL：{str(e)[:300]}")
 
 
 @agent.command("preview")

@@ -47,6 +47,11 @@ jobs:
       - name: 下載最新世界盃賽程與比分
         run: footy fetch-wc --out data/wc2026.json
 
+      - name: AI 連線自我檢查（非必須，失敗不中斷）
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: footy agent check --live || true
+
       - name: 產生多頁網站（含 api-football 傷停 + the-odds-api 盤口，失敗自動略過）
         env:
           API_FOOTBALL_KEY: ${{ secrets.API_FOOTBALL_KEY }}
