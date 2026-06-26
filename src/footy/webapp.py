@@ -168,19 +168,8 @@ class _Handler(BaseHTTPRequestHandler):
         if hm or am:
             a.player_note_home = f"缺主力 {hm} 人" if hm else "主力盡出"
             a.player_note_away = f"缺主力 {am} 人" if am else "主力盡出"
-        # AI 賽前分析（隨選，僅設了 GEMINI_API_KEY 才呼叫；失敗則略過）
-        ai_html = ""
-        try:
-            from .agents import llm, roles
-            if llm.available():
-                txt = roles.preview(a)
-                if txt:
-                    import html as _h
-                    ai_html = (f"<div class='card'><div class='sec'>🤖 AI 賽前分析</div>"
-                               f"<div class='small' style='color:#cdd9e5;line-height:1.7;"
-                               f"white-space:pre-line'>{_h.escape(txt)}</div></div>")
-        except Exception:  # noqa: BLE001
-            ai_html = ""
+        # AI 賽前分析 + 多方辯論（隨選，僅設 GEMINI_API_KEY 才呼叫；失敗略過）
+        ai_html = report.render_ai_blocks(a, include_debate=True)
         page = report.render_analysis_html(a, f"{zh(home)} vs {zh(away)}{note}",
                                            back_href="/", interactive=True, ai_html=ai_html)
         return page

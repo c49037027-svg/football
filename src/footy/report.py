@@ -381,6 +381,46 @@ def _fh_ou_box(line, p, support=1.0):
             f"<div style='color:{col};font-weight:700;margin-top:4px'>{reco}</div></div>")
 
 
+def render_ai_blocks(a, include_debate: bool = True) -> str:
+    """賽前分析 + 多方辯論卡（隨選；未設金鑰回空字串）。每張卡各 1~數次 LLM 呼叫。"""
+    try:
+        from .agents import llm, roles
+    except Exception:  # noqa: BLE001
+        return ""
+    if not llm.available():
+        return ""
+    out = []
+    try:
+        txt = roles.preview(a)
+        if txt:
+            out.append(f"<div class='card'><div class='sec'>🤖 AI 賽前分析</div>"
+                       f"<div class='small' style='color:#cdd9e5;line-height:1.7;"
+                       f"white-space:pre-line'>{html.escape(txt)}</div></div>")
+    except Exception:  # noqa: BLE001
+        pass
+    if include_debate:
+        try:
+            d = roles.debate(a)
+            if d:
+                rows = "".join(
+                    f"<div class='small' style='margin:4px 0'><b>{html.escape(x['role'])}</b>："
+                    f"{html.escape(x['view'])}</div>" for x in d.get("analysts", []))
+                v = d.get("verdict") or {}
+                verdict = ""
+                if v:
+                    verdict = (f"<div class='reco' style='font-size:15px;margin-top:8px'>"
+                               f"裁判：{html.escape(str(v.get('lean','?')))}"
+                               f"（信心 {html.escape(str(v.get('confidence','?')))}）— "
+                               f"{html.escape(str(v.get('summary','')))}</div>")
+                out.append(f"<div class='card'><div class='sec'>🧠 AI 多方辯論</div>"
+                           f"{rows}{verdict}"
+                           f"<div class='small' style='color:var(--muted);margin-top:6px'>"
+                           f"多角度檢視，與數據矛盾時以模型數據為準；非投注建議。</div></div>")
+        except Exception:  # noqa: BLE001
+            pass
+    return "".join(out)
+
+
 def render_analysis_html(a, title: str = "單場分析", back_href: str | None = None,
                          interactive: bool = False, ai_html: str = "") -> str:
     import datetime as _dt
@@ -972,18 +1012,30 @@ def _pl_hero(last):
             f"</div>")
 
 
+def _ai_card(title, text):
+    if not text:
+        return ""
+    return (f"<div class='card'><div class='sec'>{title}</div>"
+            f"<div class='small' style='color:#cdd9e5;line-height:1.7;white-space:pre-line'>"
+            f"{html.escape(text)}</div></div>")
+
+
 def render_performance_page(hist, summary_obj=None, tune=None, pending=None,
-                            track_text=None, title="下注績效 & CLV") -> str:
+                            track_text=None, ai_risk=None, ai_review=None,
+                            title="下注績效 & CLV") -> str:
     """獨立績效頁：模型勝率卡 + 真實盤口累積損益/CLV 折線、權重校準、逐注紀錄。
 
     三種狀態：已有結算→完整圖表；已連結但全待結算→列出待結算 +EV 推薦；
     完全沒有真實盤口下注→引導設定 ODDS_API_KEY。模型勝率卡三態皆顯示。
+    ai_risk/ai_review：AI 風控/賽後檢討文字（未設金鑰時為 None，不顯示）。
     """
     today = _dt.date.today().isoformat()
     track_card = _track_card(track_text)  # 次要，放最下面
+    risk_card = _ai_card("🛡️ AI 風控提醒", ai_risk)
+    review_card = _ai_card("🔎 AI 賽後檢討", ai_review)
     if not hist:
         if pending:
-            return _perf_doc(title, today, _pending_body(pending) + track_card)
+            return _perf_doc(title, today, risk_card + _pending_body(pending) + track_card)
         body = ("<div class='card'><div class='sec'>📈 尚無收益紀錄（無已結算的真實盤口下注）</div>"
                 "<div class='small' style='color:var(--muted);line-height:1.7'>"
                 "需要部署環境設定 <code>ODDS_API_KEY</code>，系統才會抓真實盤口、"
@@ -1051,7 +1103,8 @@ def render_performance_page(hist, summary_obj=None, tune=None, pending=None,
     note = ("<div class='small' style='color:var(--muted);margin-top:4px'>"
             "CLV（closing line value）= 你拿到的賠率 vs 收盤賠率；長期 CLV&gt;0 是"
             "判斷模型能否真正贏過市場最可靠的領先指標，比短期勝率/ROI 抗雜訊。</div>")
-    return _perf_doc(title, sub, hero + kpis + charts + note + tune_html + log_html + track_card)
+    return _perf_doc(title, sub, hero + kpis + risk_card + charts + note
+                     + tune_html + log_html + review_card + track_card)
 
 
 _MK_ZH = {"1X2": "勝平負", "OU": "大小", "BTTS": "兩隊進球", "AH": "亞盤"}
@@ -1166,7 +1219,19 @@ def write_worldcup_site(result, model, matches, outdir, history=None,
                 tune_res = tracker.tune_weight(snap)
             except Exception:  # noqa: BLE001
                 tune_res = None
+    # AI 風控 / 賽後檢討（每日 1~2 次呼叫，僅設 GEMINI_API_KEY 才跑）
+    ai_risk = ai_review = None
+    if ledger_path:
+        try:
+            from .agents import llm, roles
+            if llm.available():
+                ai_risk = roles.risk_review(pending) if pending else None
+                settled = [h for h in hist][-40:]
+                ai_review = roles.postmortem(settled) if settled else None
+        except Exception:  # noqa: BLE001
+            ai_risk = ai_review = None
     (outdir / "performance.html").write_text(
         render_performance_page(hist, tune=tune_res, pending=pending,
-                                track_text=track_text), encoding="utf-8")
+                                track_text=track_text, ai_risk=ai_risk,
+                                ai_review=ai_review), encoding="utf-8")
     return outdir, len(linked)
