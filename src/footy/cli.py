@@ -273,7 +273,7 @@ def tune_blend(snap):
 
 @cli.group("agent")
 def agent():
-    """AI agents（賽前分析/辯論/風控/賽後檢討/新聞抽取）。需設 GEMINI_API_KEY。"""
+    """AI agents（賽前分析/辯論/風控/賽後檢討/新聞抽取）。需設 ANTHROPIC_API_KEY。"""
 
 
 def _analyze_one(model_path, schedule, home, away):
@@ -294,10 +294,10 @@ def _analyze_one(model_path, schedule, home, away):
 @agent.command("check")
 @click.option("--live/--no-live", default=False, help="實際呼叫一次確認 key/model 可用")
 def agent_check(live):
-    """印出目前 LLM 設定；--live 會真的呼叫一次驗證連線。"""
+    """印出目前 LLM 設定；--live 會真的呼叫一次 Claude 驗證連線。"""
     from .agents import llm
     c = llm.config()
-    click.echo(f"base_url：{c['base']}　model：{c['model']}　"
+    click.echo(f"provider：Anthropic Claude　model：{c['model']}　"
                f"金鑰：{'已設定' if c['key'] else '未設定（agent 會略過）'}")
     if not live:
         return
@@ -306,7 +306,7 @@ def agent_check(live):
         return
     try:
         out = llm.complete("用繁體中文回覆「可用」兩個字。", max_tokens=80, timeout=30)
-        status = "PASS" if out else "PASS(但回覆為空，可調高 max_tokens 或換非思考型模型)"
+        status = "PASS" if out else "PASS(但回覆為空)"
         click.echo(f"[ai-check] {status}（model={c['model']}）回覆：{out[:60]}")
     except Exception as e:  # noqa: BLE001
         click.echo(f"[ai-check] FAIL：{str(e)[:300]}")

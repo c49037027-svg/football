@@ -1219,7 +1219,7 @@ def write_worldcup_site(result, model, matches, outdir, history=None,
                 tune_res = tracker.tune_weight(snap)
             except Exception:  # noqa: BLE001
                 tune_res = None
-    # AI 風控 / 賽後檢討（每日 1~2 次呼叫，僅設 GEMINI_API_KEY 才跑）
+    # AI 風控 / 賽後檢討（每日 1~2 次呼叫，僅設 ANTHROPIC_API_KEY 才跑）
     ai_risk = ai_review = None
     if ledger_path:
         try:

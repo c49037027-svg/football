@@ -20,6 +20,6 @@ services:
         sync: false
       - key: API_FOOTBALL_KEY
         sync: false
-      # 選用：AI agents（賽前分析等）。設了才會呼叫 LLM；可另設 LLM_MODEL/LLM_BASE_URL
-      - key: GEMINI_API_KEY
+      # 選用：AI agents（賽前分析等）用 Claude。設了才會呼叫；可另設 LLM_MODEL
+      - key: ANTHROPIC_API_KEY
         sync: false

@@ -1,7 +1,9 @@
-"""供應商無關的 LLM 客戶端（OpenAI 相容 chat/completions）。
+"""Claude（Anthropic）LLM 客戶端，供 AI agents 使用。
 
-預設接 Gemini 的 OpenAI 相容端點；改 base_url/model 即可換 OpenAI/OpenRouter/
-DeepSeek/本地 Ollama 等。只用 requests，無額外相依。
+用官方 anthropic SDK（非 OpenAI 相容層）。設定：
+  ANTHROPIC_API_KEY  ── 金鑰（SDK 預設讀此環境變數）
+  LLM_MODEL          ── 模型，預設 claude-opus-4-8（要省錢可設 claude-haiku-4-5）
+未設金鑰時 available() 回 False，所有 agent 安全略過、不影響主流程。
 """
 from __future__ import annotations
 
@@ -9,67 +11,62 @@ import json
 import os
 import re
 
-import requests
-
-DEFAULT_BASE = "https://generativelanguage.googleapis.com/v1beta/openai/"
-DEFAULT_MODEL = "gemini-2.5-flash"
+# 預設用最強的 Opus 4.8；成本是使用者的決定，要省錢就設 LLM_MODEL。
+DEFAULT_MODEL = "claude-opus-4-8"
 
 
-def config() -> dict:
-    return {
-        # 空字串（如 CI 傳入未設定的變數）視為未提供 → 用預設
-        "base": (os.environ.get("LLM_BASE_URL") or DEFAULT_BASE).rstrip("/"),
-        "model": os.environ.get("LLM_MODEL") or DEFAULT_MODEL,
-        "key": os.environ.get("LLM_API_KEY") or os.environ.get("GEMINI_API_KEY"),
-        # 思考型模型（Gemini 2.5）會吃光輸出額度；工具型 agent 預設關小思考。
-        "reasoning": os.environ.get("LLM_REASONING_EFFORT", "low"),
-    }
+def _model() -> str:
+    return os.environ.get("LLM_MODEL") or DEFAULT_MODEL
+
+
+def _key() -> str | None:
+    return os.environ.get("ANTHROPIC_API_KEY") or os.environ.get("LLM_API_KEY")
 
 
 def available() -> bool:
     """是否已設金鑰（沒設則所有 agent 略過）。"""
-    return bool(config()["key"])
+    return bool(_key())
 
 
-def complete(prompt: str, system: str | None = None, temperature: float = 0.4,
-             max_tokens: int = 900, timeout: float = 45.0) -> str:
-    """送一則 chat 請求，回純文字。未設金鑰則丟 RuntimeError。"""
-    c = config()
-    if not c["key"]:
-        raise RuntimeError("缺少 LLM_API_KEY / GEMINI_API_KEY")
-    messages = []
+def config() -> dict:
+    return {"model": _model(), "key": _key()}
+
+
+def _client(timeout: float):
+    import anthropic
+    key = _key()
+    if not key:
+        raise RuntimeError("缺少 ANTHROPIC_API_KEY")
+    return anthropic.Anthropic(api_key=key, timeout=timeout)
+
+
+def complete(prompt: str, system: str | None = None, temperature: float | None = None,
+             max_tokens: int = 900, timeout: float = 60.0) -> str:
+    """送一則 Messages 請求，回純文字。未設金鑰則丟 RuntimeError。
+
+    temperature 參數保留相容性但不轉送——Opus 4.8 已移除取樣參數（傳了會 400）。
+    """
+    client = _client(timeout)
+    kwargs = {"model": _model(), "max_tokens": max_tokens,
+              "messages": [{"role": "user", "content": prompt}]}
     if system:
-        messages.append({"role": "system", "content": system})
-    messages.append({"role": "user", "content": prompt})
-    payload = {"model": c["model"], "messages": messages,
-               "temperature": temperature, "max_tokens": max_tokens}
-    if c.get("reasoning"):  # 思考型模型關小思考，避免吃光輸出
-        payload["reasoning_effort"] = c["reasoning"]
-    r = requests.post(
-        f"{c['base']}/chat/completions",
-        headers={"Authorization": f"Bearer {c['key']}",
-                 "Content-Type": "application/json"},
-        json=payload, timeout=timeout)
-    r.raise_for_status()
-    return _extract_text(r.json())
-
-
-def _extract_text(data: dict) -> str:
-    """防呆抽出回覆文字（content 可能缺、為 None 或為 parts 陣列）。"""
-    try:
-        msg = data["choices"][0]["message"]
-    except (KeyError, IndexError, TypeError):
-        return ""
-    content = msg.get("content")
-    if isinstance(content, list):  # 某些端點回 [{type,text},...]
-        content = "".join(p.get("text", "") for p in content if isinstance(p, dict))
-    return (content or "").strip()
+        kwargs["system"] = system
+    msg = client.messages.create(**kwargs)
+    return _extract_text(msg)
 
 
 def complete_json(prompt: str, system: str | None = None, **kw):
     """要求模型輸出 JSON 並寬鬆解析（容忍 ```json 圍欄與前後雜訊）。失敗回 None。"""
-    txt = complete(prompt, system=system, **kw)
-    return parse_json(txt)
+    return parse_json(complete(prompt, system=system, **kw))
+
+
+def _extract_text(msg) -> str:
+    """從 Message.content（區塊清單）取出文字。"""
+    parts = []
+    for block in getattr(msg, "content", []) or []:
+        if getattr(block, "type", None) == "text":
+            parts.append(getattr(block, "text", ""))
+    return "".join(parts).strip()
 
 
 def parse_json(txt: str):
