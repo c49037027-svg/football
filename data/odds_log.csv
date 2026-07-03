@@ -2221,24 +2221,24 @@ date,match_num,home,away,market,selection,line,model_p,odds,close_odds,hg,ag,pla
 2026-07-02,85,Switzerland,Algeria,AH,away,-0.5,0.63787,1.86,1.81,2.0,0.0,1
 2026-07-02,85,Switzerland,Algeria,AH,home,-0.5,0.36213,1.84,2.02,2.0,0.0,1
 2026-07-03,86,Argentina,Cape Verde,1X2,home,,0.84313,1.16,1.14,,,0
-2026-07-03,86,Argentina,Cape Verde,1X2,away,,0.02837,21.0,23.0,,,0
-2026-07-03,86,Argentina,Cape Verde,1X2,draw,,0.1285,8.5,9.5,,,0
+2026-07-03,86,Argentina,Cape Verde,1X2,away,,0.02837,21.0,25.0,,,0
+2026-07-03,86,Argentina,Cape Verde,1X2,draw,,0.1285,8.5,9.0,,,0
 2026-07-03,86,Argentina,Cape Verde,OU,over,2.5,0.49345,1.63,1.61,,,0
 2026-07-03,86,Argentina,Cape Verde,OU,under,2.5,0.50655,2.32,2.35,,,0
-2026-07-03,86,Argentina,Cape Verde,AH,home,-2.0,0.49257,1.76,1.79,,,0
-2026-07-03,86,Argentina,Cape Verde,AH,away,-2.0,0.50743,1.95,2.04,,,0
-2026-07-03,87,Colombia,Ghana,1X2,home,,0.76392,1.6,1.41,,,0
-2026-07-03,87,Colombia,Ghana,1X2,away,,0.06619,6.4,9.0,,,0
-2026-07-03,87,Colombia,Ghana,1X2,draw,,0.16989,3.7,4.4,,,0
-2026-07-03,87,Colombia,Ghana,OU,over,2.5,0.50245,2.14,2.1,,,0
-2026-07-03,87,Colombia,Ghana,OU,under,2.5,0.49755,1.68,1.71,,,0
-2026-07-03,87,Colombia,Ghana,AH,home,-1.0,0.64215,2.05,1.68,,,0
-2026-07-03,87,Colombia,Ghana,AH,away,-1.0,0.35785,1.68,2.19,,,0
-2026-07-03,88,Australia,Egypt,1X2,home,,0.36822,3.35,3.75,,,0
-2026-07-03,88,Australia,Egypt,1X2,away,,0.27594,2.55,2.43,,,0
-2026-07-03,88,Australia,Egypt,1X2,draw,,0.35584,2.85,2.88,,,0
-2026-07-03,88,Australia,Egypt,OU,over,1.5,0.4931,1.53,1.53,,,0
-2026-07-03,88,Australia,Egypt,OU,under,1.5,0.5069,2.43,2.43,,,0
+2026-07-03,86,Argentina,Cape Verde,AH,home,-2.0,0.49257,1.76,1.75,,,0
+2026-07-03,86,Argentina,Cape Verde,AH,away,-2.0,0.50743,1.95,2.09,,,0
+2026-07-03,87,Colombia,Ghana,1X2,home,,0.76392,1.6,1.44,,,0
+2026-07-03,87,Colombia,Ghana,1X2,away,,0.06619,6.4,8.0,,,0
+2026-07-03,87,Colombia,Ghana,1X2,draw,,0.16989,3.7,4.25,,,0
+2026-07-03,87,Colombia,Ghana,OU,over,2.5,0.50245,2.14,2.04,,,0
+2026-07-03,87,Colombia,Ghana,OU,under,2.5,0.49755,1.68,1.75,,,0
+2026-07-03,87,Colombia,Ghana,AH,home,-1.0,0.64215,2.05,1.7,,,0
+2026-07-03,87,Colombia,Ghana,AH,away,-1.0,0.35785,1.68,2.16,,,0
+2026-07-03,88,Australia,Egypt,1X2,home,,0.36822,3.35,3.8,,,0
+2026-07-03,88,Australia,Egypt,1X2,away,,0.27594,2.55,2.38,,,0
+2026-07-03,88,Australia,Egypt,1X2,draw,,0.35584,2.85,2.9,,,0
+2026-07-03,88,Australia,Egypt,OU,over,1.5,0.4931,1.53,1.51,,,0
+2026-07-03,88,Australia,Egypt,OU,under,1.5,0.5069,2.43,2.48,,,0
 2026-07-03,88,Australia,Egypt,AH,home,0.0,0.54614,2.1,2.33,,,0
 2026-07-03,88,Australia,Egypt,AH,away,0.0,0.45386,1.66,1.61,,,0
 2026-06-29,74,Germany,Paraguay,1X2,home,,0.48201,1.33,1.33,1.0,1.0,1
@@ -2275,16 +2275,16 @@ date,match_num,home,away,market,selection,line,model_p,odds,close_odds,hg,ag,pla
 2026-07-02,85,Switzerland,Algeria,1X2,home,,0.39233,2.02,2.02,2.0,0.0,1
 2026-07-02,85,Switzerland,Algeria,1X2,draw,,0.26632,3.25,3.15,2.0,0.0,1
 2026-07-03,86,Argentina,Cape Verde,1X2,home,,0.83697,1.16,1.14,,,0
-2026-07-03,86,Argentina,Cape Verde,1X2,away,,0.0287,21.0,23.0,,,0
-2026-07-03,86,Argentina,Cape Verde,1X2,draw,,0.13433,9.0,9.5,,,0
+2026-07-03,86,Argentina,Cape Verde,1X2,away,,0.0287,21.0,25.0,,,0
+2026-07-03,86,Argentina,Cape Verde,1X2,draw,,0.13433,9.0,9.0,,,0
 2026-07-03,86,Argentina,Cape Verde,OU,over,3.5,0.26117,2.7,2.7,,,0
 2026-07-03,86,Argentina,Cape Verde,OU,under,3.5,0.73883,1.48,1.48,,,0
-2026-07-03,87,Colombia,Ghana,1X2,home,,0.76542,1.53,1.41,,,0
-2026-07-03,87,Colombia,Ghana,1X2,away,,0.06449,7.5,9.0,,,0
-2026-07-03,87,Colombia,Ghana,1X2,draw,,0.17009,3.8,4.4,,,0
-2026-07-03,88,Australia,Egypt,1X2,home,,0.36169,3.45,3.75,,,0
-2026-07-03,88,Australia,Egypt,1X2,away,,0.27733,2.5,2.43,,,0
-2026-07-03,88,Australia,Egypt,1X2,draw,,0.36098,2.95,2.88,,,0
+2026-07-03,87,Colombia,Ghana,1X2,home,,0.76542,1.53,1.44,,,0
+2026-07-03,87,Colombia,Ghana,1X2,away,,0.06449,7.5,8.0,,,0
+2026-07-03,87,Colombia,Ghana,1X2,draw,,0.17009,3.8,4.25,,,0
+2026-07-03,88,Australia,Egypt,1X2,home,,0.36169,3.45,3.8,,,0
+2026-07-03,88,Australia,Egypt,1X2,away,,0.27733,2.5,2.38,,,0
+2026-07-03,88,Australia,Egypt,1X2,draw,,0.36098,2.95,2.9,,,0
 2026-06-30,77,France,Sweden,1X2,home,,0.7252,1.29,1.29,3.0,0.0,1
 2026-06-30,77,France,Sweden,1X2,away,,0.10541,11.0,11.0,3.0,0.0,1
 2026-06-30,77,France,Sweden,1X2,draw,,0.16939,6.25,6.25,3.0,0.0,1
@@ -2312,14 +2312,14 @@ date,match_num,home,away,market,selection,line,model_p,odds,close_odds,hg,ag,pla
 2026-07-02,85,Switzerland,Algeria,1X2,home,,0.41949,2.02,2.02,2.0,0.0,1
 2026-07-02,85,Switzerland,Algeria,1X2,draw,,0.27121,3.15,3.15,2.0,0.0,1
 2026-07-03,86,Argentina,Cape Verde,1X2,home,,0.84118,1.17,1.14,,,0
-2026-07-03,86,Argentina,Cape Verde,1X2,away,,0.02583,20.0,23.0,,,0
-2026-07-03,86,Argentina,Cape Verde,1X2,draw,,0.13298,8.5,9.5,,,0
-2026-07-03,87,Colombia,Ghana,1X2,home,,0.76242,1.51,1.41,,,0
-2026-07-03,87,Colombia,Ghana,1X2,away,,0.06264,8.0,9.0,,,0
-2026-07-03,87,Colombia,Ghana,1X2,draw,,0.17494,3.8,4.4,,,0
-2026-07-03,88,Australia,Egypt,1X2,home,,0.35465,3.65,3.75,,,0
-2026-07-03,88,Australia,Egypt,1X2,away,,0.2753,2.5,2.43,,,0
-2026-07-03,88,Australia,Egypt,1X2,draw,,0.37005,2.88,2.88,,,0
+2026-07-03,86,Argentina,Cape Verde,1X2,away,,0.02583,20.0,25.0,,,0
+2026-07-03,86,Argentina,Cape Verde,1X2,draw,,0.13298,8.5,9.0,,,0
+2026-07-03,87,Colombia,Ghana,1X2,home,,0.76242,1.51,1.44,,,0
+2026-07-03,87,Colombia,Ghana,1X2,away,,0.06264,8.0,8.0,,,0
+2026-07-03,87,Colombia,Ghana,1X2,draw,,0.17494,3.8,4.25,,,0
+2026-07-03,88,Australia,Egypt,1X2,home,,0.35465,3.65,3.8,,,0
+2026-07-03,88,Australia,Egypt,1X2,away,,0.2753,2.5,2.38,,,0
+2026-07-03,88,Australia,Egypt,1X2,draw,,0.37005,2.88,2.9,,,0
 2026-07-01,80,England,DR Congo,1X2,away,,0.16024,15.0,15.0,2.0,1.0,1
 2026-07-01,80,England,DR Congo,1X2,home,,0.49413,1.3,1.3,2.0,1.0,1
 2026-07-01,80,England,DR Congo,1X2,draw,,0.34563,5.4,5.4,2.0,1.0,1
@@ -2336,33 +2336,33 @@ date,match_num,home,away,market,selection,line,model_p,odds,close_odds,hg,ag,pla
 2026-07-02,85,Switzerland,Algeria,1X2,home,,0.37883,2.02,2.02,2.0,0.0,1
 2026-07-02,85,Switzerland,Algeria,1X2,draw,,0.26718,3.15,3.15,2.0,0.0,1
 2026-07-03,86,Argentina,Cape Verde,1X2,home,,0.85543,1.17,1.14,,,0
-2026-07-03,86,Argentina,Cape Verde,1X2,away,,0.0239,20.0,23.0,,,0
-2026-07-03,86,Argentina,Cape Verde,1X2,draw,,0.12067,8.5,9.5,,,0
-2026-07-03,87,Colombia,Ghana,1X2,home,,0.77002,1.51,1.41,,,0
-2026-07-03,87,Colombia,Ghana,1X2,away,,0.06152,8.0,9.0,,,0
-2026-07-03,87,Colombia,Ghana,1X2,draw,,0.16847,3.75,4.4,,,0
-2026-07-03,88,Australia,Egypt,1X2,home,,0.37013,3.5,3.75,,,0
-2026-07-03,88,Australia,Egypt,1X2,away,,0.26605,2.6,2.43,,,0
-2026-07-03,88,Australia,Egypt,1X2,draw,,0.36382,2.85,2.88,,,0
-2026-07-04,89,Paraguay,France,1X2,away,,0.49931,1.19,1.2,,,0
-2026-07-04,89,Paraguay,France,1X2,home,,0.1998,18.0,21.0,,,0
-2026-07-04,89,Paraguay,France,1X2,draw,,0.30089,7.0,7.0,,,0
+2026-07-03,86,Argentina,Cape Verde,1X2,away,,0.0239,20.0,25.0,,,0
+2026-07-03,86,Argentina,Cape Verde,1X2,draw,,0.12067,8.5,9.0,,,0
+2026-07-03,87,Colombia,Ghana,1X2,home,,0.77002,1.51,1.44,,,0
+2026-07-03,87,Colombia,Ghana,1X2,away,,0.06152,8.0,8.0,,,0
+2026-07-03,87,Colombia,Ghana,1X2,draw,,0.16847,3.75,4.25,,,0
+2026-07-03,88,Australia,Egypt,1X2,home,,0.37013,3.5,3.8,,,0
+2026-07-03,88,Australia,Egypt,1X2,away,,0.26605,2.6,2.38,,,0
+2026-07-03,88,Australia,Egypt,1X2,draw,,0.36382,2.85,2.9,,,0
+2026-07-04,89,Paraguay,France,1X2,away,,0.49931,1.19,1.19,,,0
+2026-07-04,89,Paraguay,France,1X2,home,,0.1998,18.0,19.0,,,0
+2026-07-04,89,Paraguay,France,1X2,draw,,0.30089,7.0,7.5,,,0
 2026-07-04,89,Paraguay,France,OU,over,3.5,0.15201,2.38,2.38,,,0
 2026-07-04,89,Paraguay,France,OU,under,3.5,0.84799,1.56,1.56,,,0
-2026-07-04,89,Paraguay,France,AH,away,1.5,0.24076,1.61,1.61,,,0
-2026-07-04,89,Paraguay,France,AH,home,1.5,0.75924,2.3,2.26,,,0
-2026-07-04,90,Canada,Morocco,1X2,home,,0.15339,4.75,5.4,,,0
-2026-07-04,90,Canada,Morocco,1X2,away,,0.51677,1.77,1.7,,,0
-2026-07-04,90,Canada,Morocco,1X2,draw,,0.32984,3.35,3.35,,,0
-2026-07-04,90,Canada,Morocco,OU,over,2.5,0.23395,2.14,2.18,,,0
-2026-07-04,90,Canada,Morocco,OU,under,2.5,0.76605,1.61,1.6,,,0
+2026-07-04,89,Paraguay,France,AH,away,1.5,0.24076,1.61,1.65,,,0
+2026-07-04,89,Paraguay,France,AH,home,1.5,0.75924,2.3,2.25,,,0
+2026-07-04,90,Canada,Morocco,1X2,home,,0.15339,4.75,5.1,,,0
+2026-07-04,90,Canada,Morocco,1X2,away,,0.51677,1.77,1.72,,,0
+2026-07-04,90,Canada,Morocco,1X2,draw,,0.32984,3.35,3.4,,,0
+2026-07-04,90,Canada,Morocco,OU,over,2.5,0.23395,2.14,2.15,,,0
+2026-07-04,90,Canada,Morocco,OU,under,2.5,0.76605,1.61,1.61,,,0
 2026-07-04,90,Canada,Morocco,AH,home,0.5,0.48323,2.05,2.05,,,0
 2026-07-04,90,Canada,Morocco,AH,away,0.5,0.51677,1.86,1.86,,,0
-2026-07-05,91,Brazil,Norway,1X2,home,,0.47824,1.9,1.83,,,0
-2026-07-05,91,Brazil,Norway,1X2,away,,0.28057,4.1,4.3,,,0
-2026-07-05,91,Brazil,Norway,1X2,draw,,0.24119,3.6,3.7,,,0
-2026-07-05,91,Brazil,Norway,OU,over,2.5,0.61384,1.83,1.7,,,0
-2026-07-05,91,Brazil,Norway,OU,under,2.5,0.38616,1.85,2.0,,,0
+2026-07-05,91,Brazil,Norway,1X2,home,,0.47824,1.9,1.77,,,0
+2026-07-05,91,Brazil,Norway,1X2,away,,0.28057,4.1,4.5,,,0
+2026-07-05,91,Brazil,Norway,1X2,draw,,0.24119,3.6,3.8,,,0
+2026-07-05,91,Brazil,Norway,OU,over,2.5,0.61384,1.83,1.73,,,0
+2026-07-05,91,Brazil,Norway,OU,under,2.5,0.38616,1.85,1.95,,,0
 2026-07-05,91,Brazil,Norway,AH,home,0.0,0.59884,1.39,1.37,,,0
 2026-07-05,91,Brazil,Norway,AH,away,0.0,0.40116,3.18,3.29,,,0
 2026-07-02,83,Portugal,Croatia,1X2,away,,0.18094,4.9,4.9,2.0,1.0,1
@@ -2375,52 +2375,84 @@ date,match_num,home,away,market,selection,line,model_p,odds,close_odds,hg,ag,pla
 2026-07-02,85,Switzerland,Algeria,1X2,home,,0.3946,2.02,2.02,2.0,0.0,1
 2026-07-02,85,Switzerland,Algeria,1X2,draw,,0.27007,3.15,3.15,2.0,0.0,1
 2026-07-03,86,Argentina,Cape Verde,1X2,home,,0.84227,1.17,1.14,,,0
-2026-07-03,86,Argentina,Cape Verde,1X2,away,,0.02453,20.0,23.0,,,0
-2026-07-03,86,Argentina,Cape Verde,1X2,draw,,0.1332,8.5,9.5,,,0
-2026-07-03,87,Colombia,Ghana,1X2,home,,0.75925,1.5,1.41,,,0
-2026-07-03,87,Colombia,Ghana,1X2,away,,0.06202,8.0,9.0,,,0
-2026-07-03,87,Colombia,Ghana,1X2,draw,,0.17873,3.85,4.4,,,0
-2026-07-03,88,Australia,Egypt,1X2,home,,0.35935,3.5,3.75,,,0
-2026-07-03,88,Australia,Egypt,1X2,away,,0.26369,2.55,2.43,,,0
-2026-07-03,88,Australia,Egypt,1X2,draw,,0.37696,2.9,2.88,,,0
-2026-07-04,89,Paraguay,France,1X2,away,,0.48927,1.18,1.2,,,0
-2026-07-04,89,Paraguay,France,1X2,home,,0.19744,20.0,21.0,,,0
-2026-07-04,89,Paraguay,France,1X2,draw,,0.31329,7.5,7.0,,,0
-2026-07-04,89,Paraguay,France,OU,over,2.5,0.32404,1.56,1.62,,,0
-2026-07-04,89,Paraguay,France,OU,under,2.5,0.67596,2.33,2.25,,,0
-2026-07-04,90,Canada,Morocco,1X2,home,,0.15071,5.25,5.4,,,0
-2026-07-04,90,Canada,Morocco,1X2,away,,0.50447,1.7,1.7,,,0
-2026-07-04,90,Canada,Morocco,1X2,draw,,0.34483,3.4,3.35,,,0
+2026-07-03,86,Argentina,Cape Verde,1X2,away,,0.02453,20.0,25.0,,,0
+2026-07-03,86,Argentina,Cape Verde,1X2,draw,,0.1332,8.5,9.0,,,0
+2026-07-03,87,Colombia,Ghana,1X2,home,,0.75925,1.5,1.44,,,0
+2026-07-03,87,Colombia,Ghana,1X2,away,,0.06202,8.0,8.0,,,0
+2026-07-03,87,Colombia,Ghana,1X2,draw,,0.17873,3.85,4.25,,,0
+2026-07-03,88,Australia,Egypt,1X2,home,,0.35935,3.5,3.8,,,0
+2026-07-03,88,Australia,Egypt,1X2,away,,0.26369,2.55,2.38,,,0
+2026-07-03,88,Australia,Egypt,1X2,draw,,0.37696,2.9,2.9,,,0
+2026-07-04,89,Paraguay,France,1X2,away,,0.48927,1.18,1.19,,,0
+2026-07-04,89,Paraguay,France,1X2,home,,0.19744,20.0,19.0,,,0
+2026-07-04,89,Paraguay,France,1X2,draw,,0.31329,7.5,7.5,,,0
+2026-07-04,89,Paraguay,France,OU,over,2.5,0.32404,1.56,1.65,,,0
+2026-07-04,89,Paraguay,France,OU,under,2.5,0.67596,2.33,2.18,,,0
+2026-07-04,90,Canada,Morocco,1X2,home,,0.15071,5.25,5.1,,,0
+2026-07-04,90,Canada,Morocco,1X2,away,,0.50447,1.7,1.72,,,0
+2026-07-04,90,Canada,Morocco,1X2,draw,,0.34483,3.4,3.4,,,0
 2026-07-04,90,Canada,Morocco,AH,home,0.75,0.49553,1.84,1.86,,,0
-2026-07-04,90,Canada,Morocco,AH,away,0.75,0.50447,2.08,2.06,,,0
-2026-07-05,91,Brazil,Norway,1X2,home,,0.45099,1.85,1.83,,,0
-2026-07-05,91,Brazil,Norway,1X2,away,,0.30382,4.2,4.3,,,0
-2026-07-05,91,Brazil,Norway,1X2,draw,,0.2452,3.7,3.7,,,0
-2026-07-05,92,Mexico,England,1X2,away,,0.38426,2.5,2.5,,,0
-2026-07-05,92,Mexico,England,1X2,home,,0.26403,3.15,3.1,,,0
+2026-07-04,90,Canada,Morocco,AH,away,0.75,0.50447,2.08,2.05,,,0
+2026-07-05,91,Brazil,Norway,1X2,home,,0.45099,1.85,1.77,,,0
+2026-07-05,91,Brazil,Norway,1X2,away,,0.30382,4.2,4.5,,,0
+2026-07-05,91,Brazil,Norway,1X2,draw,,0.2452,3.7,3.8,,,0
+2026-07-05,92,Mexico,England,1X2,away,,0.38426,2.5,2.48,,,0
+2026-07-05,92,Mexico,England,1X2,home,,0.26403,3.15,3.2,,,0
 2026-07-05,92,Mexico,England,1X2,draw,,0.35171,3.15,3.2,,,0
-2026-07-05,92,Mexico,England,OU,over,2.5,0.26324,2.48,2.48,,,0
-2026-07-05,92,Mexico,England,OU,under,2.5,0.73676,1.51,1.51,,,0
+2026-07-05,92,Mexico,England,OU,over,2.5,0.26324,2.48,2.4,,,0
+2026-07-05,92,Mexico,England,OU,under,2.5,0.73676,1.51,1.55,,,0
 2026-07-05,92,Mexico,England,AH,away,-0.0,0.56011,1.83,1.72,,,0
 2026-07-05,92,Mexico,England,AH,home,-0.0,0.43989,2.04,2.19,,,0
 2026-07-03,86,Argentina,Cape Verde,1X2,home,,0.84381,1.14,1.14,,,0
-2026-07-03,86,Argentina,Cape Verde,1X2,away,,0.02655,23.0,23.0,,,0
-2026-07-03,86,Argentina,Cape Verde,1X2,draw,,0.12964,9.5,9.5,,,0
-2026-07-03,87,Colombia,Ghana,1X2,home,,0.75897,1.41,1.41,,,0
-2026-07-03,87,Colombia,Ghana,1X2,away,,0.06453,9.0,9.0,,,0
-2026-07-03,87,Colombia,Ghana,1X2,draw,,0.1765,4.4,4.4,,,0
-2026-07-03,88,Australia,Egypt,1X2,home,,0.37099,3.75,3.75,,,0
-2026-07-03,88,Australia,Egypt,1X2,away,,0.26993,2.43,2.43,,,0
-2026-07-03,88,Australia,Egypt,1X2,draw,,0.35909,2.88,2.88,,,0
-2026-07-04,89,Paraguay,France,1X2,away,,0.49975,1.2,1.2,,,0
-2026-07-04,89,Paraguay,France,1X2,home,,0.1966,21.0,21.0,,,0
-2026-07-04,89,Paraguay,France,1X2,draw,,0.30365,7.0,7.0,,,0
-2026-07-04,90,Canada,Morocco,1X2,home,,0.15899,5.4,5.4,,,0
-2026-07-04,90,Canada,Morocco,1X2,away,,0.50937,1.7,1.7,,,0
-2026-07-04,90,Canada,Morocco,1X2,draw,,0.33164,3.35,3.35,,,0
-2026-07-05,91,Brazil,Norway,1X2,home,,0.45809,1.83,1.83,,,0
-2026-07-05,91,Brazil,Norway,1X2,away,,0.29109,4.3,4.3,,,0
-2026-07-05,91,Brazil,Norway,1X2,draw,,0.25082,3.7,3.7,,,0
-2026-07-05,92,Mexico,England,1X2,away,,0.38323,2.5,2.5,,,0
-2026-07-05,92,Mexico,England,1X2,home,,0.27684,3.1,3.1,,,0
+2026-07-03,86,Argentina,Cape Verde,1X2,away,,0.02655,23.0,25.0,,,0
+2026-07-03,86,Argentina,Cape Verde,1X2,draw,,0.12964,9.5,9.0,,,0
+2026-07-03,87,Colombia,Ghana,1X2,home,,0.75897,1.41,1.44,,,0
+2026-07-03,87,Colombia,Ghana,1X2,away,,0.06453,9.0,8.0,,,0
+2026-07-03,87,Colombia,Ghana,1X2,draw,,0.1765,4.4,4.25,,,0
+2026-07-03,88,Australia,Egypt,1X2,home,,0.37099,3.75,3.8,,,0
+2026-07-03,88,Australia,Egypt,1X2,away,,0.26993,2.43,2.38,,,0
+2026-07-03,88,Australia,Egypt,1X2,draw,,0.35909,2.88,2.9,,,0
+2026-07-04,89,Paraguay,France,1X2,away,,0.49975,1.2,1.19,,,0
+2026-07-04,89,Paraguay,France,1X2,home,,0.1966,21.0,19.0,,,0
+2026-07-04,89,Paraguay,France,1X2,draw,,0.30365,7.0,7.5,,,0
+2026-07-04,90,Canada,Morocco,1X2,home,,0.15899,5.4,5.1,,,0
+2026-07-04,90,Canada,Morocco,1X2,away,,0.50937,1.7,1.72,,,0
+2026-07-04,90,Canada,Morocco,1X2,draw,,0.33164,3.35,3.4,,,0
+2026-07-05,91,Brazil,Norway,1X2,home,,0.45809,1.83,1.77,,,0
+2026-07-05,91,Brazil,Norway,1X2,away,,0.29109,4.3,4.5,,,0
+2026-07-05,91,Brazil,Norway,1X2,draw,,0.25082,3.7,3.8,,,0
+2026-07-05,92,Mexico,England,1X2,away,,0.38323,2.5,2.48,,,0
+2026-07-05,92,Mexico,England,1X2,home,,0.27684,3.1,3.2,,,0
 2026-07-05,92,Mexico,England,1X2,draw,,0.33994,3.2,3.2,,,0
+2026-07-03,86,Argentina,Cape Verde,1X2,home,,0.8381,1.14,1.14,,,0
+2026-07-03,86,Argentina,Cape Verde,1X2,away,,0.02676,25.0,25.0,,,0
+2026-07-03,86,Argentina,Cape Verde,1X2,draw,,0.13514,9.0,9.0,,,0
+2026-07-03,87,Colombia,Ghana,1X2,home,,0.76331,1.44,1.44,,,0
+2026-07-03,87,Colombia,Ghana,1X2,away,,0.06239,8.0,8.0,,,0
+2026-07-03,87,Colombia,Ghana,1X2,draw,,0.1743,4.25,4.25,,,0
+2026-07-03,88,Australia,Egypt,1X2,home,,0.35345,3.8,3.8,,,0
+2026-07-03,88,Australia,Egypt,1X2,away,,0.27701,2.38,2.38,,,0
+2026-07-03,88,Australia,Egypt,1X2,draw,,0.36953,2.9,2.9,,,0
+2026-07-03,88,Australia,Egypt,AH,home,0.5,0.72299,1.62,1.62,,,0
+2026-07-03,88,Australia,Egypt,AH,away,0.5,0.27701,2.32,2.32,,,0
+2026-07-04,89,Paraguay,France,1X2,away,,0.55837,1.19,1.19,,,0
+2026-07-04,89,Paraguay,France,1X2,home,,0.1595,19.0,19.0,,,0
+2026-07-04,89,Paraguay,France,1X2,draw,,0.28213,7.5,7.5,,,0
+2026-07-04,90,Canada,Morocco,1X2,home,,0.15154,5.1,5.1,,,0
+2026-07-04,90,Canada,Morocco,1X2,away,,0.52088,1.72,1.72,,,0
+2026-07-04,90,Canada,Morocco,1X2,draw,,0.32758,3.4,3.4,,,0
+2026-07-05,91,Brazil,Norway,1X2,home,,0.4489,1.77,1.77,,,0
+2026-07-05,91,Brazil,Norway,1X2,away,,0.30079,4.5,4.5,,,0
+2026-07-05,91,Brazil,Norway,1X2,draw,,0.25032,3.8,3.8,,,0
+2026-07-05,91,Brazil,Norway,AH,home,-1.5,0.24234,3.31,3.31,,,0
+2026-07-05,91,Brazil,Norway,AH,away,-1.5,0.75766,1.36,1.36,,,0
+2026-07-05,92,Mexico,England,1X2,away,,0.40812,2.48,2.48,,,0
+2026-07-05,92,Mexico,England,1X2,home,,0.25401,3.2,3.2,,,0
+2026-07-05,92,Mexico,England,1X2,draw,,0.33788,3.2,3.2,,,0
+2026-07-06,93,Portugal,Spain,1X2,home,,0.23874,3.9,3.9,,,0
+2026-07-06,93,Portugal,Spain,1X2,away,,0.48183,1.88,1.88,,,0
+2026-07-06,93,Portugal,Spain,1X2,draw,,0.27943,3.5,3.5,,,0
+2026-07-06,93,Portugal,Spain,OU,over,2.5,0.44571,1.8,1.8,,,0
+2026-07-06,93,Portugal,Spain,OU,under,2.5,0.55429,1.88,1.88,,,0
+2026-07-06,93,Portugal,Spain,AH,home,0.0,0.37846,3.12,3.12,,,0
+2026-07-06,93,Portugal,Spain,AH,away,0.0,0.62154,1.4,1.4,,,0
