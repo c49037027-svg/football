@@ -401,6 +401,113 @@ def agent_news(model_path, schedule, news_file, home, away):
                f"；讓盤 {a.ah_line:+g}")
 
 
+@cli.group("mlb")
+def mlb_group():
+    """MLB 美國職棒預測（錢線/讓分/大小）。資料源 statsapi.mlb.com（免費）。"""
+
+
+@mlb_group.command("fetch")
+@click.option("--seasons", multiple=True, type=int, required=True,
+              help="球季年份，可多個：--seasons 2024 --seasons 2025 --seasons 2026")
+@click.option("--out", default="data/mlb.csv")
+def mlb_fetch(seasons, out):
+    """下載球季賽果（例行賽+季後賽）。沙箱擋 statsapi，需在 Render/Actions 跑。"""
+    from . import mlb
+    n = mlb.fetch_seasons(list(seasons), out)
+    click.echo(f"[mlb] 已存 {n} 場到 {out}")
+
+
+@mlb_group.command("train")
+@click.option("--data", "data_path", default="data/mlb.csv")
+@click.option("--out", default="models/mlb.pkl")
+@click.option("--half-life", default=120.0, type=float,
+              help="時間衰減半衰期（天）。棒球狀態變化快，預設 120")
+@click.option("--reg", default=0.3, type=float, help="L2 正則化（往聯盟平均收縮）")
+def mlb_train(data_path, out, half_life, reg):
+    """以得分（runs）訓練 Dixon–Coles（max_goals=20、無低比分修正）。"""
+    df = loader.load_csv(data_path)
+    click.echo(f"[mlb] 載入 {len(df)} 場，擬合中（half_life={half_life}天, reg={reg}）…")
+    model = dc.fit(df, half_life_days=half_life, max_goals=20, rho_init=0.0,
+                   reg=reg, verbose=True)
+    model.save(out)
+    click.echo(f"[ok] 模型已存：{out}（{len(model.teams)} 隊，主場優勢={model.home_adv:.3f}）")
+
+
+@mlb_group.command("analyze")
+@click.option("--model", "model_path", default="models/mlb.pkl")
+@click.option("--total-line", default=8.5, type=float, help="大小分線")
+@click.option("--run-line", default=-1.5, type=float, help="讓分線（主隊視角）")
+@click.argument("home")
+@click.argument("away")
+def mlb_analyze(model_path, total_line, run_line, home, away):
+    """單場分析：footy mlb analyze "New York Yankees" "Boston Red Sox" """
+    from . import mlb
+    model = dc.DixonColesModel.load(model_path)
+    if home not in model.attack or away not in model.attack:
+        raise click.ClickException(f"球隊不在模型中（需完整隊名，如 New York Yankees）")
+    m = mlb.analyze_game(model, home, away, total_line=total_line, run_line=run_line)
+    hz, az = mlb.zh_mlb(home), mlb.zh_mlb(away)
+    click.echo(f"\n{hz}(主) vs {az}")
+    click.echo(f"  期望得分     {m.exp_home:.2f} : {m.exp_away:.2f}")
+    click.echo(f"  錢線         {hz} {m.p_home:.1%}（公平賠率 {m.ml_home_odds}）"
+               f" / {az} {m.p_away:.1%}（{m.ml_away_odds}）")
+    click.echo(f"  讓分 {m.run_line:+g}    {hz} 過盤 {m.p_cover_home:.1%}")
+    click.echo(f"  大小 {m.total_line}    大 {m.p_over:.1%} / 小 {m.p_under:.1%}")
+    tops = "、".join(f"{h}-{a} {p:.1%}" for (h, a), p in m.top_scores)
+    click.echo(f"  最可能比分   {tops}")
+    click.echo("  ⚠️ v1 未建模先發投手（MLB 最大單一因子），供研究參考、非投注建議。")
+
+
+@mlb_group.command("today")
+@click.option("--model", "model_path", default="models/mlb.pkl")
+@click.option("--date", default=None, help="日期 YYYY-MM-DD（預設今天）")
+@click.option("--odds/--no-odds", default=True, help="抓真實盤口比對（需 ODDS_API_KEY）")
+def mlb_today(model_path, date, odds):
+    """今日賽程逐場預測（含預告先發），可比對真實盤口。"""
+    import datetime as _dt
+    from . import mlb
+    date = date or _dt.date.today().isoformat()
+    model = dc.DixonColesModel.load(model_path)
+    try:
+        games = mlb.fetch_today(date)
+    except Exception as e:  # noqa: BLE001
+        raise click.ClickException(f"抓賽程失敗（沙箱擋 statsapi？需在 Render/Actions 跑）：{e}")
+    if not games:
+        click.echo(f"{date} 無比賽。")
+        return
+    gobjs = [mlb._Game(i + 1, g["home"], g["away"]) for i, g in enumerate(games)]
+    odds_index = {}
+    if odds:
+        try:
+            odds_index = mlb.fetch_mlb_odds(gobjs)
+            click.echo(f"[mlb] 已抓盤口：{len(odds_index)} 場")
+        except Exception as e:  # noqa: BLE001
+            click.echo(f"[mlb] 無盤口（{e}），僅顯示模型預測")
+    for i, g in enumerate(games):
+        h, a = g["home"], g["away"]
+        hz, az = mlb.zh_mlb(h), mlb.zh_mlb(a)
+        line = f"{date} {az} @ {hz}"
+        if g.get("away_pitcher") or g.get("home_pitcher"):
+            line += f"（先發 {g.get('away_pitcher') or '?'} vs {g.get('home_pitcher') or '?'}）"
+        click.echo("\n" + line)
+        if h not in model.attack or a not in model.attack:
+            click.echo("  （球隊不在模型中，先跑 mlb fetch + mlb train）")
+            continue
+        m = mlb.analyze_game(model, h, a)
+        click.echo(f"  模型：{hz} 勝 {m.p_home:.1%}｜大小8.5 大 {m.p_over:.1%}"
+                   f"｜{hz} -1.5 過盤 {m.p_cover_home:.1%}")
+        quotes = odds_index.get(i + 1)
+        if quotes:
+            ml = {q.selection: q.odds for q in quotes if q.market == "1X2"}
+            if "home" in ml:
+                edge_h = m.p_home * ml["home"] - 1
+                edge_a = m.p_away * ml.get("away", 0) - 1 if ml.get("away") else None
+                s = f"  盤口：{hz} @{ml['home']}（edge {edge_h:+.1%}）"
+                if edge_a is not None:
+                    s += f" / {az} @{ml['away']}（edge {edge_a:+.1%}）"
+                click.echo(s)
+
+
 @cli.command("serve")
 @click.option("--model", "model_path", default="models/intl.pkl")
 @click.option("--history", "history_path", default="data/intl.csv", help="國際賽歷史（狀態/H2H）")
