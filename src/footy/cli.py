@@ -433,21 +433,60 @@ def mlb_train(data_path, out, half_life, reg):
     click.echo(f"[ok] 模型已存：{out}（{len(model.teams)} 隊，主場優勢={model.home_adv:.3f}）")
 
 
+@mlb_group.command("fetch-pitchers")
+@click.option("--season", default=2026, type=int)
+@click.option("--out", default="data/mlb_pitchers.csv")
+def mlb_fetch_pitchers(season, out):
+    """下載整季投手數據（一次呼叫），供先發投手評分。需在 Render/Actions 跑。"""
+    from . import mlb
+    rows = mlb.fetch_pitchers(season, out_path=out)
+    click.echo(f"[mlb] 已存 {len(rows)} 位投手到 {out}")
+
+
+def _load_pitcher_book(path):
+    from pathlib import Path
+
+    from . import mlb
+    if path and Path(path).exists():
+        return mlb.PitcherBook.load_csv(path)
+    return None
+
+
 @mlb_group.command("analyze")
 @click.option("--model", "model_path", default="models/mlb.pkl")
 @click.option("--total-line", default=8.5, type=float, help="大小分線")
 @click.option("--run-line", default=-1.5, type=float, help="讓分線（主隊視角）")
+@click.option("--pitchers", "pitchers_path", default="data/mlb_pitchers.csv",
+              help="投手數據 CSV（mlb fetch-pitchers 產出；檔案不存在則不調整）")
+@click.option("--home-pitcher", default=None, help="主隊先發姓名（英文全名）")
+@click.option("--away-pitcher", default=None, help="客隊先發姓名（英文全名）")
 @click.argument("home")
 @click.argument("away")
-def mlb_analyze(model_path, total_line, run_line, home, away):
+def mlb_analyze(model_path, total_line, run_line, pitchers_path,
+                home_pitcher, away_pitcher, home, away):
     """單場分析：footy mlb analyze "New York Yankees" "Boston Red Sox" """
     from . import mlb
     model = dc.DixonColesModel.load(model_path)
     if home not in model.attack or away not in model.attack:
         raise click.ClickException(f"球隊不在模型中（需完整隊名，如 New York Yankees）")
-    m = mlb.analyze_game(model, home, away, total_line=total_line, run_line=run_line)
+    hf = af = 1.0
+    book = _load_pitcher_book(pitchers_path) if (home_pitcher or away_pitcher) else None
+    notes = []
+    if book:
+        if home_pitcher:
+            hf, n = book.factor(home_pitcher)
+            notes.append(f"主先發 {home_pitcher}：{n}")
+        if away_pitcher:
+            af, n = book.factor(away_pitcher)
+            notes.append(f"客先發 {away_pitcher}：{n}")
+    elif home_pitcher or away_pitcher:
+        notes.append(f"（找不到投手數據 {pitchers_path}，未調整——先跑 mlb fetch-pitchers）")
+    m = mlb.analyze_game(model, home, away, total_line=total_line, run_line=run_line,
+                         home_pitcher_factor=hf, away_pitcher_factor=af)
     hz, az = mlb.zh_mlb(home), mlb.zh_mlb(away)
     click.echo(f"\n{hz}(主) vs {az}")
+    for n in notes:
+        click.echo(f"  {n}")
     click.echo(f"  期望得分     {m.exp_home:.2f} : {m.exp_away:.2f}")
     click.echo(f"  錢線         {hz} {m.p_home:.1%}（公平賠率 {m.ml_home_odds}）"
                f" / {az} {m.p_away:.1%}（{m.ml_away_odds}）")
@@ -455,15 +494,17 @@ def mlb_analyze(model_path, total_line, run_line, home, away):
     click.echo(f"  大小 {m.total_line}    大 {m.p_over:.1%} / 小 {m.p_under:.1%}")
     tops = "、".join(f"{h}-{a} {p:.1%}" for (h, a), p in m.top_scores)
     click.echo(f"  最可能比分   {tops}")
-    click.echo("  ⚠️ v1 未建模先發投手（MLB 最大單一因子），供研究參考、非投注建議。")
+    click.echo("  ⚠️ 供研究參考、非投注建議。")
 
 
 @mlb_group.command("today")
 @click.option("--model", "model_path", default="models/mlb.pkl")
 @click.option("--date", default=None, help="日期 YYYY-MM-DD（預設今天）")
 @click.option("--odds/--no-odds", default=True, help="抓真實盤口比對（需 ODDS_API_KEY）")
-def mlb_today(model_path, date, odds):
-    """今日賽程逐場預測（含預告先發），可比對真實盤口。"""
+@click.option("--pitchers", "pitchers_path", default="data/mlb_pitchers.csv",
+              help="投手數據 CSV（存在則自動套用先發評分）")
+def mlb_today(model_path, date, odds, pitchers_path):
+    """今日賽程逐場預測（自動套用預告先發評分），可比對真實盤口。"""
     import datetime as _dt
     from . import mlb
     date = date or _dt.date.today().isoformat()
@@ -475,6 +516,11 @@ def mlb_today(model_path, date, odds):
     if not games:
         click.echo(f"{date} 無比賽。")
         return
+    book = _load_pitcher_book(pitchers_path)
+    if book:
+        click.echo(f"[mlb] 先發投手評分：{len(book.rows)} 位（{pitchers_path}）")
+    else:
+        click.echo("[mlb] 無投手數據，未做先發調整（跑 mlb fetch-pitchers 可啟用）")
     gobjs = [mlb._Game(i + 1, g["home"], g["away"]) for i, g in enumerate(games)]
     odds_index = {}
     if odds:
@@ -493,7 +539,14 @@ def mlb_today(model_path, date, odds):
         if h not in model.attack or a not in model.attack:
             click.echo("  （球隊不在模型中，先跑 mlb fetch + mlb train）")
             continue
-        m = mlb.analyze_game(model, h, a)
+        hf = af = 1.0
+        if book:
+            hf, hn = book.factor(g.get("home_pitcher_id") or g.get("home_pitcher"))
+            af, an = book.factor(g.get("away_pitcher_id") or g.get("away_pitcher"))
+            if g.get("home_pitcher") or g.get("away_pitcher"):
+                click.echo(f"  先發評分：主 {hn}｜客 {an}")
+        m = mlb.analyze_game(model, h, a,
+                             home_pitcher_factor=hf, away_pitcher_factor=af)
         click.echo(f"  模型：{hz} 勝 {m.p_home:.1%}｜大小8.5 大 {m.p_over:.1%}"
                    f"｜{hz} -1.5 過盤 {m.p_cover_home:.1%}")
         quotes = odds_index.get(i + 1)

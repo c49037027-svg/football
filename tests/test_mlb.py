@@ -108,6 +108,96 @@ def test_analyze_game_end_to_end():
     assert len(m.top_scores) == 4
 
 
+PITCHER_FIXTURE = {
+    "stats": [{
+        "splits": [
+            # 王牌：180 局失 50 分 → RA/9 = 2.5
+            {"player": {"id": 1, "fullName": "Ace Man"},
+             "team": {"name": "New York Yankees"},
+             "stat": {"inningsPitched": "180.0", "runs": 50, "gamesStarted": 30}},
+            # 普通先發：150 局失 75 分 → RA/9 = 4.5
+            {"player": {"id": 2, "fullName": "Avg Joe"},
+             "team": {"name": "New York Yankees"},
+             "stat": {"inningsPitched": "150.0", "runs": 75, "gamesStarted": 28}},
+            # 爛先發：120 局失 90 分 → RA/9 = 6.75
+            {"player": {"id": 3, "fullName": "Bad Luck"},
+             "team": {"name": "Boston Red Sox"},
+             "stat": {"inningsPitched": "120.0", "runs": 90, "gamesStarted": 25}},
+            # 小樣本新秀：6 局失 0 分（收縮後不該變成怪物）
+            {"player": {"id": 4, "fullName": "Tiny Sample"},
+             "team": {"name": "Boston Red Sox"},
+             "stat": {"inningsPitched": "6.0", "runs": 0, "gamesStarted": 1}},
+            # 牛棚（gs=0，不進隊先發平均）
+            {"player": {"id": 5, "fullName": "Pen Guy"},
+             "team": {"name": "Boston Red Sox"},
+             "stat": {"inningsPitched": "60.1", "runs": 30, "gamesStarted": 0}},
+        ],
+    }],
+}
+
+
+def test_ip_to_float():
+    assert abs(mlb.ip_to_float("123.2") - (123 + 2 / 3)) < 1e-9
+    assert abs(mlb.ip_to_float("45.1") - (45 + 1 / 3)) < 1e-9
+    assert mlb.ip_to_float("88") == 88.0
+    assert mlb.ip_to_float("") == 0.0 and mlb.ip_to_float(None) == 0.0
+
+
+def test_parse_pitcher_stats():
+    rows = mlb.parse_pitcher_stats(PITCHER_FIXTURE)
+    assert len(rows) == 5
+    ace = next(r for r in rows if r["id"] == 1)
+    assert ace["name"] == "Ace Man" and ace["ip"] == 180.0 and ace["runs"] == 50
+
+
+def test_pitcher_factor_direction_and_clip():
+    book = mlb.PitcherBook(mlb.parse_pitcher_stats(PITCHER_FIXTURE))
+    f_ace, _ = book.factor(1)      # 王牌 → 壓低對手得分
+    f_bad, _ = book.factor(3)      # 爛投 → 放大對手得分
+    f_none, note = book.factor(999)
+    assert f_ace < 1.0 < f_bad
+    assert f_none == 1.0 and "無評分" in note
+    # 係數混入 0.6 權重且原始值有夾限 → 落在 [0.82, 1.21] 內
+    assert 0.7 * 0.6 + 0.4 <= f_ace and f_bad <= 1.35 * 0.6 + 0.4
+    # 姓名查詢也通
+    f_name, _ = book.factor("Ace Man")
+    assert abs(f_name - f_ace) < 1e-12
+
+
+def test_pitcher_shrinkage_small_sample():
+    book = mlb.PitcherBook(mlb.parse_pitcher_stats(PITCHER_FIXTURE))
+    # 6 局 0 失分的新秀：收縮後 RA/9 應接近聯盟平均，不會是 0
+    rookie = book.by_id[4]
+    shrunk = book._shrunk_ra9(rookie)
+    assert shrunk > book.league_ra9 * 0.7
+
+
+def test_pitcher_factor_shifts_moneyline():
+    model = _mlb_model()
+    base = mlb.analyze_game(model, "Team0", "Team1")
+    # 客隊派王牌（客先發係數 <1 → 主隊得分被壓）→ 主勝率下降、總分小盤機率升
+    strong_away = mlb.analyze_game(model, "Team0", "Team1", away_pitcher_factor=0.85)
+    assert strong_away.p_home < base.p_home
+    assert strong_away.p_under > base.p_under
+    # 主隊派王牌 → 主勝率上升
+    strong_home = mlb.analyze_game(model, "Team0", "Team1", home_pitcher_factor=0.85)
+    assert strong_home.p_home > base.p_home
+
+
+def test_pitcher_book_csv_roundtrip(tmp_path):
+    import csv as _csv
+    rows = mlb.parse_pitcher_stats(PITCHER_FIXTURE)
+    p = tmp_path / "pitchers.csv"
+    with p.open("w", newline="") as f:
+        w = _csv.DictWriter(f, fieldnames=["id", "name", "team", "ip", "runs", "gs"])
+        w.writeheader()
+        w.writerows(rows)
+    book = mlb.PitcherBook.load_csv(p)
+    f1, _ = book.factor(1)
+    f2, _ = mlb.PitcherBook(rows).factor(1)
+    assert abs(f1 - f2) < 1e-12
+
+
 def test_zh_mlb():
     assert mlb.zh_mlb("New York Yankees") == "洋基"
     assert mlb.zh_mlb("Unknown Club") == "Unknown Club"

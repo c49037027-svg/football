@@ -68,14 +68,18 @@ def parse_schedule(payload: dict, finals_only: bool = True) -> list[dict]:
             hs, as_ = home.get("score"), away.get("score")
             if finals_only and (status != "Final" or hs is None or as_ is None):
                 continue
+            hp = home.get("probablePitcher") or {}
+            ap = away.get("probablePitcher") or {}
             rows.append({
                 "date": g.get("officialDate") or day.get("date"),
                 "home": (home.get("team") or {}).get("name", ""),
                 "away": (away.get("team") or {}).get("name", ""),
                 "home_goals": hs, "away_goals": as_,
                 "status": status,
-                "home_pitcher": ((home.get("probablePitcher") or {}).get("fullName", "")),
-                "away_pitcher": ((away.get("probablePitcher") or {}).get("fullName", "")),
+                "home_pitcher": hp.get("fullName", ""),
+                "away_pitcher": ap.get("fullName", ""),
+                "home_pitcher_id": hp.get("id"),
+                "away_pitcher_id": ap.get("id"),
             })
     return rows
 
@@ -125,6 +129,128 @@ def fetch_today(date: str, timeout: float = 30.0) -> list[dict]:
     return parse_schedule(r.json(), finals_only=False)
 
 
+# ---------------- 先發投手評分（RA/9 + 收縮估計） ----------------
+def ip_to_float(ip: str | float | None) -> float:
+    """statsapi 的局數是字串，小數位是「出局數」：'123.2' = 123 又 2/3 局。"""
+    if ip in (None, ""):
+        return 0.0
+    s = str(ip)
+    if "." in s:
+        whole, outs = s.split(".", 1)
+        return int(whole or 0) + int(outs[:1] or 0) / 3.0
+    return float(s)
+
+
+def parse_pitcher_stats(payload: dict) -> list[dict]:
+    """解析 /stats?stats=season&group=pitching 回應。純函式、可測試。
+
+    回傳 [{id, name, team, ip, runs, gs}]（ip 已轉為浮點局數）。
+    """
+    rows = []
+    for block in payload.get("stats", []):
+        for sp in block.get("splits", []):
+            st = sp.get("stat") or {}
+            pl = sp.get("player") or {}
+            if pl.get("id") is None:
+                continue
+            rows.append({
+                "id": pl["id"],
+                "name": pl.get("fullName", ""),
+                "team": (sp.get("team") or {}).get("name", ""),
+                "ip": ip_to_float(st.get("inningsPitched")),
+                "runs": int(st.get("runs") or 0),
+                "gs": int(st.get("gamesStarted") or 0),
+            })
+    return rows
+
+
+def fetch_pitchers(season: int, out_path: str | Path | None = None,
+                   timeout: float = 30.0) -> list[dict]:
+    """抓整季全聯盟投手數據（一次呼叫），選擇性存 CSV。"""
+    import requests
+    r = requests.get(f"{STATSAPI}/stats",
+                     params={"stats": "season", "group": "pitching",
+                             "season": season, "sportIds": 1, "gameType": "R",
+                             "playerPool": "ALL", "limit": 2000},
+                     headers={"User-Agent": "Mozilla/5.0"}, timeout=timeout)
+    r.raise_for_status()
+    rows = parse_pitcher_stats(r.json())
+    if out_path:
+        out_path = Path(out_path)
+        out_path.parent.mkdir(parents=True, exist_ok=True)
+        with out_path.open("w", newline="", encoding="utf-8") as f:
+            w = csv.DictWriter(f, fieldnames=["id", "name", "team", "ip", "runs", "gs"])
+            w.writeheader()
+            w.writerows(rows)
+    return rows
+
+
+class PitcherBook:
+    """先發投手評分簿：RA/9 + 收縮估計 → 相對該隊平均先發的係數。
+
+    設計（避免與隊級模型重複計算）：
+      - 每人 RA/9 以 prior_ip 局的聯盟平均當先驗收縮（小樣本不會爆）。
+      - 係數 = 該投手收縮後 RA/9 ÷ 其球隊「先發群」IP 加權平均 RA/9 ——
+        隊防守評分已含全隊投手平均，這裡只修正「今晚這位相對隊內平均」的差。
+      - 係數夾在 [0.7, 1.35]；先發約投 6 成局數，套用時混 0.6 權重。
+    """
+
+    STARTER_SHARE = 0.6   # 先發平均吃掉的比賽比重
+    CLIP = (0.7, 1.35)
+
+    def __init__(self, rows: list[dict], prior_ip: float = 60.0):
+        self.rows = [r for r in rows if float(r.get("ip") or 0) > 0]
+        total_runs = sum(r["runs"] for r in self.rows)
+        total_ip = sum(float(r["ip"]) for r in self.rows)
+        self.league_ra9 = 9.0 * total_runs / total_ip if total_ip else 4.5
+        self.prior_ip = prior_ip
+        self.by_id = {int(r["id"]): r for r in self.rows}
+        self.by_name = {r["name"]: r for r in self.rows}
+        # 各隊先發群（gs>=1）的 IP 加權平均「收縮後 RA/9」
+        self.team_avg: dict[str, float] = {}
+        agg: dict[str, list] = {}
+        for r in self.rows:
+            if int(r.get("gs") or 0) >= 1 and r.get("team"):
+                agg.setdefault(r["team"], []).append(r)
+        for team, rs in agg.items():
+            w = sum(float(x["ip"]) for x in rs)
+            if w > 0:
+                self.team_avg[team] = sum(
+                    self._shrunk_ra9(x) * float(x["ip"]) for x in rs) / w
+
+    def _shrunk_ra9(self, r: dict) -> float:
+        ip, runs = float(r["ip"]), r["runs"]
+        prior_runs = self.league_ra9 / 9.0 * self.prior_ip
+        return 9.0 * (runs + prior_runs) / (ip + self.prior_ip)
+
+    def factor(self, pitcher: "int | str | None") -> tuple[float, str]:
+        """回傳 (對手得分乘數已混權重, 說明)。查無此人 → (1.0, 說明)。"""
+        r = None
+        if isinstance(pitcher, int):
+            r = self.by_id.get(pitcher)
+        elif pitcher:
+            r = self.by_name.get(str(pitcher))
+        if r is None:
+            return 1.0, "無評分（查無此投手，用隊平均）"
+        ra9 = self._shrunk_ra9(r)
+        base = self.team_avg.get(r.get("team", ""), self.league_ra9)
+        raw = ra9 / base if base > 0 else 1.0
+        raw = min(max(raw, self.CLIP[0]), self.CLIP[1])
+        blended = self.STARTER_SHARE * raw + (1.0 - self.STARTER_SHARE)
+        note = f"RA/9 {ra9:.2f}（隊平均 {base:.2f}，係數 {blended:.2f}）"
+        return blended, note
+
+    @staticmethod
+    def load_csv(path: str | Path) -> "PitcherBook":
+        rows = []
+        with Path(path).open(encoding="utf-8") as f:
+            for r in csv.DictReader(f):
+                rows.append({"id": int(r["id"]), "name": r["name"],
+                             "team": r["team"], "ip": float(r["ip"]),
+                             "runs": int(r["runs"]), "gs": int(r["gs"])})
+        return PitcherBook(rows)
+
+
 # ---------------- 盤口（棒球版） ----------------
 @dataclass
 class MLBMarkets:
@@ -154,14 +280,22 @@ def moneyline(mat: np.ndarray) -> tuple[float, float]:
 
 
 def analyze_game(model, home: str, away: str, total_line: float = 8.5,
-                 run_line: float = -1.5, top_n: int = 4) -> MLBMarkets:
-    """對一場比賽算錢線/大小/讓分。model 為以 runs 訓練的 DixonColesModel。"""
-    mat = model.score_matrix(home, away)
+                 run_line: float = -1.5, top_n: int = 4,
+                 home_pitcher_factor: float = 1.0,
+                 away_pitcher_factor: float = 1.0) -> MLBMarkets:
+    """對一場比賽算錢線/大小/讓分。model 為以 runs 訓練的 DixonColesModel。
+
+    pitcher_factor 來自 PitcherBook.factor()：主隊先發的係數乘在「客隊得分」上，
+    客隊先發的係數乘在「主隊得分」上（好投手 <1 → 壓低對手得分）。
+    """
+    lam, mu = model.expected_goals(home, away)
+    lam *= away_pitcher_factor   # 客隊先發壓制主隊打線
+    mu *= home_pitcher_factor    # 主隊先發壓制客隊打線
+    mat = model.score_matrix(home, away, lam=lam, mu=mu)
     p_h, p_a = moneyline(mat)
     ou = markets.over_under(mat, total_line)
     ah = markets.asian_handicap(mat, run_line, "home")
     cover = ah.p_win + ah.p_half_win + 0.5 * ah.p_push
-    lam, mu = model.expected_goals(home, away)
     flat = [((h, a), float(mat[h, a]))
             for h in range(mat.shape[0]) for a in range(mat.shape[1])]
     flat.sort(key=lambda x: -x[1])
