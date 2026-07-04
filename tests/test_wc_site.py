@@ -35,6 +35,9 @@ def test_write_worldcup_site(tmp_path):
     # 績效頁存在（無帳本時顯示引導訊息）且首頁導覽列有連結
     perf = (Path(outdir) / "performance.html").read_text(encoding="utf-8")
     assert "尚無收益紀錄" in perf and "performance.html" in html
+    # MLB 分頁存在（沒給內容時是引導頁）且導覽列有連結
+    mlb_page = (Path(outdir) / "mlb.html").read_text(encoding="utf-8")
+    assert "MLB" in mlb_page and "mlb.html" in html
     # 分析頁含返回首頁與行動裝置 viewport
     sample = pages[0].read_text(encoding="utf-8")
     assert "返回首頁" in sample and "width=device-width" in sample

@@ -71,6 +71,7 @@ def parse_schedule(payload: dict, finals_only: bool = True) -> list[dict]:
             hp = home.get("probablePitcher") or {}
             ap = away.get("probablePitcher") or {}
             rows.append({
+                "game_pk": g.get("gamePk"),
                 "date": g.get("officialDate") or day.get("date"),
                 "home": (home.get("team") or {}).get("name", ""),
                 "away": (away.get("team") or {}).get("name", ""),
@@ -127,6 +128,62 @@ def fetch_today(date: str, timeout: float = 30.0) -> list[dict]:
                      headers={"User-Agent": "Mozilla/5.0"}, timeout=timeout)
     r.raise_for_status()
     return parse_schedule(r.json(), finals_only=False)
+
+
+# ---------------- 球場因子（park factors） ----------------
+def park_factors(df, prior_games: float = 80.0,
+                 clip: tuple = (0.90, 1.12)) -> dict[str, float]:
+    """由訓練資料估各主場的得分環境：PF = 該隊主場總得分 ÷ 聯盟平均（收縮+夾限）。
+
+    Coors Field（洛磯）這類打者天堂 PF>1。套用時每邊乘 PF^0.5（總分約放大 PF 倍）；
+    隊級評分已吸收部分球場效應，此為文獻常用的近似修正，故夾限保守。
+    df 需含 home/home_goals/away_goals 欄。
+    """
+    total = df["home_goals"] + df["away_goals"]
+    league = float(total.mean())
+    if not league:
+        return {}
+    out = {}
+    for team, grp in df.groupby("home"):
+        s = float((grp["home_goals"] + grp["away_goals"]).sum())
+        n = len(grp)
+        pf = (s + prior_games * league) / ((n + prior_games) * league)
+        out[str(team)] = min(max(pf, clip[0]), clip[1])
+    return out
+
+
+def park_factors_from_csv(path: str | Path) -> dict[str, float]:
+    """從訓練 CSV 算球場因子；檔案不存在回空 dict（不調整）。"""
+    import pandas as pd
+    p = Path(path)
+    if not p.exists():
+        return {}
+    try:
+        return park_factors(pd.read_csv(p))
+    except Exception:  # noqa: BLE001
+        return {}
+
+
+# ---------------- 球隊戰力表 ----------------
+def team_power(model) -> list[dict]:
+    """每隊對聯盟平均對手的期望得分/失分（主客各半），依淨值排序。"""
+    teams = sorted(model.attack)
+    rows = []
+    for t in teams:
+        rf = ra = 0.0
+        n = 0
+        for u in teams:
+            if u == t:
+                continue
+            lam_h, mu_h = model.expected_goals(t, u)   # t 在主場
+            lam_a, mu_a = model.expected_goals(u, t)   # t 作客
+            rf += lam_h + mu_a
+            ra += mu_h + lam_a
+            n += 2
+        rows.append({"team": t, "rf": rf / n, "ra": ra / n,
+                     "diff": (rf - ra) / n})
+    rows.sort(key=lambda r: -r["diff"])
+    return rows
 
 
 # ---------------- 先發投手評分（RA/9 + 收縮估計） ----------------
@@ -282,15 +339,21 @@ def moneyline(mat: np.ndarray) -> tuple[float, float]:
 def analyze_game(model, home: str, away: str, total_line: float = 8.5,
                  run_line: float = -1.5, top_n: int = 4,
                  home_pitcher_factor: float = 1.0,
-                 away_pitcher_factor: float = 1.0) -> MLBMarkets:
+                 away_pitcher_factor: float = 1.0,
+                 park_factor: float = 1.0) -> MLBMarkets:
     """對一場比賽算錢線/大小/讓分。model 為以 runs 訓練的 DixonColesModel。
 
     pitcher_factor 來自 PitcherBook.factor()：主隊先發的係數乘在「客隊得分」上，
     客隊先發的係數乘在「主隊得分」上（好投手 <1 → 壓低對手得分）。
+    park_factor 為主場球場因子：兩邊各乘 PF^0.5（總分約放大 PF 倍）。
     """
     lam, mu = model.expected_goals(home, away)
     lam *= away_pitcher_factor   # 客隊先發壓制主隊打線
     mu *= home_pitcher_factor    # 主隊先發壓制客隊打線
+    if park_factor and park_factor != 1.0:
+        pf = park_factor ** 0.5
+        lam *= pf
+        mu *= pf
     mat = model.score_matrix(home, away, lam=lam, mu=mu)
     p_h, p_a = moneyline(mat)
     ou = markets.over_under(mat, total_line)
@@ -320,3 +383,192 @@ def fetch_mlb_odds(games: list, **kw) -> dict:
     """抓 MLB 盤口，回 {num: [MarketQuote...]}。重用足球那套抓取/配對。"""
     from .live.providers import fetch_wc_odds
     return fetch_wc_odds(games, sport="baseball_mlb", **kw)
+
+
+# ---------------- MLB 戰績追蹤（重用足球 tracker 的結算機制） ----------------
+MLB_LEDGER = "data/mlb_bets.csv"
+_MLB_MARKET_ZH = {"1X2": "錢線", "OU": "大小", "AH": "讓分"}
+
+
+def picks_for_game(m: MLBMarkets, quotes=None, min_lean: float = 0.03) -> list[dict]:
+    """一場比賽的模型推薦：錢線（看好側）、大小（有明顯方向才推）、讓分。
+
+    quotes 給定時附真實賠率（market key 沿用 tracker：1X2/OU/AH，結算直接相容——
+    棒球無和局，1X2 只會出 home/away）。
+    """
+    from . import tracker
+
+    def odds_for(market, sel, line):
+        if not quotes:
+            return None
+        od = tracker._lookup_odds(quotes, market, sel, line)
+        return od if (od and 1.0 < od <= tracker.MAX_ODDS) else None
+
+    picks = []
+    ml = "home" if m.p_home >= m.p_away else "away"
+    picks.append(("1X2", ml, "", odds_for("1X2", ml, "")))
+    if abs(m.p_over - 0.5) >= min_lean:
+        sel = "大" if m.p_over >= 0.5 else "小"
+        picks.append(("OU", sel, m.total_line, odds_for("OU", sel, m.total_line)))
+    rl_sel = "主" if m.p_cover_home >= 0.5 else "客"
+    picks.append(("AH", rl_sel, m.run_line, odds_for("AH", rl_sel, m.run_line)))
+    return [dict(market=mk, selection=sel, line=ln, odds=od)
+            for mk, sel, ln, od in picks]
+
+
+def log_picks(ledger_path, date: str, game: dict, picks: list[dict]) -> int:
+    """把一場的推薦記入帳本（以 game_pk 當 match_num，不重複）。回傳新增筆數。"""
+    import pandas as pd
+
+    from . import tracker
+    if not game.get("game_pk"):
+        return 0
+    df = tracker.load_ledger(ledger_path)
+    seen = set(zip(df["match_num"].astype(str), df["market"], df["selection"].astype(str)))
+    rows = []
+    for p in picks:
+        if (str(game["game_pk"]), p["market"], str(p["selection"])) in seen:
+            continue
+        od = round(p["odds"], 3) if p.get("odds") else ""
+        rows.append(dict(date=date, match_num=game["game_pk"], home=game["home"],
+                         away=game["away"], market=p["market"], selection=p["selection"],
+                         line=p["line"], odds=od, edge="",
+                         source="market" if p.get("odds") else "model",
+                         close_odds=od, result="pending", pl=""))
+    if rows:
+        df = pd.concat([df, pd.DataFrame(rows)], ignore_index=True)
+        tracker.save_ledger(df, ledger_path)
+    return len(rows)
+
+
+def settle_ledger(ledger_path, days_back: int = 5) -> int:
+    """抓近幾天賽果結算帳本（match_num=game_pk）。需可連 statsapi。"""
+    import datetime as _dt
+
+    from . import tracker
+    end = _dt.datetime.utcnow().date()
+    start = end - _dt.timedelta(days=days_back)
+    finals = fetch_games(start.isoformat(), end.isoformat())
+    results = {int(g["game_pk"]): (int(g["home_goals"]), int(g["away_goals"]))
+               for g in finals if g.get("game_pk") is not None}
+    return tracker.settle(ledger_path, results)
+
+
+def summary_text(ledger_path) -> str | None:
+    """MLB 戰績摘要（沿用 tracker 統計，改棒球盤口名）。無紀錄回 None。"""
+    from pathlib import Path as _P
+
+    from . import tracker
+    if not _P(ledger_path).exists():
+        return None
+    s = tracker.summary(ledger_path)
+    if not (s.settled or s.pending):
+        return None
+    parts = []
+    for mk, (w, l, p) in s.by_market.items():
+        d = w + l
+        rt = f"{w/d:.0%}" if d else "—"
+        parts.append(f"{_MLB_MARKET_ZH.get(mk, mk)} {w}–{l}（{rt}）")
+    head = (f"MLB 推薦戰績｜{s.wins} 勝 {s.losses} 敗"
+            f"{f' {s.pushes} 走盤' if s.pushes else ''}"
+            f"｜勝率 {s.win_rate:.1%}（待結 {s.pending}）")
+    lines = [head]
+    if parts:
+        lines.append("　".join(parts))
+    if s.market_bets:
+        roi = f"實際損益｜{s.pl_units:+.2f}u / {s.market_bets} 注｜ROI {s.roi:+.1%}"
+        lines.append(roi)
+    return "\n".join(lines)
+
+
+# ---------------- 網站分頁（mlb.html）建置 ----------------
+def us_today() -> str:
+    """MLB 賽程日（美東日期，UTC-5 近似）。"""
+    import datetime as _dt
+    return (_dt.datetime.utcnow() - _dt.timedelta(hours=5)).date().isoformat()
+
+
+def build_site_page(model_path: str = "models/mlb.pkl",
+                    data_path: str = "data/mlb.csv",
+                    pitchers_path: str = "data/mlb_pitchers.csv",
+                    ledger_path: str = MLB_LEDGER,
+                    date: str | None = None, with_odds: bool = True) -> str:
+    """建 MLB 分頁 HTML：今日各場預測卡 + 戰力表 + 戰績。任何一步失敗都優雅降級。"""
+    from pathlib import Path as _P
+
+    from . import report
+    from .models.dixon_coles import DixonColesModel
+    date = date or us_today()
+    if not _P(model_path).exists():
+        return report.render_mlb_page([], date=date, power=None, track_text=None,
+                                      note="尚未訓練 MLB 模型——在部署環境跑 "
+                                           "footy mlb fetch + fetch-pitchers + train 後，"
+                                           "每日建站會自動更新本頁。")
+    model = DixonColesModel.load(model_path)
+    pf_map = park_factors_from_csv(data_path)
+    book = None
+    if _P(pitchers_path).exists():
+        try:
+            book = PitcherBook.load_csv(pitchers_path)
+        except Exception:  # noqa: BLE001
+            book = None
+    # 先結算舊推薦（抓近幾天賽果；網路失敗略過）
+    try:
+        settle_ledger(ledger_path)
+    except Exception:  # noqa: BLE001
+        pass
+    note = ""
+    try:
+        games = fetch_today(date)
+    except Exception as e:  # noqa: BLE001
+        games = []
+        note = f"抓不到今日賽程（{e}）。"
+    games = [g for g in games if g["home"] in model.attack and g["away"] in model.attack]
+    odds_index = {}
+    if with_odds and games:
+        try:
+            gobjs = [_Game(i + 1, g["home"], g["away"]) for i, g in enumerate(games)]
+            odds_index = fetch_mlb_odds(gobjs)
+        except Exception:  # noqa: BLE001
+            odds_index = {}
+    rows = []
+    for i, g in enumerate(games):
+        quotes = odds_index.get(i + 1)
+        hf = af = 1.0
+        hn = an = ""
+        if book:
+            hf, hn = book.factor(g.get("home_pitcher_id") or g.get("home_pitcher") or None)
+            af, an = book.factor(g.get("away_pitcher_id") or g.get("away_pitcher") or None)
+        pf = pf_map.get(g["home"], 1.0)
+        # 大小分線：有市場線用市場線，否則 8.5
+        total_line = 8.5
+        ml_odds = {}
+        ou_odds = {}
+        rl_odds = {}
+        if quotes:
+            from . import tracker
+            ous = tracker._group_quotes(quotes, "OU")
+            if ous:
+                total_line = sorted(ous, key=lambda ln: abs(float(ln) - 8.5))[0]
+            ml_odds = tracker._group_quotes(quotes, "1X2").get("", {})
+            ou_odds = ous.get(total_line, {})
+            rl_odds = tracker._group_quotes(quotes, "AH").get(-1.5, {})
+        m = analyze_game(model, g["home"], g["away"], total_line=float(total_line),
+                         home_pitcher_factor=hf, away_pitcher_factor=af,
+                         park_factor=pf)
+        picks = picks_for_game(m, quotes)
+        try:
+            log_picks(ledger_path, date, g, picks)
+        except Exception:  # noqa: BLE001
+            pass
+        rows.append({"game": g, "m": m, "pf": pf,
+                     "hp_note": hn, "ap_note": an,
+                     "ml_odds": ml_odds, "ou_odds": ou_odds, "rl_odds": rl_odds,
+                     "status": g.get("status", "")})
+    power = None
+    try:
+        power = team_power(model)
+    except Exception:  # noqa: BLE001
+        power = None
+    return report.render_mlb_page(rows, date=date, power=power,
+                                  track_text=summary_text(ledger_path), note=note)

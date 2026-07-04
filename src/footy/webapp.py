@@ -200,11 +200,19 @@ def _build_site(model, history, schedule_path, n_sims=12000, match_sims=8000):
                                          odds_index=odds_index).text()
         except Exception:  # noqa: BLE001
             track_text = None
+        # MLB 分頁（Render 可連 statsapi；失敗寫引導頁）
+        mlb_html = None
+        try:
+            from . import mlb as mlbmod
+            mlb_html = mlbmod.build_site_page()
+            print("[serve] MLB 分頁已產生", flush=True)
+        except Exception as e:  # noqa: BLE001
+            print(f"[serve] MLB 分頁略過：{e}", flush=True)
         outdir = tempfile.mkdtemp(prefix="footy_wc_")
         report.write_worldcup_site(result, model, matches, outdir, history=history,
                                    n_sims=match_sims, interactive=True,
                                    track_text=track_text, ledger_path="data/bets.csv",
-                                   odds_index=odds_index)
+                                   odds_index=odds_index, mlb_html=mlb_html)
         return outdir
     except Exception as e:  # noqa: BLE001
         print(f"[serve] 產生世界盃首頁失敗（改用自訂表單為首頁）：{e}")

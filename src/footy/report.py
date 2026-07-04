@@ -701,6 +701,7 @@ def _navbar(active: str) -> str:
         return " class='on'" if k == active else ""
     return (f"<div class='nav'><a href='index.html'{cls('home')}>🏆 首頁</a>"
             f"<a href='knockout.html'{cls('knockout')}>🏟️ 晉級&對陣</a>"
+            f"<a href='mlb.html'{cls('mlb')}>⚾ MLB</a>"
             f"<a href='performance.html'{cls('perf')}>📈 績效</a>"
             f"<a href='/custom'{cls('custom')}>🔧 自訂分析</a></div>")
 
@@ -1143,10 +1144,97 @@ border-radius:14px;padding:16px 18px;margin:4px 0 10px}}
 </div></body></html>"""
 
 
+def _mlb_edge(p: float, odds) -> str:
+    if not odds:
+        return ""
+    e = p * float(odds) - 1.0
+    c = "#7be0b0" if e > 0 else "#8a97a6"
+    return f"<span style='color:{c}'>@{float(odds):g}（edge {e:+.1%}）</span>"
+
+
+def render_mlb_page(rows, date: str, power=None, track_text=None,
+                    note: str = "", title: str = "MLB 今日預測") -> str:
+    """MLB 分頁：今日各場預測卡 + 球隊戰力表 + 推薦戰績。"""
+    from . import mlb as _mlb
+    zh_t = _mlb.zh_mlb
+    cards = []
+    for r in rows:
+        g, m = r["game"], r["m"]
+        hz, az = zh_t(g["home"]), zh_t(g["away"])
+        pit = ""
+        if g.get("home_pitcher") or g.get("away_pitcher"):
+            pit = (f"<div class='small'>先發：{html.escape(g.get('away_pitcher') or '?')}"
+                   f"{('　' + html.escape(r['ap_note'])) if r.get('ap_note') else ''}"
+                   f"　vs　{html.escape(g.get('home_pitcher') or '?')}"
+                   f"{('　' + html.escape(r['hp_note'])) if r.get('hp_note') else ''}</div>")
+        pf_note = (f"<span class='small'>球場因子 {r['pf']:.2f}</span>"
+                   if abs(r.get("pf", 1.0) - 1.0) > 0.005 else "")
+        ml_o, ou_o, rl_o = r.get("ml_odds") or {}, r.get("ou_odds") or {}, r.get("rl_odds") or {}
+        lines = [
+            f"<div class='mrow'><span>錢線</span>"
+            f"<b>{hz} {m.p_home:.0%}</b>（公平 {m.ml_home_odds}）{_mlb_edge(m.p_home, ml_o.get('home'))}"
+            f"　/　{az} {m.p_away:.0%}（{m.ml_away_odds}）{_mlb_edge(m.p_away, ml_o.get('away'))}</div>",
+            f"<div class='mrow'><span>大小 {m.total_line:g}</span>"
+            f"大 {m.p_over:.0%} {_mlb_edge(m.p_over, ou_o.get('over'))}"
+            f"　/　小 {m.p_under:.0%} {_mlb_edge(m.p_under, ou_o.get('under'))}</div>",
+            f"<div class='mrow'><span>讓分 {m.run_line:+g}</span>"
+            f"{hz} 過盤 {m.p_cover_home:.0%} {_mlb_edge(m.p_cover_home, rl_o.get('home'))}</div>",
+        ]
+        tops = "、".join(f"{h}-{a} {p:.1%}" for (h, a), p in m.top_scores)
+        cards.append(
+            f"<div class='card'><div class='sec'>{az} @ {hz}"
+            f"　<span class='small'>期望得分 {m.exp_away:.1f} : {m.exp_home:.1f}</span>"
+            f"　{pf_note}</div>{pit}{''.join(lines)}"
+            f"<div class='small' style='color:var(--muted)'>最可能比分：{tops}</div></div>")
+    body = "".join(cards) if cards else (
+        f"<div class='card'><div class='sec'>今日無可預測比賽</div>"
+        f"<div class='small' style='color:var(--muted)'>{html.escape(note) or '賽程空檔，或模型未涵蓋參賽隊。'}</div></div>")
+    track_html = ""
+    if track_text:
+        track_html = (f"<div class='card'><div class='sec'>📒 MLB 推薦戰績</div>"
+                      f"<div class='small' style='white-space:pre-line;color:#cdd9e5'>"
+                      f"{html.escape(track_text)}</div></div>")
+    power_html = ""
+    if power:
+        trs = "".join(
+            f"<tr><td class='rk'>{i}</td><td class='tm'>{html.escape(zh_t(p['team']))}</td>"
+            f"<td>{p['rf']:.2f}</td><td>{p['ra']:.2f}</td>"
+            f"<td class='num'><b>{p['diff']:+.2f}</b></td></tr>"
+            for i, p in enumerate(power, 1))
+        power_html = (f"<details class='card sec-collapse'><summary>💪 球隊戰力表（模型評分）</summary>"
+                      f"<table style='margin-top:8px'><thead><tr><th>#</th><th>球隊</th>"
+                      f"<th>場均得分</th><th>場均失分</th><th>淨</th></tr></thead>"
+                      f"<tbody>{trs}</tbody></table></details>")
+    return f"""<!doctype html><html lang="zh-Hant"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>{html.escape(title)}</title><style>{_CSS}
+table{{width:100%;border-collapse:collapse;font-size:12px}}
+th,td{{padding:5px 7px;text-align:center;border-bottom:1px solid var(--line)}}
+th{{color:var(--muted);font-size:11px}}td.tm{{text-align:left;font-weight:700}}td.rk{{color:var(--muted)}}
+.mrow{{display:flex;gap:8px;align-items:baseline;font-size:13px;padding:4px 0;
+border-top:1px solid #1c242d;flex-wrap:wrap}}
+.mrow>span:first-child{{color:var(--muted);font-size:11px;width:64px;flex:none}}
+.sec-collapse>summary{{cursor:pointer;font-weight:700;list-style:none}}
+.sec-collapse>summary::-webkit-details-marker{{display:none}}
+.sec-collapse>summary::before{{content:'▸ '}}.sec-collapse[open]>summary::before{{content:'▾ '}}
+</style></head>
+<body><div class="wrap">
+  {_navbar('mlb')}
+  <h1>⚾ {html.escape(title)}</h1>
+  <div class="sub">{html.escape(date)}（美東賽程日）· Dixon–Coles(得分) + 先發投手評分 + 球場因子</div>
+  <div class="disc">⚠️ 純機率預測，非投注建議。先發評分為 RA/9 收縮估計；模型未含牛棚當日狀態。</div>
+  {('<div class="small" style="color:var(--warn)">' + html.escape(note) + '</div>') if note else ''}
+  {track_html}
+  {body}
+  {power_html}
+  <div class="foot">Generated by footy · 研究與教育用途</div>
+</div></body></html>"""
+
+
 def write_worldcup_site(result, model, matches, outdir, history=None,
                         title="2026 世界盃預測", n_sims=20000, injury_counts=None,
                         track_text=None, ledger_path=None, odds_index=None,
-                        interactive=False):
+                        mlb_html=None, interactive=False):
     """產生多頁網站：index.html + 每場可分析的 match_<num>.html。
 
     可分析 = 雙方皆為模型已知球隊（小組賽全部；淘汰賽待隊伍確定後）。
@@ -1234,4 +1322,12 @@ def write_worldcup_site(result, model, matches, outdir, history=None,
         render_performance_page(hist, tune=tune_res, pending=pending,
                                 track_text=track_text, ai_risk=ai_risk,
                                 ai_review=ai_review), encoding="utf-8")
+    # MLB 分頁（呼叫端可傳現成 HTML；沒有就寫引導頁，導覽列連結不 404）
+    if mlb_html is None:
+        import datetime as _dt2
+        mlb_html = render_mlb_page(
+            [], date=_dt2.date.today().isoformat(), power=None, track_text=None,
+            note="MLB 預測需在部署環境啟用：footy mlb fetch → fetch-pitchers → train，"
+                 "每日建站會自動更新本頁。")
+    (outdir / "mlb.html").write_text(mlb_html, encoding="utf-8")
     return outdir, len(linked)

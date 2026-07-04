@@ -203,6 +203,73 @@ def test_zh_mlb():
     assert mlb.zh_mlb("Unknown Club") == "Unknown Club"
 
 
+def test_park_factors():
+    rows = []
+    # Team0 主場高得分（場均 12），Team1 正常（9），各 40 場
+    for i in range(40):
+        rows.append(dict(home="Team0", away="TeamX", home_goals=7, away_goals=5))
+        rows.append(dict(home="Team1", away="TeamX", home_goals=5, away_goals=4))
+    df = pd.DataFrame(rows)
+    pf = mlb.park_factors(df)
+    assert pf["Team0"] > 1.0 > pf["Team1"] * 1.001 or pf["Team0"] > pf["Team1"]
+    assert 0.90 <= pf["Team0"] <= 1.12  # 夾限
+    # park factor 放大總分 → 大盤機率升
+    model = _mlb_model()
+    base = mlb.analyze_game(model, "Team0", "Team1")
+    juiced = mlb.analyze_game(model, "Team0", "Team1", park_factor=1.10)
+    assert juiced.p_over > base.p_over
+
+
+def test_team_power():
+    model = _mlb_model()
+    power = mlb.team_power(model)
+    assert len(power) == 6
+    assert power[0]["diff"] >= power[-1]["diff"]      # 依淨值排序
+    assert power[0]["team"] == "Team0"                 # 合成資料裡最強
+    assert all(1.0 < p["rf"] < 10.0 for p in power)
+
+
+def test_picks_and_ledger(tmp_path):
+    model = _mlb_model()
+    m = mlb.analyze_game(model, "Team0", "Team5")
+    picks = mlb.picks_for_game(m)
+    mks = {p["market"] for p in picks}
+    assert "1X2" in mks and "AH" in mks               # 錢線+讓分必有
+    ml = next(p for p in picks if p["market"] == "1X2")
+    assert ml["selection"] == "home"                  # 強隊在家 → 推主
+    led = tmp_path / "mlb_bets.csv"
+    game = {"game_pk": 777001, "home": "Team0", "away": "Team5"}
+    n = mlb.log_picks(led, "2026-07-03", game, picks)
+    assert n == len(picks)
+    assert mlb.log_picks(led, "2026-07-03", game, picks) == 0   # 不重複
+    # 結算：主隊 6-2 贏 → 錢線過
+    from footy import tracker
+    settled = tracker.settle(led, {777001: (6, 2)})
+    assert settled == n
+    txt = mlb.summary_text(led)
+    assert txt and "MLB 推薦戰績" in txt and "錢線" in txt
+
+
+def test_render_mlb_page():
+    from footy import report
+    model = _mlb_model()
+    m = mlb.analyze_game(model, "Team0", "Team5")
+    rows = [{"game": {"home": "Team0", "away": "Team5", "home_pitcher": "P One",
+                      "away_pitcher": "P Two"},
+             "m": m, "pf": 1.08, "hp_note": "RA/9 3.00", "ap_note": "",
+             "ml_odds": {"home": 1.5, "away": 2.8}, "ou_odds": {}, "rl_odds": {},
+             "status": "Preview"}]
+    power = mlb.team_power(model)
+    page = report.render_mlb_page(rows, date="2026-07-03", power=power,
+                                  track_text="MLB 推薦戰績｜1 勝 0 敗")
+    assert "MLB 今日預測" in page and "錢線" in page and "球場因子 1.08" in page
+    assert "戰力表" in page and "MLB 推薦戰績" in page
+    assert "edge" in page                              # 有 odds → 顯示 edge
+    # 空狀態
+    empty = report.render_mlb_page([], date="2026-07-03", note="尚未訓練")
+    assert "今日無可預測比賽" in empty and "尚未訓練" in empty
+
+
 def test_cli_wiring():
     from click.testing import CliRunner
     from footy.cli import cli

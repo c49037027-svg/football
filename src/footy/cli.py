@@ -686,11 +686,21 @@ def wc_site(ctx, model_path, schedule, history_path, outdir, n_sims, match_sims,
             click.echo(f"[warn] 取傷停失敗，略過（網站照常產生）：{e}")
             injury_counts = None
 
+    # MLB 分頁（有 models/mlb.pkl 才會有內容；失敗寫引導頁）
+    mlb_html = None
+    try:
+        from . import mlb as mlbmod
+        mlb_html = mlbmod.build_site_page()
+        click.echo("[wc-site] MLB 分頁已產生")
+    except Exception as e:  # noqa: BLE001
+        click.echo(f"[wc-site] MLB 分頁略過：{e}")
+
     click.echo("[wc] 產生首頁與各場分析頁…")
     out, n = report.write_worldcup_site(result, model, matches, outdir,
                                         history=hist, title=title, n_sims=match_sims,
                                         injury_counts=injury_counts, track_text=track_text,
-                                        ledger_path=ledger, odds_index=odds_index)
+                                        ledger_path=ledger, odds_index=odds_index,
+                                        mlb_html=mlb_html)
     champ = sorted(result.champion.items(), key=lambda x: x[1], reverse=True)[:5]
     click.echo("奪冠機率前五：" + "  ".join(f"{zh(t)} {p:.1%}" for t, p in champ))
     click.echo(f"[ok] 網站已輸出到 {out}/（首頁 index.html，{n} 場分析頁）")
