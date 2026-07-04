@@ -130,6 +130,53 @@ def fetch_today(date: str, timeout: float = 30.0) -> list[dict]:
     return parse_schedule(r.json(), finals_only=False)
 
 
+# ---------------- 負二項比分分布（棒球得分過度離散） ----------------
+def nb_score_matrix(lam: float, mu: float, k: float | None,
+                    max_goals: int = 20) -> np.ndarray:
+    """負二項聯合比分矩陣（兩邊獨立）。k 為離散度：var = m + m²/k。
+
+    棒球得分遠比 Poisson 離散（得分常一局爆量），Poisson 會高估強隊錢線、
+    低估大小盤尾端。k=None 或極大 → 退回 Poisson。
+    """
+    from scipy import stats
+    ks = np.arange(max_goals + 1)
+    if k is None or k <= 0 or k > 1e6:
+        h = stats.poisson.pmf(ks, lam)
+        a = stats.poisson.pmf(ks, mu)
+    else:
+        # NB 參數化：n=k, p=k/(k+m) → 平均=m、變異=m+m²/k
+        h = stats.nbinom.pmf(ks, k, k / (k + lam))
+        a = stats.nbinom.pmf(ks, k, k / (k + mu))
+    mat = np.outer(h, a)
+    s = mat.sum()
+    return mat / s if s > 0 else mat
+
+
+def dispersion_from_df(df) -> float | None:
+    """由賽果估離散度 k（動差法）：k = m²/(v−m)。v≤m（無過度離散）回 None。
+
+    註：原始變異含「對戰強弱差」成分，會略高估離散（k 略低、分布略寬），
+    屬保守方向；回測驗證見 docs/FINDINGS.md。
+    """
+    runs = np.concatenate([df["home_goals"].to_numpy(float),
+                           df["away_goals"].to_numpy(float)])
+    m, v = float(runs.mean()), float(runs.var())
+    if v <= m or m <= 0:
+        return None
+    return m * m / (v - m)
+
+
+def dispersion_from_csv(path: str | Path) -> float | None:
+    import pandas as pd
+    p = Path(path)
+    if not p.exists():
+        return None
+    try:
+        return dispersion_from_df(pd.read_csv(p))
+    except Exception:  # noqa: BLE001
+        return None
+
+
 # ---------------- 球場因子（park factors） ----------------
 def park_factors(df, prior_games: float = 80.0,
                  clip: tuple = (0.90, 1.12)) -> dict[str, float]:
@@ -217,6 +264,10 @@ def parse_pitcher_stats(payload: dict) -> list[dict]:
                 "ip": ip_to_float(st.get("inningsPitched")),
                 "runs": int(st.get("runs") or 0),
                 "gs": int(st.get("gamesStarted") or 0),
+                # FIP 用（缺欄時評分自動退回純 RA/9）
+                "so": int(st.get("strikeOuts") or 0),
+                "bb": int(st.get("baseOnBalls") or 0),
+                "hr": int(st.get("homeRuns") or 0),
             })
     return rows
 
@@ -236,24 +287,28 @@ def fetch_pitchers(season: int, out_path: str | Path | None = None,
         out_path = Path(out_path)
         out_path.parent.mkdir(parents=True, exist_ok=True)
         with out_path.open("w", newline="", encoding="utf-8") as f:
-            w = csv.DictWriter(f, fieldnames=["id", "name", "team", "ip", "runs", "gs"])
+            w = csv.DictWriter(f, fieldnames=["id", "name", "team", "ip", "runs",
+                                              "gs", "so", "bb", "hr"])
             w.writeheader()
             w.writerows(rows)
     return rows
 
 
 class PitcherBook:
-    """先發投手評分簿：RA/9 + 收縮估計 → 相對該隊平均先發的係數。
+    """先發投手評分簿：RA/9 與 FIP 各半混合 + 收縮估計 → 相對該隊平均先發的係數。
 
     設計（避免與隊級模型重複計算）：
-      - 每人 RA/9 以 prior_ip 局的聯盟平均當先驗收縮（小樣本不會爆）。
-      - 係數 = 該投手收縮後 RA/9 ÷ 其球隊「先發群」IP 加權平均 RA/9 ——
-        隊防守評分已含全隊投手平均，這裡只修正「今晚這位相對隊內平均」的差。
+      - RA/9 含守備與運氣雜訊；FIP =(13*HR+3*BB−2*K)/IP+常數 只看投手可控
+        三事件，對未來失分更有預測力。兩者各以 prior_ip 局的聯盟平均收縮後
+        各半混合（缺 K/BB/HR 欄的舊資料自動退回純 RA/9）。
+      - 係數 = 該投手混合評分 ÷ 其球隊「先發群」IP 加權平均——隊防守評分
+        已含全隊投手平均，這裡只修正「今晚這位相對隊內平均」的差。
       - 係數夾在 [0.7, 1.35]；先發約投 6 成局數，套用時混 0.6 權重。
     """
 
     STARTER_SHARE = 0.6   # 先發平均吃掉的比賽比重
     CLIP = (0.7, 1.35)
+    FIP_WEIGHT = 0.5      # FIP 佔混合評分的比重（缺欄時為 0）
 
     def __init__(self, rows: list[dict], prior_ip: float = 60.0):
         self.rows = [r for r in rows if float(r.get("ip") or 0) > 0]
@@ -261,9 +316,17 @@ class PitcherBook:
         total_ip = sum(float(r["ip"]) for r in self.rows)
         self.league_ra9 = 9.0 * total_runs / total_ip if total_ip else 4.5
         self.prior_ip = prior_ip
+        # FIP 常數：把聯盟 IP 加權 FIP 核心對齊到聯盟 RA/9（失分尺度，可與 RA/9 混合）
+        core_ip = sum(float(r["ip"]) for r in self.rows if self._has_fip(r))
+        if core_ip > 0:
+            core_sum = sum(self._fip_core(r) * float(r["ip"])
+                           for r in self.rows if self._has_fip(r))
+            self.fip_const = self.league_ra9 - core_sum / core_ip
+        else:
+            self.fip_const = None
         self.by_id = {int(r["id"]): r for r in self.rows}
         self.by_name = {r["name"]: r for r in self.rows}
-        # 各隊先發群（gs>=1）的 IP 加權平均「收縮後 RA/9」
+        # 各隊先發群（gs>=1）的 IP 加權平均混合評分
         self.team_avg: dict[str, float] = {}
         agg: dict[str, list] = {}
         for r in self.rows:
@@ -273,12 +336,37 @@ class PitcherBook:
             w = sum(float(x["ip"]) for x in rs)
             if w > 0:
                 self.team_avg[team] = sum(
-                    self._shrunk_ra9(x) * float(x["ip"]) for x in rs) / w
+                    self._rating(x) * float(x["ip"]) for x in rs) / w
+
+    @staticmethod
+    def _has_fip(r: dict) -> bool:
+        return any(int(r.get(k) or 0) > 0 for k in ("so", "bb", "hr"))
+
+    @staticmethod
+    def _fip_core(r: dict) -> float:
+        ip = float(r["ip"])
+        return (13 * int(r.get("hr") or 0) + 3 * int(r.get("bb") or 0)
+                - 2 * int(r.get("so") or 0)) / ip
 
     def _shrunk_ra9(self, r: dict) -> float:
         ip, runs = float(r["ip"]), r["runs"]
         prior_runs = self.league_ra9 / 9.0 * self.prior_ip
         return 9.0 * (runs + prior_runs) / (ip + self.prior_ip)
+
+    def _shrunk_fip(self, r: dict) -> float | None:
+        if self.fip_const is None or not self._has_fip(r):
+            return None
+        ip = float(r["ip"])
+        fip = self._fip_core(r) + self.fip_const
+        return (fip * ip + self.league_ra9 * self.prior_ip) / (ip + self.prior_ip)
+
+    def _rating(self, r: dict) -> float:
+        """混合評分（失分尺度）：0.5*RA/9 + 0.5*FIP；無 FIP 資料退回 RA/9。"""
+        ra9 = self._shrunk_ra9(r)
+        fip = self._shrunk_fip(r)
+        if fip is None:
+            return ra9
+        return (1 - self.FIP_WEIGHT) * ra9 + self.FIP_WEIGHT * fip
 
     def factor(self, pitcher: "int | str | None") -> tuple[float, str]:
         """回傳 (對手得分乘數已混權重, 說明)。查無此人 → (1.0, 說明)。"""
@@ -289,12 +377,12 @@ class PitcherBook:
             r = self.by_name.get(str(pitcher))
         if r is None:
             return 1.0, "無評分（查無此投手，用隊平均）"
-        ra9 = self._shrunk_ra9(r)
+        rating = self._rating(r)
         base = self.team_avg.get(r.get("team", ""), self.league_ra9)
-        raw = ra9 / base if base > 0 else 1.0
+        raw = rating / base if base > 0 else 1.0
         raw = min(max(raw, self.CLIP[0]), self.CLIP[1])
         blended = self.STARTER_SHARE * raw + (1.0 - self.STARTER_SHARE)
-        note = f"RA/9 {ra9:.2f}（隊平均 {base:.2f}，係數 {blended:.2f}）"
+        note = f"評分 {rating:.2f}（RA/9+FIP，隊平均 {base:.2f}，係數 {blended:.2f}）"
         return blended, note
 
     @staticmethod
@@ -304,7 +392,10 @@ class PitcherBook:
             for r in csv.DictReader(f):
                 rows.append({"id": int(r["id"]), "name": r["name"],
                              "team": r["team"], "ip": float(r["ip"]),
-                             "runs": int(r["runs"]), "gs": int(r["gs"])})
+                             "runs": int(r["runs"]), "gs": int(r["gs"]),
+                             "so": int(r.get("so") or 0),
+                             "bb": int(r.get("bb") or 0),
+                             "hr": int(r.get("hr") or 0)})
         return PitcherBook(rows)
 
 
@@ -340,12 +431,14 @@ def analyze_game(model, home: str, away: str, total_line: float = 8.5,
                  run_line: float = -1.5, top_n: int = 4,
                  home_pitcher_factor: float = 1.0,
                  away_pitcher_factor: float = 1.0,
-                 park_factor: float = 1.0) -> MLBMarkets:
+                 park_factor: float = 1.0,
+                 dispersion: float | None = None) -> MLBMarkets:
     """對一場比賽算錢線/大小/讓分。model 為以 runs 訓練的 DixonColesModel。
 
     pitcher_factor 來自 PitcherBook.factor()：主隊先發的係數乘在「客隊得分」上，
     客隊先發的係數乘在「主隊得分」上（好投手 <1 → 壓低對手得分）。
     park_factor 為主場球場因子：兩邊各乘 PF^0.5（總分約放大 PF 倍）。
+    dispersion 為負二項離散度 k（dispersion_from_csv 取得）；None 退回 Poisson。
     """
     lam, mu = model.expected_goals(home, away)
     lam *= away_pitcher_factor   # 客隊先發壓制主隊打線
@@ -354,7 +447,7 @@ def analyze_game(model, home: str, away: str, total_line: float = 8.5,
         pf = park_factor ** 0.5
         lam *= pf
         mu *= pf
-    mat = model.score_matrix(home, away, lam=lam, mu=mu)
+    mat = nb_score_matrix(lam, mu, dispersion, model.max_goals)
     p_h, p_a = moneyline(mat)
     ou = markets.over_under(mat, total_line)
     ah = markets.asian_handicap(mat, run_line, "home")
@@ -481,7 +574,54 @@ def summary_text(ledger_path) -> str | None:
     return "\n".join(lines)
 
 
-# ---------------- 網站分頁（mlb.html）建置 ----------------
+# ---------------- 回測（驗證分布假設，無前視） ----------------
+def evaluate(df, cut: str, ks: list | None = None,
+             half_life: float = 120.0, reg: float = 0.3) -> dict:
+    """walk-forward 回測：cut 前訓練、cut 後評估。比較不同離散度 k 的
+    錢線 log loss 與大小 8.5 的 log loss/Brier。k=None 代表 Poisson。
+    """
+    import pandas as pd
+
+    from .models import dixon_coles as dc
+    df = df.copy()
+    df["date"] = pd.to_datetime(df["date"])
+    cut_ts = pd.Timestamp(cut)
+    train = df[df["date"] < cut_ts]
+    test = df[df["date"] >= cut_ts]
+    model = dc.fit(train, half_life_days=half_life, max_goals=20,
+                   rho_init=0.0, reg=reg, reference_date=cut_ts)
+    k_mom = dispersion_from_df(train)
+    if ks is None:
+        ks = [None, k_mom, 2.0, 3.0, 5.0, 8.0, 15.0]
+    rows = []
+    games = [(r.home, r.away, int(r.home_goals), int(r.away_goals))
+             for r in test.itertuples()
+             if r.home in model.attack and r.away in model.attack]
+    eps = 1e-12
+    for k in ks:
+        ml_ll = ou_ll = ou_br = 0.0
+        n = 0
+        cal_p = cal_y = 0.0
+        for home, away, hg, ag in games:
+            if hg == ag:
+                continue  # 極罕見（暫停補賽），跳過
+            lam, mu = model.expected_goals(home, away)
+            mat = nb_score_matrix(lam, mu, k, 20)
+            p_h, _ = moneyline(mat)
+            y = 1.0 if hg > ag else 0.0
+            ml_ll -= y * np.log(max(p_h, eps)) + (1 - y) * np.log(max(1 - p_h, eps))
+            ou = markets.over_under(mat, 8.5)
+            po = ou["over_win"] / (ou["over_win"] + ou["under_win"])
+            yo = 1.0 if hg + ag > 8.5 else 0.0
+            ou_ll -= yo * np.log(max(po, eps)) + (1 - yo) * np.log(max(1 - po, eps))
+            ou_br += (po - yo) ** 2
+            cal_p += p_h
+            cal_y += y
+            n += 1
+        rows.append({"k": k, "n": n, "ml_logloss": ml_ll / n,
+                     "ou_logloss": ou_ll / n, "ou_brier": ou_br / n,
+                     "mean_p_home": cal_p / n, "home_win_rate": cal_y / n})
+    return {"rows": rows, "k_mom": k_mom, "n_train": len(train), "n_test": len(games)}
 def us_today() -> str:
     """MLB 賽程日（美東日期，UTC-5 近似）。"""
     import datetime as _dt
@@ -506,6 +646,7 @@ def build_site_page(model_path: str = "models/mlb.pkl",
                                            "每日建站會自動更新本頁。")
     model = DixonColesModel.load(model_path)
     pf_map = park_factors_from_csv(data_path)
+    disp = dispersion_from_csv(data_path)   # 負二項離散度（回測驗證優於 Poisson）
     book = None
     if _P(pitchers_path).exists():
         try:
@@ -540,8 +681,9 @@ def build_site_page(model_path: str = "models/mlb.pkl",
             hf, hn = book.factor(g.get("home_pitcher_id") or g.get("home_pitcher") or None)
             af, an = book.factor(g.get("away_pitcher_id") or g.get("away_pitcher") or None)
         pf = pf_map.get(g["home"], 1.0)
-        # 大小分線：有市場線用市場線，否則 8.5
+        # 大小分線/讓分線：有市場主線用市場，否則 8.5 / -1.5
         total_line = 8.5
+        run_line = -1.5
         ml_odds = {}
         ou_odds = {}
         rl_odds = {}
@@ -552,10 +694,14 @@ def build_site_page(model_path: str = "models/mlb.pkl",
                 total_line = sorted(ous, key=lambda ln: abs(float(ln) - 8.5))[0]
             ml_odds = tracker._group_quotes(quotes, "1X2").get("", {})
             ou_odds = ous.get(total_line, {})
-            rl_odds = tracker._group_quotes(quotes, "AH").get(-1.5, {})
+            mkt_rl = tracker.main_ah_line(quotes)   # 主客賠率最均衡的讓分線
+            if mkt_rl is not None:
+                run_line = float(mkt_rl)
+            rl_odds = tracker._group_quotes(quotes, "AH").get(run_line, {})
         m = analyze_game(model, g["home"], g["away"], total_line=float(total_line),
+                         run_line=run_line,
                          home_pitcher_factor=hf, away_pitcher_factor=af,
-                         park_factor=pf)
+                         park_factor=pf, dispersion=disp)
         picks = picks_for_game(m, quotes)
         try:
             log_picks(ledger_path, date, g, picks)

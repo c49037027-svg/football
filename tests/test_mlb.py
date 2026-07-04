@@ -189,7 +189,8 @@ def test_pitcher_book_csv_roundtrip(tmp_path):
     rows = mlb.parse_pitcher_stats(PITCHER_FIXTURE)
     p = tmp_path / "pitchers.csv"
     with p.open("w", newline="") as f:
-        w = _csv.DictWriter(f, fieldnames=["id", "name", "team", "ip", "runs", "gs"])
+        w = _csv.DictWriter(f, fieldnames=["id", "name", "team", "ip", "runs",
+                                           "gs", "so", "bb", "hr"])
         w.writeheader()
         w.writerows(rows)
     book = mlb.PitcherBook.load_csv(p)
@@ -201,6 +202,87 @@ def test_pitcher_book_csv_roundtrip(tmp_path):
 def test_zh_mlb():
     assert mlb.zh_mlb("New York Yankees") == "洋基"
     assert mlb.zh_mlb("Unknown Club") == "Unknown Club"
+
+
+def test_nb_matrix_vs_poisson():
+    # k=None → Poisson；k 小 → 尾端更厚（總分>12 機率更高）、平均不變
+    lam, mu = 4.6, 4.2
+    pois = mlb.nb_score_matrix(lam, mu, None, 20)
+    nb = mlb.nb_score_matrix(lam, mu, 3.5, 20)
+    ks = np.arange(21)
+    assert abs((pois * ks[:, None]).sum() - lam) < 0.02       # 平均保留
+    assert abs((nb * ks[:, None]).sum() - lam) < 0.05
+    def p_total_over(mat, line):
+        t = np.add.outer(ks, ks)
+        return float(mat[t > line].sum())
+    assert p_total_over(nb, 12.5) > p_total_over(pois, 12.5)  # 尾端更厚
+    # 錢線：分布變寬 → 強隊機率往 5 成收
+    p_pois, _ = mlb.moneyline(mlb.nb_score_matrix(6.0, 3.0, None, 20))
+    p_nb, _ = mlb.moneyline(mlb.nb_score_matrix(6.0, 3.0, 3.5, 20))
+    assert 0.5 < p_nb < p_pois
+
+
+def test_dispersion_from_df():
+    rng = np.random.default_rng(1)
+    m, k = 4.5, 3.5
+    # 由 NB(m, k) 取樣 → 動差法估回的 k 應接近
+    p = k / (k + m)
+    from scipy import stats
+    runs = stats.nbinom.rvs(k, p, size=20000, random_state=rng)
+    df = pd.DataFrame({"home_goals": runs[:10000], "away_goals": runs[10000:],
+                       "home": "A", "away": "B"})
+    est = mlb.dispersion_from_df(df)
+    assert est is not None and 2.8 < est < 4.4
+    # 純 Poisson 資料 → 無過度離散 → None 或很大
+    pois = stats.poisson.rvs(4.5, size=20000, random_state=rng)
+    df2 = pd.DataFrame({"home_goals": pois[:10000], "away_goals": pois[10000:],
+                        "home": "A", "away": "B"})
+    est2 = mlb.dispersion_from_df(df2)
+    assert est2 is None or est2 > 15
+
+
+def test_analyze_game_dispersion_shrinks_favourite():
+    model = _mlb_model()
+    pois = mlb.analyze_game(model, "Team0", "Team5")
+    nb = mlb.analyze_game(model, "Team0", "Team5", dispersion=3.3)
+    assert 0.5 < nb.p_home < pois.p_home
+
+
+def test_fip_blend():
+    base = dict(team="X", ip=150.0, runs=75, gs=28)   # RA/9 = 4.5
+    rows = [
+        {"id": 1, "name": "K Machine", **base, "so": 200, "bb": 25, "hr": 10},
+        {"id": 2, "name": "Contact Luck", **base, "so": 80, "bb": 70, "hr": 28},
+        {"id": 3, "name": "No FIP Data", **base, "so": 0, "bb": 0, "hr": 0},
+    ]
+    book = mlb.PitcherBook(rows)
+    # 相同 RA/9：FIP 好的評分應優於 FIP 差的
+    r1, r2 = book._rating(rows[0]), book._rating(rows[1])
+    assert r1 < r2
+    # 缺 K/BB/HR → 退回純 RA/9
+    assert abs(book._rating(rows[2]) - book._shrunk_ra9(rows[2])) < 1e-9
+
+
+def test_evaluate_smoke():
+    """回測函式在小合成資料上能跑且 NB 不劣於 Poisson 太多。"""
+    rng = np.random.default_rng(3)
+    teams = [f"T{i}" for i in range(4)]
+    rows = []
+    day = pd.Timestamp("2025-04-01")
+    from scipy import stats as st
+    for rnd in range(120):
+        for i in range(0, 4, 2):
+            h, a = teams[(i + rnd) % 4], teams[(i + rnd + 1) % 4]
+            k, m1, m2 = 3.5, 4.6, 4.2
+            rows.append(dict(date=(day + pd.Timedelta(days=rnd)).date().isoformat(),
+                             home=h, away=a,
+                             home_goals=int(st.nbinom.rvs(k, k / (k + m1), random_state=rng)),
+                             away_goals=int(st.nbinom.rvs(k, k / (k + m2), random_state=rng))))
+    df = pd.DataFrame(rows)
+    res = mlb.evaluate(df, cut="2025-07-01", ks=[None, 3.5])
+    assert res["n_test"] > 30 and len(res["rows"]) == 2
+    pois, nb = res["rows"][0], res["rows"][1]
+    assert nb["ou_logloss"] <= pois["ou_logloss"] + 0.01   # NB 資料上 NB 應不劣
 
 
 def test_park_factors():

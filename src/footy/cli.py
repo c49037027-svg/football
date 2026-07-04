@@ -458,11 +458,13 @@ def _load_pitcher_book(path):
 @click.option("--run-line", default=-1.5, type=float, help="讓分線（主隊視角）")
 @click.option("--pitchers", "pitchers_path", default="data/mlb_pitchers.csv",
               help="投手數據 CSV（mlb fetch-pitchers 產出；檔案不存在則不調整）")
+@click.option("--data", "data_path", default="data/mlb.csv",
+              help="訓練資料 CSV（估球場因子與負二項離散度；不存在則不調整）")
 @click.option("--home-pitcher", default=None, help="主隊先發姓名（英文全名）")
 @click.option("--away-pitcher", default=None, help="客隊先發姓名（英文全名）")
 @click.argument("home")
 @click.argument("away")
-def mlb_analyze(model_path, total_line, run_line, pitchers_path,
+def mlb_analyze(model_path, total_line, run_line, pitchers_path, data_path,
                 home_pitcher, away_pitcher, home, away):
     """單場分析：footy mlb analyze "New York Yankees" "Boston Red Sox" """
     from . import mlb
@@ -481,8 +483,11 @@ def mlb_analyze(model_path, total_line, run_line, pitchers_path,
             notes.append(f"客先發 {away_pitcher}：{n}")
     elif home_pitcher or away_pitcher:
         notes.append(f"（找不到投手數據 {pitchers_path}，未調整——先跑 mlb fetch-pitchers）")
+    pf = mlb.park_factors_from_csv(data_path).get(home, 1.0)
+    disp = mlb.dispersion_from_csv(data_path)
     m = mlb.analyze_game(model, home, away, total_line=total_line, run_line=run_line,
-                         home_pitcher_factor=hf, away_pitcher_factor=af)
+                         home_pitcher_factor=hf, away_pitcher_factor=af,
+                         park_factor=pf, dispersion=disp)
     hz, az = mlb.zh_mlb(home), mlb.zh_mlb(away)
     click.echo(f"\n{hz}(主) vs {az}")
     for n in notes:
@@ -497,13 +502,36 @@ def mlb_analyze(model_path, total_line, run_line, pitchers_path,
     click.echo("  ⚠️ 供研究參考、非投注建議。")
 
 
+@mlb_group.command("eval")
+@click.option("--data", "data_path", default="data/mlb.csv")
+@click.option("--cut", default="2026-05-01", help="切分日：之前訓練、之後評估（無前視）")
+def mlb_eval(data_path, cut):
+    """回測：比較 Poisson vs 負二項（不同離散度 k）的錢線/大小盤預測品質。"""
+    import pandas as pd
+
+    from . import mlb
+    df = pd.read_csv(data_path)
+    res = mlb.evaluate(df, cut)
+    click.echo(f"訓練 {res['n_train']} 場｜測試 {res['n_test']} 場｜"
+               f"動差法 k={res['k_mom']:.2f}" if res['k_mom'] else "無過度離散")
+    click.echo(f"{'k':>8} {'錢線LL':>8} {'大小LL':>8} {'大小Brier':>9} "
+               f"{'平均P(主)':>9} {'實際主勝率':>10}")
+    for r in res["rows"]:
+        ks = "Poisson" if r["k"] is None else f"{r['k']:.2f}"
+        click.echo(f"{ks:>8} {r['ml_logloss']:>8.4f} {r['ou_logloss']:>8.4f} "
+                   f"{r['ou_brier']:>9.4f} {r['mean_p_home']:>9.3f} "
+                   f"{r['home_win_rate']:>10.3f}")
+
+
 @mlb_group.command("today")
 @click.option("--model", "model_path", default="models/mlb.pkl")
 @click.option("--date", default=None, help="日期 YYYY-MM-DD（預設今天）")
 @click.option("--odds/--no-odds", default=True, help="抓真實盤口比對（需 ODDS_API_KEY）")
 @click.option("--pitchers", "pitchers_path", default="data/mlb_pitchers.csv",
               help="投手數據 CSV（存在則自動套用先發評分）")
-def mlb_today(model_path, date, odds, pitchers_path):
+@click.option("--data", "data_path", default="data/mlb.csv",
+              help="訓練資料 CSV（估球場因子與離散度）")
+def mlb_today(model_path, date, odds, pitchers_path, data_path):
     """今日賽程逐場預測（自動套用預告先發評分），可比對真實盤口。"""
     import datetime as _dt
     from . import mlb
@@ -516,6 +544,8 @@ def mlb_today(model_path, date, odds, pitchers_path):
     if not games:
         click.echo(f"{date} 無比賽。")
         return
+    pf_map = mlb.park_factors_from_csv(data_path)
+    disp = mlb.dispersion_from_csv(data_path)
     book = _load_pitcher_book(pitchers_path)
     if book:
         click.echo(f"[mlb] 先發投手評分：{len(book.rows)} 位（{pitchers_path}）")
@@ -546,7 +576,8 @@ def mlb_today(model_path, date, odds, pitchers_path):
             if g.get("home_pitcher") or g.get("away_pitcher"):
                 click.echo(f"  先發評分：主 {hn}｜客 {an}")
         m = mlb.analyze_game(model, h, a,
-                             home_pitcher_factor=hf, away_pitcher_factor=af)
+                             home_pitcher_factor=hf, away_pitcher_factor=af,
+                             park_factor=pf_map.get(h, 1.0), dispersion=disp)
         click.echo(f"  模型：{hz} 勝 {m.p_home:.1%}｜大小8.5 大 {m.p_over:.1%}"
                    f"｜{hz} -1.5 過盤 {m.p_cover_home:.1%}")
         quotes = odds_index.get(i + 1)
