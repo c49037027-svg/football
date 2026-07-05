@@ -336,10 +336,19 @@ def test_render_mlb_page():
     from footy import report
     model = _mlb_model()
     m = mlb.analyze_game(model, "Team0", "Team5")
+    # 錢線給一個「買」訊號（賠率 1.5，模型看好主 → +EV），供 @1.5/買/TOP5 檢查
+    sig = {"1X2": {"side": "home", "odds": 1.5, "edge": 0.12,
+                   "verdict": "買", "p": m.p_home},
+           "OU": {"side": "over" if m.p_over >= m.p_under else "under",
+                  "odds": None, "edge": None, "verdict": None, "p": m.p_over},
+           "AH": {"side": "home", "odds": None, "edge": None,
+                  "verdict": None, "p": m.p_cover_home}}
     rows = [{"game": {"home": "Team0", "away": "Team5", "home_pitcher": "P One",
-                      "away_pitcher": "P Two"},
+                      "away_pitcher": "P Two",
+                      "game_date_iso": "2026-07-03T23:05:00Z"},
              "m": m, "pf": 1.08, "hp_note": "RA/9 3.00", "ap_note": "",
-             "ml_odds": {"home": 1.5, "away": 2.8}, "ou_odds": {}, "rl_odds": {},
+             "signals": sig, "best_edge": 0.12, "time": mlb.taipei_time(
+                 "2026-07-03T23:05:00Z"),
              "status": "Preview"}]
     power = mlb.team_power(model)
     page = report.render_mlb_page(rows, date="2026-07-03", power=power,
@@ -348,9 +357,46 @@ def test_render_mlb_page():
     assert "球場 1.08" in page and "戰力表" in page and "MLB 推薦戰績" in page
     assert "@1.5" in page                              # 有 odds → 顯示賠率
     assert "class='mgrid'" in page                     # 卡片格線排版
+    assert "買" in page and "TOP 5" in page             # 買訊號 + 最推薦區塊
+    assert "07/04" in page                             # 台北時間（+8 跨日）
+    assert "mlb_perf.html" in page                     # 連到績效頁
     # 空狀態
     empty = report.render_mlb_page([], date="2026-07-03", note="尚未訓練")
     assert "今日無可預測比賽" in empty and "尚未訓練" in empty
+
+
+def test_bet_signals_and_perf_page():
+    from footy import report
+    from footy.live.feed import MarketQuote
+    model = _mlb_model()
+    m = mlb.analyze_game(model, "Team0", "Team5")
+    # 錢線給主隊很甜的賠率 → 融合後仍 +EV → 買
+    quotes = [MarketQuote("1X2", "home", 2.2), MarketQuote("1X2", "away", 1.7)]
+    sig = mlb.bet_signals(m, quotes)
+    assert sig["1X2"]["side"] == "home"
+    assert sig["1X2"]["odds"] == 2.2
+    assert sig["1X2"]["verdict"] in ("買", "觀望")
+    # 無盤口 → verdict=None
+    assert mlb.bet_signals(m, None)["1X2"]["verdict"] is None
+    be = mlb.best_edge(sig)
+    assert be is None or isinstance(be, float)
+    # 台北時間
+    assert mlb.taipei_time("2026-07-03T23:05:00Z").startswith("週")
+    assert mlb.taipei_time(None) == ""
+    # 績效頁三態
+    empty = report.render_mlb_perf_page([], pending=[])
+    assert "尚無收益紀錄" in empty and "mlb.html" in empty
+    pend = report.render_mlb_perf_page([], pending=[
+        {"date": "2026-07-03", "home": "Team0", "away": "Team5", "market": "1X2",
+         "selection": "home", "line": "", "odds": 2.2, "edge": 0.08}])
+    assert "待結算" in pend and "錢線" in pend
+    hist = [{"date": "2026-07-01", "match_num": 1, "home": "Team0", "away": "Team5",
+             "market": "1X2", "selection": "home", "line": "", "odds": 1.9,
+             "close_odds": 1.8, "clv": 0.056, "result": "win", "pl": 0.9,
+             "cum_pl": 0.9, "n": 1, "cum_roi": 0.9, "cum_clv": 0.056,
+             "beat_rate": 1.0}]
+    full = report.render_mlb_perf_page(hist, track_text="MLB 推薦戰績｜1 勝 0 敗")
+    assert "過" in full and "錢線" in full and "累積收益" in full
 
 
 def test_cli_wiring():

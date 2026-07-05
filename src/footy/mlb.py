@@ -73,6 +73,7 @@ def parse_schedule(payload: dict, finals_only: bool = True) -> list[dict]:
             rows.append({
                 "game_pk": g.get("gamePk"),
                 "date": g.get("officialDate") or day.get("date"),
+                "game_date_iso": g.get("gameDate"),   # UTC ISO 開賽時刻（含未開打）
                 "home": (home.get("team") or {}).get("name", ""),
                 "away": (away.get("team") or {}).get("name", ""),
                 "home_goals": hs, "away_goals": as_,
@@ -509,6 +510,69 @@ def picks_for_game(m: MLBMarkets, quotes=None, min_lean: float = 0.03) -> list[d
             for mk, sel, ln, od in picks]
 
 
+def taipei_time(iso: str | None) -> str:
+    """把 statsapi 的 UTC 開賽 ISO（'2026-07-05T23:05:00Z'）轉台北時間顯示。
+
+    回傳 '週六 07/06 07:05'（台灣 UTC+8）。缺值或解析失敗回空字串。
+    """
+    if not iso:
+        return ""
+    import datetime as _dt
+    try:
+        s = str(iso).replace("Z", "+00:00")
+        dt = _dt.datetime.fromisoformat(s)
+        if dt.tzinfo is None:
+            dt = dt.replace(tzinfo=_dt.timezone.utc)
+        tpe = dt.astimezone(_dt.timezone(_dt.timedelta(hours=8)))
+        wd = "一二三四五六日"[tpe.weekday()]
+        return f"週{wd} {tpe.month:02d}/{tpe.day:02d} {tpe.hour:02d}:{tpe.minute:02d}"
+    except Exception:  # noqa: BLE001
+        return ""
+
+
+def bet_signals(m: MLBMarkets, quotes=None, weight=None) -> dict:
+    """三個盤口的「買/觀望」提示：市場去 vig + 模型融合後算 edge（與足球同一套風控）。
+
+    重用 tracker 的 `_blended`（去 vig + BLEND_WEIGHT 融合）與門檻
+    （MAX_ODDS/MAX_EDGE/MIN_PROB）。回傳 {market: {side, odds, edge, verdict, p}}，
+    market ∈ {"1X2","OU","AH"}，side 為模型看好側（與頁面顯示一致）。
+    有真實賠率且融合後 edge>0 且過風控 → verdict="買"，否則 "觀望"；無賠率 → None。
+    """
+    from . import tracker
+    w = tracker.BLEND_WEIGHT if weight is None else weight
+
+    def signal(market, model_ps, order, fav, line):
+        sides = tracker._group_quotes(quotes, market).get(line, {}) if quotes else {}
+        bl = tracker._blended(model_ps, sides, order, w)
+        p = bl.get(fav, model_ps[fav])
+        odds = sides.get(fav)
+        if not (odds and 1.0 < odds <= tracker.MAX_ODDS):
+            return {"side": fav, "odds": None, "edge": None, "verdict": None, "p": p}
+        edge = p * odds - 1.0
+        buy = (0.0 < edge <= tracker.MAX_EDGE and p >= tracker.MIN_PROB)
+        return {"side": fav, "odds": float(odds), "edge": edge,
+                "verdict": "買" if buy else "觀望", "p": p}
+
+    out = {}
+    fav_ml = "home" if m.p_home >= m.p_away else "away"
+    out["1X2"] = signal("1X2", {"home": m.p_home, "away": m.p_away},
+                        ["home", "away"], fav_ml, "")
+    fav_ou = "over" if m.p_over >= m.p_under else "under"
+    out["OU"] = signal("OU", {"over": m.p_over, "under": m.p_under},
+                       ["over", "under"], fav_ou, m.total_line)
+    fav_ah = "home" if m.p_cover_home >= 0.5 else "away"
+    out["AH"] = signal("AH", {"home": m.p_cover_home, "away": 1.0 - m.p_cover_home},
+                       ["home", "away"], fav_ah, m.run_line)
+    return out
+
+
+def best_edge(signals: dict) -> float | None:
+    """該場最強「買」訊號的 edge（給 TOP 排序）；無買訊號回 None。"""
+    es = [s["edge"] for s in signals.values()
+          if s.get("verdict") == "買" and s.get("edge") is not None]
+    return max(es) if es else None
+
+
 def log_picks(ledger_path, date: str, game: dict, picks: list[dict]) -> int:
     """把一場的推薦記入帳本（以 game_pk 當 match_num，不重複）。回傳新增筆數。"""
     import pandas as pd
@@ -523,9 +587,10 @@ def log_picks(ledger_path, date: str, game: dict, picks: list[dict]) -> int:
         if (str(game["game_pk"]), p["market"], str(p["selection"])) in seen:
             continue
         od = round(p["odds"], 3) if p.get("odds") else ""
+        eg = round(p["edge"], 4) if isinstance(p.get("edge"), (int, float)) else ""
         rows.append(dict(date=date, match_num=game["game_pk"], home=game["home"],
                          away=game["away"], market=p["market"], selection=p["selection"],
-                         line=p["line"], odds=od, edge="",
+                         line=p["line"], odds=od, edge=eg,
                          source="market" if p.get("odds") else "model",
                          close_odds=od, result="pending", pl=""))
     if rows:
@@ -684,32 +749,32 @@ def build_site_page(model_path: str = "models/mlb.pkl",
         # 大小分線/讓分線：有市場主線用市場，否則 8.5 / -1.5
         total_line = 8.5
         run_line = -1.5
-        ml_odds = {}
-        ou_odds = {}
-        rl_odds = {}
         if quotes:
             from . import tracker
             ous = tracker._group_quotes(quotes, "OU")
             if ous:
                 total_line = sorted(ous, key=lambda ln: abs(float(ln) - 8.5))[0]
-            ml_odds = tracker._group_quotes(quotes, "1X2").get("", {})
-            ou_odds = ous.get(total_line, {})
             mkt_rl = tracker.main_ah_line(quotes)   # 主客賠率最均衡的讓分線
             if mkt_rl is not None:
                 run_line = float(mkt_rl)
-            rl_odds = tracker._group_quotes(quotes, "AH").get(run_line, {})
         m = analyze_game(model, g["home"], g["away"], total_line=float(total_line),
                          run_line=run_line,
                          home_pitcher_factor=hf, away_pitcher_factor=af,
                          park_factor=pf, dispersion=disp)
+        sig = bet_signals(m, quotes)
         picks = picks_for_game(m, quotes)
+        for p in picks:  # 把融合後 edge 帶進帳本（待結算頁依此排序）
+            s = sig.get(p["market"])
+            if s and s.get("edge") is not None:
+                p["edge"] = s["edge"]
         try:
             log_picks(ledger_path, date, g, picks)
         except Exception:  # noqa: BLE001
             pass
         rows.append({"game": g, "m": m, "pf": pf,
                      "hp_note": hn, "ap_note": an,
-                     "ml_odds": ml_odds, "ou_odds": ou_odds, "rl_odds": rl_odds,
+                     "signals": sig, "best_edge": best_edge(sig),
+                     "time": taipei_time(g.get("game_date_iso")),
                      "status": g.get("status", "")})
     power = None
     try:

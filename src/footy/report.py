@@ -1144,74 +1144,145 @@ border-radius:14px;padding:16px 18px;margin:4px 0 10px}}
 </div></body></html>"""
 
 
-def _mlb_mrow(market: str, pick: str, prob: float, odds) -> str:
-    """一列盤口：盤口 | 推薦 | 機率 | 賠率·edge（只列模型推薦那側）。"""
+def _bs_badge(verdict) -> str:
+    """買/觀望 徽章。"""
+    if verdict == "買":
+        return " <span class='bs buy'>買</span>"
+    if verdict == "觀望":
+        return " <span class='bs wait'>觀望</span>"
+    return ""
+
+
+def _mlb_mrow(market: str, pick: str, prob: float, sig=None) -> str:
+    """一列盤口：盤口 | 推薦(+買/觀望) | 機率 | 賠率·edge（只列模型推薦那側）。
+
+    sig 為 mlb.bet_signals 的單一盤口訊號（含融合後 edge / verdict / odds）。
+    """
+    sig = sig or {}
+    odds = sig.get("odds")
     if odds:
-        e = prob * float(odds) - 1.0
+        e = sig.get("edge")
+        e = e if isinstance(e, (int, float)) else (prob * float(odds) - 1.0)
         c = "#7be0b0" if e > 0 else "#e0b341" if e > -0.05 else "var(--muted)"
         right = f"<span style='color:{c}'>@{float(odds):g} · {e:+.1%}</span>"
     else:
         right = "<span class='dim'>—</span>"
     return (f"<div class='mrow'><span class='mk'>{market}</span>"
-            f"<span class='pk'>{pick}</span>"
+            f"<span class='pk'>{pick}{_bs_badge(sig.get('verdict'))}</span>"
             f"<span class='pb'>{prob:.0%}</span>"
             f"<span class='od'>{right}</span></div>")
 
 
+_MLB_SEL_ZH = {"home": "主", "away": "客", "over": "大", "under": "小"}
+
+
+def _mlb_card(r, zh_t) -> str:
+    """單場預測卡：開賽時間 + 三盤口（含買/觀望）+ 投手 + 可能比分。"""
+    g, m = r["game"], r["m"]
+    sig = r.get("signals") or {}
+    hz, az = zh_t(g["home"]), zh_t(g["away"])
+    if m.p_home >= m.p_away:
+        ml_pick, ml_prob = hz, m.p_home
+    else:
+        ml_pick, ml_prob = az, m.p_away
+    if m.p_over >= m.p_under:
+        ou_pick, ou_prob = f"大 {m.total_line:g}", m.p_over
+    else:
+        ou_pick, ou_prob = f"小 {m.total_line:g}", m.p_under
+    if m.p_cover_home >= 0.5:
+        rl_pick, rl_prob = f"{hz} {m.run_line:+g}", m.p_cover_home
+    else:
+        rl_pick, rl_prob = f"{az} {-m.run_line:+g}", 1 - m.p_cover_home
+    mtable = (_mlb_mrow("錢線", ml_pick, ml_prob, sig.get("1X2"))
+              + _mlb_mrow("大小", ou_pick, ou_prob, sig.get("OU"))
+              + _mlb_mrow("讓分", rl_pick, rl_prob, sig.get("AH")))
+    pit = ""
+    if g.get("home_pitcher") or g.get("away_pitcher"):
+        def _pbadge(name, note):
+            nm = html.escape(name or "未定")
+            if note:
+                tip = html.escape(note)
+                return f"<span title='{tip}'>{nm} <span class='pdot'>ⓘ</span></span>"
+            return nm
+        pit = (f"<div class='pit'>先發 "
+               f"{_pbadge(g.get('away_pitcher'), r.get('ap_note'))}"
+               f"<span class='vs'>vs</span>"
+               f"{_pbadge(g.get('home_pitcher'), r.get('hp_note'))}</div>")
+    pf = r.get("pf", 1.0)
+    pf_note = (f"<span class='pf'>球場 {pf:.2f}</span>"
+               if abs(pf - 1.0) > 0.005 else "")
+    t = r.get("time")
+    time_note = f"<div class='mtime'>🕒 {html.escape(t)}</div>" if t else ""
+    tops = "、".join(f"{h}-{a}" for (h, a), p in m.top_scores[:3])
+    return (
+        f"<div class='card mgame'>"
+        f"<div class='mhd'><b>{az}</b> <span class='at'>@</span> <b>{hz}</b>"
+        f"<span class='xr'>{m.exp_away:.1f}–{m.exp_home:.1f}</span>{pf_note}</div>"
+        f"{time_note}{pit}<div class='mtab'>{mtable}</div>"
+        f"<div class='mtop'>可能比分 {tops}</div></div>")
+
+
+def _mlb_top5(rows, zh_t) -> str:
+    """最推薦 TOP 5：跨場依最強「買」edge 排序，各列出該場最強一注。"""
+    picks = []
+    for r in rows:
+        be = r.get("best_edge")
+        if be is None:
+            continue
+        sig = r.get("signals") or {}
+        mk, best = None, None
+        for k, s in sig.items():
+            if s.get("verdict") == "買" and s.get("edge") is not None:
+                if best is None or s["edge"] > best["edge"]:
+                    mk, best = k, s
+        if best is None:
+            continue
+        g, m = r["game"], r["m"]
+        mk_zh = {"1X2": "錢線", "OU": "大小", "AH": "讓分"}[mk]
+        side = best["side"]
+        if mk == "1X2":
+            sel = zh_t(g["home"]) if side == "home" else zh_t(g["away"])
+        elif mk == "OU":
+            sel = f"{'大' if side == 'over' else '小'} {m.total_line:g}"
+        else:
+            sel = (f"{zh_t(g['home'])} {m.run_line:+g}" if side == "home"
+                   else f"{zh_t(g['away'])} {-m.run_line:+g}")
+        picks.append({"edge": best["edge"], "odds": best["odds"], "mk": mk_zh,
+                      "sel": sel, "time": r.get("time", ""),
+                      "home": zh_t(g["home"]), "away": zh_t(g["away"])})
+    if not picks:
+        return ""
+    picks.sort(key=lambda x: -x["edge"])
+    trs = ""
+    for i, p in enumerate(picks[:5], 1):
+        trs += (f"<tr><td class='rk'>{i}</td>"
+                f"<td class='tm'>{html.escape(p['away'])} @ {html.escape(p['home'])}</td>"
+                f"<td class='small' style='color:var(--muted)'>{html.escape(p['time'])}</td>"
+                f"<td>{p['mk']} <b>{html.escape(p['sel'])}</b></td>"
+                f"<td>@{p['odds']:g}</td>"
+                f"<td style='color:#7be0b0;font-weight:700'>{p['edge']:+.1%}</td></tr>")
+    return (
+        "<div class='card top5'><div class='sec'>🔥 今日最推薦 TOP 5"
+        "<span class='small' style='color:var(--muted);font-weight:400'>"
+        "（模型融合市場後 +EV，依 edge 排序）</span></div>"
+        "<table style='margin-top:6px'><thead><tr><th>#</th><th>對戰</th><th>時間</th>"
+        f"<th>推薦</th><th>賠率</th><th>edge</th></tr></thead><tbody>{trs}</tbody></table>"
+        "<div class='small' style='color:var(--muted);margin-top:6px'>"
+        "「買」= 融合後機率×賠率−1&gt;0 且通過風控；edge 高不代表穩贏，"
+        "長期看 <a href='mlb_perf.html' style='color:var(--accent)'>MLB 績效頁</a> 的 CLV。</div></div>")
+
+
 def render_mlb_page(rows, date: str, power=None, track_text=None,
                     note: str = "", title: str = "MLB 今日預測") -> str:
-    """MLB 分頁：今日各場預測卡（乾淨對齊）+ 球隊戰力表 + 推薦戰績。"""
+    """MLB 分頁：TOP5 最推薦 + 今日各場預測卡（含買/觀望、開賽時間）+ 戰力表 + 戰績。"""
     from . import mlb as _mlb
     zh_t = _mlb.zh_mlb
-    cards = []
-    for r in rows:
-        g, m = r["game"], r["m"]
-        hz, az = zh_t(g["home"]), zh_t(g["away"])
-        ml_o = r.get("ml_odds") or {}
-        ou_o = r.get("ou_odds") or {}
-        rl_o = r.get("rl_odds") or {}
-        # 只列模型推薦的那一側
-        if m.p_home >= m.p_away:
-            ml_pick, ml_prob, ml_odds = hz, m.p_home, ml_o.get("home")
-        else:
-            ml_pick, ml_prob, ml_odds = az, m.p_away, ml_o.get("away")
-        if m.p_over >= m.p_under:
-            ou_pick, ou_prob, ou_odds = f"大 {m.total_line:g}", m.p_over, ou_o.get("over")
-        else:
-            ou_pick, ou_prob, ou_odds = f"小 {m.total_line:g}", m.p_under, ou_o.get("under")
-        if m.p_cover_home >= 0.5:
-            rl_pick, rl_prob, rl_odds = f"{hz} {m.run_line:+g}", m.p_cover_home, rl_o.get("home")
-        else:
-            rl_pick, rl_prob, rl_odds = f"{az} {-m.run_line:+g}", 1 - m.p_cover_home, rl_o.get("away")
-        mtable = (_mlb_mrow("錢線", ml_pick, ml_prob, ml_odds)
-                  + _mlb_mrow("大小", ou_pick, ou_prob, ou_odds)
-                  + _mlb_mrow("讓分", rl_pick, rl_prob, rl_odds))
-        # 投手（緊湊）：先發姓名 + 壓制/偏弱徽章（hover 看細節）
-        pit = ""
-        if g.get("home_pitcher") or g.get("away_pitcher"):
-            def _pbadge(name, note):
-                nm = html.escape(name or "未定")
-                if note:
-                    tip = html.escape(note)
-                    return f"<span title='{tip}'>{nm} <span class='pdot'>ⓘ</span></span>"
-                return nm
-            pit = (f"<div class='pit'>先發 "
-                   f"{_pbadge(g.get('away_pitcher'), r.get('ap_note'))}"
-                   f"<span class='vs'>vs</span>"
-                   f"{_pbadge(g.get('home_pitcher'), r.get('hp_note'))}</div>")
-        pf = r.get("pf", 1.0)
-        pf_note = (f"<span class='pf'>球場 {pf:.2f}</span>"
-                   if abs(pf - 1.0) > 0.005 else "")
-        tops = "、".join(f"{h}-{a}" for (h, a), p in m.top_scores[:3])
-        cards.append(
-            f"<div class='card mgame'>"
-            f"<div class='mhd'><b>{az}</b> <span class='at'>@</span> <b>{hz}</b>"
-            f"<span class='xr'>{m.exp_away:.1f}–{m.exp_home:.1f}</span>{pf_note}</div>"
-            f"{pit}<div class='mtab'>{mtable}</div>"
-            f"<div class='mtop'>可能比分 {tops}</div></div>")
+    top5 = _mlb_top5(rows, zh_t)
+    cards = [_mlb_card(r, zh_t) for r in rows]
     body = ("<div class='mgrid'>" + "".join(cards) + "</div>") if cards else (
         f"<div class='card'><div class='sec'>今日無可預測比賽</div>"
         f"<div class='small' style='color:var(--muted)'>{html.escape(note) or '賽程空檔，或模型未涵蓋參賽隊。'}</div></div>")
+    body = top5 + body
     track_html = ""
     if track_text:
         track_html = (f"<div class='card'><div class='sec'>📒 MLB 推薦戰績</div>"
@@ -1253,6 +1324,12 @@ font-size:13px;padding:5px 0;border-bottom:1px solid #171e26}}
 .mrow .od{{font-variant-numeric:tabular-nums;font-size:12px;text-align:right;min-width:96px}}
 .mrow .dim{{color:#3a4350}}
 .mtop{{margin-top:7px;font-size:11px;color:var(--muted)}}
+.mtime{{font-size:11px;color:#8aa0b4;margin:1px 0 6px}}
+.bs{{font-size:10px;font-weight:700;padding:1px 6px;border-radius:6px;vertical-align:middle}}
+.bs.buy{{background:#1c3a2a;color:#7be0b0;border:1px solid #2e5c42}}
+.bs.wait{{background:#2a2a1c;color:#e0b341;border:1px solid #4d4a2a}}
+.top5{{border:1px solid #2e5c42}}
+.top5 td.tm{{font-weight:600}}
 .sec-collapse>summary{{cursor:pointer;font-weight:700;list-style:none}}
 .sec-collapse>summary::-webkit-details-marker{{display:none}}
 .sec-collapse>summary::before{{content:'▸ '}}.sec-collapse[open]>summary::before{{content:'▾ '}}
@@ -1260,8 +1337,8 @@ font-size:13px;padding:5px 0;border-bottom:1px solid #171e26}}
 <body><div class="wrap">
   {_navbar('mlb')}
   <h1>⚾ {html.escape(title)}</h1>
-  <div class="sub">{html.escape(date)}（美東賽程日）· 負二項得分模型 + 先發投手(RA/9+FIP) + 球場因子</div>
-  <div class="disc">⚠️ 純機率預測，非投注建議。只列模型較看好的一側；@ 後為市場賠率與 edge。</div>
+  <div class="sub">{html.escape(date)}（美東賽程日）· 負二項得分模型 + 先發投手(RA/9+FIP) + 球場因子 · <a href="mlb_perf.html" style="color:var(--accent)">📈 MLB 績效</a></div>
+  <div class="disc">⚠️ 純機率預測，非投注建議。只列模型較看好的一側；<b class="bs buy" style="font-size:10px">買</b>=融合市場後 +EV 且過風控、<b class="bs wait" style="font-size:10px">觀望</b>=無正期望值；時間為台北時區。</div>
   {('<div class="small" style="color:var(--warn);margin-bottom:8px">' + html.escape(note) + '</div>') if note else ''}
   {track_html}
   {body}
@@ -1270,10 +1347,133 @@ font-size:13px;padding:5px 0;border-bottom:1px solid #171e26}}
 </div></body></html>"""
 
 
+_MLB_MK_ZH = {"1X2": "錢線", "OU": "大小", "AH": "讓分"}
+
+
+def _mlb_perf_doc(title, sub, body):
+    """MLB 績效頁殼（導覽列 MLB 高亮 + 返回 MLB 預測連結）。"""
+    return f"""<!doctype html><html lang="zh-Hant"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>{html.escape(title)}</title><style>{_CSS}
+table{{width:100%;border-collapse:collapse;font-size:12px;background:var(--card);border-radius:12px;overflow:hidden}}
+th,td{{padding:6px 7px;text-align:center;border-bottom:1px solid var(--line)}}
+th{{color:var(--muted);font-size:11px}}td.tm{{text-align:left;font-weight:600}}
+.kpis{{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:4px 0}}
+.kpi{{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:8px 6px;text-align:center}}
+.kpi span{{display:block;color:var(--muted);font-size:10px;margin-bottom:3px}}
+.kpi b{{font-size:15px}}
+.hero{{display:flex;align-items:center;justify-content:space-between;gap:12px;
+background:linear-gradient(135deg,#11161c,#161d26);border:1px solid var(--line);
+border-radius:14px;padding:16px 18px;margin:4px 0 10px}}
+.hero-main span,.hero-side span{{display:block;color:var(--muted);font-size:12px;margin-bottom:4px}}
+.hero-main b{{font-size:34px;font-weight:800;line-height:1}}
+.hero-side{{text-align:right}}.hero-side b{{font-size:22px;font-weight:800}}
+@media(max-width:480px){{.hero-main b{{font-size:28px}}}}
+</style></head>
+<body><div class="wrap">
+  {_navbar('mlb')}
+  <h1>⚾ {html.escape(title)}</h1>
+  <div class="sub">{sub} · <a href="mlb.html" style="color:var(--accent)">← 回今日預測</a></div>
+  {body}
+  <div class="foot">Generated by footy · 研究與教育用途，非投注建議</div>
+</div></body></html>"""
+
+
+def _mlb_pending_body(pending):
+    """MLB 已連結真實盤口、尚未結算時：列出待結算 +EV 推薦（依 edge 排序）。"""
+    from . import mlb as _mlb
+    zt = _mlb.zh_mlb
+    rows = sorted(pending, key=lambda r: -(r.get("edge") or 0))
+    trs = ""
+    for r in rows[:60]:
+        line = f" {r['line']}" if str(r.get("line", "")) not in ("", "nan") else ""
+        edge = r.get("edge")
+        edge_s = f"{edge:+.1%}" if isinstance(edge, (int, float)) else "—"
+        odds = r.get("odds")
+        odds_s = f"{odds:.2f}" if isinstance(odds, (int, float)) else "—"
+        trs += (f"<tr><td>{str(r.get('date',''))[5:]}</td>"
+                f"<td class='tm'>{html.escape(zt(str(r.get('away',''))))} @ "
+                f"{html.escape(zt(str(r.get('home',''))))}</td>"
+                f"<td>{_MLB_MK_ZH.get(r.get('market'), r.get('market'))} "
+                f"{html.escape(str(r.get('selection','')))}{line}</td>"
+                f"<td>{odds_s}</td>"
+                f"<td style='color:#7be0b0'>{edge_s}</td></tr>")
+    return (
+        "<div class='card'><div class='sec'>✅ 已連結真實盤口</div>"
+        f"<div class='small' style='color:#cdd9e5;line-height:1.7'>"
+        f"系統已抓盤口並記錄 <b>{len(pending)}</b> 注模型 +EV 推薦（均注 1 單位），"
+        "但這些比賽<b>尚未結束</b>，還沒有損益。賽後每日建站會自動用下注/收盤賠率"
+        "結算，這裡就會出現累積損益曲線、CLV 走勢與勝過收盤比例。</div></div>"
+        "<div class='card'><div class='sec'>🎯 待結算的 +EV 推薦（依 edge 排序）</div>"
+        "<table><thead><tr><th>日期</th><th>對戰</th><th>下注</th><th>賠率</th>"
+        f"<th>edge</th></tr></thead><tbody>{trs}</tbody></table></div>")
+
+
+def render_mlb_perf_page(hist, track_text=None, pending=None,
+                         title="MLB 下注績效 & CLV") -> str:
+    """MLB 獨立績效頁：累積損益/ROI 主視覺 + CLV 折線 + 逐注過/沒過紀錄。
+
+    與足球績效頁同結構，改用棒球盤口名（錢線/大小/讓分）與台灣譯名。
+    三態：已結算→完整圖表；已連結全待結算→列出 +EV 推薦；皆無→引導設定盤口金鑰。
+    """
+    from . import mlb as _mlb
+    zt = _mlb.zh_mlb
+    today = _dt.date.today().isoformat()
+    track_card = _track_card(track_text)
+    if not hist:
+        if pending:
+            return _mlb_perf_doc(title, today, _mlb_pending_body(pending) + track_card)
+        body = ("<div class='card'><div class='sec'>📈 尚無收益紀錄（無已結算的真實盤口下注）</div>"
+                "<div class='small' style='color:var(--muted);line-height:1.7'>"
+                "需要部署環境設定 <code>ODDS_API_KEY</code>，系統才會抓 MLB 真實盤口、"
+                "只記模型相對市場有正期望值(+EV)的推薦，並在賽後用下注/收盤賠率"
+                "算實際 ROI 與 CLV。<br>累積足夠注數後，這裡會出現："
+                "<b>累積收益曲線、ROI、CLV 走勢</b>與勝過收盤比例。</div></div>")
+        return _mlb_perf_doc(title, today, body + track_card)
+
+    last = hist[-1]
+    pl_pts = [r["cum_pl"] for r in hist]
+    clv_pts = [r["cum_clv"] * 100 for r in hist]
+    pl_color = "#7be0b0" if last["cum_pl"] >= 0 else "#e06a6a"
+    hero = _pl_hero(last)
+    kpis = (
+        f"<div class='kpis'>"
+        f"<div class='kpi'><span>注數</span><b>{last['n']}</b></div>"
+        f"<div class='kpi'><span>平均 CLV</span><b>{last['cum_clv']:+.1%}</b></div>"
+        f"<div class='kpi'><span>勝過收盤</span><b>{last['beat_rate']:.0%}</b></div>"
+        f"</div>")
+    charts = (
+        f"<div class='card'><div class='sec'>💰 累積收益（單位）</div>"
+        f"{_line_svg(pl_pts, color=pl_color)}</div>"
+        f"<div class='card'><div class='sec'>🎯 累積平均 CLV（%，&gt;0 長期領先指標）</div>"
+        f"{_line_svg(clv_pts, color='#6ea8fe')}</div>")
+    log_trs = ""
+    for r in reversed(hist[-40:]):
+        rc = {"win": "#7be0b0", "loss": "#e06a6a", "push": "var(--muted)"}.get(r["result"], "")
+        clv = f"{r['clv']:+.1%}" if r["clv"] is not None else "—"
+        line = f" {r['line']}" if str(r["line"]) not in ("", "nan") else ""
+        log_trs += (
+            f"<tr><td>{str(r['date'])[5:]}</td>"
+            f"<td class='tm'>{html.escape(zt(r['away']))} @ {html.escape(zt(r['home']))}</td>"
+            f"<td>{_MLB_MK_ZH.get(r['market'], r['market'])} {html.escape(str(r['selection']))}{line}</td>"
+            f"<td>{r['odds']:.2f}</td><td>{clv}</td>"
+            f"<td style='color:{rc};font-weight:700'>{_RES_ZH.get(r['result'], r['result'])}</td>"
+            f"<td style='color:{rc}'>{r['pl']:+.2f}</td></tr>")
+    log_html = (f"<div class='card'><div class='sec'>📜 逐注紀錄（近 {min(len(hist),40)} 筆，過/沒過）</div>"
+                f"<table><thead><tr><th>日期</th><th>對戰</th><th>下注</th><th>賠率</th>"
+                f"<th>CLV</th><th>結果</th><th>損益</th></tr></thead>"
+                f"<tbody>{log_trs}</tbody></table></div>")
+    sub = f"{today} · 均注 1 單位 · 只計有真實盤口、模型 +EV 的下注"
+    note = ("<div class='small' style='color:var(--muted);margin-top:4px'>"
+            "CLV（closing line value）= 你拿到的賠率 vs 收盤賠率；長期 CLV&gt;0 是"
+            "判斷模型能否真正贏過市場最可靠的領先指標，比短期勝率/ROI 抗雜訊。</div>")
+    return _mlb_perf_doc(title, sub, hero + kpis + charts + note + log_html + track_card)
+
+
 def write_worldcup_site(result, model, matches, outdir, history=None,
                         title="2026 世界盃預測", n_sims=20000, injury_counts=None,
                         track_text=None, ledger_path=None, odds_index=None,
-                        mlb_html=None, interactive=False):
+                        mlb_html=None, mlb_perf_html=None, interactive=False):
     """產生多頁網站：index.html + 每場可分析的 match_<num>.html。
 
     可分析 = 雙方皆為模型已知球隊（小組賽全部；淘汰賽待隊伍確定後）。
@@ -1369,4 +1569,25 @@ def write_worldcup_site(result, model, matches, outdir, history=None,
             note="MLB 預測需在部署環境啟用：footy mlb fetch → fetch-pitchers → train，"
                  "每日建站會自動更新本頁。")
     (outdir / "mlb.html").write_text(mlb_html, encoding="utf-8")
+    # MLB 績效頁（呼叫端可傳現成 HTML；沒有就從 MLB 帳本自算，連結不 404）
+    if mlb_perf_html is None:
+        try:
+            from . import mlb as _mlbmod, tracker as _tr
+            mlb_hist = _tr.history(_mlbmod.MLB_LEDGER)
+            mlb_pending = []
+            if Path(_mlbmod.MLB_LEDGER).exists():
+                mdf = _tr.load_ledger(_mlbmod.MLB_LEDGER)
+                mp = mdf[(mdf["source"] == "market") & (mdf["result"] == "pending")]
+                for _, r in mp.iterrows():
+                    mlb_pending.append({"date": r["date"], "home": r["home"],
+                                        "away": r["away"], "market": r["market"],
+                                        "selection": r["selection"], "line": r["line"],
+                                        "odds": _tr._to_float(r["odds"]),
+                                        "edge": _tr._to_float(r["edge"])})
+            mlb_perf_html = render_mlb_perf_page(
+                mlb_hist, track_text=_mlbmod.summary_text(_mlbmod.MLB_LEDGER),
+                pending=mlb_pending)
+        except Exception:  # noqa: BLE001
+            mlb_perf_html = render_mlb_perf_page([], pending=[])
+    (outdir / "mlb_perf.html").write_text(mlb_perf_html, encoding="utf-8")
     return outdir, len(linked)
