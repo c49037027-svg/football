@@ -344,9 +344,10 @@ def test_render_mlb_page():
     power = mlb.team_power(model)
     page = report.render_mlb_page(rows, date="2026-07-03", power=power,
                                   track_text="MLB 推薦戰績｜1 勝 0 敗")
-    assert "MLB 今日預測" in page and "錢線" in page and "球場因子 1.08" in page
-    assert "戰力表" in page and "MLB 推薦戰績" in page
-    assert "edge" in page                              # 有 odds → 顯示 edge
+    assert "MLB 今日預測" in page and "錢線" in page and "大小" in page
+    assert "球場 1.08" in page and "戰力表" in page and "MLB 推薦戰績" in page
+    assert "@1.5" in page                              # 有 odds → 顯示賠率
+    assert "class='mgrid'" in page                     # 卡片格線排版
     # 空狀態
     empty = report.render_mlb_page([], date="2026-07-03", note="尚未訓練")
     assert "今日無可預測比賽" in empty and "尚未訓練" in empty
