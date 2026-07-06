@@ -91,9 +91,9 @@ date,match_num,home,away,market,selection,line,odds,edge,source,close_odds,resul
 2026-07-05,823117,Seattle Mariners,Toronto Blue Jays,1X2,home,,1.7,,market,1.7,win,0.7
 2026-07-05,823117,Seattle Mariners,Toronto Blue Jays,OU,小,7.5,1.85,,market,1.85,win,0.85
 2026-07-05,823117,Seattle Mariners,Toronto Blue Jays,AH,客,-1.5,1.54,,market,1.54,loss,-1.0
-2026-07-05,823931,Los Angeles Dodgers,San Diego Padres,1X2,home,,1.48,,market,1.48,pending,
-2026-07-05,823931,Los Angeles Dodgers,San Diego Padres,OU,小,9.5,2.0,,market,2.0,pending,
-2026-07-05,823931,Los Angeles Dodgers,San Diego Padres,AH,客,-1.5,1.91,,market,1.91,pending,
+2026-07-05,823931,Los Angeles Dodgers,San Diego Padres,1X2,home,,1.48,,market,1.48,loss,-1.0
+2026-07-05,823931,Los Angeles Dodgers,San Diego Padres,OU,小,9.5,2.0,,market,2.0,win,1.0
+2026-07-05,823931,Los Angeles Dodgers,San Diego Padres,AH,客,-1.5,1.91,,market,1.91,win,0.91
 2026-07-05,824010,Los Angeles Angels,Boston Red Sox,1X2,away,,1.66,,market,1.66,pending,
 2026-07-05,824010,Los Angeles Angels,Boston Red Sox,OU,小,8.5,1.87,,market,1.87,pending,
 2026-07-05,824010,Los Angeles Angels,Boston Red Sox,AH,主,1.5,1.8,,market,1.8,pending,
@@ -109,6 +109,6 @@ date,match_num,home,away,market,selection,line,odds,edge,source,close_odds,resul
 2026-07-05,824333,Colorado Rockies,San Francisco Giants,AH,客,-1.5,,,model,,win,
 2026-07-05,825061,Arizona Diamondbacks,Milwaukee Brewers,AH,客,-1.5,,,model,,win,
 2026-07-05,824980,Athletics,Miami Marlins,OU,大,8.5,,,model,,win,
-2026-07-05,823931,Los Angeles Dodgers,San Diego Padres,OU,大,7.5,2.05,0.0332,market,2.05,pending,
-2026-07-05,823931,Los Angeles Dodgers,San Diego Padres,AH,主,1.5,1.4,-0.0032,market,1.4,pending,
+2026-07-05,823931,Los Angeles Dodgers,San Diego Padres,OU,大,7.5,2.05,0.0332,market,2.05,loss,-1.0
+2026-07-05,823931,Los Angeles Dodgers,San Diego Padres,AH,主,1.5,1.4,-0.0032,market,1.4,loss,-1.0
 2026-07-05,824010,Los Angeles Angels,Boston Red Sox,AH,客,-1.5,1.6,0.0914,market,1.6,pending,
