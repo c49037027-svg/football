@@ -401,12 +401,25 @@ def fetch_batting(season: int, timeout: float = 30.0) -> list[dict]:
     return parse_batting_stats(r.json())
 
 
+def _wind_speed_sign(val: str) -> tuple:
+    """風字串 → (風速mph, 方向號)。吹出去+1、吹進來−1、橫風/無風0。"""
+    speed, sign = 0.0, 0
+    m = re.search(r"(\d+)\s*mph", val or "", re.I)
+    if m:
+        speed = float(m.group(1))
+    low = (val or "").lower()
+    if "out" in low:
+        sign = 1
+    elif "in" in low:
+        sign = -1
+    return speed, sign
+
+
 def parse_weather(box_payload: dict) -> dict:
-    """從 boxscore.info 解析天氣。回 {temp, wind_speed, wind_sign}。
+    """從 boxscore.info 解析天氣（賽後實際；回測用）。回 {temp, wind_speed, wind_sign}。
 
     info 例：{"label":"Weather","value":"72 degrees, Clear."}、
              {"label":"Wind","value":"12 mph, Out To CF."}。
-    wind_sign：吹出去 +1（助攻）、吹進來 −1（壓制）、橫風/無風 0；缺→中性。
     """
     temp, wind_speed, wind_sign = None, 0.0, 0
     for item in box_payload.get("info") or []:
@@ -417,15 +430,25 @@ def parse_weather(box_payload: dict) -> dict:
             if m:
                 temp = float(m.group(1))
         elif label == "wind":
-            m = re.search(r"(\d+)\s*mph", val, re.I)
-            if m:
-                wind_speed = float(m.group(1))
-            low = val.lower()
-            if "out" in low:
-                wind_sign = 1
-            elif "in" in low:
-                wind_sign = -1        # 橫風（L to R / R to L）/ 無風 → 0
+            wind_speed, wind_sign = _wind_speed_sign(val)
     return {"temp": temp, "wind_speed": wind_speed, "wind_sign": wind_sign}
+
+
+def weather_from_gamedata(w: dict | None) -> dict | None:
+    """從賽程/gameData 的 weather dict 解析（賽前預報；生產用）。
+
+    w 例：{"condition":"Clear","temp":"72","wind":"8 mph, Out To CF"}。缺→None。
+    """
+    if not w:
+        return None
+    temp = None
+    m = re.search(r"(\d+)", str(w.get("temp") or ""))
+    if m:
+        temp = float(m.group(1))
+    speed, sign = _wind_speed_sign(str(w.get("wind") or ""))
+    if temp is None and not speed:
+        return None
+    return {"temp": temp, "wind_speed": speed, "wind_sign": sign}
 
 
 def weather_total_factor(weather: dict | None, k_temp: float = 0.0025,

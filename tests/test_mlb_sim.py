@@ -250,3 +250,18 @@ def test_nb_weather_predictor_shifts_totals():
     p_base = sim.nb_predictor(model)(g)
     p_wx = sim.nb_weather_predictor(model)(g)
     assert p_wx["p_over"] > p_base["p_over"]     # 助攻天氣 → 大分機率上升
+
+
+def test_weather_from_gamedata():
+    # 賽程/gameData 的 weather dict（賽前預報格式）
+    w = sim.weather_from_gamedata({"condition": "Sunny", "temp": "90",
+                                   "wind": "16 mph, Out To RF"})
+    assert w["temp"] == 90.0 and w["wind_speed"] == 16.0 and w["wind_sign"] == 1
+    assert sim.weather_total_factor(w) > 1.0
+    # 吹進來
+    w2 = sim.weather_from_gamedata({"temp": "55", "wind": "12 mph, In From CF"})
+    assert w2["wind_sign"] == -1
+    # 缺資料 → None → 中性
+    assert sim.weather_from_gamedata(None) is None
+    assert sim.weather_from_gamedata({}) is None
+    assert sim.weather_total_factor(sim.weather_from_gamedata({})) == 1.0

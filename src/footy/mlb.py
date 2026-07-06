@@ -82,6 +82,7 @@ def parse_schedule(payload: dict, finals_only: bool = True) -> list[dict]:
                 "away_pitcher": ap.get("fullName", ""),
                 "home_pitcher_id": hp.get("id"),
                 "away_pitcher_id": ap.get("id"),
+                "weather": g.get("weather"),   # 賽前預報（hydrate=weather 時才有）
             })
     return rows
 
@@ -125,7 +126,7 @@ def fetch_today(date: str, timeout: float = 30.0) -> list[dict]:
     import requests
     r = requests.get(f"{STATSAPI}/schedule",
                      params={"sportId": 1, "date": date,
-                             "hydrate": "probablePitcher"},
+                             "hydrate": "probablePitcher,weather"},
                      headers={"User-Agent": "Mozilla/5.0"}, timeout=timeout)
     r.raise_for_status()
     return parse_schedule(r.json(), finals_only=False)
@@ -874,6 +875,11 @@ def build_site_page(model_path: str = "models/mlb.pkl",
             hf, hn = book.factor(g.get("home_pitcher_id") or g.get("home_pitcher") or None)
             af, an = book.factor(g.get("away_pitcher_id") or g.get("away_pitcher") or None)
         pf = pf_map.get(g["home"], 1.0)
+        # 天氣預報（有 hydrate=weather 才有）→ 併入 park_factor 調整總分（只動大小盤）
+        from . import mlb_sim
+        wx = mlb_sim.weather_from_gamedata(g.get("weather"))
+        wf = mlb_sim.weather_total_factor(wx)
+        pf_eff = pf * wf
         # 大小分線/讓分線：有市場主線用市場，否則 8.5 / -1.5
         total_line = 8.5
         run_line = -1.5
@@ -888,7 +894,7 @@ def build_site_page(model_path: str = "models/mlb.pkl",
         m = analyze_game(model, g["home"], g["away"], total_line=float(total_line),
                          run_line=run_line,
                          home_pitcher_factor=hf, away_pitcher_factor=af,
-                         park_factor=pf, dispersion=disp)
+                         park_factor=pf_eff, dispersion=disp)
         sig = bet_signals(m, quotes)
         picks = picks_for_game(m, quotes)
         for p in picks:  # 把融合後 edge 帶進帳本（待結算頁依此排序）
@@ -899,7 +905,7 @@ def build_site_page(model_path: str = "models/mlb.pkl",
             log_picks(ledger_path, date, g, picks)
         except Exception:  # noqa: BLE001
             pass
-        rows.append({"game": g, "m": m, "pf": pf,
+        rows.append({"game": g, "m": m, "pf": pf, "wx": wx, "wf": wf,
                      "hp_note": hn, "ap_note": an,
                      "signals": sig, "best_edge": best_edge(sig),
                      "time": taipei_time(g.get("game_date_iso")),

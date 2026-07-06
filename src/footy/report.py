@@ -1211,13 +1211,25 @@ def _mlb_card(r, zh_t) -> str:
     pf = r.get("pf", 1.0)
     pf_note = (f"<span class='pf'>球場 {pf:.2f}</span>"
                if abs(pf - 1.0) > 0.005 else "")
+    # 天氣徽章：有明顯影響大小盤才顯示（風出/進 + 溫度）
+    wx, wf = r.get("wx"), r.get("wf", 1.0)
+    wx_note = ""
+    if wx and abs((wf or 1.0) - 1.0) > 0.005:
+        arrow = "風出↑" if wx.get("wind_sign") == 1 else "風進↓" if wx.get("wind_sign") == -1 else ""
+        parts = []
+        if wx.get("temp") is not None:
+            parts.append(f"{wx['temp']:.0f}°F")
+        if arrow and wx.get("wind_speed"):
+            parts.append(f"{arrow}{wx['wind_speed']:.0f}mph")
+        tip = f"天氣調整總分 ×{wf:.2f}"
+        wx_note = f"<span class='pf' style='color:#6ea8fe' title='{tip}'>🌤 {' '.join(parts)}</span>"
     t = r.get("time")
     time_note = f"<div class='mtime'>🕒 {html.escape(t)}</div>" if t else ""
     tops = "、".join(f"{h}-{a}" for (h, a), p in m.top_scores[:3])
     return (
         f"<div class='card mgame'>"
         f"<div class='mhd'><b>{az}</b> <span class='at'>@</span> <b>{hz}</b>"
-        f"<span class='xr'>{m.exp_away:.1f}–{m.exp_home:.1f}</span>{pf_note}</div>"
+        f"<span class='xr'>{m.exp_away:.1f}–{m.exp_home:.1f}</span>{pf_note}{wx_note}</div>"
         f"{time_note}{pit}<div class='mtab'>{mtable}</div>"
         f"<div class='mtop'>可能比分 {tops}</div></div>")
 
@@ -1337,7 +1349,7 @@ font-size:13px;padding:5px 0;border-bottom:1px solid #171e26}}
 <body><div class="wrap">
   {_navbar('mlb')}
   <h1>⚾ {html.escape(title)}</h1>
-  <div class="sub">{html.escape(date)}（美東賽程日）· 負二項得分模型 + 先發投手(RA/9+FIP) + 球場因子 · <a href="mlb_perf.html" style="color:var(--accent)">📈 MLB 績效</a></div>
+  <div class="sub">{html.escape(date)}（美東賽程日）· 負二項得分模型 + 先發投手(RA/9+FIP) + 球場因子 + 天氣 · <a href="mlb_perf.html" style="color:var(--accent)">📈 MLB 績效</a></div>
   <div class="disc">⚠️ 純機率預測，非投注建議。只列模型較看好的一側；<b class="bs buy" style="font-size:10px">買</b>=融合市場後 +EV 且過風控、<b class="bs wait" style="font-size:10px">觀望</b>=無正期望值；時間為台北時區。</div>
   {('<div class="small" style="color:var(--warn);margin-bottom:8px">' + html.escape(note) + '</div>') if note else ''}
   {track_html}
