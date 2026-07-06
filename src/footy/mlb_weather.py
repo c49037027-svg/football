@@ -112,6 +112,43 @@ def _to_unix(iso: str | None) -> float | None:
         return None
 
 
+def probe(team: str, when_iso: str | None, key: str | None = None,
+          timeout: float = 20.0) -> str:
+    """診斷用：回傳單場天氣抓取的結果原因（不吞錯），供 weather-probe CLI。
+
+    可能值：no-key / no-park:<隊> / dome / no-time / neterr:<型別> /
+    http:<狀態碼>（如 401=金鑰未啟用或錯誤）/ no-slot / ok temp=.. wind=.. f=..
+    """
+    import os
+    key = key or os.environ.get("OPENWEATHER_KEY")
+    if not key:
+        return "no-key"
+    park = MLB_PARKS.get(team)
+    if not park:
+        return f"no-park:{team}"
+    lat, lon, cf_deg, dome = park
+    if dome:
+        return "dome"
+    target = _to_unix(when_iso)
+    if target is None:
+        return f"no-time:{when_iso}"
+    import requests
+    try:
+        r = requests.get("https://api.openweathermap.org/data/2.5/forecast",
+                         params={"lat": lat, "lon": lon, "appid": key,
+                                 "units": "imperial"}, timeout=timeout)
+    except Exception as e:  # noqa: BLE001
+        return f"neterr:{type(e).__name__}"
+    if r.status_code != 200:
+        return f"http:{r.status_code}"
+    w = parse_openweather(r.json(), target, cf_deg)
+    if w is None:
+        return "no-slot"
+    from . import mlb_sim
+    return (f"ok temp={w.get('temp')} wind={w.get('wind_speed')} "
+            f"sign={(w.get('wind_sign') or 0):.2f} f={mlb_sim.weather_total_factor(w):.3f}")
+
+
 def game_weather(team: str, when_iso: str | None, key: str | None = None,
                  timeout: float = 20.0) -> dict | None:
     """抓某場（主隊球場）開賽時刻的預報天氣。無金鑰/巨蛋/查無球場/失敗 → None（不調整）。"""

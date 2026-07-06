@@ -713,6 +713,24 @@ def mlb_backtest_sim(data_path, start, end, rates_season, n_sims, max_games, wit
                    f"{'✅ 天氣有幫助' if wx_ou < nb_ou else '❌ 無'}（{wx_ou - nb_ou:+.4f}）")
 
 
+@mlb_group.command("weather-probe")
+@click.option("--date", default=None, help="日期 YYYY-MM-DD（預設今天美東）")
+def mlb_weather_probe(date):
+    """診斷：對今日各場探測 openweather 天氣抓取結果（需 OPENWEATHER_KEY，跑在部署環境）。"""
+    from . import mlb, mlb_weather
+    date = date or mlb.us_today()
+    try:
+        games = mlb.fetch_today(date)
+    except Exception as e:  # noqa: BLE001
+        raise click.ClickException(f"抓賽程失敗（沙箱擋 statsapi？）：{e}")
+    if not games:
+        click.echo(f"{date} 無比賽。")
+        return
+    for g in games:
+        r = mlb_weather.probe(g["home"], g.get("game_date_iso"))
+        click.echo(f"[wx-probe] {mlb.zh_mlb(g['away'])} @ {mlb.zh_mlb(g['home'])}｜{r}")
+
+
 @cli.command("serve")
 @click.option("--model", "model_path", default="models/intl.pkl")
 @click.option("--history", "history_path", default="data/intl.csv", help="國際賽歷史（狀態/H2H）")
