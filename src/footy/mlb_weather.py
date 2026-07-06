@@ -18,6 +18,7 @@ import math
 
 # team → (lat, lon, 本壘→中外野方位角[度,正北0順時針], 是否巨蛋/可開合頂)
 # 方位角為近似值；巨蛋（dome=True）視為室內、天氣中性。
+# 註：需 OPENWEATHER_KEY 已「啟用」（新金鑰約 10 分~2 小時生效，之前一律回 401）。
 MLB_PARKS: dict[str, tuple] = {
     "Arizona Diamondbacks": (33.4453, -112.0667, 0, True),
     "Athletics": (38.5800, -121.5180, 60, False),          # Sutter Health Park（沙加緬度）
