@@ -75,6 +75,16 @@ jobs:
             --use-injuries \
             --ledger data/bets.csv
 
+      - name: 天氣接線自我檢查（診斷用，不中斷）
+        run: |
+          if [ -f out/wc/mlb.html ]; then
+            n=$(grep -o '🌤' out/wc/mlb.html | wc -l | tr -d ' ')
+            cards=$(grep -o 'card mgame' out/wc/mlb.html | wc -l | tr -d ' ')
+            echo "[weather-check] mlb.html 天氣徽章 ${n} 個 / 比賽卡 ${cards} 張"
+          else
+            echo "[weather-check] 無 mlb.html（MLB 未產生）"
+          fi
+
       - name: 回寫戰績帳本（每日累積推薦與結算）
         run: |
           git config user.name "github-actions"
