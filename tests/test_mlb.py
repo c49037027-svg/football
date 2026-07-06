@@ -435,3 +435,26 @@ def test_pitcher_gamelog_and_formbook():
     # 查無投手 / 無 as_of 之前出賽 → 中性
     assert book.factor(999, as_of="2025-04-25") == 1.0
     assert book.factor(11, as_of="2025-01-01") == 1.0
+
+
+def test_pitcher_formbook_team_baseline():
+    # 同隊三人：ace 強、兩位平庸 → ace 相對隊平均應 <1，平庸 ≈1
+    ace = [{"date": "2025-04-01", "ip": 7.0, "r": 1, "so": 9, "bb": 1, "hr": 0},
+           {"date": "2025-04-08", "ip": 7.0, "r": 1, "so": 8, "bb": 0, "hr": 0}]
+    mid1 = [{"date": "2025-04-02", "ip": 5.0, "r": 4, "so": 4, "bb": 3, "hr": 1},
+            {"date": "2025-04-09", "ip": 5.0, "r": 5, "so": 3, "bb": 2, "hr": 2}]
+    mid2 = [{"date": "2025-04-03", "ip": 5.0, "r": 5, "so": 3, "bb": 3, "hr": 2},
+            {"date": "2025-04-10", "ip": 5.0, "r": 4, "so": 4, "bb": 2, "hr": 1}]
+    logs = {1: ace, 2: mid1, 3: mid2}
+    pid_team = {1: "Aces", 2: "Aces", 3: "Aces"}
+    team = mlb.PitcherFormBook(logs, pid_team=pid_team)
+    league = mlb.PitcherFormBook(logs)   # 無隊基準（聯盟）
+    as_of = "2025-04-15"
+    assert team.team_base and "Aces" in team.team_base
+    # 隊基準下：ace 優於隊平均 → 係數 <1 且明顯低於平庸隊友
+    f_ace = team.factor(1, as_of, halflife=1e9)
+    f_mid = team.factor(2, as_of, halflife=1e9)
+    assert f_ace < 1.0 < f_mid            # ace 壓制、平庸放大（相對隊平均）
+    assert f_ace < f_mid
+    # 隊基準 vs 聯盟基準應不同（基準不同）
+    assert f_ace != league.factor(1, as_of, halflife=1e9)

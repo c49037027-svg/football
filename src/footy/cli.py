@@ -666,8 +666,15 @@ def mlb_backtest_sim(data_path, start, end, rates_season, n_sims, max_games, wit
             logs[int(pid)] = mlb.fetch_pitcher_gamelog(int(pid), season_year)
         except Exception:  # noqa: BLE001
             continue
-    form = mlb.PitcherFormBook(logs)
-    click.echo(f"[bt] 先發 game log：{len(logs)}/{len(sp_ids)} 位投手")
+    # pid→隊（取自 boxscore 實際先發所屬隊）：供隊基準，避免與 NB 隊防守重複計算
+    pid_team = {}
+    for g in games:
+        if g.get("home_sp"):
+            pid_team[int(g["home_sp"])] = g["home"]
+        if g.get("away_sp"):
+            pid_team[int(g["away_sp"])] = g["away"]
+    form = mlb.PitcherFormBook(logs, pid_team=pid_team)
+    click.echo(f"[bt] 先發 game log：{len(logs)}/{len(sp_ids)} 位投手（隊基準 {len(form.team_base)} 隊）")
 
     # 4) 比對：NB / NB+季投手 / NB+近況投手（主角），另列 NB+打線；選配 event-sim
     book = mlb_sim.LineupBook(bat_lines, league)

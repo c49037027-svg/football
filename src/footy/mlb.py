@@ -322,12 +322,15 @@ class PitcherFormBook:
     STARTER_SHARE = 0.6
     FIP_WEIGHT = 0.5
 
-    def __init__(self, logs: dict, prior_ip: float = 40.0,
-                 halflife_starts: float = 4.0):
+    def __init__(self, logs: dict, pid_team: dict | None = None,
+                 prior_ip: float = 40.0, halflife_starts: float = 4.0):
+        """logs：{pid: [逐場列]}；pid_team：{pid: 隊名} 給定則用「隊基準」
+        （相對該隊輪值平均，避免與 NB 隊防守重複計算），否則退回聯盟基準。"""
         self.logs = {int(k): sorted(v, key=lambda g: g["date"])
                      for k, v in logs.items()}
         self.prior_ip = prior_ip
         self.halflife = halflife_starts
+        self.pid_team = {int(k): v for k, v in (pid_team or {}).items()}
         allg = [g for v in self.logs.values() for g in v]
         tot_ip = sum(float(g["ip"]) for g in allg)
         tot_r = sum(int(g["r"]) for g in allg)
@@ -335,6 +338,21 @@ class PitcherFormBook:
         core = sum(13 * int(g["hr"]) + 3 * int(g["bb"]) - 2 * int(g["so"])
                    for g in allg)
         self.fip_const = self.league_ra9 - core / tot_ip if tot_ip else 0.0
+        # 隊基準：該隊各先發「季評分」的 IP 加權平均（靜態，如生產 PitcherBook）
+        self.team_base: dict[str, float] = {}
+        if self.pid_team:
+            agg: dict[str, list] = {}
+            for pid, v in self.logs.items():
+                team = self.pid_team.get(pid)
+                rating = self._rating(pid, as_of=None, halflife=1e9)
+                if not team or rating is None:
+                    continue
+                agg.setdefault(team, []).append(
+                    (rating, sum(float(g["ip"]) for g in v)))
+            for team, rs in agg.items():
+                w = sum(ip for _, ip in rs)
+                if w > 0:
+                    self.team_base[team] = sum(r * ip for r, ip in rs) / w
 
     def _rating(self, pid, as_of=None, halflife=None):
         v = self.logs.get(int(pid)) if pid is not None else None
@@ -361,11 +379,18 @@ class PitcherFormBook:
         return (1 - self.FIP_WEIGHT) * ra9 + self.FIP_WEIGHT * fip
 
     def factor(self, pid, as_of=None, halflife=None) -> float:
-        """對手得分乘數（已混先發權重）；查無或無出賽 → 1.0。"""
+        """對手得分乘數（已混先發權重）；查無或無出賽 → 1.0。
+
+        基準：有 pid_team 用該隊輪值平均（隊基準，避免與 NB 隊防守重複計算），
+        否則用聯盟 RA/9。好投手 rating<基準 → 係數<1 → 壓低對手得分。
+        """
         r = self._rating(pid, as_of, halflife)
         if r is None:
             return 1.0
-        raw = r / self.league_ra9 if self.league_ra9 > 0 else 1.0
+        base = self.team_base.get(self.pid_team.get(int(pid))) if self.pid_team else None
+        if not base or base <= 0:
+            base = self.league_ra9
+        raw = r / base if base > 0 else 1.0
         raw = min(max(raw, self.CLIP[0]), self.CLIP[1])
         return self.STARTER_SHARE * raw + (1.0 - self.STARTER_SHARE)
 
