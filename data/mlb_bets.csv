@@ -134,3 +134,4 @@ date,match_num,home,away,market,selection,line,odds,edge,source,close_odds,resul
 2026-07-06,823205,San Francisco Giants,Toronto Blue Jays,AH,主,1.5,1.58,-0.0079,market,1.58,pending,
 2026-07-06,823930,Los Angeles Dodgers,Colorado Rockies,1X2,home,,1.45,-0.042,market,1.45,pending,
 2026-07-06,823930,Los Angeles Dodgers,Colorado Rockies,AH,主,-1.5,1.91,0.0013,market,1.91,pending,
+2026-07-06,823930,Los Angeles Dodgers,Colorado Rockies,OU,大,10.5,1.91,-0.0179,market,1.91,pending,
