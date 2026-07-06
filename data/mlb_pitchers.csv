@@ -224,6 +224,7 @@ id,name,team,ip,runs,gs,so,bb,hr
 680755,Braydon Fisher,Toronto Blue Jays,46.0,21,6,46,21,6
 669387,Carmen Mlodzinski,Pittsburgh Pirates,75.66666666666667,35,9,60,26,6
 668933,Graham Ashcraft,Cincinnati Reds,27.0,11,0,32,16,2
+676263,Jack Dreyer,Los Angeles Dodgers,35.0,13,1,40,10,6
 681810,Austin Warren,New York Mets,35.0,14,2,37,17,5
 700669,Gordon Graceffo,St. Louis Cardinals,40.333333333333336,17,0,18,19,4
 615698,Cal Quantrill,Texas Rangers,40.333333333333336,19,3,27,12,5
@@ -240,7 +241,6 @@ id,name,team,ip,runs,gs,so,bb,hr
 694360,Beck Way,Kansas City Royals,16.0,6,0,16,8,3
 687064,Brandon Young,Baltimore Orioles,77.33333333333333,37,14,62,30,7
 801139,Payton Tolle,Boston Red Sox,74.33333333333333,32,13,74,23,8
-676263,Jack Dreyer,Los Angeles Dodgers,34.333333333333336,13,1,40,9,6
 687377,Orlando Ribalta,Washington Nationals,26.333333333333332,11,0,22,10,2
 667755,José Soriano,Los Angeles Angels,100.0,41,18,111,49,12
 813349,Connelly Early,Boston Red Sox,91.66666666666667,35,17,93,34,15
@@ -425,6 +425,7 @@ id,name,team,ip,runs,gs,so,bb,hr
 660761,José Suarez,Athletics,45.333333333333336,25,1,48,22,3
 622491,Luis Castillo,Seattle Mariners,82.66666666666667,53,14,77,27,9
 676083,Janson Junk,Miami Marlins,60.0,34,11,43,13,8
+676664,JP Sears,San Diego Padres,15.0,9,3,13,7,4
 677961,Cole Wilcox,Seattle Mariners,15.0,8,0,16,12,1
 669160,Dustin May,St. Louis Cardinals,84.33333333333333,48,16,78,24,7
 608372,Tomoyuki Sugano,Colorado Rockies,84.33333333333333,47,16,48,23,16
@@ -440,9 +441,9 @@ id,name,team,ip,runs,gs,so,bb,hr
 689520,Cody Laweryson,Minnesota Twins,16.666666666666668,12,0,18,8,3
 685126,Brandon Eisert,Chicago White Sox,25.666666666666668,15,4,32,6,6
 552640,Andrew Kittredge,Baltimore Orioles,22.0,15,0,22,6,4
+686218,Emmet Sheehan,Los Angeles Dodgers,77.0,42,16,86,25,15
 669298,TJ Shook,Colorado Rockies,3.6666666666666665,2,0,3,0,2
 676760,Ron Marinaccio,San Diego Padres,42.0,23,0,34,18,8
-686218,Emmet Sheehan,Los Angeles Dodgers,76.66666666666667,42,16,86,24,15
 621366,Ryan Borucki,San Francisco Giants,23.666666666666668,14,0,15,9,3
 702070,Noah Cameron,Kansas City Royals,83.66666666666667,51,16,75,25,10
 687570,Connor Prielipp,Minnesota Twins,61.666666666666664,42,12,65,23,6
@@ -469,7 +470,6 @@ id,name,team,ip,runs,gs,so,bb,hr
 700249,Cade Povich,Baltimore Orioles,19.333333333333332,11,3,12,7,4
 687075,Brandon Sproat,Milwaukee Brewers,79.0,45,15,84,37,14
 690155,Matt Pushard,St. Louis Cardinals,7.0,5,0,6,4,0
-676664,JP Sears,San Diego Padres,14.0,9,3,11,7,4
 608337,Lucas Giolito,San Diego Padres,29.666666666666668,19,5,18,23,4
 640455,Sean Manaea,New York Mets,68.0,42,5,68,23,8
 677053,Andrew Nardi,Miami Marlins,22.666666666666668,13,0,27,11,4
