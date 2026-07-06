@@ -642,19 +642,26 @@ def mlb_backtest_sim(data_path, start, end, rates_season, n_sims, max_games, wit
     finals = mlb.fetch_games(start, end)
     if max_games:
         finals = finals[:max_games]
-    games, no_lineup = [], 0
+    games, no_lineup, no_wx = [], 0, 0
     for gr in finals:
         pk = gr.get("game_pk")
-        try:
-            lu = mlb_sim.fetch_lineups(int(pk)) if pk else {"home": [], "away": []}
-        except Exception:  # noqa: BLE001
-            lu = {"home": [], "away": []}
+        lu = {"home": [], "away": []}
+        wx = None
+        if pk:
+            try:
+                box = mlb_sim.fetch_boxscore(int(pk))   # 一次請求兼取打序與天氣
+                lu = mlb_sim.parse_lineups(box)
+                wx = mlb_sim.parse_weather(box)
+            except Exception:  # noqa: BLE001
+                lu, wx = {"home": [], "away": []}, None
         if not lu["home"]:
             no_lineup += 1
+        if not wx or (wx.get("temp") is None and not wx.get("wind_speed")):
+            no_wx += 1
         games.append(mlb_sim.build_game_record(
             gr, lu, bat, pit, league,
-            park=pf_map.get(gr.get("home"), 1.0)))
-    click.echo(f"[bt] 測試 {len(games)} 場（{no_lineup} 場無打序 → 打線/sim 略過）")
+            park=pf_map.get(gr.get("home"), 1.0), weather=wx))
+    click.echo(f"[bt] 測試 {len(games)} 場（{no_lineup} 無打序、{no_wx} 無天氣 → 各自略過）")
 
     # 3b) 抓當季先發投手逐場 game log（依比賽日切，天然 point-in-time、零洩漏）
     season_year = int(start[:4])
@@ -683,6 +690,7 @@ def mlb_backtest_sim(data_path, start, end, rates_season, n_sims, max_games, wit
         "NB+季投手": mlb_sim.nb_pitcher_predictor(model, form, halflife=1e9, dispersion=disp),
         "NB+近況投手": mlb_sim.nb_pitcher_predictor(model, form, halflife=4.0, dispersion=disp),
         "NB+打線": mlb_sim.nb_lineup_predictor(model, book, dispersion=disp),
+        "NB+天氣": mlb_sim.nb_weather_predictor(model, dispersion=disp),
     }
     if with_sim:
         preds["event-sim"] = mlb_sim.sim_predictor(n_sims=n_sims, seed=0)
@@ -697,6 +705,12 @@ def mlb_backtest_sim(data_path, start, end, rates_season, n_sims, max_games, wit
                    f"（{sp_s - nb:+.4f}）")
         click.echo(f"  近況是否勝季投手：{'✅ 有' if sp_r < sp_s else '❌ 無'}"
                    f"（{sp_r - sp_s:+.4f}）")
+    # 天氣是大小盤訊號：比 OU log-loss
+    nb_ou = res["負二項(NB)"]["ou"]["logloss"]
+    wx_ou = res["NB+天氣"]["ou"]["logloss"]
+    if None not in (nb_ou, wx_ou):
+        click.echo(f"大小 log-loss：NB {nb_ou:.4f}｜NB+天氣 {wx_ou:.4f} → "
+                   f"{'✅ 天氣有幫助' if wx_ou < nb_ou else '❌ 無'}（{wx_ou - nb_ou:+.4f}）")
 
 
 @cli.command("serve")

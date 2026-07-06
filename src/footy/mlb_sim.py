@@ -27,6 +27,8 @@ Phase 0 誠實範圍與簡化（皆已註明，待後續逐項升級）：
 """
 from __future__ import annotations
 
+import re
+
 import numpy as np
 
 # 打席結果類別（順序固定，供 log5 與抽樣共用）
@@ -399,6 +401,60 @@ def fetch_batting(season: int, timeout: float = 30.0) -> list[dict]:
     return parse_batting_stats(r.json())
 
 
+def parse_weather(box_payload: dict) -> dict:
+    """從 boxscore.info 解析天氣。回 {temp, wind_speed, wind_sign}。
+
+    info 例：{"label":"Weather","value":"72 degrees, Clear."}、
+             {"label":"Wind","value":"12 mph, Out To CF."}。
+    wind_sign：吹出去 +1（助攻）、吹進來 −1（壓制）、橫風/無風 0；缺→中性。
+    """
+    temp, wind_speed, wind_sign = None, 0.0, 0
+    for item in box_payload.get("info") or []:
+        label = (item.get("label") or "").strip().lower()
+        val = (item.get("value") or "")
+        if label == "weather":
+            m = re.search(r"(\d+)\s*degree", val, re.I)
+            if m:
+                temp = float(m.group(1))
+        elif label == "wind":
+            m = re.search(r"(\d+)\s*mph", val, re.I)
+            if m:
+                wind_speed = float(m.group(1))
+            low = val.lower()
+            if "out" in low:
+                wind_sign = 1
+            elif "in" in low:
+                wind_sign = -1        # 橫風（L to R / R to L）/ 無風 → 0
+    return {"temp": temp, "wind_speed": wind_speed, "wind_sign": wind_sign}
+
+
+def weather_total_factor(weather: dict | None, k_temp: float = 0.0025,
+                         k_wind: float = 0.006, clip: tuple = (0.85, 1.15)) -> float:
+    """天氣 → 總得分環境乘數（對兩隊對稱，只動大小盤）。
+
+    熱空氣稀、球飛遠 → 溫度高係數>1；風吹出去助攻>1、吹進來壓制<1。
+    係數量級取文獻近似（回測前為先驗），夾限保守；套用時併入 park_factor。
+    """
+    if not weather:
+        return 1.0
+    f = 1.0
+    if weather.get("temp") is not None:
+        f *= 1.0 + k_temp * (weather["temp"] - 70.0)
+    f *= 1.0 + k_wind * weather.get("wind_speed", 0.0) * weather.get("wind_sign", 0)
+    return min(max(f, clip[0]), clip[1])
+
+
+def fetch_boxscore(game_pk: int, timeout: float = 30.0) -> dict:
+    """抓單場 boxscore 原始 JSON（供 parse_lineups + parse_weather 共用一次請求）。"""
+    import requests
+
+    from .mlb import STATSAPI
+    r = requests.get(f"{STATSAPI}/game/{game_pk}/boxscore",
+                     headers={"User-Agent": "Mozilla/5.0"}, timeout=timeout)
+    r.raise_for_status()
+    return r.json()
+
+
 def fetch_pitching_events(season: int, timeout: float = 30.0) -> list[dict]:
     """抓整季全聯盟投手「被打」事件數據（部署環境用）。"""
     import requests
@@ -453,7 +509,7 @@ def score_market(rows: list[tuple]) -> dict:
 def build_game_record(result: dict, lineups: dict, bat_rates: dict,
                       pit_rates: dict, league: dict | None = None,
                       total_line: float = 8.5, run_line: float = -1.5,
-                      park: float = 1.0) -> dict:
+                      park: float = 1.0, weather: dict | None = None) -> dict:
     """組一場回測記錄（純函式）。缺打序 → home_lineup 為空 → sim 該場略過（誠實覆蓋缺口）。
 
     result: {home, away, home_goals, away_goals, home_pitcher_id, away_pitcher_id}
@@ -482,7 +538,8 @@ def build_game_record(result: dict, lineups: dict, bat_rates: dict,
         "away_sp": lineups.get("away_sp") or result.get("away_pitcher_id"),
         "home_pitcher": pit(result.get("home_pitcher_id")),
         "away_pitcher": pit(result.get("away_pitcher_id")),
-        "league": lg, "park": park, "total_line": total_line, "run_line": run_line,
+        "league": lg, "park": park, "weather": weather,
+        "total_line": total_line, "run_line": run_line,
     }
 
 
@@ -550,6 +607,21 @@ def nb_pitcher_predictor(model, form_book, halflife: float, dispersion: float | 
                              run_line=g.get("run_line", -1.5), park_factor=g.get("park", 1.0),
                              dispersion=dispersion,
                              home_pitcher_factor=hpf, away_pitcher_factor=apf)
+        return {"p_home": m.p_home, "p_over": m.p_over, "p_cover_home": m.p_cover_home}
+    return f
+
+
+def nb_weather_predictor(model, dispersion: float | None = None):
+    """NB + 天氣：把天氣得分環境乘數併入 park_factor（對兩隊對稱，只動大小盤）。"""
+    from . import mlb
+
+    def f(g):
+        if g["home"] not in model.attack or g["away"] not in model.attack:
+            return None
+        wf = weather_total_factor(g.get("weather"))
+        m = mlb.analyze_game(model, g["home"], g["away"], total_line=g["_total_line"],
+                             run_line=g.get("run_line", -1.5),
+                             park_factor=g.get("park", 1.0) * wf, dispersion=dispersion)
         return {"p_home": m.p_home, "p_over": m.p_over, "p_cover_home": m.p_cover_home}
     return f
 

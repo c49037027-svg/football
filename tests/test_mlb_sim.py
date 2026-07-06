@@ -212,3 +212,41 @@ def test_nb_lineup_predictor_shifts_probs():
     boosted = sim.nb_lineup_predictor(model, book)(g)
     # 主隊打線變強、客隊變弱 → 主勝機率上升
     assert boosted["p_home"] > base["p_home"]
+
+
+# ---------------- 天氣（大小盤訊號） ----------------
+def test_parse_weather_and_factor():
+    box = {"info": [
+        {"label": "Weather", "value": "88 degrees, Sunny."},
+        {"label": "Wind", "value": "15 mph, Out To CF."},
+        {"label": "First pitch", "value": "7:05 PM."}]}
+    w = sim.parse_weather(box)
+    assert w["temp"] == 88.0 and w["wind_speed"] == 15.0 and w["wind_sign"] == 1
+    # 熱 + 吹出去 → 總分環境放大
+    assert sim.weather_total_factor(w) > 1.0
+    # 冷 + 吹進來 → 壓低
+    cold_in = sim.parse_weather({"info": [
+        {"label": "Weather", "value": "48 degrees, Cloudy."},
+        {"label": "Wind", "value": "18 mph, In From LF."}]})
+    assert cold_in["wind_sign"] == -1
+    assert sim.weather_total_factor(cold_in) < 1.0
+    # 橫風 / 無資料 → 中性
+    cross = sim.parse_weather({"info": [{"label": "Wind", "value": "10 mph, L To R."}]})
+    assert cross["wind_sign"] == 0
+    assert sim.weather_total_factor(None) == 1.0
+    assert sim.weather_total_factor({"temp": 70.0, "wind_speed": 0.0, "wind_sign": 0}) == 1.0
+
+
+def test_nb_weather_predictor_shifts_totals():
+    from test_mlb import _mlb_model
+    model = _mlb_model()
+    lg = dict(sim.LEAGUE_RATES)
+    hot = {"temp": 95.0, "wind_speed": 18.0, "wind_sign": 1}     # 助攻天氣
+    g = sim.build_game_record(
+        {"home": "Team0", "away": "Team1", "home_goals": 5, "away_goals": 4,
+         "home_pitcher_id": None, "away_pitcher_id": None},
+        {"home": [], "away": []}, {}, {}, lg, weather=hot)
+    g["_total_line"] = 8.5
+    p_base = sim.nb_predictor(model)(g)
+    p_wx = sim.nb_weather_predictor(model)(g)
+    assert p_wx["p_over"] > p_base["p_over"]     # 助攻天氣 → 大分機率上升
