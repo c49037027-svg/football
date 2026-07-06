@@ -1227,8 +1227,10 @@ def _mlb_card(r, zh_t) -> str:
     t = r.get("time")
     time_note = f"<div class='mtime'>🕒 {html.escape(t)}</div>" if t else ""
     tops = "、".join(f"{h}-{a}" for (h, a), p in m.top_scores[:3])
+    # 診斷標記（HTML 註解，不顯示）：每場天氣是否抓到 + 總分係數，供建站自我檢查
+    diag = f"<!--wx:{'fetched' if wx else 'none'} wxf:{(wf or 1.0):.3f}-->"
     return (
-        f"<div class='card mgame'>"
+        f"<div class='card mgame'>{diag}"
         f"<div class='mhd'><b>{az}</b> <span class='at'>@</span> <b>{hz}</b>"
         f"<span class='xr'>{m.exp_away:.1f}–{m.exp_home:.1f}</span>{pf_note}{wx_note}</div>"
         f"{time_note}{pit}<div class='mtab'>{mtable}</div>"
