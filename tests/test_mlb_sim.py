@@ -109,3 +109,55 @@ def test_parse_batting_and_lineups():
                      "away": {"battingOrder": []}}}
     lu = sim.parse_lineups(box)
     assert lu["home"] == [11, 12, 13] and lu["away"] == []
+
+
+# ---------------- Phase 3 回測骨架 ----------------
+def test_score_market_and_logloss():
+    # 完美預測 → logloss≈0；亂猜 0.5 → logloss≈ln2
+    perfect = [(0.999999, 1.0), (0.000001, 0.0)]
+    coin = [(0.5, 1.0), (0.5, 0.0)]
+    sp = sim.score_market(perfect)
+    sc = sim.score_market(coin)
+    assert sp["logloss"] < 1e-4 and sp["n"] == 2
+    assert abs(sc["logloss"] - np.log(2)) < 1e-6
+    assert abs(sc["brier"] - 0.25) < 1e-9
+    assert sim.score_market([])["n"] == 0
+
+
+def test_build_game_record_coverage():
+    lg = dict(sim.LEAGUE_RATES)
+    bat = {1: dict(lg), 2: dict(lg)}
+    result = {"home": "A", "away": "B", "home_goals": 5, "away_goals": 3,
+              "home_pitcher_id": 100, "away_pitcher_id": 200}
+    # 有打序
+    g = sim.build_game_record(result, {"home": [1, 2, 1, 2, 1, 2, 1, 2, 1],
+                                       "away": [2, 1, 2, 1, 2, 1, 2, 1, 2]},
+                              bat, {}, lg)
+    assert len(g["home_lineup"]) == 9 and g["home_score"] == 5
+    assert g["away_pitcher"] == lg           # 查無投手 → 聯盟率
+    # 無打序 → 空 lineup → sim 略過
+    g2 = sim.build_game_record(result, {"home": [], "away": []}, bat, {}, lg)
+    assert g2["home_lineup"] == []
+    assert sim.sim_predictor()(({**g2, "_total_line": 8.5})) is None
+
+
+def test_compare_backtest_end_to_end():
+    from test_mlb import _mlb_model
+    model = _mlb_model()
+    lg = dict(sim.LEAGUE_RATES)
+    strong = [{"bb": 0.11, "1b": 0.16, "2b": 0.06, "3b": 0.005,
+               "hr": 0.055, "out": 0.610} for _ in range(9)]
+    lgteam = [dict(lg) for _ in range(9)]
+    games = []
+    for hs, as_ in [(6, 2), (5, 4), (3, 1), (2, 7), (8, 3)]:
+        games.append(sim.build_game_record(
+            {"home": "Team0", "away": "Team5", "home_goals": hs, "away_goals": as_,
+             "home_pitcher_id": None, "away_pitcher_id": None},
+            {"home": [1] * 9, "away": [2] * 9},
+            {1: strong[0], 2: lgteam[0]}, {}, lg))
+    res = sim.compare_backtest(games, {"sim": sim.sim_predictor(n_sims=800, seed=1),
+                                       "nb": sim.nb_predictor(model)})
+    assert res["sim"]["ml"]["n"] == 5 and res["nb"]["ml"]["n"] == 5
+    assert res["sim"]["ou"]["logloss"] is not None
+    assert isinstance(sim.format_backtest(res), str)
+    assert "錢線" in sim.format_backtest(res)

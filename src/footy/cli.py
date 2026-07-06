@@ -592,6 +592,80 @@ def mlb_today(model_path, date, odds, pitchers_path, data_path):
                 click.echo(s)
 
 
+@mlb_group.command("backtest-sim")
+@click.option("--data", "data_path", default="data/mlb.csv",
+              help="賽果 CSV（訓練 NB 模型 + 估球場/離散度）")
+@click.option("--start", required=True, help="測試起日 YYYY-MM-DD（之前訓練 NB、當作 walk-forward 切分）")
+@click.option("--end", required=True, help="測試迄日 YYYY-MM-DD")
+@click.option("--rates-season", type=int, required=True,
+              help="事件率用的『前一季』年份（零洩漏 point-in-time 近似）")
+@click.option("--n-sims", default=3000, type=int)
+@click.option("--max-games", default=0, type=int, help="限制場數（0=全部；除錯用）")
+def mlb_backtest_sim(data_path, start, end, rates_season, n_sims, max_games):
+    """Phase 3：event-sim vs 負二項 樣本外比對（需連 statsapi，跑在 Render/Actions）。
+
+    流程：以前一季打者/投手事件率為 point-in-time 近似 → 抓 [start,end] 每場實際打序
+    與賽果 → NB 模型只用 start 之前的賽果訓練（walk-forward）→ 對同一批賽果比較
+    兩者的錢線/大小 log-loss。event-sim 只涵蓋有打序的場次（覆蓋 n 會顯示差異）。
+    """
+    import pandas as pd
+
+    from . import mlb, mlb_sim
+    # 1) NB 模型：只用切分日之前的賽果訓練（無前視）
+    df = pd.read_csv(data_path)
+    df["date"] = pd.to_datetime(df["date"])
+    cut = pd.Timestamp(start)
+    train = df[df["date"] < cut]
+    if train.empty:
+        raise click.ClickException("切分日之前無訓練資料。")
+    model = dc.fit(train, half_life_days=120, max_goals=20, rho_init=0.0,
+                   reg=0.3, reference_date=cut)
+    disp = mlb.dispersion_from_df(train)
+    pf_map = mlb.park_factors(train) if len(train) else {}
+    click.echo(f"[bt] NB 訓練 {len(train)} 場（<{start}）｜k={disp:.2f}" if disp else "[bt] 無過度離散")
+
+    # 2) 前一季事件率（point-in-time 近似）
+    try:
+        bat_lines = mlb_sim.fetch_batting(rates_season)
+        pit_lines = mlb_sim.fetch_pitching_events(rates_season)
+    except Exception as e:  # noqa: BLE001
+        raise click.ClickException(f"抓 {rates_season} 季事件率失敗（沙箱擋 statsapi？）：{e}")
+    league = mlb_sim.league_rates(bat_lines)
+    bat = {int(r["id"]): mlb_sim.rates_from_batting(r) for r in bat_lines}
+    pit = {int(r["id"]): mlb_sim.rates_from_pitching(r) for r in pit_lines}
+    click.echo(f"[bt] 前一季事件率：打者 {len(bat)} 位、投手 {len(pit)} 位")
+
+    # 3) 抓測試區間賽果 + 每場打序
+    finals = mlb.fetch_games(start, end)
+    if max_games:
+        finals = finals[:max_games]
+    games, no_lineup = [], 0
+    for gr in finals:
+        pk = gr.get("game_pk")
+        try:
+            lu = mlb_sim.fetch_lineups(int(pk)) if pk else {"home": [], "away": []}
+        except Exception:  # noqa: BLE001
+            lu = {"home": [], "away": []}
+        if not lu["home"]:
+            no_lineup += 1
+        games.append(mlb_sim.build_game_record(
+            gr, lu, bat, pit, league,
+            park=pf_map.get(gr.get("home"), 1.0)))
+    click.echo(f"[bt] 測試 {len(games)} 場（{no_lineup} 場無打序 → sim 略過）")
+
+    # 4) 比對
+    res = mlb_sim.compare_backtest(
+        games, {"event-sim": mlb_sim.sim_predictor(n_sims=n_sims, seed=0),
+                "負二項(NB)": mlb_sim.nb_predictor(model, dispersion=disp)})
+    click.echo("\n" + mlb_sim.format_backtest(res))
+    sim_ll = res["event-sim"]["ml"]["logloss"]
+    nb_ll = res["負二項(NB)"]["ml"]["logloss"]
+    if sim_ll is not None and nb_ll is not None:
+        verdict = "✅ event-sim 較佳" if sim_ll < nb_ll else "❌ NB 仍較佳"
+        click.echo(f"\n錢線 log-loss：event-sim {sim_ll:.4f} vs NB {nb_ll:.4f} → {verdict}")
+        click.echo("（注意：兩者涵蓋場數不同時勿直接比；先看 n 是否接近）")
+
+
 @cli.command("serve")
 @click.option("--model", "model_path", default="models/intl.pkl")
 @click.option("--history", "history_path", default="data/intl.csv", help="國際賽歷史（狀態/H2H）")

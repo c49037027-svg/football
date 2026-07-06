@@ -23,8 +23,6 @@ Phase 0 誠實範圍與簡化（皆已註明，待後續逐項升級）：
 """
 from __future__ import annotations
 
-from dataclasses import dataclass
-
 import numpy as np
 
 # 打席結果類別（順序固定，供 log5 與抽樣共用）
@@ -336,12 +334,149 @@ def fetch_batting(season: int, timeout: float = 30.0) -> list[dict]:
     return parse_batting_stats(r.json())
 
 
+def fetch_pitching_events(season: int, timeout: float = 30.0) -> list[dict]:
+    """抓整季全聯盟投手「被打」事件數據（部署環境用）。"""
+    import requests
+
+    from .mlb import STATSAPI
+    r = requests.get(f"{STATSAPI}/stats",
+                     params={"stats": "season", "group": "pitching",
+                             "season": season, "sportIds": 1, "gameType": "R",
+                             "playerPool": "ALL", "limit": 3000},
+                     headers={"User-Agent": "Mozilla/5.0"}, timeout=timeout)
+    r.raise_for_status()
+    return parse_pitching_events(r.json())
+
+
 def fetch_lineups(game_pk: int, timeout: float = 30.0) -> dict:
     """抓單場 boxscore 的雙方打序（賽前數小時才公布；未公布回空）。"""
     import requests
 
     from .mlb import STATSAPI
-    r = requests.get(f"{STATSAPI.replace('/v1', '/v1')}/game/{game_pk}/boxscore",
+    r = requests.get(f"{STATSAPI}/game/{game_pk}/boxscore",
                      headers={"User-Agent": "Mozilla/5.0"}, timeout=timeout)
     r.raise_for_status()
     return parse_lineups(r.json())
+
+
+# ================= Phase 3：回測骨架（event-sim vs 負二項，樣本外比對） =================
+#
+# 誠實原則（見 docs/FINDINGS.md）：新方法要 walk-forward 樣本外贏過現行 NB 才採用。
+# 難點是「時間點正確」的球員率——本骨架用「前一季」事件率當零洩漏近似（測試季不含
+# 當季資訊；缺點：忽略當季成長與新秀，故偏保守、對強弱差略鈍）。真正上線前可換成
+# 「截至當日的逐場累積率」進一步精確。純評分/組裝為可離線測試的函式；連線資料組裝
+# 走部署環境的 CLI（footy mlb backtest-sim）。
+
+
+def _logloss(p: float, y: float, eps: float = 1e-12) -> float:
+    p = min(max(p, eps), 1.0 - eps)
+    return -(y * np.log(p) + (1.0 - y) * np.log(1.0 - p))
+
+
+def score_market(rows: list[tuple]) -> dict:
+    """rows: [(p, y)...]，y∈{0,1}。回傳 {logloss, brier, n, mean_p, base_rate}。"""
+    n = len(rows)
+    if n == 0:
+        return {"logloss": None, "brier": None, "n": 0}
+    ll = sum(_logloss(p, y) for p, y in rows) / n
+    br = sum((p - y) ** 2 for p, y in rows) / n
+    return {"logloss": float(ll), "brier": float(br), "n": n,
+            "mean_p": sum(p for p, _ in rows) / n,
+            "base_rate": sum(y for _, y in rows) / n}
+
+
+def build_game_record(result: dict, lineups: dict, bat_rates: dict,
+                      pit_rates: dict, league: dict | None = None,
+                      total_line: float = 8.5, run_line: float = -1.5,
+                      park: float = 1.0) -> dict:
+    """組一場回測記錄（純函式）。缺打序 → home_lineup 為空 → sim 該場略過（誠實覆蓋缺口）。
+
+    result: {home, away, home_goals, away_goals, home_pitcher_id, away_pitcher_id}
+    lineups: {"home":[id...], "away":[id...]}（parse_lineups 產物）
+    bat_rates/pit_rates: {player_id: 每打席事件率 dict}
+    缺球員 → 退回聯盟率（新秀/查無）。
+    """
+    lg = league or LEAGUE_RATES
+
+    def lineup_rates(ids):
+        return [bat_rates.get(int(i), dict(lg)) for i in ids] if ids else []
+
+    def pit(pid):
+        return pit_rates.get(int(pid), dict(lg)) if pid is not None else dict(lg)
+
+    return {
+        "home": result.get("home"), "away": result.get("away"),
+        "home_score": int(result["home_goals"]), "away_score": int(result["away_goals"]),
+        "home_lineup": lineup_rates(lineups.get("home") or []),
+        "away_lineup": lineup_rates(lineups.get("away") or []),
+        "home_pitcher": pit(result.get("home_pitcher_id")),
+        "away_pitcher": pit(result.get("away_pitcher_id")),
+        "league": lg, "park": park, "total_line": total_line, "run_line": run_line,
+    }
+
+
+def sim_predictor(n_sims: int = 3000, seed: int = 0):
+    """回測用 event-sim 預測器：game → {p_home, p_over, p_cover_home} 或 None（無打序）。"""
+    def f(g):
+        if not g.get("home_lineup") or not g.get("away_lineup"):
+            return None
+        m = analyze_game_sim(g["home_lineup"], g["away_lineup"],
+                             g["home_pitcher"], g["away_pitcher"], g.get("league"),
+                             total_line=g["_total_line"], run_line=g.get("run_line", -1.5),
+                             park=g.get("park", 1.0), n_sims=n_sims, seed=seed)
+        return {"p_home": m.p_home, "p_over": m.p_over, "p_cover_home": m.p_cover_home}
+    return f
+
+
+def nb_predictor(model, dispersion: float | None = None):
+    """回測用負二項預測器（現行隊級模型）：game → {p_home, p_over, p_cover_home}。"""
+    from . import mlb
+
+    def f(g):
+        if g["home"] not in model.attack or g["away"] not in model.attack:
+            return None
+        m = mlb.analyze_game(model, g["home"], g["away"], total_line=g["_total_line"],
+                             run_line=g.get("run_line", -1.5), park_factor=g.get("park", 1.0),
+                             dispersion=dispersion)
+        return {"p_home": m.p_home, "p_over": m.p_over, "p_cover_home": m.p_cover_home}
+    return f
+
+
+def compare_backtest(games: list[dict], predictors: dict,
+                     total_line: float = 8.5) -> dict:
+    """對同一批賽果，逐一比較各預測器的錢線與大小 log-loss/Brier（樣本外）。
+
+    predictors: {name: fn(game)->{p_home,p_over,...} 或 None}。回 None 的場次該預測器
+    略過（覆蓋數 n 會顯示差異——sim 只涵蓋有打序的場次，這是誠實的覆蓋缺口）。
+    回傳 {name: {"ml": score, "ou": score}}，並含各自實際涵蓋場數。
+    """
+    acc = {name: {"ml": [], "ou": []} for name in predictors}
+    for g in games:
+        g = {**g, "_total_line": total_line}
+        hs, as_ = g["home_score"], g["away_score"]
+        y_home = 1.0 if hs > as_ else 0.0
+        y_over = 1.0 if hs + as_ > total_line else 0.0
+        tie = hs == as_
+        for name, fn in predictors.items():
+            pr = fn(g)
+            if pr is None:
+                continue
+            if not tie:                       # 錢線無和局，平手（極罕見補賽）跳過
+                acc[name]["ml"].append((pr["p_home"], y_home))
+            acc[name]["ou"].append((pr["p_over"], y_over))
+    return {name: {"ml": score_market(d["ml"]), "ou": score_market(d["ou"])}
+            for name, d in acc.items()}
+
+
+def format_backtest(res: dict) -> str:
+    """把 compare_backtest 結果印成對照表。"""
+    lines = ["模型            | 錢線 n | 錢線 LL | 大小 n | 大小 LL | 大小 Brier",
+             "----------------|-------:|--------:|-------:|--------:|----------:"]
+    for name, d in res.items():
+        ml, ou = d["ml"], d["ou"]
+        ll = f"{ml['logloss']:.4f}" if ml["logloss"] is not None else "  —  "
+        oll = f"{ou['logloss']:.4f}" if ou["logloss"] is not None else "  —  "
+        obr = f"{ou['brier']:.4f}" if ou["brier"] is not None else "  —  "
+        lines.append(f"{name:<15} | {ml['n']:>6} | {ll:>7} | "
+                     f"{ou['n']:>6} | {oll:>7} | {obr:>10}")
+    return "\n".join(lines)
