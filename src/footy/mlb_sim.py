@@ -105,6 +105,61 @@ def league_rates(batting_lines: list[dict]) -> dict:
     return _norm({e: tot[e] / pa_sum for e in CATS})
 
 
+# ---------------- 打線攻擊係數（把打者資訊接進隊級 NB 的外科手術層） ----------------
+# 線性加權：每事件的近似得分價值（wOBA 尺度，出局取 0，供「相對」比較用）。
+_LINEAR_WEIGHTS = {"bb": 0.33, "1b": 0.47, "2b": 0.77, "3b": 1.04, "hr": 1.40, "out": 0.0}
+
+
+def offensive_rate(rates: dict) -> float:
+    """由每打席事件率算「每打席得分產能」（線性加權）。用於打線間的相對比較。"""
+    return sum(_LINEAR_WEIGHTS[e] * rates.get(e, 0.0) for e in CATS)
+
+
+class LineupBook:
+    """打線攻擊係數簿：今日 9 人相對「該隊季平均打線」的得分乘數。
+
+    與 PitcherBook 對稱設計（避免與隊級 NB 重複計算）：隊級模型已含全隊平均攻擊，
+    這裡只修正「今晚這幾位相對隊內平均」的差；係數夾在 [0.85,1.15]，混 0.7 權重
+    （單場打線只佔比賽一部分、且有變異）。查無球員（新秀/未登錄）→ 從均值中略過。
+    """
+
+    CLIP = (0.85, 1.15)
+    WEIGHT = 0.7
+
+    def __init__(self, bat_rows: list[dict], league: dict | None = None):
+        """bat_rows：fetch_batting 產物（{id,name,team,pa,h,2b,3b,hr,bb,hbp}）。"""
+        self.league = league or LEAGUE_RATES
+        self.by_id: dict[int, float] = {}
+        team_sum: dict[str, float] = {}
+        team_pa: dict[str, float] = {}
+        for r in bat_rows:
+            pa = float(r.get("pa") or 0)
+            if pa < 1:
+                continue
+            rate = offensive_rate(rates_from_batting(r))
+            self.by_id[int(r["id"])] = rate
+            t = r.get("team", "")
+            if t:
+                team_sum[t] = team_sum.get(t, 0.0) + rate * pa
+                team_pa[t] = team_pa.get(t, 0.0) + pa
+        self.team_avg = {t: team_sum[t] / team_pa[t]
+                         for t in team_pa if team_pa[t] > 0}
+        self.league_avg = offensive_rate(self.league) or 1.0
+
+    def factor(self, batter_ids, team: str | None = None) -> float:
+        """今日打序 → 得分乘數。基準用該隊季平均打線（查無隊則用聯盟均值）。"""
+        ids = [int(i) for i in (batter_ids or []) if int(i) in self.by_id]
+        if not ids:
+            return 1.0
+        today = sum(self.by_id[i] for i in ids) / len(ids)
+        base = self.team_avg.get(team) if team else None
+        if not base or base <= 0:
+            base = self.league_avg
+        raw = today / base if base > 0 else 1.0
+        raw = min(max(raw, self.CLIP[0]), self.CLIP[1])
+        return self.WEIGHT * raw + (1.0 - self.WEIGHT)
+
+
 # ---------------- log5（勝算比法，多結果推廣） ----------------
 def log5_matchup(batter: dict, pitcher: dict, league: dict | None = None,
                  park: float = 1.0) -> dict:
@@ -413,6 +468,8 @@ def build_game_record(result: dict, lineups: dict, bat_rates: dict,
         "home_score": int(result["home_goals"]), "away_score": int(result["away_goals"]),
         "home_lineup": lineup_rates(lineups.get("home") or []),
         "away_lineup": lineup_rates(lineups.get("away") or []),
+        "home_lineup_ids": [int(i) for i in (lineups.get("home") or [])],
+        "away_lineup_ids": [int(i) for i in (lineups.get("away") or [])],
         "home_pitcher": pit(result.get("home_pitcher_id")),
         "away_pitcher": pit(result.get("away_pitcher_id")),
         "league": lg, "park": park, "total_line": total_line, "run_line": run_line,
@@ -442,6 +499,25 @@ def nb_predictor(model, dispersion: float | None = None):
         m = mlb.analyze_game(model, g["home"], g["away"], total_line=g["_total_line"],
                              run_line=g.get("run_line", -1.5), park_factor=g.get("park", 1.0),
                              dispersion=dispersion)
+        return {"p_home": m.p_home, "p_over": m.p_over, "p_cover_home": m.p_cover_home}
+    return f
+
+
+def nb_lineup_predictor(model, book: "LineupBook", dispersion: float | None = None):
+    """NB + 打線係數：在現行 NB 上，用今日打序相對隊平均的偏差微調 λ（外科手術層）。
+
+    這是「把打者資訊接進生產 NB」的正確做法——保留 NB，只加今日打線的偏差修正。
+    """
+    from . import mlb
+
+    def f(g):
+        if g["home"] not in model.attack or g["away"] not in model.attack:
+            return None
+        hbf = book.factor(g.get("home_lineup_ids"), team=g["home"])
+        abf = book.factor(g.get("away_lineup_ids"), team=g["away"])
+        m = mlb.analyze_game(model, g["home"], g["away"], total_line=g["_total_line"],
+                             run_line=g.get("run_line", -1.5), park_factor=g.get("park", 1.0),
+                             dispersion=dispersion, home_bat_factor=hbf, away_bat_factor=abf)
         return {"p_home": m.p_home, "p_over": m.p_over, "p_cover_home": m.p_cover_home}
     return f
 

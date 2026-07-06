@@ -161,3 +161,54 @@ def test_compare_backtest_end_to_end():
     assert res["sim"]["ou"]["logloss"] is not None
     assert isinstance(sim.format_backtest(res), str)
     assert "錢線" in sim.format_backtest(res)
+
+
+# ---------------- 打線係數（把打者資訊接進 NB） ----------------
+def test_offensive_rate_and_lineup_book():
+    lg = dict(sim.LEAGUE_RATES)
+    # 強打（多 HR/安打）每打席產能 > 弱打
+    strong = {"bb": 0.11, "1b": 0.16, "2b": 0.06, "3b": 0.005, "hr": 0.055, "out": 0.610}
+    weak = {"bb": 0.06, "1b": 0.11, "2b": 0.03, "3b": 0.002, "hr": 0.015, "out": 0.783}
+    assert sim.offensive_rate(strong) > sim.offensive_rate(weak)
+    # LineupBook：兩隊各 3 名（A 隊強、B 隊弱）
+    rows = ([{"id": i, "team": "A", "pa": 500, "h": 150, "2b": 35, "3b": 3,
+              "hr": 30, "bb": 55, "hbp": 5} for i in range(1, 4)]
+            + [{"id": i, "team": "B", "pa": 500, "h": 120, "2b": 20, "3b": 1,
+                "hr": 10, "bb": 40, "hbp": 3} for i in range(4, 7)])
+    book = sim.LineupBook(rows, lg)
+    # 該隊全先發上場 → 係數≈1（等於隊平均）
+    f_team = book.factor([1, 2, 3], team="A")
+    assert 0.97 < f_team < 1.03
+    # 只派隊內最強一人、基準用聯盟均值 → >1；夾在 [clip] 混權重後仍 >1
+    f_vs_league = book.factor([1], team=None)
+    assert f_vs_league > 1.0
+    # 查無球員 → 中性 1.0
+    assert book.factor([999], team="A") == 1.0
+    assert book.factor([], team="A") == 1.0
+
+
+def test_nb_lineup_predictor_shifts_probs():
+    from test_mlb import _mlb_model
+    model = _mlb_model()
+    lg = dict(sim.LEAGUE_RATES)
+    strong = {"pa": 500, "h": 150, "2b": 35, "3b": 3, "hr": 30, "bb": 55, "hbp": 5}
+    avg = {"pa": 500, "h": 130, "2b": 25, "3b": 2, "hr": 18, "bb": 45, "hbp": 4}
+    weak = {"pa": 500, "h": 115, "2b": 18, "3b": 1, "hr": 9, "bb": 38, "hbp": 3}
+    # 每隊各有強弱差；派出的一人才能偏離隊平均
+    rows = ([{"id": 1, "team": "Team0", **strong},
+             {"id": 2, "team": "Team0", **avg}, {"id": 3, "team": "Team0", **avg}]
+            + [{"id": 4, "team": "Team5", **weak},
+               {"id": 5, "team": "Team5", **avg}, {"id": 6, "team": "Team5", **avg}])
+    book = sim.LineupBook(rows, lg)
+    assert book.factor([1], team="Team0") > 1.0    # 派隊內最強 → >隊平均
+    assert book.factor([4], team="Team5") < 1.0    # 派隊內最弱 → <隊平均
+    g = sim.build_game_record(
+        {"home": "Team0", "away": "Team5", "home_goals": 5, "away_goals": 3,
+         "home_pitcher_id": None, "away_pitcher_id": None},
+        {"home": [1], "away": [4]},   # 主派最強、客派最弱
+        {}, {}, lg)
+    g["_total_line"] = 8.5
+    base = sim.nb_predictor(model)(g)
+    boosted = sim.nb_lineup_predictor(model, book)(g)
+    # 主隊打線變強、客隊變弱 → 主勝機率上升
+    assert boosted["p_home"] > base["p_home"]

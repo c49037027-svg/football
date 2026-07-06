@@ -601,12 +601,15 @@ def mlb_today(model_path, date, odds, pitchers_path, data_path):
               help="事件率用的『前一季』年份（零洩漏 point-in-time 近似）")
 @click.option("--n-sims", default=3000, type=int)
 @click.option("--max-games", default=0, type=int, help="限制場數（0=全部；除錯用）")
-def mlb_backtest_sim(data_path, start, end, rates_season, n_sims, max_games):
-    """Phase 3：event-sim vs 負二項 樣本外比對（需連 statsapi，跑在 Render/Actions）。
+@click.option("--with-sim/--no-sim", default=False,
+              help="是否也跑 event-sim（慢；已知輸 NB，預設關）")
+def mlb_backtest_sim(data_path, start, end, rates_season, n_sims, max_games, with_sim):
+    """Phase 3：把打者資訊接進 NB（NB+打線）vs 現行 NB 的樣本外比對，選配 event-sim。
 
     流程：以前一季打者/投手事件率為 point-in-time 近似 → 抓 [start,end] 每場實際打序
-    與賽果 → NB 模型只用 start 之前的賽果訓練（walk-forward）→ 對同一批賽果比較
-    兩者的錢線/大小 log-loss。event-sim 只涵蓋有打序的場次（覆蓋 n 會顯示差異）。
+    與賽果 → NB 只用 start 之前的賽果訓練（walk-forward）→ 對同一批賽果比較
+    「NB」「NB+打線（今日打序相對隊平均微調 λ）」的錢線/大小 log-loss。
+    只有 NB+打線 vs NB 涵蓋數相同、可直接比；--with-sim 另加 event-sim（覆蓋不同）。
     """
     import pandas as pd
 
@@ -651,19 +654,24 @@ def mlb_backtest_sim(data_path, start, end, rates_season, n_sims, max_games):
         games.append(mlb_sim.build_game_record(
             gr, lu, bat, pit, league,
             park=pf_map.get(gr.get("home"), 1.0)))
-    click.echo(f"[bt] 測試 {len(games)} 場（{no_lineup} 場無打序 → sim 略過）")
+    click.echo(f"[bt] 測試 {len(games)} 場（{no_lineup} 場無打序 → 打線/sim 略過）")
 
-    # 4) 比對
-    res = mlb_sim.compare_backtest(
-        games, {"event-sim": mlb_sim.sim_predictor(n_sims=n_sims, seed=0),
-                "負二項(NB)": mlb_sim.nb_predictor(model, dispersion=disp)})
+    # 4) 比對：NB vs NB+打線（主角），選配 event-sim
+    book = mlb_sim.LineupBook(bat_lines, league)
+    preds = {"負二項(NB)": mlb_sim.nb_predictor(model, dispersion=disp),
+             "NB+打線": mlb_sim.nb_lineup_predictor(model, book, dispersion=disp)}
+    if with_sim:
+        preds["event-sim"] = mlb_sim.sim_predictor(n_sims=n_sims, seed=0)
+    res = mlb_sim.compare_backtest(games, preds)
     click.echo("\n" + mlb_sim.format_backtest(res))
-    sim_ll = res["event-sim"]["ml"]["logloss"]
     nb_ll = res["負二項(NB)"]["ml"]["logloss"]
-    if sim_ll is not None and nb_ll is not None:
-        verdict = "✅ event-sim 較佳" if sim_ll < nb_ll else "❌ NB 仍較佳"
-        click.echo(f"\n錢線 log-loss：event-sim {sim_ll:.4f} vs NB {nb_ll:.4f} → {verdict}")
-        click.echo("（注意：兩者涵蓋場數不同時勿直接比；先看 n 是否接近）")
+    lu_ll = res["NB+打線"]["ml"]["logloss"]
+    if nb_ll is not None and lu_ll is not None:
+        verdict = "✅ NB+打線 較佳（值得上線）" if lu_ll < nb_ll else "❌ 沒贏，不上線"
+        click.echo(f"\n錢線 log-loss：NB+打線 {lu_ll:.4f} vs NB {nb_ll:.4f} → {verdict}")
+        nb_ou = res["負二項(NB)"]["ou"]["logloss"]
+        lu_ou = res["NB+打線"]["ou"]["logloss"]
+        click.echo(f"大小 log-loss：NB+打線 {lu_ou:.4f} vs NB {nb_ou:.4f}")
 
 
 @cli.command("serve")

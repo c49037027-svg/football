@@ -433,17 +433,23 @@ def analyze_game(model, home: str, away: str, total_line: float = 8.5,
                  home_pitcher_factor: float = 1.0,
                  away_pitcher_factor: float = 1.0,
                  park_factor: float = 1.0,
-                 dispersion: float | None = None) -> MLBMarkets:
+                 dispersion: float | None = None,
+                 home_bat_factor: float = 1.0,
+                 away_bat_factor: float = 1.0) -> MLBMarkets:
     """對一場比賽算錢線/大小/讓分。model 為以 runs 訓練的 DixonColesModel。
 
     pitcher_factor 來自 PitcherBook.factor()：主隊先發的係數乘在「客隊得分」上，
     客隊先發的係數乘在「主隊得分」上（好投手 <1 → 壓低對手得分）。
+    bat_factor 來自 LineupBook.factor()：今日打線相對該隊季平均打線的得分乘數
+    （主隊打線乘在主隊得分、客隊打線乘在客隊得分；>1 為比平常強的打線）。
     park_factor 為主場球場因子：兩邊各乘 PF^0.5（總分約放大 PF 倍）。
     dispersion 為負二項離散度 k（dispersion_from_csv 取得）；None 退回 Poisson。
     """
     lam, mu = model.expected_goals(home, away)
     lam *= away_pitcher_factor   # 客隊先發壓制主隊打線
     mu *= home_pitcher_factor    # 主隊先發壓制客隊打線
+    lam *= home_bat_factor       # 今日主隊打線相對常態的強弱
+    mu *= away_bat_factor        # 今日客隊打線相對常態的強弱
     if park_factor and park_factor != 1.0:
         pf = park_factor ** 0.5
         lam *= pf
