@@ -220,11 +220,11 @@ id,name,team,ip,runs,gs,so,bb,hr
 607074,Carlos Rodón,New York Yankees,46.333333333333336,20,9,52,26,3
 677161,Zack Kelly,Boston Red Sox,16.333333333333332,8,0,14,7,1
 625643,Reynaldo López,Atlanta Braves,51.666666666666664,23,7,46,22,6
+676263,Jack Dreyer,Los Angeles Dodgers,35.333333333333336,13,1,41,10,6
 702056,Trey Yesavage,Toronto Blue Jays,73.33333333333333,28,13,68,32,7
 680755,Braydon Fisher,Toronto Blue Jays,46.0,21,6,46,21,6
 669387,Carmen Mlodzinski,Pittsburgh Pirates,75.66666666666667,35,9,60,26,6
 668933,Graham Ashcraft,Cincinnati Reds,27.0,11,0,32,16,2
-676263,Jack Dreyer,Los Angeles Dodgers,35.0,13,1,40,10,6
 681810,Austin Warren,New York Mets,35.0,14,2,37,17,5
 700669,Gordon Graceffo,St. Louis Cardinals,40.333333333333336,17,0,18,19,4
 615698,Cal Quantrill,Texas Rangers,40.333333333333336,19,3,27,12,5
@@ -414,6 +414,7 @@ id,name,team,ip,runs,gs,so,bb,hr
 682445,Domingo Gonzalez,Seattle Mariners,7.666666666666667,4,0,5,5,1
 643410,Mark Leiter Jr.,Athletics,30.666666666666668,16,0,33,10,2
 669432,Trevor Rogers,Baltimore Orioles,84.33333333333333,46,16,65,29,9
+676664,JP Sears,San Diego Padres,15.333333333333334,9,3,14,7,4
 681190,Randy Vásquez,San Diego Padres,84.0,48,16,60,27,14
 689254,Mason Fluharty,Toronto Blue Jays,34.333333333333336,18,3,42,16,4
 670245,Ryan Watson,Boston Red Sox,47.666666666666664,25,0,36,18,7
@@ -425,7 +426,6 @@ id,name,team,ip,runs,gs,so,bb,hr
 660761,José Suarez,Athletics,45.333333333333336,25,1,48,22,3
 622491,Luis Castillo,Seattle Mariners,82.66666666666667,53,14,77,27,9
 676083,Janson Junk,Miami Marlins,60.0,34,11,43,13,8
-676664,JP Sears,San Diego Padres,15.0,9,3,13,7,4
 677961,Cole Wilcox,Seattle Mariners,15.0,8,0,16,12,1
 669160,Dustin May,St. Louis Cardinals,84.33333333333333,48,16,78,24,7
 608372,Tomoyuki Sugano,Colorado Rockies,84.33333333333333,47,16,48,23,16
