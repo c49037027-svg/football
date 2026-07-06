@@ -2502,10 +2502,10 @@ date,match_num,home,away,market,selection,line,model_p,odds,close_odds,hg,ag,pla
 2026-07-06,93,Portugal,Spain,1X2,away,,0.46722,1.83,1.95,,,0
 2026-07-06,93,Portugal,Spain,1X2,draw,,0.27915,3.5,3.65,,,0
 2026-07-07,95,Argentina,Egypt,1X2,home,,0.65619,1.38,1.38,,,0
-2026-07-07,95,Argentina,Egypt,1X2,away,,0.08558,11.0,10.0,,,0
+2026-07-07,95,Argentina,Egypt,1X2,away,,0.08558,11.0,10.5,,,0
 2026-07-07,95,Argentina,Egypt,1X2,draw,,0.25822,4.9,4.9,,,0
 2026-07-07,95,Argentina,Egypt,OU,over,2.5,0.30757,2.04,2.0,,,0
-2026-07-07,95,Argentina,Egypt,OU,under,2.5,0.69243,1.75,1.78,,,0
+2026-07-07,95,Argentina,Egypt,OU,under,2.5,0.69243,1.75,1.77,,,0
 2026-07-07,95,Argentina,Egypt,AH,home,-1.5,0.36555,2.06,2.19,,,0
 2026-07-07,95,Argentina,Egypt,AH,away,-1.5,0.63445,1.74,1.74,,,0
 2026-07-07,96,Switzerland,Colombia,1X2,away,,0.47607,2.3,2.32,,,0
@@ -2533,7 +2533,7 @@ date,match_num,home,away,market,selection,line,model_p,odds,close_odds,hg,ag,pla
 2026-07-06,93,Portugal,Spain,1X2,away,,0.48649,1.89,1.95,,,0
 2026-07-06,93,Portugal,Spain,1X2,draw,,0.276,3.4,3.65,,,0
 2026-07-07,95,Argentina,Egypt,1X2,home,,0.64347,1.38,1.38,,,0
-2026-07-07,95,Argentina,Egypt,1X2,away,,0.09293,11.0,10.0,,,0
+2026-07-07,95,Argentina,Egypt,1X2,away,,0.09293,11.0,10.5,,,0
 2026-07-07,95,Argentina,Egypt,1X2,draw,,0.26361,4.75,4.9,,,0
 2026-07-07,96,Switzerland,Colombia,1X2,away,,0.4562,2.23,2.32,,,0
 2026-07-07,96,Switzerland,Colombia,1X2,home,,0.26315,3.55,3.45,,,0
@@ -2548,7 +2548,7 @@ date,match_num,home,away,market,selection,line,model_p,odds,close_odds,hg,ag,pla
 2026-07-06,93,Portugal,Spain,1X2,away,,0.47482,1.85,1.95,,,0
 2026-07-06,93,Portugal,Spain,1X2,draw,,0.27289,3.5,3.65,,,0
 2026-07-07,95,Argentina,Egypt,1X2,home,,0.65103,1.36,1.38,,,0
-2026-07-07,95,Argentina,Egypt,1X2,away,,0.09344,10.5,10.0,,,0
+2026-07-07,95,Argentina,Egypt,1X2,away,,0.09344,10.5,10.5,,,0
 2026-07-07,95,Argentina,Egypt,1X2,draw,,0.25553,5.0,4.9,,,0
 2026-07-07,96,Switzerland,Colombia,1X2,away,,0.46082,2.2,2.32,,,0
 2026-07-07,96,Switzerland,Colombia,1X2,home,,0.26535,3.65,3.45,,,0
@@ -2563,7 +2563,7 @@ date,match_num,home,away,market,selection,line,model_p,odds,close_odds,hg,ag,pla
 2026-07-06,93,Portugal,Spain,1X2,away,,0.43926,1.87,1.95,,,0
 2026-07-06,93,Portugal,Spain,1X2,draw,,0.29648,3.5,3.65,,,0
 2026-07-07,95,Argentina,Egypt,1X2,home,,0.6438,1.36,1.38,,,0
-2026-07-07,95,Argentina,Egypt,1X2,away,,0.08654,10.5,10.0,,,0
+2026-07-07,95,Argentina,Egypt,1X2,away,,0.08654,10.5,10.5,,,0
 2026-07-07,95,Argentina,Egypt,1X2,draw,,0.26967,5.0,4.9,,,0
 2026-07-07,96,Switzerland,Colombia,1X2,away,,0.46242,2.23,2.32,,,0
 2026-07-07,96,Switzerland,Colombia,1X2,home,,0.25509,3.55,3.45,,,0
@@ -2578,7 +2578,7 @@ date,match_num,home,away,market,selection,line,model_p,odds,close_odds,hg,ag,pla
 2026-07-06,93,Portugal,Spain,1X2,away,,0.47482,1.88,1.95,,,0
 2026-07-06,93,Portugal,Spain,1X2,draw,,0.27289,3.5,3.65,,,0
 2026-07-07,95,Argentina,Egypt,1X2,home,,0.65103,1.36,1.38,,,0
-2026-07-07,95,Argentina,Egypt,1X2,away,,0.09344,10.5,10.0,,,0
+2026-07-07,95,Argentina,Egypt,1X2,away,,0.09344,10.5,10.5,,,0
 2026-07-07,95,Argentina,Egypt,1X2,draw,,0.25553,5.0,4.9,,,0
 2026-07-07,96,Switzerland,Colombia,1X2,away,,0.46082,2.25,2.32,,,0
 2026-07-07,96,Switzerland,Colombia,1X2,home,,0.26535,3.6,3.45,,,0
@@ -2590,7 +2590,7 @@ date,match_num,home,away,market,selection,line,model_p,odds,close_odds,hg,ag,pla
 2026-07-06,93,Portugal,Spain,1X2,away,,0.47482,1.94,1.95,,,0
 2026-07-06,93,Portugal,Spain,1X2,draw,,0.27289,3.65,3.65,,,0
 2026-07-07,95,Argentina,Egypt,1X2,home,,0.65103,1.38,1.38,,,0
-2026-07-07,95,Argentina,Egypt,1X2,away,,0.09344,10.5,10.0,,,0
+2026-07-07,95,Argentina,Egypt,1X2,away,,0.09344,10.5,10.5,,,0
 2026-07-07,95,Argentina,Egypt,1X2,draw,,0.25553,5.0,4.9,,,0
 2026-07-07,96,Switzerland,Colombia,1X2,away,,0.46082,2.2,2.32,,,0
 2026-07-07,96,Switzerland,Colombia,1X2,home,,0.26535,3.7,3.45,,,0
@@ -2609,7 +2609,7 @@ date,match_num,home,away,market,selection,line,model_p,odds,close_odds,hg,ag,pla
 2026-07-06,93,Portugal,Spain,1X2,away,,0.47482,1.94,1.95,,,0
 2026-07-06,93,Portugal,Spain,1X2,draw,,0.27289,3.65,3.65,,,0
 2026-07-07,95,Argentina,Egypt,1X2,home,,0.65103,1.38,1.38,,,0
-2026-07-07,95,Argentina,Egypt,1X2,away,,0.09344,10.5,10.0,,,0
+2026-07-07,95,Argentina,Egypt,1X2,away,,0.09344,10.5,10.5,,,0
 2026-07-07,95,Argentina,Egypt,1X2,draw,,0.25553,5.0,4.9,,,0
 2026-07-07,96,Switzerland,Colombia,1X2,away,,0.46082,2.2,2.32,,,0
 2026-07-07,96,Switzerland,Colombia,1X2,home,,0.26535,3.7,3.45,,,0
@@ -2624,7 +2624,7 @@ date,match_num,home,away,market,selection,line,model_p,odds,close_odds,hg,ag,pla
 2026-07-06,93,Portugal,Spain,1X2,away,,0.43926,1.94,1.95,,,0
 2026-07-06,93,Portugal,Spain,1X2,draw,,0.29648,3.65,3.65,,,0
 2026-07-07,95,Argentina,Egypt,1X2,home,,0.6438,1.38,1.38,,,0
-2026-07-07,95,Argentina,Egypt,1X2,away,,0.08654,10.5,10.0,,,0
+2026-07-07,95,Argentina,Egypt,1X2,away,,0.08654,10.5,10.5,,,0
 2026-07-07,95,Argentina,Egypt,1X2,draw,,0.26967,5.0,4.9,,,0
 2026-07-07,96,Switzerland,Colombia,1X2,away,,0.46242,2.2,2.32,,,0
 2026-07-07,96,Switzerland,Colombia,1X2,home,,0.25509,3.7,3.45,,,0
@@ -2641,7 +2641,7 @@ date,match_num,home,away,market,selection,line,model_p,odds,close_odds,hg,ag,pla
 2026-07-06,93,Portugal,Spain,1X2,away,,0.47482,1.94,1.95,,,0
 2026-07-06,93,Portugal,Spain,1X2,draw,,0.27289,3.65,3.65,,,0
 2026-07-07,95,Argentina,Egypt,1X2,home,,0.65103,1.38,1.38,,,0
-2026-07-07,95,Argentina,Egypt,1X2,away,,0.09344,10.5,10.0,,,0
+2026-07-07,95,Argentina,Egypt,1X2,away,,0.09344,10.5,10.5,,,0
 2026-07-07,95,Argentina,Egypt,1X2,draw,,0.25553,5.0,4.9,,,0
 2026-07-07,96,Switzerland,Colombia,1X2,away,,0.46082,2.2,2.32,,,0
 2026-07-07,96,Switzerland,Colombia,1X2,home,,0.26535,3.7,3.45,,,0
@@ -2658,7 +2658,7 @@ date,match_num,home,away,market,selection,line,model_p,odds,close_odds,hg,ag,pla
 2026-07-06,93,Portugal,Spain,1X2,away,,0.47482,1.94,1.95,,,0
 2026-07-06,93,Portugal,Spain,1X2,draw,,0.27289,3.65,3.65,,,0
 2026-07-07,95,Argentina,Egypt,1X2,home,,0.65103,1.38,1.38,,,0
-2026-07-07,95,Argentina,Egypt,1X2,away,,0.09344,10.5,10.0,,,0
+2026-07-07,95,Argentina,Egypt,1X2,away,,0.09344,10.5,10.5,,,0
 2026-07-07,95,Argentina,Egypt,1X2,draw,,0.25553,5.0,4.9,,,0
 2026-07-07,96,Switzerland,Colombia,1X2,away,,0.46082,2.2,2.32,,,0
 2026-07-07,96,Switzerland,Colombia,1X2,home,,0.26535,3.7,3.45,,,0
@@ -2679,7 +2679,7 @@ date,match_num,home,away,market,selection,line,model_p,odds,close_odds,hg,ag,pla
 2026-07-06,93,Portugal,Spain,1X2,away,,0.47482,1.94,1.95,,,0
 2026-07-06,93,Portugal,Spain,1X2,draw,,0.27289,3.65,3.65,,,0
 2026-07-07,95,Argentina,Egypt,1X2,home,,0.65103,1.38,1.38,,,0
-2026-07-07,95,Argentina,Egypt,1X2,away,,0.09344,10.5,10.0,,,0
+2026-07-07,95,Argentina,Egypt,1X2,away,,0.09344,10.5,10.5,,,0
 2026-07-07,95,Argentina,Egypt,1X2,draw,,0.25553,5.0,4.9,,,0
 2026-07-07,96,Switzerland,Colombia,1X2,away,,0.46082,2.2,2.32,,,0
 2026-07-07,96,Switzerland,Colombia,1X2,home,,0.26535,3.7,3.45,,,0
@@ -2691,7 +2691,7 @@ date,match_num,home,away,market,selection,line,model_p,odds,close_odds,hg,ag,pla
 2026-07-06,93,Portugal,Spain,1X2,away,,0.47482,1.93,1.95,,,0
 2026-07-06,93,Portugal,Spain,1X2,draw,,0.27289,3.7,3.65,,,0
 2026-07-07,95,Argentina,Egypt,1X2,home,,0.65103,1.38,1.38,,,0
-2026-07-07,95,Argentina,Egypt,1X2,away,,0.09344,10.5,10.0,,,0
+2026-07-07,95,Argentina,Egypt,1X2,away,,0.09344,10.5,10.5,,,0
 2026-07-07,95,Argentina,Egypt,1X2,draw,,0.25553,5.0,4.9,,,0
 2026-07-07,96,Switzerland,Colombia,1X2,away,,0.46082,2.15,2.32,,,0
 2026-07-07,96,Switzerland,Colombia,1X2,home,,0.26535,3.8,3.45,,,0
@@ -2703,7 +2703,7 @@ date,match_num,home,away,market,selection,line,model_p,odds,close_odds,hg,ag,pla
 2026-07-06,93,Portugal,Spain,1X2,away,,0.47482,1.93,1.95,,,0
 2026-07-06,93,Portugal,Spain,1X2,draw,,0.27289,3.7,3.65,,,0
 2026-07-07,95,Argentina,Egypt,1X2,home,,0.65103,1.36,1.38,,,0
-2026-07-07,95,Argentina,Egypt,1X2,away,,0.09344,10.5,10.0,,,0
+2026-07-07,95,Argentina,Egypt,1X2,away,,0.09344,10.5,10.5,,,0
 2026-07-07,95,Argentina,Egypt,1X2,draw,,0.25553,5.0,4.9,,,0
 2026-07-07,96,Switzerland,Colombia,1X2,away,,0.46082,2.2,2.32,,,0
 2026-07-07,96,Switzerland,Colombia,1X2,home,,0.26535,3.65,3.45,,,0
@@ -2715,7 +2715,7 @@ date,match_num,home,away,market,selection,line,model_p,odds,close_odds,hg,ag,pla
 2026-07-06,93,Portugal,Spain,1X2,away,,0.47482,1.94,1.95,,,0
 2026-07-06,93,Portugal,Spain,1X2,draw,,0.27289,3.65,3.65,,,0
 2026-07-07,95,Argentina,Egypt,1X2,home,,0.65103,1.38,1.38,,,0
-2026-07-07,95,Argentina,Egypt,1X2,away,,0.09344,10.0,10.0,,,0
+2026-07-07,95,Argentina,Egypt,1X2,away,,0.09344,10.0,10.5,,,0
 2026-07-07,95,Argentina,Egypt,1X2,draw,,0.25553,4.9,4.9,,,0
 2026-07-07,96,Switzerland,Colombia,1X2,away,,0.46082,2.2,2.32,,,0
 2026-07-07,96,Switzerland,Colombia,1X2,home,,0.26535,3.65,3.45,,,0
@@ -2727,7 +2727,7 @@ date,match_num,home,away,market,selection,line,model_p,odds,close_odds,hg,ag,pla
 2026-07-06,93,Portugal,Spain,1X2,away,,0.47482,1.94,1.95,,,0
 2026-07-06,93,Portugal,Spain,1X2,draw,,0.27289,3.65,3.65,,,0
 2026-07-07,95,Argentina,Egypt,1X2,home,,0.65103,1.38,1.38,,,0
-2026-07-07,95,Argentina,Egypt,1X2,away,,0.09344,10.0,10.0,,,0
+2026-07-07,95,Argentina,Egypt,1X2,away,,0.09344,10.0,10.5,,,0
 2026-07-07,95,Argentina,Egypt,1X2,draw,,0.25553,4.9,4.9,,,0
 2026-07-07,96,Switzerland,Colombia,1X2,away,,0.46082,2.2,2.32,,,0
 2026-07-07,96,Switzerland,Colombia,1X2,home,,0.26535,3.65,3.45,,,0
@@ -2739,7 +2739,7 @@ date,match_num,home,away,market,selection,line,model_p,odds,close_odds,hg,ag,pla
 2026-07-06,93,Portugal,Spain,1X2,away,,0.47482,1.95,1.95,,,0
 2026-07-06,93,Portugal,Spain,1X2,draw,,0.27289,3.65,3.65,,,0
 2026-07-07,95,Argentina,Egypt,1X2,home,,0.65103,1.38,1.38,,,0
-2026-07-07,95,Argentina,Egypt,1X2,away,,0.09344,10.0,10.0,,,0
+2026-07-07,95,Argentina,Egypt,1X2,away,,0.09344,10.0,10.5,,,0
 2026-07-07,95,Argentina,Egypt,1X2,draw,,0.25553,4.9,4.9,,,0
 2026-07-07,96,Switzerland,Colombia,1X2,away,,0.46082,2.32,2.32,,,0
 2026-07-07,96,Switzerland,Colombia,1X2,home,,0.26535,3.45,3.45,,,0
@@ -2751,7 +2751,7 @@ date,match_num,home,away,market,selection,line,model_p,odds,close_odds,hg,ag,pla
 2026-07-06,93,Portugal,Spain,1X2,away,,0.43926,1.95,1.95,,,0
 2026-07-06,93,Portugal,Spain,1X2,draw,,0.29648,3.65,3.65,,,0
 2026-07-07,95,Argentina,Egypt,1X2,home,,0.6438,1.38,1.38,,,0
-2026-07-07,95,Argentina,Egypt,1X2,away,,0.08654,10.0,10.0,,,0
+2026-07-07,95,Argentina,Egypt,1X2,away,,0.08654,10.0,10.5,,,0
 2026-07-07,95,Argentina,Egypt,1X2,draw,,0.26967,4.9,4.9,,,0
 2026-07-07,96,Switzerland,Colombia,1X2,away,,0.46242,2.32,2.32,,,0
 2026-07-07,96,Switzerland,Colombia,1X2,home,,0.25509,3.45,3.45,,,0
@@ -2763,7 +2763,7 @@ date,match_num,home,away,market,selection,line,model_p,odds,close_odds,hg,ag,pla
 2026-07-06,93,Portugal,Spain,1X2,away,,0.47482,1.95,1.95,,,0
 2026-07-06,93,Portugal,Spain,1X2,draw,,0.27289,3.65,3.65,,,0
 2026-07-07,95,Argentina,Egypt,1X2,home,,0.65103,1.38,1.38,,,0
-2026-07-07,95,Argentina,Egypt,1X2,away,,0.09344,10.0,10.0,,,0
+2026-07-07,95,Argentina,Egypt,1X2,away,,0.09344,10.0,10.5,,,0
 2026-07-07,95,Argentina,Egypt,1X2,draw,,0.25553,4.9,4.9,,,0
 2026-07-07,96,Switzerland,Colombia,1X2,away,,0.46082,2.32,2.32,,,0
 2026-07-07,96,Switzerland,Colombia,1X2,home,,0.26535,3.45,3.45,,,0
@@ -2775,7 +2775,19 @@ date,match_num,home,away,market,selection,line,model_p,odds,close_odds,hg,ag,pla
 2026-07-06,93,Portugal,Spain,1X2,away,,0.47482,1.95,1.95,,,0
 2026-07-06,93,Portugal,Spain,1X2,draw,,0.27289,3.65,3.65,,,0
 2026-07-07,95,Argentina,Egypt,1X2,home,,0.65103,1.38,1.38,,,0
-2026-07-07,95,Argentina,Egypt,1X2,away,,0.09344,10.0,10.0,,,0
+2026-07-07,95,Argentina,Egypt,1X2,away,,0.09344,10.0,10.5,,,0
+2026-07-07,95,Argentina,Egypt,1X2,draw,,0.25553,4.9,4.9,,,0
+2026-07-07,96,Switzerland,Colombia,1X2,away,,0.46082,2.32,2.32,,,0
+2026-07-07,96,Switzerland,Colombia,1X2,home,,0.26535,3.45,3.45,,,0
+2026-07-07,96,Switzerland,Colombia,1X2,draw,,0.27383,3.05,3.05,,,0
+2026-07-09,97,France,Morocco,1X2,home,,0.3597,1.54,1.54,,,0
+2026-07-09,97,France,Morocco,1X2,away,,0.29789,6.25,6.25,,,0
+2026-07-09,97,France,Morocco,1X2,draw,,0.34241,3.85,3.85,,,0
+2026-07-06,93,Portugal,Spain,1X2,home,,0.2523,4.0,4.0,,,0
+2026-07-06,93,Portugal,Spain,1X2,away,,0.47482,1.95,1.95,,,0
+2026-07-06,93,Portugal,Spain,1X2,draw,,0.27289,3.65,3.65,,,0
+2026-07-07,95,Argentina,Egypt,1X2,home,,0.65103,1.38,1.38,,,0
+2026-07-07,95,Argentina,Egypt,1X2,away,,0.09344,10.5,10.5,,,0
 2026-07-07,95,Argentina,Egypt,1X2,draw,,0.25553,4.9,4.9,,,0
 2026-07-07,96,Switzerland,Colombia,1X2,away,,0.46082,2.32,2.32,,,0
 2026-07-07,96,Switzerland,Colombia,1X2,home,,0.26535,3.45,3.45,,,0
