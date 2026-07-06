@@ -77,11 +77,11 @@ id,name,team,ip,runs,gs,so,bb,hr
 669084,DL Hall,Milwaukee Brewers,31.0,7,1,32,24,1
 573009,Joe Mantiply,Toronto Blue Jays,17.666666666666668,4,0,16,4,1
 675512,Troy Melton,Detroit Tigers,44.0,10,7,32,10,7
+673513,Yuki Matsui,San Diego Padres,30.666666666666668,8,0,34,17,4
 664199,Taylor Clarke,Arizona Diamondbacks,39.333333333333336,10,0,21,8,3
 670062,Julian Garcia,Cincinnati Reds,8.666666666666666,2,0,9,5,1
 675916,James Karinchak,Atlanta Braves,8.666666666666666,2,0,7,4,1
 687911,Bryan King,Houston Astros,39.0,11,0,30,14,1
-673513,Yuki Matsui,San Diego Padres,30.333333333333332,8,0,34,16,4
 693645,Cam Schlittler,New York Yankees,104.0,31,18,123,21,10
 547973,Aroldis Chapman,Boston Red Sox,25.666666666666668,7,0,33,12,0
 805299,Brandyn Garcia,Arizona Diamondbacks,21.333333333333332,5,0,22,6,0
@@ -210,6 +210,7 @@ id,name,team,ip,runs,gs,so,bb,hr
 677952,Braxton Ashcraft,Pittsburgh Pirates,108.33333333333333,43,18,122,25,12
 676879,Aaron Ashby,Milwaukee Brewers,52.666666666666664,23,1,70,28,4
 657514,Brennan Bernardino,Colorado Rockies,36.0,17,2,26,11,2
+676263,Jack Dreyer,Los Angeles Dodgers,36.0,13,1,42,10,6
 696147,Sam Bachman,Los Angeles Angels,38.666666666666664,14,0,39,19,5
 663567,Peter Lambert,Houston Astros,80.0,29,14,74,32,10
 657044,Ryan Thompson,Arizona Diamondbacks,30.333333333333332,14,0,21,9,2
@@ -220,7 +221,6 @@ id,name,team,ip,runs,gs,so,bb,hr
 607074,Carlos Rodón,New York Yankees,46.333333333333336,20,9,52,26,3
 677161,Zack Kelly,Boston Red Sox,16.333333333333332,8,0,14,7,1
 625643,Reynaldo López,Atlanta Braves,51.666666666666664,23,7,46,22,6
-676263,Jack Dreyer,Los Angeles Dodgers,35.333333333333336,13,1,41,10,6
 702056,Trey Yesavage,Toronto Blue Jays,73.33333333333333,28,13,68,32,7
 680755,Braydon Fisher,Toronto Blue Jays,46.0,21,6,46,21,6
 669387,Carmen Mlodzinski,Pittsburgh Pirates,75.66666666666667,35,9,60,26,6
