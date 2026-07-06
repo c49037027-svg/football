@@ -406,3 +406,32 @@ def test_cli_wiring():
     assert out.exit_code == 0
     for cmd in ("fetch", "train", "analyze", "today"):
         assert cmd in out.output
+
+
+def test_pitcher_gamelog_and_formbook():
+    payload = {"stats": [{"splits": [
+        {"date": "2025-04-05", "stat": {"inningsPitched": "6.0", "runs": 1,
+         "strikeOuts": 8, "baseOnBalls": 1, "homeRuns": 0}},
+        {"date": "2025-04-17", "stat": {"inningsPitched": "7.0", "runs": 0,
+         "strikeOuts": 10, "baseOnBalls": 0, "homeRuns": 0}}]}]}
+    log = mlb.parse_pitcher_gamelog(payload)
+    assert len(log) == 2 and log[0]["date"] == "2025-04-05"
+    # 兩位「整季相同、順序相反」的投手：A 近況好、B 近況差
+    a = [{"date": "2025-04-01", "ip": 5.0, "r": 6, "so": 3, "bb": 3, "hr": 2},   # 早爛
+         {"date": "2025-04-20", "ip": 5.0, "r": 0, "so": 8, "bb": 0, "hr": 0}]   # 近好
+    b = [{"date": "2025-04-01", "ip": 5.0, "r": 0, "so": 8, "bb": 0, "hr": 0},   # 早好
+         {"date": "2025-04-20", "ip": 5.0, "r": 6, "so": 3, "bb": 3, "hr": 2}]   # 近爛
+    book = mlb.PitcherFormBook({11: a, 22: b})
+    as_of = "2025-04-25"
+    # 季版（halflife 極大）：兩人整季相同 → 係數相同
+    assert abs(book.factor(11, as_of, halflife=1e9)
+               - book.factor(22, as_of, halflife=1e9)) < 1e-9
+    # 近況版（halflife 小）：A 近況好 → 係數較低（更壓制對手）；B 反之
+    assert book.factor(11, as_of, halflife=1.0) < book.factor(22, as_of, halflife=1.0)
+    # point-in-time：只看 as_of 之前
+    f_early = book.factor(11, as_of="2025-04-10", halflife=1.0)   # 只有早爛那場
+    f_late = book.factor(11, as_of="2025-04-25", halflife=1.0)    # 含近好那場
+    assert f_late < f_early
+    # 查無投手 / 無 as_of 之前出賽 → 中性
+    assert book.factor(999, as_of="2025-04-25") == 1.0
+    assert book.factor(11, as_of="2025-01-01") == 1.0

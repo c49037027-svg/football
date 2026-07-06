@@ -374,12 +374,14 @@ def parse_lineups(box_payload: dict) -> dict:
 
     回傳 {"home": [id...], "away": [id...]}；未公布時對應清單為空。
     """
-    out = {"home": [], "away": []}
+    out = {"home": [], "away": [], "home_sp": None, "away_sp": None}
     teams = box_payload.get("teams", {})
     for side in ("home", "away"):
         info = teams.get(side, {})
         order = info.get("battingOrder") or []
         out[side] = [int(x) for x in order] if order else []
+        pitchers = info.get("pitchers") or []      # 依上場順序，[0] 為先發
+        out[f"{side}_sp"] = int(pitchers[0]) if pitchers else None
     return out
 
 
@@ -469,11 +471,15 @@ def build_game_record(result: dict, lineups: dict, bat_rates: dict,
 
     return {
         "home": result.get("home"), "away": result.get("away"),
+        "date": result.get("date"),
         "home_score": int(result["home_goals"]), "away_score": int(result["away_goals"]),
         "home_lineup": lineup_rates(lineups.get("home") or []),
         "away_lineup": lineup_rates(lineups.get("away") or []),
         "home_lineup_ids": [int(i) for i in (lineups.get("home") or [])],
         "away_lineup_ids": [int(i) for i in (lineups.get("away") or [])],
+        # 先發投手 id：優先用 boxscore 實際先發，退回賽程預告
+        "home_sp": lineups.get("home_sp") or result.get("home_pitcher_id"),
+        "away_sp": lineups.get("away_sp") or result.get("away_pitcher_id"),
         "home_pitcher": pit(result.get("home_pitcher_id")),
         "away_pitcher": pit(result.get("away_pitcher_id")),
         "league": lg, "park": park, "total_line": total_line, "run_line": run_line,
@@ -522,6 +528,28 @@ def nb_lineup_predictor(model, book: "LineupBook", dispersion: float | None = No
         m = mlb.analyze_game(model, g["home"], g["away"], total_line=g["_total_line"],
                              run_line=g.get("run_line", -1.5), park_factor=g.get("park", 1.0),
                              dispersion=dispersion, home_bat_factor=hbf, away_bat_factor=abf)
+        return {"p_home": m.p_home, "p_over": m.p_over, "p_cover_home": m.p_cover_home}
+    return f
+
+
+def nb_pitcher_predictor(model, form_book, halflife: float, dispersion: float | None = None):
+    """NB + 先發投手（近況加權）：用 PitcherFormBook 依比賽日 point-in-time 算先發係數。
+
+    halflife 小 → 重近況；極大（如 1e9）→ 等於季至今平均（可與近況版對比）。
+    主隊先發壓客隊得分、客隊先發壓主隊得分（乘在對手 λ）。
+    """
+    from . import mlb
+
+    def f(g):
+        if g["home"] not in model.attack or g["away"] not in model.attack:
+            return None
+        as_of = g.get("date")
+        hpf = form_book.factor(g.get("home_sp"), as_of=as_of, halflife=halflife)
+        apf = form_book.factor(g.get("away_sp"), as_of=as_of, halflife=halflife)
+        m = mlb.analyze_game(model, g["home"], g["away"], total_line=g["_total_line"],
+                             run_line=g.get("run_line", -1.5), park_factor=g.get("park", 1.0),
+                             dispersion=dispersion,
+                             home_pitcher_factor=hpf, away_pitcher_factor=apf)
         return {"p_home": m.p_home, "p_over": m.p_over, "p_cover_home": m.p_cover_home}
     return f
 

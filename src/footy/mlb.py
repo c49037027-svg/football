@@ -273,6 +273,103 @@ def parse_pitcher_stats(payload: dict) -> list[dict]:
     return rows
 
 
+def parse_pitcher_gamelog(payload: dict) -> list[dict]:
+    """解析 /people/{id}/stats?stats=gameLog&group=pitching 成逐場列（純函式）。
+
+    回傳 [{date, ip, r, so, bb, hr}]（依日期）；供近況加權評分。局數 0 者略過。
+    """
+    rows = []
+    for block in payload.get("stats", []):
+        for sp in block.get("splits", []):
+            st = sp.get("stat") or {}
+            ip = ip_to_float(st.get("inningsPitched"))
+            if ip <= 0:
+                continue
+            rows.append({
+                "date": sp.get("date") or "",
+                "ip": ip, "r": int(st.get("runs") or 0),
+                "so": int(st.get("strikeOuts") or 0),
+                "bb": int(st.get("baseOnBalls") or 0),
+                "hr": int(st.get("homeRuns") or 0),
+            })
+    rows.sort(key=lambda g: g["date"])
+    return rows
+
+
+def fetch_pitcher_gamelog(pid: int, season: int, timeout: float = 30.0) -> list[dict]:
+    """抓某投手某季逐場數據（部署環境用）。"""
+    import requests
+    r = requests.get(f"{STATSAPI}/people/{pid}/stats",
+                     params={"stats": "gameLog", "group": "pitching",
+                             "season": season, "gameType": "R"},
+                     headers={"User-Agent": "Mozilla/5.0"}, timeout=timeout)
+    r.raise_for_status()
+    return parse_pitcher_gamelog(r.json())
+
+
+class PitcherFormBook:
+    """近況加權投手評分簿：由逐場 game log，對「截至比賽日之前」的出賽做指數衰減
+    加權（近期權重高）+ 收縮 + RA/9·FIP 混合，算出對手得分乘數。
+
+    - point-in-time：factor(as_of=比賽日) 只用日期 < as_of 的出賽（零洩漏）。
+    - halflife_starts 控制「多看近況」：小=只看最近幾場、極大=等於季至今平均。
+      用同一顆簿子、不同 halflife，就能公平比「季投手」vs「近況投手」。
+    - 基準為聯盟 RA/9（近似；隊級 NB 已含球隊平均投手，故此為文獻常用近似修正，
+      夾限保守）。好投手 rating<聯盟 → 係數<1 → 壓低對手得分。
+    """
+
+    CLIP = (0.7, 1.35)
+    STARTER_SHARE = 0.6
+    FIP_WEIGHT = 0.5
+
+    def __init__(self, logs: dict, prior_ip: float = 40.0,
+                 halflife_starts: float = 4.0):
+        self.logs = {int(k): sorted(v, key=lambda g: g["date"])
+                     for k, v in logs.items()}
+        self.prior_ip = prior_ip
+        self.halflife = halflife_starts
+        allg = [g for v in self.logs.values() for g in v]
+        tot_ip = sum(float(g["ip"]) for g in allg)
+        tot_r = sum(int(g["r"]) for g in allg)
+        self.league_ra9 = 9.0 * tot_r / tot_ip if tot_ip else 4.5
+        core = sum(13 * int(g["hr"]) + 3 * int(g["bb"]) - 2 * int(g["so"])
+                   for g in allg)
+        self.fip_const = self.league_ra9 - core / tot_ip if tot_ip else 0.0
+
+    def _rating(self, pid, as_of=None, halflife=None):
+        v = self.logs.get(int(pid)) if pid is not None else None
+        if not v:
+            return None
+        starts = [g for g in v if (as_of is None or g["date"] < as_of)]
+        if not starts:
+            return None
+        hl = self.halflife if halflife is None else halflife
+        m = len(starts)
+        w_ip = w_r = w_hr = w_bb = w_so = 0.0
+        for i, g in enumerate(starts):
+            age = m - 1 - i                       # 0 = 最近一場
+            wt = 0.5 ** (age / hl) if (hl and 0 < hl < 1e6) else 1.0
+            w_ip += wt * float(g["ip"]); w_r += wt * int(g["r"])
+            w_hr += wt * int(g["hr"]); w_bb += wt * int(g["bb"])
+            w_so += wt * int(g["so"])
+        if w_ip <= 0:
+            return None
+        pr = self.prior_ip
+        ra9 = 9.0 * (w_r + self.league_ra9 / 9.0 * pr) / (w_ip + pr)
+        fip_core = (13 * w_hr + 3 * w_bb - 2 * w_so) / w_ip + self.fip_const
+        fip = (fip_core * w_ip + self.league_ra9 * pr) / (w_ip + pr)
+        return (1 - self.FIP_WEIGHT) * ra9 + self.FIP_WEIGHT * fip
+
+    def factor(self, pid, as_of=None, halflife=None) -> float:
+        """對手得分乘數（已混先發權重）；查無或無出賽 → 1.0。"""
+        r = self._rating(pid, as_of, halflife)
+        if r is None:
+            return 1.0
+        raw = r / self.league_ra9 if self.league_ra9 > 0 else 1.0
+        raw = min(max(raw, self.CLIP[0]), self.CLIP[1])
+        return self.STARTER_SHARE * raw + (1.0 - self.STARTER_SHARE)
+
+
 def fetch_pitchers(season: int, out_path: str | Path | None = None,
                    timeout: float = 30.0) -> list[dict]:
     """抓整季全聯盟投手數據（一次呼叫），選擇性存 CSV。"""

@@ -656,22 +656,40 @@ def mlb_backtest_sim(data_path, start, end, rates_season, n_sims, max_games, wit
             park=pf_map.get(gr.get("home"), 1.0)))
     click.echo(f"[bt] 測試 {len(games)} 場（{no_lineup} 場無打序 → 打線/sim 略過）")
 
-    # 4) 比對：NB vs NB+打線（主角），選配 event-sim
+    # 3b) 抓當季先發投手逐場 game log（依比賽日切，天然 point-in-time、零洩漏）
+    season_year = int(start[:4])
+    sp_ids = {g["home_sp"] for g in games if g.get("home_sp")} | \
+             {g["away_sp"] for g in games if g.get("away_sp")}
+    logs = {}
+    for pid in sp_ids:
+        try:
+            logs[int(pid)] = mlb.fetch_pitcher_gamelog(int(pid), season_year)
+        except Exception:  # noqa: BLE001
+            continue
+    form = mlb.PitcherFormBook(logs)
+    click.echo(f"[bt] 先發 game log：{len(logs)}/{len(sp_ids)} 位投手")
+
+    # 4) 比對：NB / NB+季投手 / NB+近況投手（主角），另列 NB+打線；選配 event-sim
     book = mlb_sim.LineupBook(bat_lines, league)
-    preds = {"負二項(NB)": mlb_sim.nb_predictor(model, dispersion=disp),
-             "NB+打線": mlb_sim.nb_lineup_predictor(model, book, dispersion=disp)}
+    preds = {
+        "負二項(NB)": mlb_sim.nb_predictor(model, dispersion=disp),
+        "NB+季投手": mlb_sim.nb_pitcher_predictor(model, form, halflife=1e9, dispersion=disp),
+        "NB+近況投手": mlb_sim.nb_pitcher_predictor(model, form, halflife=4.0, dispersion=disp),
+        "NB+打線": mlb_sim.nb_lineup_predictor(model, book, dispersion=disp),
+    }
     if with_sim:
         preds["event-sim"] = mlb_sim.sim_predictor(n_sims=n_sims, seed=0)
     res = mlb_sim.compare_backtest(games, preds)
     click.echo("\n" + mlb_sim.format_backtest(res))
-    nb_ll = res["負二項(NB)"]["ml"]["logloss"]
-    lu_ll = res["NB+打線"]["ml"]["logloss"]
-    if nb_ll is not None and lu_ll is not None:
-        verdict = "✅ NB+打線 較佳（值得上線）" if lu_ll < nb_ll else "❌ 沒贏，不上線"
-        click.echo(f"\n錢線 log-loss：NB+打線 {lu_ll:.4f} vs NB {nb_ll:.4f} → {verdict}")
-        nb_ou = res["負二項(NB)"]["ou"]["logloss"]
-        lu_ou = res["NB+打線"]["ou"]["logloss"]
-        click.echo(f"大小 log-loss：NB+打線 {lu_ou:.4f} vs NB {nb_ou:.4f}")
+    nb = res["負二項(NB)"]["ml"]["logloss"]
+    sp_s = res["NB+季投手"]["ml"]["logloss"]
+    sp_r = res["NB+近況投手"]["ml"]["logloss"]
+    if None not in (nb, sp_s, sp_r):
+        click.echo(f"\n錢線 log-loss：NB {nb:.4f}｜NB+季投手 {sp_s:.4f}｜NB+近況投手 {sp_r:.4f}")
+        click.echo(f"  季投手是否幫 NB：{'✅ 有' if sp_s < nb else '❌ 無'}"
+                   f"（{sp_s - nb:+.4f}）")
+        click.echo(f"  近況是否勝季投手：{'✅ 有' if sp_r < sp_s else '❌ 無'}"
+                   f"（{sp_r - sp_s:+.4f}）")
 
 
 @cli.command("serve")
