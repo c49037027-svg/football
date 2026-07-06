@@ -1215,7 +1215,8 @@ def _mlb_card(r, zh_t) -> str:
     wx, wf = r.get("wx"), r.get("wf", 1.0)
     wx_note = ""
     if wx and abs((wf or 1.0) - 1.0) > 0.005:
-        arrow = "風出↑" if wx.get("wind_sign") == 1 else "風進↓" if wx.get("wind_sign") == -1 else ""
+        _ws = wx.get("wind_sign") or 0
+        arrow = "風出↑" if _ws > 0 else "風進↓" if _ws < 0 else ""
         parts = []
         if wx.get("temp") is not None:
             parts.append(f"{wx['temp']:.0f}°F")

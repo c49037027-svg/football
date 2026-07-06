@@ -875,9 +875,13 @@ def build_site_page(model_path: str = "models/mlb.pkl",
             hf, hn = book.factor(g.get("home_pitcher_id") or g.get("home_pitcher") or None)
             af, an = book.factor(g.get("away_pitcher_id") or g.get("away_pitcher") or None)
         pf = pf_map.get(g["home"], 1.0)
-        # 天氣預報（有 hydrate=weather 才有）→ 併入 park_factor 調整總分（只動大小盤）
-        from . import mlb_sim
-        wx = mlb_sim.weather_from_gamedata(g.get("weather"))
+        # 天氣預報 → 併入 park_factor 調整總分（只動大小盤）。
+        # 優先用 openweathermap 預報（設 OPENWEATHER_KEY，幾天前就有、解決建站時機）；
+        # 否則退回 statsapi 賽程天氣（多半空）。皆無 → 係數 1.0，安全降級。
+        from . import mlb_sim, mlb_weather
+        wx = mlb_weather.game_weather(g["home"], g.get("game_date_iso"))
+        if wx is None:
+            wx = mlb_sim.weather_from_gamedata(g.get("weather"))
         wf = mlb_sim.weather_total_factor(wx)
         pf_eff = pf * wf
         # 大小分線/讓分線：有市場主線用市場，否則 8.5 / -1.5

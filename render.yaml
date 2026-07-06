@@ -26,3 +26,6 @@ services:
       # 選用：AI agents（賽前分析等）用 Claude。設了才會呼叫；可另設 LLM_MODEL
       - key: ANTHROPIC_API_KEY
         sync: false
+      # 選用：MLB 天氣預報（openweathermap）。設了才會依球場預報調整大小盤
+      - key: OPENWEATHER_KEY
+        sync: false
