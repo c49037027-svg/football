@@ -1,0 +1,70 @@
+name: MLB event-sim 回測（手動）
+
+# 手動觸發的研究用回測：event-sim（log5+規則引擎+蒙地卡羅）vs 負二項(NB)
+# 樣本外比較錢線/大小 log-loss。唯讀——不部署、不回寫帳本。
+# 結果印在 Actions log，也存成 artifact（backtest-result.txt）。
+on:
+  workflow_dispatch:
+    inputs:
+      start:
+        description: "測試起日（此日之前訓練 NB，walk-forward 切分）"
+        default: "2025-06-01"
+        required: true
+      end:
+        description: "測試迄日"
+        default: "2025-07-15"
+        required: true
+      rates_season:
+        description: "事件率用的『前一季』年份（零洩漏 point-in-time 近似）"
+        default: "2024"
+        required: true
+      n_sims:
+        description: "每場蒙地卡羅次數"
+        default: "3000"
+        required: true
+      max_games:
+        description: "限制場數（0=全部；每場需抓一次 boxscore，先小量試跑）"
+        default: "200"
+        required: true
+
+permissions:
+  contents: read
+
+jobs:
+  backtest:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+
+      - name: 安裝套件
+        run: pip install -e .
+
+      - name: 確保有 NB 訓練資料（缺則抓取）
+        run: |
+          test -f data/mlb.csv || footy mlb fetch --seasons 2024 --seasons 2025 --out data/mlb.csv
+
+      - name: 跑 event-sim vs NB 樣本外回測
+        run: |
+          set -o pipefail
+          footy mlb backtest-sim \
+            --data data/mlb.csv \
+            --start "${{ inputs.start }}" \
+            --end "${{ inputs.end }}" \
+            --rates-season "${{ inputs.rates_season }}" \
+            --n-sims "${{ inputs.n_sims }}" \
+            --max-games "${{ inputs.max_games }}" \
+            2>&1 | tee backtest-result.txt
+
+      - name: 上傳回測結果
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: backtest-result
+          path: backtest-result.txt
