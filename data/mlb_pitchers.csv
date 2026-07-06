@@ -442,9 +442,9 @@ id,name,team,ip,runs,gs,so,bb,hr
 552640,Andrew Kittredge,Baltimore Orioles,22.0,15,0,22,6,4
 669298,TJ Shook,Colorado Rockies,3.6666666666666665,2,0,3,0,2
 676760,Ron Marinaccio,San Diego Padres,42.0,23,0,34,18,8
+686218,Emmet Sheehan,Los Angeles Dodgers,76.66666666666667,42,16,86,24,15
 621366,Ryan Borucki,San Francisco Giants,23.666666666666668,14,0,15,9,3
 702070,Noah Cameron,Kansas City Royals,83.66666666666667,51,16,75,25,10
-686218,Emmet Sheehan,Los Angeles Dodgers,76.33333333333333,42,16,85,24,15
 687570,Connor Prielipp,Minnesota Twins,61.666666666666664,42,12,65,23,6
 663767,Chase Shugart,Philadelphia Phillies,29.0,16,0,34,11,7
 669194,Ryne Nelson,Arizona Diamondbacks,83.33333333333333,53,15,62,22,18
@@ -469,6 +469,7 @@ id,name,team,ip,runs,gs,so,bb,hr
 700249,Cade Povich,Baltimore Orioles,19.333333333333332,11,3,12,7,4
 687075,Brandon Sproat,Milwaukee Brewers,79.0,45,15,84,37,14
 690155,Matt Pushard,St. Louis Cardinals,7.0,5,0,6,4,0
+676664,JP Sears,San Diego Padres,14.0,9,3,11,7,4
 608337,Lucas Giolito,San Diego Padres,29.666666666666668,19,5,18,23,4
 640455,Sean Manaea,New York Mets,68.0,42,5,68,23,8
 677053,Andrew Nardi,Miami Marlins,22.666666666666668,13,0,27,11,4
@@ -505,7 +506,6 @@ id,name,team,ip,runs,gs,so,bb,hr
 664238,Dylan Moore,Philadelphia Phillies,1.6666666666666665,1,0,0,1,0
 694297,Brandon Pfaadt,Arizona Diamondbacks,43.333333333333336,29,4,33,18,8
 808963,Roki Sasaki,Los Angeles Dodgers,75.0,46,15,75,32,17
-676664,JP Sears,San Diego Padres,13.333333333333334,9,3,11,6,4
 702281,Robby Snelling,Miami Marlins,5.0,3,1,2,4,1
 571945,Miles Mikolas,Washington Nationals,84.33333333333333,56,7,47,17,18
 683175,Connor Phillips,Cincinnati Reds,27.666666666666668,18,0,28,28,3

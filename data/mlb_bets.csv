@@ -103,10 +103,11 @@ date,match_num,home,away,market,selection,line,odds,edge,source,close_odds,resul
 2026-07-05,824497,Cincinnati Reds,Baltimore Orioles,OU,大,5.5,1.85,0.1886,market,1.85,loss,-1.0
 2026-07-05,823525,New York Yankees,Minnesota Twins,AH,主,1.5,1.68,0.0359,market,1.68,loss,-1.0
 2026-07-05,824980,Athletics,Miami Marlins,OU,小,10.0,1.91,0.0118,market,1.91,loss,-1.0
-2026-07-05,824497,Cincinnati Reds,Baltimore Orioles,AH,客,-1.5,,,model,,pending,
-2026-07-05,822879,Texas Rangers,Detroit Tigers,AH,客,-1.5,,,model,,pending,
-2026-07-05,824333,Colorado Rockies,San Francisco Giants,OU,大,8.5,,,model,,pending,
-2026-07-05,824333,Colorado Rockies,San Francisco Giants,AH,客,-1.5,,,model,,pending,
-2026-07-05,825061,Arizona Diamondbacks,Milwaukee Brewers,AH,客,-1.5,,,model,,pending,
-2026-07-05,824980,Athletics,Miami Marlins,OU,大,8.5,,,model,,pending,
+2026-07-05,824497,Cincinnati Reds,Baltimore Orioles,AH,客,-1.5,,,model,,win,
+2026-07-05,822879,Texas Rangers,Detroit Tigers,AH,客,-1.5,,,model,,win,
+2026-07-05,824333,Colorado Rockies,San Francisco Giants,OU,大,8.5,,,model,,win,
+2026-07-05,824333,Colorado Rockies,San Francisco Giants,AH,客,-1.5,,,model,,win,
+2026-07-05,825061,Arizona Diamondbacks,Milwaukee Brewers,AH,客,-1.5,,,model,,win,
+2026-07-05,824980,Athletics,Miami Marlins,OU,大,8.5,,,model,,win,
 2026-07-05,823931,Los Angeles Dodgers,San Diego Padres,OU,大,7.5,2.05,0.0332,market,2.05,pending,
+2026-07-05,823931,Los Angeles Dodgers,San Diego Padres,AH,主,1.5,1.4,-0.0032,market,1.4,pending,
