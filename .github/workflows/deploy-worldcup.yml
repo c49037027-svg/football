@@ -90,11 +90,6 @@ jobs:
             echo "[weather-check] 無 mlb.html（MLB 未產生）"
           fi
 
-      - name: 天氣探測（診斷用，印各場抓取原因，不中斷）
-        env:
-          OPENWEATHER_KEY: ${{ secrets.OPENWEATHER_KEY }}
-        run: footy mlb weather-probe || true
-
       - name: 回寫戰績帳本（每日累積推薦與結算）
         run: |
           git config user.name "github-actions"
