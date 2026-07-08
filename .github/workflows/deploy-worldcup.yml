@@ -82,7 +82,9 @@ jobs:
             n=$(grep -o '🌤' out/wc/mlb.html | wc -l | tr -d ' ')
             cards=$(grep -o 'card mgame' out/wc/mlb.html | wc -l | tr -d ' ')
             fetched=$(grep -o 'wx:fetched' out/wc/mlb.html | wc -l | tr -d ' ')
-            echo "[weather-check] 徽章 ${n} 個 / 比賽卡 ${cards} 張 / 天氣抓到 ${fetched} 場"
+            track=$(grep -o 'MLB 推薦戰績' out/wc/mlb.html | wc -l | tr -d ' ')
+            top5=$(grep -o 'TOP 5' out/wc/mlb.html | wc -l | tr -d ' ')
+            echo "[weather-check] 徽章 ${n} 個 / 比賽卡 ${cards} 張 / 天氣抓到 ${fetched} 場 / 戰績卡 ${track} / TOP5 ${top5}"
             echo "[weather-check] 各場總分係數：$(grep -o 'wxf:[0-9.]*' out/wc/mlb.html | tr '\n' ' ')"
           else
             echo "[weather-check] 無 mlb.html（MLB 未產生）"

@@ -919,5 +919,9 @@ def build_site_page(model_path: str = "models/mlb.pkl",
         power = team_power(model)
     except Exception:  # noqa: BLE001
         power = None
+    track = summary_text(ledger_path)
+    n_buy = sum(1 for r in rows if r.get("best_edge") is not None)
+    print(f"[mlb-site] 賽程 {len(games)} 場｜盤口 {len(odds_index)} 場｜"
+          f"買推薦 {n_buy} 場｜戰績卡 {'有' if track else '無'}", flush=True)
     return report.render_mlb_page(rows, date=date, power=power,
-                                  track_text=summary_text(ledger_path), note=note)
+                                  track_text=track, note=note)
