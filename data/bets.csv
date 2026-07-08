@@ -476,3 +476,7 @@ date,match_num,home,away,market,selection,line,odds,edge,source,close_odds,resul
 2026-07-10,98,Spain,Belgium,1X2,home,,,,model,,pending,
 2026-07-10,98,Spain,Belgium,AH,客,-1.0,,,model,,pending,
 2026-07-11,99,Norway,England,AH,客,0.0,,,model,,pending,
+2026-07-11,100,Argentina,Switzerland,1X2,home,,,,model,,pending,
+2026-07-11,100,Argentina,Switzerland,OU,小,2.5,,,model,,pending,
+2026-07-11,100,Argentina,Switzerland,BTTS,否,,,,model,,pending,
+2026-07-11,100,Argentina,Switzerland,AH,主,-0.75,,,model,,pending,
