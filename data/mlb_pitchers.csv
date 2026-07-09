@@ -81,7 +81,7 @@ id,name,team,ip,runs,gs,so,bb,hr
 805299,Brandyn Garcia,Arizona Diamondbacks,22.0,5,0,24,6,0
 660825,Eduard Bazardo,Seattle Mariners,39.333333333333336,11,0,37,13,2
 689266,Dylan Dodd,Atlanta Braves,26.0,6,0,27,8,3
-675916,James Karinchak,Atlanta Braves,8.666666666666666,2,0,7,4,1
+675916,James Karinchak,Atlanta Braves,8.666666666666666,2,0,7,5,1
 663776,Patrick Sandoval,Boston Red Sox,4.333333333333333,1,1,5,1,0
 699134,Bradgley Rodriguez,San Diego Padres,37.666666666666664,12,3,35,14,1
 689546,Nick Davila,Seattle Mariners,16.666666666666668,5,0,9,10,0
@@ -165,9 +165,9 @@ id,name,team,ip,runs,gs,so,bb,hr
 681751,Lazaro Estrada,Toronto Blue Jays,6.333333333333333,2,0,3,4,1
 676428,Brant Hurter,Detroit Tigers,25.333333333333332,9,0,18,12,1
 657746,Joe Ryan,Minnesota Twins,104.33333333333333,44,19,122,23,10
+669020,Ryan Rolison,Chicago Cubs,34.666666666666664,13,2,35,16,4
 700712,Walbert Ureña,Los Angeles Angels,81.33333333333333,33,15,78,46,5
 664141,JT Brubaker,San Francisco Giants,43.666666666666664,16,0,30,20,3
-669020,Ryan Rolison,Chicago Cubs,34.0,13,2,35,15,4
 670280,David Bednar,New York Yankees,37.0,15,0,44,12,2
 656848,Michael Petersen,Miami Marlins,40.0,15,0,48,15,3
 663558,Jovani Morán,Boston Red Sox,36.666666666666664,12,3,45,17,5
@@ -351,6 +351,7 @@ id,name,team,ip,runs,gs,so,bb,hr
 642397,Gregory Soto,Pittsburgh Pirates,39.0,20,0,44,16,5
 622663,Luis Severino,Athletics,62.666666666666664,33,12,65,31,9
 642232,Ryan Yarbrough,New York Yankees,36.666666666666664,18,0,27,15,3
+663855,Jordan Hicks,Chicago White Sox,23.666666666666668,11,0,25,18,1
 660604,Alan Rangel,Philadelphia Phillies,19.333333333333332,9,2,22,9,3
 669358,Shane Baz,Baltimore Orioles,107.0,56,18,90,42,9
 681799,Ethan Roberts,Chicago Cubs,25.666666666666668,14,0,17,14,3
@@ -363,7 +364,6 @@ id,name,team,ip,runs,gs,so,bb,hr
 684007,Shota Imanaga,Chicago Cubs,103.0,50,18,100,26,21
 677960,Ryan Weathers,New York Yankees,92.33333333333333,50,17,104,27,16
 664285,Framber Valdez,Detroit Tigers,100.66666666666667,53,18,78,36,11
-663855,Jordan Hicks,Chicago White Sox,23.0,11,0,25,18,1
 571510,Matthew Boyd,Chicago Cubs,39.666666666666664,20,8,44,12,4
 592332,Kevin Gausman,Toronto Blue Jays,106.33333333333333,56,19,108,29,15
 680702,Joey Gerber,New York Mets,8.333333333333334,4,0,8,4,1
@@ -395,6 +395,7 @@ id,name,team,ip,runs,gs,so,bb,hr
 608371,Lucas Sims,Chicago White Sox,10.0,7,0,10,7,1
 664954,Brett Sullivan,Colorado Rockies,6.0,3,0,1,2,1
 677020,Josh Walker,Baltimore Orioles,6.0,3,0,7,2,1
+810938,Ben Williamson,Tampa Bay Rays,4.0,2,0,0,1,1
 660853,Enyel De Los Santos,Houston Astros,41.666666666666664,23,0,39,10,5
 677944,Slade Cecconi,Cleveland Guardians,99.0,52,19,77,31,13
 622554,Seranthony Domínguez,Chicago White Sox,31.666666666666668,19,0,39,20,5
@@ -543,7 +544,6 @@ id,name,team,ip,runs,gs,so,bb,hr
 702273,Noah Schultz,Chicago White Sox,48.0,33,10,43,29,7
 686678,Chase Solesky,Tampa Bay Rays,3.0,2,0,4,1,1
 805427,Drew Sommers,Detroit Tigers,9.0,6,0,14,5,1
-810938,Ben Williamson,Tampa Bay Rays,3.0,2,0,0,1,1
 661563,Luis Gil,New York Yankees,19.333333333333332,13,4,9,11,6
 689818,David Sandlin,Chicago White Sox,19.333333333333332,13,3,20,10,4
 837227,Tatsuya Imai,Houston Astros,52.0,35,13,63,33,9
@@ -650,6 +650,7 @@ id,name,team,ip,runs,gs,so,bb,hr
 675540,Xzavion Curry,New York Mets,1.0,1,0,1,1,0
 671382,Cameron Foster,Baltimore Orioles,9.0,10,0,9,8,1
 472610,Luis García,Minnesota Twins,15.0,16,0,6,6,2
+808970,Woo-Suk Go,Minnesota Twins,1.0,1,0,1,0,1
 681432,Luke Little,Chicago Cubs,1.0,1,0,1,0,1
 702566,Owen Murphy,Atlanta Braves,1.0,2,0,1,0,0
 663967,César Salazar,Houston Astros,1.0,1,0,0,0,1
@@ -724,7 +725,6 @@ id,name,team,ip,runs,gs,so,bb,hr
 678576,Wilkin Ramos,San Francisco Giants,2.0,5,0,1,4,0
 686894,Joey Wiemer,Washington Nationals,2.0,5,0,0,2,1
 660710,Rodolfo Durán,San Diego Padres,3.0,9,0,0,1,2
-808970,Woo-Suk Go,Minnesota Twins,0.3333333333333333,1,0,0,0,1
 656577,Alex Jackson,Minnesota Twins,1.0,3,0,0,1,2
 686747,Joe La Sorsa,Boston Red Sox,0.3333333333333333,1,0,1,0,1
 663893,Brendon Little,Toronto Blue Jays,4.666666666666667,15,0,7,6,3
