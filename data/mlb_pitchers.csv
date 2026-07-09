@@ -27,7 +27,6 @@ id,name,team,ip,runs,gs,so,bb,hr
 700842,Eduardo Rivera,Boston Red Sox,3.3333333333333335,0,0,3,0,0
 668670,Jake Rogers,Detroit Tigers,1.3333333333333333,0,0,1,0,0
 605441,Yacksel Ríos,Chicago Cubs,1.6666666666666665,0,0,2,0,0
-663776,Patrick Sandoval,Boston Red Sox,4.333333333333333,0,1,5,1,0
 680474,Max Schuemann,New York Yankees,1.0,0,0,0,1,0
 670097,Zack Short,New York Mets,1.0,0,0,0,0,0
 668831,Garrett Stallings,Milwaukee Brewers,3.0,0,0,4,1,0
@@ -49,6 +48,7 @@ id,name,team,ip,runs,gs,so,bb,hr
 660787,Yerry De los Santos,New York Yankees,8.666666666666666,5,0,7,4,1
 695001,Alimber Santa,Houston Astros,15.333333333333334,6,0,9,6,1
 592779,Brock Stewart,Los Angeles Dodgers,7.666666666666667,1,0,7,3,1
+683409,Angel Chivilli,New York Yankees,6.666666666666667,1,0,7,3,1
 702153,Brian Fitzpatrick,Milwaukee Brewers,6.666666666666667,2,0,5,3,0
 661395,Jhoan Duran,Philadelphia Phillies,30.666666666666668,6,0,48,6,1
 680916,Franco Aleman,Cleveland Guardians,6.0,1,0,3,2,1
@@ -57,7 +57,6 @@ id,name,team,ip,runs,gs,so,bb,hr
 669276,Dylan Lee,Atlanta Braves,41.333333333333336,8,0,51,7,1
 621097,Jacob Waguespack,Detroit Tigers,11.666666666666666,2,0,8,2,2
 687396,Brent Headrick,New York Yankees,46.0,9,0,52,16,2
-683409,Angel Chivilli,New York Yankees,5.666666666666667,1,0,5,3,1
 694819,Jacob Misiorowski,Milwaukee Brewers,111.0,27,18,167,27,9
 694795,Josh Ekness,Miami Marlins,5.333333333333333,1,0,5,5,0
 682243,Bryce Miller,Seattle Mariners,52.666666666666664,10,8,62,5,7
@@ -83,6 +82,7 @@ id,name,team,ip,runs,gs,so,bb,hr
 660825,Eduard Bazardo,Seattle Mariners,39.333333333333336,11,0,37,13,2
 689266,Dylan Dodd,Atlanta Braves,26.0,6,0,27,8,3
 675916,James Karinchak,Atlanta Braves,8.666666666666666,2,0,7,4,1
+663776,Patrick Sandoval,Boston Red Sox,4.333333333333333,1,1,5,1,0
 699134,Bradgley Rodriguez,San Diego Padres,37.666666666666664,12,3,35,14,1
 689546,Nick Davila,Seattle Mariners,16.666666666666668,5,0,9,10,0
 702303,Riley Martin,Chicago Cubs,8.333333333333334,2,1,10,2,1
@@ -157,6 +157,7 @@ id,name,team,ip,runs,gs,so,bb,hr
 596001,Jakob Junis,Texas Rangers,35.333333333333336,11,1,27,6,2
 800048,Parker Messick,Cleveland Guardians,106.0,35,18,109,32,9
 641835,Tim Mayza,Philadelphia Phillies,41.666666666666664,14,3,42,8,4
+683769,Hunter Gaddis,Cleveland Guardians,28.666666666666668,9,0,26,9,3
 663556,Shane McClanahan,Tampa Bay Rays,86.0,33,17,82,28,6
 676571,PJ Poulin,Washington Nationals,35.0,12,10,22,20,4
 671922,Cade Smith,Cleveland Guardians,41.333333333333336,16,0,59,11,3
@@ -164,7 +165,6 @@ id,name,team,ip,runs,gs,so,bb,hr
 681751,Lazaro Estrada,Toronto Blue Jays,6.333333333333333,2,0,3,4,1
 676428,Brant Hurter,Detroit Tigers,25.333333333333332,9,0,18,12,1
 657746,Joe Ryan,Minnesota Twins,104.33333333333333,44,19,122,23,10
-683769,Hunter Gaddis,Cleveland Guardians,28.333333333333332,9,0,25,9,3
 700712,Walbert Ureña,Los Angeles Angels,81.33333333333333,33,15,78,46,5
 664141,JT Brubaker,San Francisco Giants,43.666666666666664,16,0,30,20,3
 669020,Ryan Rolison,Chicago Cubs,34.0,13,2,35,15,4
@@ -348,15 +348,15 @@ id,name,team,ip,runs,gs,so,bb,hr
 688107,Robert Gasser,Milwaukee Brewers,43.333333333333336,21,8,40,14,8
 572955,Pierce Johnson,Cincinnati Reds,26.0,12,0,25,11,5
 804619,John Klein,Minnesota Twins,4.333333333333333,2,0,2,4,1
+642397,Gregory Soto,Pittsburgh Pirates,39.0,20,0,44,16,5
 622663,Luis Severino,Athletics,62.666666666666664,33,12,65,31,9
 642232,Ryan Yarbrough,New York Yankees,36.666666666666664,18,0,27,15,3
 660604,Alan Rangel,Philadelphia Phillies,19.333333333333332,9,2,22,9,3
 669358,Shane Baz,Baltimore Orioles,107.0,56,18,90,42,9
 681799,Ethan Roberts,Chicago Cubs,25.666666666666668,14,0,17,14,3
 693433,Bryan Woo,Seattle Mariners,104.33333333333333,52,18,102,20,10
-641743,Anthony Kay,Chicago White Sox,89.0,46,17,71,35,12
+641743,Anthony Kay,Chicago White Sox,89.33333333333333,46,17,71,35,12
 682254,Mason Montgomery,Pittsburgh Pirates,36.0,18,4,53,16,4
-642397,Gregory Soto,Pittsburgh Pirates,38.0,20,0,44,16,5
 694738,Landen Roupp,San Francisco Giants,97.0,50,18,104,42,7
 663372,Ryan Feltner,Colorado Rockies,59.0,31,12,44,20,9
 623454,Drew Anderson,Detroit Tigers,54.666666666666664,29,2,68,20,9
@@ -516,7 +516,6 @@ id,name,team,ip,runs,gs,so,bb,hr
 683175,Connor Phillips,Cincinnati Reds,27.666666666666668,18,0,28,28,3
 687473,Ryan Gusto,Miami Marlins,24.333333333333332,15,6,22,10,3
 702021,Will Dion,Cleveland Guardians,11.333333333333334,11,0,13,3,2
-621053,Tyler Ferguson,Chicago Cubs,9.666666666666666,6,0,13,0,4
 657424,Matt Gage,San Francisco Giants,27.333333333333332,18,0,22,17,6
 703615,Jose Cabrera,Arizona Diamondbacks,17.666666666666668,11,4,12,7,3
 573124,Taylor Rogers,Minnesota Twins,33.666666666666664,21,0,30,14,3
@@ -607,6 +606,7 @@ id,name,team,ip,runs,gs,so,bb,hr
 675919,Nick Raquet,Baltimore Orioles,3.6666666666666665,3,0,1,2,1
 605447,Jordan Romano,Colorado Rockies,11.0,9,0,17,7,1
 664875,Justin Lawrence,Washington Nationals,32.666666666666664,34,0,41,25,8
+621053,Tyler Ferguson,Chicago Cubs,9.666666666666666,8,0,13,0,4
 607536,Kyle Freeland,Colorado Rockies,82.0,70,16,70,18,17
 656212,Charlie Barnes,Los Angeles Dodgers,12.0,11,0,4,6,3
 605335,Brandon Leibrandt,Cincinnati Reds,6.0,5,0,3,3,2
@@ -724,6 +724,7 @@ id,name,team,ip,runs,gs,so,bb,hr
 678576,Wilkin Ramos,San Francisco Giants,2.0,5,0,1,4,0
 686894,Joey Wiemer,Washington Nationals,2.0,5,0,0,2,1
 660710,Rodolfo Durán,San Diego Padres,3.0,9,0,0,1,2
+808970,Woo-Suk Go,Minnesota Twins,0.3333333333333333,1,0,0,0,1
 656577,Alex Jackson,Minnesota Twins,1.0,3,0,0,1,2
 686747,Joe La Sorsa,Boston Red Sox,0.3333333333333333,1,0,1,0,1
 663893,Brendon Little,Toronto Blue Jays,4.666666666666667,15,0,7,6,3
