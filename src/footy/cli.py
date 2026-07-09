@@ -731,6 +731,34 @@ def mlb_weather_probe(date):
         click.echo(f"[wx-probe] {mlb.zh_mlb(g['away'])} @ {mlb.zh_mlb(g['home'])}｜{r}")
 
 
+@cli.command("odds-check")
+def odds_check():
+    """診斷 the-odds-api 金鑰：打免費的 /sports（0 額度），印狀態+剩餘/已用用量。
+
+    200 = 金鑰有效（若 /odds 仍 401 → 額度用完）；401 = 金鑰無效/貼錯。
+    x-requests-remaining=0 → 額度用盡（額度綁帳號，換金鑰不重置，需等月重置或換帳號）。
+    """
+    import os
+
+    import requests
+    key = os.environ.get("ODDS_API_KEY")
+    if not key:
+        click.echo("[odds-check] 未設 ODDS_API_KEY")
+        return
+    try:
+        r = requests.get("https://api.the-odds-api.com/v4/sports",
+                         params={"apiKey": key}, timeout=20)
+    except Exception as e:  # noqa: BLE001
+        click.echo(f"[odds-check] 連線錯誤：{e}")
+        return
+    rem = r.headers.get("x-requests-remaining")
+    used = r.headers.get("x-requests-used")
+    verdict = ("金鑰有效" if r.status_code == 200 else
+               "金鑰無效/貼錯" if r.status_code == 401 else f"HTTP {r.status_code}")
+    click.echo(f"[odds-check] HTTP {r.status_code}（{verdict}）｜剩餘 {rem}｜已用 {used}"
+               f"｜body：{r.text[:160]}")
+
+
 @cli.command("serve")
 @click.option("--model", "model_path", default="models/intl.pkl")
 @click.option("--history", "history_path", default="data/intl.csv", help="國際賽歷史（狀態/H2H）")

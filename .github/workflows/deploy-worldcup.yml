@@ -90,6 +90,11 @@ jobs:
             echo "[weather-check] 無 mlb.html（MLB 未產生）"
           fi
 
+      - name: the-odds-api 金鑰診斷（0 額度，印剩餘用量；不中斷）
+        env:
+          ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
+        run: footy odds-check || true
+
       - name: 回寫戰績帳本（每日累積推薦與結算）
         run: |
           git config user.name "github-actions"
