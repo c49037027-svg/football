@@ -45,6 +45,21 @@ def fetch_github(league, out):
     loader.fetch_github(league, out_path=out)
 
 
+@cli.command("fetch-xg")
+@click.option("--league", required=True, help="聯賽代碼 E0/SP1/I1/D1/F1")
+@click.option("--seasons", multiple=True, type=int, required=True,
+              help="球季起始年（可多個），如 --seasons 2022 --seasons 2023")
+@click.option("--out", default=None, help="輸出 CSV（預設 data/xg_<league>.csv）")
+def fetch_xg(league, seasons, out):
+    """抓 understat 真實 xG（每場 h/a xG），存成含 home_xg/away_xg 的訓練 CSV。
+
+    需連 understat（沙箱擋，跑在 Actions/Render）。五大聯賽遷移用；比射正代理準。
+    """
+    from .data import understat
+    out = out or f"data/xg_{league}.csv"
+    understat.build_league_csv(league, list(seasons), out_path=out)
+
+
 @cli.command("train")
 @click.option("--data", "data_path", required=True, help="歷史資料 CSV")
 @click.option("--out", default=None, help="模型輸出路徑（預設 models/<name>.pkl）")
