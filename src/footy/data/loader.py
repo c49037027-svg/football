@@ -157,6 +157,16 @@ def normalize_consolidated(raw: pd.DataFrame, division: str | None = None) -> pd
     if "HomeRed" in raw.columns:
         df["home_red"] = pd.to_numeric(raw["HomeRed"].values, errors="coerce")
         df["away_red"] = pd.to_numeric(raw["AwayRed"].values, errors="coerce")
+    # 射正（shots on target）→ 粗略 xG 代理，填入 home_xg/away_xg（DC 的 xg_weight 會用）。
+    # 每次射正約 K_SOT 進球轉換（近年五大聯賽 ~0.33）。這是「去運氣的攻防訊號」替代品，
+    # 比純進球雜訊低；真實 xG（understat）可日後以相同欄位覆蓋。缺射正資料時留 NaN，
+    # dc.fit 會自動退回實際進球，故舊球季不受影響。
+    K_SOT = 0.33
+    if "HomeTarget" in raw.columns and "AwayTarget" in raw.columns:
+        hsot = pd.to_numeric(raw["HomeTarget"].values, errors="coerce")
+        asot = pd.to_numeric(raw["AwayTarget"].values, errors="coerce")
+        df[S.HOME_XG] = K_SOT * hsot
+        df[S.AWAY_XG] = K_SOT * asot
     df[S.DATE] = pd.to_datetime(df[S.DATE], errors="coerce")
     df = df.dropna(subset=[S.DATE, S.HOME, S.AWAY, S.HOME_GOALS, S.AWAY_GOALS])
     df[S.HOME_GOALS] = df[S.HOME_GOALS].astype(int)
