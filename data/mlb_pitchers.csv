@@ -211,12 +211,12 @@ id,name,team,ip,runs,gs,so,bb,hr
 669302,Logan Gilbert,Seattle Mariners,107.33333333333333,38,18,114,22,14
 608331,Max Fried,New York Yankees,61.666666666666664,22,10,50,19,1
 676106,Emerson Hancock,Seattle Mariners,97.66666666666667,35,17,92,24,12
-677952,Braxton Ashcraft,Pittsburgh Pirates,108.33333333333333,43,18,122,25,12
 669387,Carmen Mlodzinski,Pittsburgh Pirates,77.66666666666667,35,9,62,26,6
 656876,Drew Rasmussen,Tampa Bay Rays,99.33333333333333,38,18,98,17,12
 663567,Peter Lambert,Houston Astros,80.0,29,14,74,32,10
 682608,Peyton Gray,Texas Rangers,33.0,16,0,37,10,3
 663969,Tyler Phillips,Miami Marlins,74.0,29,8,55,34,8
+677952,Braxton Ashcraft,Pittsburgh Pirates,112.33333333333333,45,19,126,25,13
 669724,Brenan Hanifee,Detroit Tigers,13.666666666666666,5,2,6,4,2
 663947,Tyler Holton,Detroit Tigers,41.0,19,2,34,10,5
 687377,Orlando Ribalta,Washington Nationals,27.333333333333332,12,0,23,10,2
@@ -471,10 +471,10 @@ id,name,team,ip,runs,gs,so,bb,hr
 683232,Nick Mears,Kansas City Royals,19.333333333333332,11,0,15,11,2
 700249,Cade Povich,Baltimore Orioles,19.333333333333332,11,3,12,7,4
 687473,Ryan Gusto,Miami Marlins,26.333333333333332,15,6,23,10,3
-687075,Brandon Sproat,Milwaukee Brewers,79.0,45,15,84,37,14
 656605,Mitch Keller,Pittsburgh Pirates,103.33333333333333,64,19,77,35,13
 690155,Matt Pushard,St. Louis Cardinals,7.0,5,0,6,4,0
 608337,Lucas Giolito,San Diego Padres,29.666666666666668,19,5,18,23,4
+687075,Brandon Sproat,Milwaukee Brewers,82.0,48,16,87,39,15
 677053,Andrew Nardi,Miami Marlins,22.666666666666668,13,0,27,11,4
 671212,Joe Boyle,Tampa Bay Rays,15.666666666666666,11,3,16,6,1
 592791,Jameson Taillon,Chicago Cubs,67.66666666666667,40,13,59,23,20
