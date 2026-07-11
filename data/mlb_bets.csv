@@ -311,13 +311,14 @@ date,match_num,home,away,market,selection,line,odds,edge,source,close_odds,resul
 2026-07-10,823200,San Francisco Giants,Colorado Rockies,1X2,home,,1.6,-0.0803,market,1.6,pending,
 2026-07-10,823200,San Francisco Giants,Colorado Rockies,OU,大,8.5,1.91,0.0462,market,1.91,pending,
 2026-07-10,823200,San Francisco Giants,Colorado Rockies,AH,客,-1.5,1.62,-0.0584,market,1.62,pending,
-2026-07-10,824252,Detroit Tigers,Philadelphia Phillies,OU,大,7.5,2.0,0.0458,market,2.0,pending,
-2026-07-10,824252,Detroit Tigers,Philadelphia Phillies,AH,主,1.5,1.67,0.0486,market,1.67,pending,
-2026-07-10,824817,Baltimore Orioles,Kansas City Royals,OU,大,8.5,1.73,-0.0451,market,1.73,pending,
-2026-07-10,823604,New York Mets,Boston Red Sox,OU,小,8.5,1.8,0.0316,market,1.8,pending,
-2026-07-10,824575,Chicago White Sox,Athletics,AH,主,1.5,1.57,0.0723,market,1.57,pending,
-2026-07-10,822878,Texas Rangers,Houston Astros,1X2,home,,1.8,-0.0668,market,1.8,pending,
-2026-07-10,822878,Texas Rangers,Houston Astros,OU,小,8.5,1.85,0.0106,market,1.85,pending,
-2026-07-10,823685,Minnesota Twins,Los Angeles Angels,AH,客,-1.5,1.8,-0.0092,market,1.8,pending,
+2026-07-10,824252,Detroit Tigers,Philadelphia Phillies,OU,大,7.5,2.0,0.0458,market,2.0,win,1.0
+2026-07-10,824252,Detroit Tigers,Philadelphia Phillies,AH,主,1.5,1.67,0.0486,market,1.67,win,0.67
+2026-07-10,824817,Baltimore Orioles,Kansas City Royals,OU,大,8.5,1.73,-0.0451,market,1.73,loss,-1.0
+2026-07-10,823604,New York Mets,Boston Red Sox,OU,小,8.5,1.8,0.0316,market,1.8,win,0.8
+2026-07-10,824575,Chicago White Sox,Athletics,AH,主,1.5,1.57,0.0723,market,1.57,win,0.57
+2026-07-10,822878,Texas Rangers,Houston Astros,1X2,home,,1.8,-0.0668,market,1.8,win,0.8
+2026-07-10,822878,Texas Rangers,Houston Astros,OU,小,8.5,1.85,0.0106,market,1.85,loss,-1.0
+2026-07-10,823685,Minnesota Twins,Los Angeles Angels,AH,客,-1.5,1.8,-0.0092,market,1.8,win,0.8
 2026-07-10,823033,St. Louis Cardinals,Atlanta Braves,OU,大,3.5,1.7,0.2045,market,1.7,pending,
 2026-07-10,823927,Los Angeles Dodgers,Arizona Diamondbacks,AH,主,6.5,2.4,0.6114,market,2.4,pending,
+2026-07-10,823278,San Diego Padres,Toronto Blue Jays,AH,客,-1.5,1.47,-0.0552,market,1.47,pending,
