@@ -1247,16 +1247,17 @@ def _mlb_top5(rows, zh_t, mkt_conf=None) -> str:
     wr = (mkt_conf or {}).get("winrate", {})
     picks = []
     for r in rows:
-        if r.get("best_edge") is None:
-            continue
         sig = r.get("signals") or {}
+        # 每場取「調整後 edge 最高」的盤口（不限已 +EV；有賠率即可入榜，湊滿每日 5 個）
         mk, best, best_adj = None, None, None
         for k, s in sig.items():
-            if s.get("verdict") == "買" and s.get("edge") is not None:
-                adj = s["edge"] * mult.get(k, 1.0)      # 依歷史勝率調整
-                if best is None or adj > best_adj:
-                    mk, best, best_adj = k, s, adj
-        if best is None:
+            e = s.get("edge")
+            if e is None:                               # 無賠率的盤口跳過
+                continue
+            adj = e * mult.get(k, 1.0)                  # 依歷史勝率加權
+            if best is None or adj > best_adj:
+                mk, best, best_adj = k, s, adj
+        if best is None:                                # 該場完全無賠率 → 無法排序
             continue
         g, m = r["game"], r["m"]
         mk_zh = {"1X2": "錢線", "OU": "大小", "AH": "讓分"}[mk]
@@ -1269,7 +1270,8 @@ def _mlb_top5(rows, zh_t, mkt_conf=None) -> str:
             sel = (f"{zh_t(g['home'])} {m.run_line:+g}" if side == "home"
                    else f"{zh_t(g['away'])} {-m.run_line:+g}")
         picks.append({"edge": best["edge"], "adj": best_adj, "mk": mk_zh, "mk_key": mk,
-                      "odds": best["odds"], "sel": sel, "time": r.get("time", ""),
+                      "verdict": best.get("verdict"), "odds": best["odds"], "sel": sel,
+                      "time": r.get("time", ""),
                       "home": zh_t(g["home"]), "away": zh_t(g["away"])})
     if not picks:
         return ""
@@ -1279,22 +1281,26 @@ def _mlb_top5(rows, zh_t, mkt_conf=None) -> str:
         w = wr.get(p["mk_key"])
         wtag = (f"<span class='small' style='color:var(--muted)'> · 該盤史勝 {w:.0%}</span>"
                 if w is not None else "")
+        buy = p["verdict"] == "買"
+        badge = ("<span class='bs buy'>買</span>" if buy else "<span class='bs wait'>觀望</span>")
+        ec = "#7be0b0" if buy else "#e0b341"
         trs += (f"<tr><td class='rk'>{i}</td>"
                 f"<td class='tm'>{html.escape(p['away'])} @ {html.escape(p['home'])}</td>"
                 f"<td class='small' style='color:var(--muted)'>{html.escape(p['time'])}</td>"
-                f"<td>{p['mk']} <b>{html.escape(p['sel'])}</b>{wtag}</td>"
+                f"<td>{p['mk']} <b>{html.escape(p['sel'])}</b> {badge}{wtag}</td>"
                 f"<td>@{p['odds']:g}</td>"
-                f"<td style='color:#7be0b0;font-weight:700'>{p['edge']:+.1%}</td></tr>")
-    adj_note = "（模型 +EV × <b>歷史推薦勝率</b>加權排序）" if mult and any(
-        v != 1.0 for v in mult.values()) else "（模型融合市場後 +EV，依 edge 排序）"
+                f"<td style='color:{ec};font-weight:700'>{p['edge']:+.1%}</td></tr>")
+    n_buy = sum(1 for p in picks[:5] if p["verdict"] == "買")
     return (
         "<div class='card top5'><div class='sec'>🔥 今日最推薦 TOP 5"
-        f"<span class='small' style='color:var(--muted);font-weight:400'>{adj_note}</span></div>"
+        "<span class='small' style='color:var(--muted);font-weight:400'>"
+        f"（模型最看好前 5 · edge×歷史勝率排序 · 其中 {n_buy} 場 +EV）</span></div>"
         "<table style='margin-top:6px'><thead><tr><th>#</th><th>對戰</th><th>時間</th>"
         f"<th>推薦</th><th>賠率</th><th>edge</th></tr></thead><tbody>{trs}</tbody></table>"
         "<div class='small' style='color:var(--muted);margin-top:6px'>"
-        "排序 = 融合後 edge × 該盤口歷史勝率信心（收縮後、夾 0.7~1.3）；"
-        "贏面高的盤口類型被加權。長期看 "
+        "<b class='bs buy' style='font-size:10px'>買</b>=融合後 +EV 可下注；"
+        "<b class='bs wait' style='font-size:10px'>觀望</b>=模型當日最偏好一側但無正期望值、僅參考。"
+        "排序＝edge×該盤歷史勝率信心（收縮、夾 0.7~1.3）。長期看 "
         "<a href='mlb_perf.html' style='color:var(--accent)'>MLB 績效頁</a> 的 CLV。</div></div>")
 
 
