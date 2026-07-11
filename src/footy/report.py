@@ -1237,19 +1237,25 @@ def _mlb_card(r, zh_t) -> str:
         f"<div class='mtop'>可能比分 {tops}</div></div>")
 
 
-def _mlb_top5(rows, zh_t) -> str:
-    """最推薦 TOP 5：跨場依最強「買」edge 排序，各列出該場最強一注。"""
+def _mlb_top5(rows, zh_t, mkt_conf=None) -> str:
+    """最推薦 TOP 5：跨場依「edge × 歷史勝率信心」排序，各列出該場最強一注。
+
+    mkt_conf = mlb.market_confidence 產物 {"mult":{盤口:乘數}, "winrate":{盤口:勝率}}。
+    歷史贏面高的盤口(如讓分)排序被加權;無帳本時乘數全 1.0(退回純 edge)。
+    """
+    mult = (mkt_conf or {}).get("mult", {})
+    wr = (mkt_conf or {}).get("winrate", {})
     picks = []
     for r in rows:
-        be = r.get("best_edge")
-        if be is None:
+        if r.get("best_edge") is None:
             continue
         sig = r.get("signals") or {}
-        mk, best = None, None
+        mk, best, best_adj = None, None, None
         for k, s in sig.items():
             if s.get("verdict") == "買" and s.get("edge") is not None:
-                if best is None or s["edge"] > best["edge"]:
-                    mk, best = k, s
+                adj = s["edge"] * mult.get(k, 1.0)      # 依歷史勝率調整
+                if best is None or adj > best_adj:
+                    mk, best, best_adj = k, s, adj
         if best is None:
             continue
         g, m = r["game"], r["m"]
@@ -1262,37 +1268,42 @@ def _mlb_top5(rows, zh_t) -> str:
         else:
             sel = (f"{zh_t(g['home'])} {m.run_line:+g}" if side == "home"
                    else f"{zh_t(g['away'])} {-m.run_line:+g}")
-        picks.append({"edge": best["edge"], "odds": best["odds"], "mk": mk_zh,
-                      "sel": sel, "time": r.get("time", ""),
+        picks.append({"edge": best["edge"], "adj": best_adj, "mk": mk_zh, "mk_key": mk,
+                      "odds": best["odds"], "sel": sel, "time": r.get("time", ""),
                       "home": zh_t(g["home"]), "away": zh_t(g["away"])})
     if not picks:
         return ""
-    picks.sort(key=lambda x: -x["edge"])
+    picks.sort(key=lambda x: -x["adj"])                 # 依調整後分數排序
     trs = ""
     for i, p in enumerate(picks[:5], 1):
+        w = wr.get(p["mk_key"])
+        wtag = (f"<span class='small' style='color:var(--muted)'> · 該盤史勝 {w:.0%}</span>"
+                if w is not None else "")
         trs += (f"<tr><td class='rk'>{i}</td>"
                 f"<td class='tm'>{html.escape(p['away'])} @ {html.escape(p['home'])}</td>"
                 f"<td class='small' style='color:var(--muted)'>{html.escape(p['time'])}</td>"
-                f"<td>{p['mk']} <b>{html.escape(p['sel'])}</b></td>"
+                f"<td>{p['mk']} <b>{html.escape(p['sel'])}</b>{wtag}</td>"
                 f"<td>@{p['odds']:g}</td>"
                 f"<td style='color:#7be0b0;font-weight:700'>{p['edge']:+.1%}</td></tr>")
+    adj_note = "（模型 +EV × <b>歷史推薦勝率</b>加權排序）" if mult and any(
+        v != 1.0 for v in mult.values()) else "（模型融合市場後 +EV，依 edge 排序）"
     return (
         "<div class='card top5'><div class='sec'>🔥 今日最推薦 TOP 5"
-        "<span class='small' style='color:var(--muted);font-weight:400'>"
-        "（模型融合市場後 +EV，依 edge 排序）</span></div>"
+        f"<span class='small' style='color:var(--muted);font-weight:400'>{adj_note}</span></div>"
         "<table style='margin-top:6px'><thead><tr><th>#</th><th>對戰</th><th>時間</th>"
         f"<th>推薦</th><th>賠率</th><th>edge</th></tr></thead><tbody>{trs}</tbody></table>"
         "<div class='small' style='color:var(--muted);margin-top:6px'>"
-        "「買」= 融合後機率×賠率−1&gt;0 且通過風控；edge 高不代表穩贏，"
-        "長期看 <a href='mlb_perf.html' style='color:var(--accent)'>MLB 績效頁</a> 的 CLV。</div></div>")
+        "排序 = 融合後 edge × 該盤口歷史勝率信心（收縮後、夾 0.7~1.3）；"
+        "贏面高的盤口類型被加權。長期看 "
+        "<a href='mlb_perf.html' style='color:var(--accent)'>MLB 績效頁</a> 的 CLV。</div></div>")
 
 
 def render_mlb_page(rows, date: str, power=None, track_text=None,
-                    note: str = "", title: str = "MLB 今日預測") -> str:
+                    note: str = "", title: str = "MLB 今日預測", mkt_conf=None) -> str:
     """MLB 分頁：TOP5 最推薦 + 今日各場預測卡（含買/觀望、開賽時間）+ 戰力表 + 戰績。"""
     from . import mlb as _mlb
     zh_t = _mlb.zh_mlb
-    top5 = _mlb_top5(rows, zh_t)
+    top5 = _mlb_top5(rows, zh_t, mkt_conf)
     cards = [_mlb_card(r, zh_t) for r in rows]
     body = ("<div class='mgrid'>" + "".join(cards) + "</div>") if cards else (
         f"<div class='card'><div class='sec'>今日無可預測比賽</div>"

@@ -768,6 +768,36 @@ def summary_text(ledger_path) -> str | None:
     return "\n".join(lines)
 
 
+def market_confidence(ledger_path, prior: float = 20.0,
+                      clip: tuple = (0.7, 1.3)) -> dict:
+    """由歷史推薦「勝率」算各盤口的信心乘數，供 TOP5 排序加權。
+
+    乘數 = 收縮後勝率 ÷ 0.5（夾在 clip）。歷史贏面高的盤口（如讓分）→ 乘數>1、
+    TOP5 排序被加權;低於五成 → <1、被壓低。prior 為收縮強度（加 prior 場 0.5 的
+    虛擬樣本,避免小樣本過度反應)。回 {"1X2":x,"OU":x,"AH":x}；無帳本 → 全 1.0。
+    另回 winrate 供顯示。
+    """
+    from pathlib import Path as _P
+
+    from . import tracker
+    out = {"1X2": 1.0, "OU": 1.0, "AH": 1.0}
+    wr_out = {}
+    if not _P(ledger_path).exists():
+        return {"mult": out, "winrate": wr_out}
+    try:
+        s = tracker.summary(ledger_path)
+    except Exception:  # noqa: BLE001
+        return {"mult": out, "winrate": wr_out}
+    for mk, (w, l, _p) in s.by_market.items():
+        n = w + l
+        if n <= 0:
+            continue
+        wr = (w + prior * 0.5) / (n + prior)          # 收縮向 0.5
+        out[mk] = min(max(wr / 0.5, clip[0]), clip[1])
+        wr_out[mk] = w / n
+    return {"mult": out, "winrate": wr_out}
+
+
 # ---------------- 回測（驗證分布假設，無前視） ----------------
 def evaluate(df, cut: str, ks: list | None = None,
              half_life: float = 120.0, reg: float = 0.3) -> dict:
@@ -924,4 +954,5 @@ def build_site_page(model_path: str = "models/mlb.pkl",
     print(f"[mlb-site] 賽程 {len(games)} 場｜盤口 {len(odds_index)} 場｜"
           f"買推薦 {n_buy} 場｜戰績卡 {'有' if track else '無'}", flush=True)
     return report.render_mlb_page(rows, date=date, power=power,
-                                  track_text=track, note=note)
+                                  track_text=track, note=note,
+                                  mkt_conf=market_confidence(ledger_path))

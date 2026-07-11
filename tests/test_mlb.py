@@ -458,3 +458,47 @@ def test_pitcher_formbook_team_baseline():
     assert f_ace < f_mid
     # 隊基準 vs 聯盟基準應不同（基準不同）
     assert f_ace != league.factor(1, as_of, halflife=1e9)
+
+
+def test_market_confidence_and_top5_weighting(tmp_path):
+    import csv as _csv
+    from footy import report
+    led = tmp_path / "mlb_bets.csv"
+    fields = ["date", "match_num", "home", "away", "market", "selection",
+              "line", "odds", "edge", "source", "close_odds", "result", "pl"]
+    rows = []
+    # 讓分(AH) 8勝2敗；錢線(1X2) 3勝7敗 → AH 乘數應 >1、1X2 <1
+    for i in range(10):
+        rows.append(dict(date="2026-07-01", match_num=1000 + i, home="A", away="B",
+                         market="AH", selection="主", line=-1.5, odds=1.9, edge=0.05,
+                         source="market", close_odds=1.9,
+                         result="win" if i < 8 else "loss", pl=0.9 if i < 8 else -1.0))
+        rows.append(dict(date="2026-07-01", match_num=2000 + i, home="A", away="B",
+                         market="1X2", selection="home", line="", odds=1.9, edge=0.05,
+                         source="market", close_odds=1.9,
+                         result="win" if i < 3 else "loss", pl=0.9 if i < 3 else -1.0))
+    with led.open("w", newline="") as f:
+        w = _csv.DictWriter(f, fieldnames=fields); w.writeheader(); w.writerows(rows)
+    mc = mlb.market_confidence(str(led))
+    assert mc["mult"]["AH"] > 1.05 and mc["mult"]["1X2"] < 0.95   # 方向正確
+    assert 0.7 <= mc["mult"]["1X2"] and mc["mult"]["AH"] <= 1.3   # 夾限
+    assert abs(mc["winrate"]["AH"] - 0.8) < 1e-9
+
+    # 排序：錢線 edge 0.06 vs 讓分 edge 0.05；勝率加權後讓分應排前
+    model = _mlb_model()
+    m = mlb.analyze_game(model, "Team0", "Team5")
+
+    def mkrow(mk, edge):
+        sig = {"1X2": {"verdict": None}, "OU": {"verdict": None}, "AH": {"verdict": None}}
+        sd = {"1X2": "home", "OU": "over", "AH": "home"}[mk]
+        sig[mk] = {"side": sd, "odds": 1.95, "edge": edge, "verdict": "買", "p": 0.55}
+        return {"game": {"home": "Team0", "away": "Team5", "home_pitcher": "",
+                         "away_pitcher": "", "game_date_iso": "2026-07-06T23:05:00Z"},
+                "m": m, "pf": 1.0, "wx": None, "wf": 1.0, "hp_note": "", "ap_note": "",
+                "signals": sig, "best_edge": edge, "time": "19:00", "status": ""}
+    rows2 = [mkrow("1X2", 0.06), mkrow("AH", 0.05)]
+    import re
+    p_plain = report.render_mlb_page(rows2, date="d", mkt_conf=None)
+    p_adj = report.render_mlb_page(rows2, date="d", mkt_conf=mc)
+    assert re.findall(r"錢線|讓分", p_plain)[0] == "錢線"   # 純 edge → 錢線先
+    assert re.findall(r"錢線|讓分", p_adj)[0] == "讓分"     # 勝率加權 → 讓分先
