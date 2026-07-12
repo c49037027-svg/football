@@ -192,3 +192,42 @@ def test_site_page_offseason_note(tmp_path):
                                    schedule_payload={"leagueSchedule": {"gameDates": []}},
                                    date="2026-08-15")
     assert "休賽季" in html_out
+
+
+def test_parse_espn_scoreboard_and_months():
+    payload = {"events": [
+        {"id": "401585601", "date": "2024-10-23T23:30Z",
+         "season": {"type": 2},
+         "status": {"type": {"completed": True}},
+         "competitions": [{"competitors": [
+             {"homeAway": "home", "score": "132",
+              "team": {"displayName": "Boston Celtics"}},
+             {"homeAway": "away", "score": "109",
+              "team": {"displayName": "New York Knicks"}}]}]},
+        {"id": "401585602", "date": "2024-10-15T23:00Z",
+         "season": {"type": 1},          # 熱身賽 → 排除
+         "status": {"type": {"completed": True}},
+         "competitions": [{"competitors": [
+             {"homeAway": "home", "score": "100",
+              "team": {"displayName": "Miami Heat"}},
+             {"homeAway": "away", "score": "99",
+              "team": {"displayName": "Orlando Magic"}}]}]},
+        {"id": "401585603", "date": "2024-10-24T23:00Z",
+         "season": {"type": 2},
+         "status": {"type": {"completed": False}},   # 未完賽 → 排除
+         "competitions": [{"competitors": [
+             {"homeAway": "home", "score": "0",
+              "team": {"displayName": "LA Clippers"}},
+             {"homeAway": "away", "score": "0",
+              "team": {"displayName": "Phoenix Suns"}}]}]},
+    ]}
+    rows = nba.parse_espn_scoreboard(payload)
+    assert len(rows) == 1
+    g = rows[0]
+    assert (g["home"], g["away"], g["home_goals"], g["away_goals"]) == \
+        ("Boston Celtics", "New York Knicks", 132, 109)
+    assert g["date"] == "2024-10-23"
+    months = nba.season_months("2024-25")
+    assert months[0] == ("20241001", "20241031")
+    assert months[-1] == ("20250601", "20250630")
+    assert len(months) == 9

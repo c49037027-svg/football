@@ -146,6 +146,67 @@ def parse_leaguegamelog(payload: dict) -> list[dict]:
     return out
 
 
+ESPN_SCOREBOARD = "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/scoreboard"
+
+
+def parse_espn_scoreboard(payload: dict) -> list[dict]:
+    """解析 ESPN scoreboard 成賽事列表（純函式）。只留例行(2)/季後(3)且已完賽。
+
+    回 [{date, home, away, home_goals, away_goals, game_pk}]（game_pk=ESPN id）。
+    """
+    out = []
+    for ev in payload.get("events") or []:
+        if (ev.get("season") or {}).get("type") not in (2, 3):
+            continue
+        comp = (ev.get("competitions") or [{}])[0]
+        if not ((ev.get("status") or {}).get("type") or {}).get("completed"):
+            continue
+        home = away = None
+        hs = as_ = None
+        for c in comp.get("competitors") or []:
+            name = ((c.get("team") or {}).get("displayName") or "").strip()
+            name = NBA_TEAM_RENAMES.get(name, name)
+            try:
+                score = int(c.get("score"))
+            except (TypeError, ValueError):
+                score = None
+            if c.get("homeAway") == "home":
+                home, hs = name, score
+            elif c.get("homeAway") == "away":
+                away, as_ = name, score
+        if not home or not away or hs is None or as_ is None:
+            continue
+        gid = str(ev.get("id") or "")
+        out.append({"date": _et_date(ev.get("date")), "home": home, "away": away,
+                    "home_goals": hs, "away_goals": as_,
+                    "game_pk": int(gid) if gid.isdigit() else None})
+    out.sort(key=lambda r: (r["date"], r["game_pk"] or 0))
+    return out
+
+
+def fetch_espn_range(start_ymd: str, end_ymd: str, timeout: float = 30.0) -> list[dict]:
+    """抓一段日期區間的已完賽賽果（ESPN，YYYYMMDD；雲端可達，備援 stats.nba.com）。"""
+    import requests
+    r = requests.get(ESPN_SCOREBOARD,
+                     params={"dates": f"{start_ymd}-{end_ymd}", "limit": 1000},
+                     headers={"User-Agent": "Mozilla/5.0"}, timeout=timeout)
+    r.raise_for_status()
+    return parse_espn_scoreboard(r.json())
+
+
+def season_months(season: str) -> list[tuple[str, str]]:
+    """'2024-25' → 該季 10 月到隔年 6 月的（月初, 月底）YYYYMMDD 區間清單。"""
+    y1 = int(season[:4])
+    y2 = y1 + 1
+    spans = [(y1, m) for m in (10, 11, 12)] + [(y2, m) for m in range(1, 7)]
+    out = []
+    for y, m in spans:
+        last = {1: 31, 2: 29, 3: 31, 4: 30, 5: 31, 6: 30,
+                10: 31, 11: 30, 12: 31}[m]
+        out.append((f"{y}{m:02d}01", f"{y}{m:02d}{last}"))
+    return out
+
+
 def fetch_gamelog(season: str, season_type: str = "Regular Season",
                   timeout: float = 30.0) -> list[dict]:
     """抓某季逐場（season 如 '2024-25'；部署環境用，沙箱擋）。"""

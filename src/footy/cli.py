@@ -441,25 +441,34 @@ def nba_fetch(out):
 @click.option("--seasons", multiple=True, required=True,
               help="球季，可多個：--seasons 2021-22 --seasons 2022-23 …")
 @click.option("--out", default="data/nba_hist.csv")
-@click.option("--playoffs/--no-playoffs", default=True, help="是否含季後賽")
-def nba_fetch_history(seasons, out, playoffs):
-    """下載歷史賽季（stats.nba.com leaguegamelog）。需在 Actions 跑。"""
+def nba_fetch_history(seasons, out):
+    """下載歷史賽季（ESPN scoreboard 逐月抓；stats.nba.com 擋雲端 IP 不可用）。"""
     import time as _t
 
     from . import nba
-    rows = []
+    rows, seen = [], set()
     for s in seasons:
-        for st in (["Regular Season", "Playoffs"] if playoffs else ["Regular Season"]):
+        n_season = 0
+        for a, b in nba.season_months(s):
             try:
-                got = nba.fetch_gamelog(s, season_type=st)
-                rows.extend(got)
-                click.echo(f"[nba] {s} {st}：{len(got)} 場")
+                got = nba.fetch_espn_range(a, b)
             except Exception as e:  # noqa: BLE001
-                click.echo(f"[nba] {s} {st} 失敗：{e}")
-            _t.sleep(1.0)          # stats.nba.com 對頻繁請求敏感
+                click.echo(f"[nba] {s} {a[:6]} 失敗：{e}")
+                continue
+            for g in got:
+                key = (g["date"], g["home"], g["away"])
+                if key in seen:
+                    continue
+                seen.add(key)
+                rows.append(g)
+                n_season += 1
+            _t.sleep(0.3)
+        click.echo(f"[nba] {s}：{n_season} 場")
     rows.sort(key=lambda r: r["date"])
     n = nba.write_games_csv(rows, out)
     click.echo(f"[nba] 共 {n} 場 → {out}")
+    if n < 500 * len(seasons):
+        raise click.ClickException(f"場數異常偏低（{n}），資料源可能被擋，不提交。")
 
 
 @nba_group.command("train")

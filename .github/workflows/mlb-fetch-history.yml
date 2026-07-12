@@ -42,5 +42,7 @@ jobs:
           git config user.name "github-actions"
           git config user.email "actions@github.com"
           git add -f data/mlb_hist.csv
+          git pull --rebase origin "${GITHUB_REF_NAME}" || true
           git commit -m "data: MLB 歷史賽季 ${{ inputs.seasons }}（mlb_hist.csv）[skip ci]" || echo "無變更"
-          git push || echo "推送略過"
+          git pull --rebase origin "${GITHUB_REF_NAME}" || true
+          git push || (git pull --rebase origin "${GITHUB_REF_NAME}" && git push)
