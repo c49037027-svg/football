@@ -255,6 +255,8 @@ def load_with_history(data_path: str | Path,
     df = pd.concat(frames, ignore_index=True)
     for c in ("home", "away"):
         df[c] = df[c].replace(NBA_TEAM_RENAMES)
+    # 只留 30 隊正規對戰（ESPN 資料偶混入明星賽的表演隊）
+    df = df[df["home"].isin(NBA_ZH) & df["away"].isin(NBA_ZH)]
     df["date"] = pd.to_datetime(df["date"])
     df = df.dropna(subset=["home_goals", "away_goals"])
     df = df.drop_duplicates(subset=["date", "home", "away"])
@@ -289,7 +291,7 @@ class NBAModel:
             return pickle.load(f)
 
 
-def fit_ratings(df, half_life_days: float = 300.0, reg: float = 8.0,
+def fit_ratings(df, half_life_days: float = 90.0, reg: float = 3.0,
                 reference_date=None) -> NBAModel:
     """加權嶺回歸擬合攻防評分。
 

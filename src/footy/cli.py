@@ -476,9 +476,9 @@ def nba_fetch_history(seasons, out):
 @click.option("--hist", "hist_path", default="data/nba_hist.csv",
               help="歷史賽季 CSV（存在則合併；傳空字串停用）")
 @click.option("--out", default="models/nba.pkl")
-@click.option("--half-life", default=300.0, type=float,
-              help="時間衰減半衰期（天）")
-@click.option("--reg", default=8.0, type=float, help="攻防評分 L2 收縮強度")
+@click.option("--half-life", default=90.0, type=float,
+              help="時間衰減半衰期（天）。回測：兩窗口 80-100 天最佳（NBA 要看近況）")
+@click.option("--reg", default=3.0, type=float, help="攻防評分 L2 收縮強度（回測 reg=3 最佳）")
 def nba_train(data_path, hist_path, out, half_life, reg):
     """訓練攻防評分模型（加權嶺回歸 + 常態殘差）。"""
     from . import nba
@@ -520,8 +520,8 @@ def nba_today(model_path, date):
 @click.option("--cut", required=True, help="測試起日（之前訓練，walk-forward）")
 @click.option("--end", default="9999-12-31", help="測試迄日")
 @click.option("--half-life", "half_lives", multiple=True, type=float,
-              default=(150.0, 300.0, 500.0, 1e9), help="半衰期網格")
-@click.option("--reg", default=8.0, type=float)
+              default=(60.0, 90.0, 140.0, 300.0), help="半衰期網格")
+@click.option("--reg", default=3.0, type=float)
 def nba_backtest(data_path, hist_path, cut, end, half_lives, reg):
     """walk-forward 回測：錢線/大小/讓分 log-loss（線用模型預期最近 .5，公平對比）。"""
     import numpy as np
