@@ -246,6 +246,8 @@ date,match_num,home,away,market,selection,line,odds,edge,source,close_odds,resul
 2026-07-06,93,Portugal,Spain,BTTS,否,,,,model,,win,
 2026-06-11,2,South Korea,Czech Republic,BTTS,是,,,,model,,win,
 2026-06-26,63,New Zealand,Belgium,BTTS,否,,,,model,,loss,
+2026-07-15,102,England,Argentina,OU,小,2.5,,,model,,pending,
+2026-07-15,102,England,Argentina,BTTS,否,,,,model,,pending,
 2026-06-20,33,Ecuador,Curaçao,1X2,home,,1.12,,market,1.16,loss,-1.0
 2026-06-20,33,Ecuador,Curaçao,OU,大,2.5,1.54,,market,1.54,loss,-1.0
 2026-06-20,33,Ecuador,Curaçao,AH,客,-2.5,1.69,,market,1.64,win,0.69
@@ -433,3 +435,5 @@ date,match_num,home,away,market,selection,line,odds,edge,source,close_odds,resul
 2026-07-14,101,France,Spain,1X2,away,,3.0,,market,2.9,pending,
 2026-07-14,101,France,Spain,OU,小,2.5,1.8,,market,1.8,pending,
 2026-07-14,101,France,Spain,AH,客,-0.25,1.85,,market,1.88,pending,
+2026-07-15,102,England,Argentina,1X2,away,,3.11,,market,3.11,pending,
+2026-07-15,102,England,Argentina,AH,客,0.0,2.11,,market,2.11,pending,
