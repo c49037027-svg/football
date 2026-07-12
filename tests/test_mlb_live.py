@@ -1,0 +1,106 @@
+"""走地引擎測試：開賽=賽前一致、方向性、終局規則、狀態解析、邊界還原。"""
+import numpy as np
+
+from footy import mlb_live
+from footy.mlb_live import LiveState, boundary_states_from_innings, parse_linescore_state, simulate
+
+
+def _sim(state, lh=4.6, la=4.3, **kw):
+    return mlb_live.simulate(state, lh, la, k=3.0, n_sims=30000, seed=1, **kw)
+
+
+def test_game_start_matches_pregame_model():
+    """開賽瞬間（1 上 0 出局無人）應重現賽前 NB 模型的勝率/總分。"""
+    from footy.mlb import nb_score_matrix, moneyline
+    lh, la = 4.8, 4.2
+    r = _sim(LiveState(1, "top", 0, "000", 0, 0), lh, la)
+    mat = nb_score_matrix(lh, la, 3.0, 20)
+    p_pre, _ = moneyline(mat)
+    assert abs(r["p_home"] - p_pre) < 0.02          # 蒙地卡羅誤差內
+    assert abs(r["exp_total"] - (lh + la)) < 0.35   # 9下截斷會略降總分
+    assert r["exp_home"] > r["exp_away"]
+
+
+def test_score_and_inning_direction():
+    base = _sim(LiveState(5, "top", 0, "000", 3, 3))
+    lead = _sim(LiveState(5, "top", 0, "000", 5, 3))
+    late = _sim(LiveState(8, "top", 0, "000", 5, 3))
+    assert lead["p_home"] > base["p_home"] + 0.15   # 領先 2 分勝率大增
+    assert late["p_home"] > lead["p_home"]          # 越晚領先越穩
+
+
+def test_endgame_rules():
+    # 9 下開始主隊領先 → 其實已結束；勝率 ≈ 1
+    r = _sim(LiveState(9, "bottom", 0, "000", 4, 3))
+    assert r["p_home"] > 0.995
+    # 9 上開始平手 → 勝率貼近五五波，主隊靠得分率優勢微領先
+    # （「後攻」本身在得分交換模型中不改變勝率；實證平手進 9 局主隊 ~51-52%）
+    r2 = _sim(LiveState(9, "top", 0, "000", 3, 3))
+    assert 0.50 < r2["p_home"] < 0.58
+    # 9 上客隊領先 5 分 → 主隊勝率很低
+    r3 = _sim(LiveState(9, "top", 0, "000", 0, 5))
+    assert r3["p_home"] < 0.03
+
+
+def test_bases_outs_re24_effect():
+    # 同分同局：滿壘無出局的進攻方明顯提升該隊表現
+    neutral = _sim(LiveState(7, "bottom", 0, "000", 2, 2))
+    loaded = _sim(LiveState(7, "bottom", 0, "111", 2, 2))
+    two_out = _sim(LiveState(7, "bottom", 2, "000", 2, 2))
+    assert loaded["p_home"] > neutral["p_home"] + 0.08
+    assert two_out["p_home"] < neutral["p_home"]
+    assert loaded["exp_total"] > neutral["exp_total"] + 1.0
+
+
+def test_p_over_monotone():
+    r = _sim(LiveState(3, "top", 0, "000", 2, 1))
+    assert mlb_live.p_over(r, 6.5) > mlb_live.p_over(r, 9.5)
+    assert 0.0 <= mlb_live.p_over(r, 30.5) < 0.02
+
+
+def test_parse_linescore_state():
+    ls = {"currentInning": 6, "inningState": "Bottom", "outs": 1,
+          "teams": {"home": {"runs": 3}, "away": {"runs": 5}},
+          "offense": {"first": {"id": 1}, "third": {"id": 2}}}
+    s = parse_linescore_state(ls)
+    assert (s.inning, s.half, s.outs, s.bases) == (6, "bottom", 1, "101")
+    assert (s.home_score, s.away_score) == (3, 5)
+    # Middle of 7th = 7 下開始
+    s2 = parse_linescore_state({"currentInning": 7, "inningState": "Middle",
+                                "outs": 3, "teams": {"home": {"runs": 0},
+                                                     "away": {"runs": 0}}})
+    assert (s2.inning, s2.half, s2.outs, s2.bases) == (7, "bottom", 0, "000")
+    # End of 7th = 8 上開始
+    s3 = parse_linescore_state({"currentInning": 7, "inningState": "End",
+                                "teams": {"home": {"runs": 2}, "away": {"runs": 1}}})
+    assert (s3.inning, s3.half) == (8, "top")
+    assert parse_linescore_state({}) is None
+
+
+def test_boundary_states_from_innings():
+    innings = [
+        {"num": 1, "away": {"runs": 1}, "home": {"runs": 0}},
+        {"num": 2, "away": {"runs": 0}, "home": {"runs": 3}},
+        {"num": 3, "away": {"runs": 2}, "home": {}},   # 9局前不會發生,防呆:home 缺 runs → 停
+    ]
+    bs = boundary_states_from_innings(innings, 3, 3)
+    labels = [b["label"] for b in bs]
+    assert labels[:4] == ["T1", "B1", "T2", "B2"]
+    b2 = next(b for b in bs if b["label"] == "B2")
+    assert (b2["state"].home_score, b2["state"].away_score) == (0, 1)
+    t3 = next(b for b in bs if b["label"] == "T3")
+    assert (t3["state"].home_score, t3["state"].away_score) == (3, 1)
+    # 9 下沒打（主隊領先）→ 不產生 B9
+    innings9 = [{"num": i, "away": {"runs": 0}, "home": {"runs": 1 if i == 1 else 0}}
+                for i in range(1, 9)]
+    innings9.append({"num": 9, "away": {"runs": 0}, "home": {"runs": None}})
+    bs9 = boundary_states_from_innings(innings9, 1, 0)
+    assert "T9" in [b["label"] for b in bs9]
+    assert "B9" not in [b["label"] for b in bs9]
+
+
+def test_walkoff_truncation_totals():
+    """9 下平手時打 → 總分期望應高於主隊已領先(9下不打)的鏡像情境。"""
+    tied = _sim(LiveState(9, "top", 0, "000", 4, 4))
+    # 9 上結束平手時,還有 9 下(可能延長) → 期望總分至少 +0.4
+    assert tied["exp_total"] > 8.0 + 0.4

@@ -933,6 +933,135 @@ def mlb_backtest_sim(data_path, start, end, rates_season, n_sims, max_games, wit
                        f"{'✅' if d_br < 0 else '❌'}（{d_br:+.4f}）")
 
 
+@mlb_group.command("live")
+@click.option("--model", "model_path", default="models/mlb.pkl")
+@click.option("--data", "data_path", default="data/mlb.csv")
+@click.option("--date", default=None, help="美東賽程日（預設今天）")
+@click.option("--n-sims", default=20000, type=int)
+def mlb_live_cmd(model_path, data_path, date, n_sims):
+    """走地：列出進行中比賽的即時勝率/預期總分（statsapi，需部署/Render 環境）。
+
+    λ 用賽前模型（隊強度×球場係數）；壘包/出局用 RE24 修正。v1 不含
+    當日先發層（差異已部分反映在比分裡）。
+    """
+    from . import mlb, mlb_live
+    from .models.dixon_coles import DixonColesModel
+    model = DixonColesModel.load(model_path)
+    pf_map = mlb.park_factors_from_csv(data_path)
+    disp = mlb.dispersion_from_csv(data_path)
+    date = date or mlb.us_today()
+    payload = mlb_live.fetch_schedule_linescores(date, date)
+    games = mlb_live.parse_schedule_linescores(payload, finals_only=False)
+    live = [g for g in games if g["status"] == "Live"]
+    if not live:
+        click.echo(f"{date} 目前無進行中的比賽。")
+        return
+    for g in live:
+        if g["home"] not in model.attack or g["away"] not in model.attack:
+            continue
+        st = mlb_live.parse_linescore_state(g["linescore"])
+        if st is None:
+            continue
+        lam, mu = model.expected_goals(g["home"], g["away"])
+        pf = pf_map.get(g["home"], 1.0)
+        r = mlb_live.simulate(st, lam * pf, mu * pf, k=disp, n_sims=n_sims)
+        hz, az = mlb.zh_mlb(g["home"]), mlb.zh_mlb(g["away"])
+        half = "上" if st.half == "top" else "下"
+        bases = "".join(b for b, f in zip("一二三", st.bases) if f == "1") or "無人"
+        click.echo(f"{az} {st.away_score}–{st.home_score} {hz}"
+                   f"｜{st.inning}局{half} {st.outs}出局 壘上{bases}"
+                   f"｜主勝 {r['p_home']:.1%}｜預期總分 {r['exp_total']:.1f}")
+
+
+@mlb_group.command("backtest-live")
+@click.option("--data", "data_path", default="data/mlb.csv")
+@click.option("--hist", "hist_path", default="data/mlb_hist.csv")
+@click.option("--start", required=True, help="測試起日（之前訓練，walk-forward）")
+@click.option("--end", required=True, help="測試迄日")
+@click.option("--max-games", default=0, type=int, help="限制場數（0=全部）")
+@click.option("--n-sims", default=4000, type=int)
+def mlb_backtest_live(data_path, hist_path, start, end, max_games, n_sims):
+    """走地勝率回測：用歷史逐局比分還原每個半局邊界狀態 → 勝率校準。
+
+    基準=「賽前機率凍結」（整場都用開賽前勝率）。走地引擎必須大幅
+    贏過凍結基準且逐局校準良好，才接到介面。
+    """
+    import numpy as np
+    import pandas as pd
+
+    from . import mlb, mlb_live
+    df = mlb.load_with_history(data_path, hist_path or None)
+    cut = pd.Timestamp(start)
+    train = df[df["date"] < cut]
+    model = dc.fit(train, half_life_days=365, max_goals=20, rho_init=0.0,
+                   reg=0.3, reference_date=cut)
+    struct = train[train["date"] >= cut - pd.Timedelta(days=731)]
+    disp = mlb.dispersion_from_df(struct)
+    pf_map = mlb.park_factors(struct)
+    click.echo(f"[live-bt] NB 訓練 {len(train)} 場（<{start}，hl=365）｜k={disp:.2f}")
+    payload = mlb_live.fetch_schedule_linescores(start, end)
+    games = mlb_live.parse_schedule_linescores(payload, finals_only=True)
+    if max_games:
+        games = games[:max_games]
+    eps = 1e-12
+    by_label: dict = {}          # 邊界 → [(p_live, p_frozen, y)]
+    n_games = 0
+    for g in games:
+        if (g["home"] not in model.attack or g["away"] not in model.attack
+                or not g["innings"] or g["home_goals"] is None):
+            continue
+        y = 1.0 if g["home_goals"] > g["away_goals"] else 0.0
+        if g["home_goals"] == g["away_goals"]:
+            continue
+        lam, mu = model.expected_goals(g["home"], g["away"])
+        pf = pf_map.get(g["home"], 1.0)
+        lam, mu = lam * pf, mu * pf
+        bounds = mlb_live.boundary_states_from_innings(
+            g["innings"], g["home_goals"], g["away_goals"])
+        if not bounds:
+            continue
+        p_frozen = None
+        for b in bounds:
+            r = mlb_live.simulate(b["state"], lam, mu, k=disp,
+                                  n_sims=n_sims, seed=int(g["game_pk"]) % 100000)
+            if b["label"] == "T1":
+                p_frozen = r["p_home"]
+            by_label.setdefault(b["label"], []).append(
+                (r["p_home"], p_frozen if p_frozen is not None else r["p_home"], y))
+        n_games += 1
+    click.echo(f"[live-bt] {n_games} 場、{sum(len(v) for v in by_label.values())} 個半局邊界\n")
+    click.echo("邊界  |     n | 走地LL | 凍結LL |  Δ     | 走地準確率")
+    order = [f"{h}{i}" for i in range(1, 10) for h in ("T", "B")]
+    tot_l = tot_f = tot_n = tot_acc = 0.0
+    for lb in order:
+        rows = by_label.get(lb)
+        if not rows:
+            continue
+        pl = np.array([r[0] for r in rows]); pf_ = np.array([r[1] for r in rows])
+        yv = np.array([r[2] for r in rows])
+        ll = -np.mean(yv * np.log(np.maximum(pl, eps))
+                      + (1 - yv) * np.log(np.maximum(1 - pl, eps)))
+        lf = -np.mean(yv * np.log(np.maximum(pf_, eps))
+                      + (1 - yv) * np.log(np.maximum(1 - pf_, eps)))
+        acc = float(((pl >= 0.5) == (yv == 1)).mean())
+        click.echo(f"{lb:>4} | {len(rows):>5} | {ll:.4f} | {lf:.4f} | {ll-lf:+.4f} | {acc:.1%}")
+        tot_l += ll * len(rows); tot_f += lf * len(rows)
+        tot_n += len(rows); tot_acc += acc * len(rows)
+    click.echo(f"\n合計：走地 LL {tot_l/tot_n:.4f}｜凍結 LL {tot_f/tot_n:.4f}"
+               f"｜{'✅ 走地大勝' if tot_l < tot_f - 0.05 else '⚠️ 檢查引擎'}"
+               f"｜走地準確率 {tot_acc/tot_n:.1%}")
+    # 校準表：預測勝率分桶 vs 實際
+    allp = np.concatenate([np.array([r[0] for r in v]) for v in by_label.values()])
+    ally = np.concatenate([np.array([r[2] for r in v]) for v in by_label.values()])
+    click.echo("\n校準（走地預測 → 實際主勝率）：")
+    for lo in np.arange(0.0, 1.0, 0.1):
+        m = (allp >= lo) & (allp < lo + 0.1)
+        if m.sum() < 30:
+            continue
+        click.echo(f"  {lo:.0%}-{lo+0.1:.0%}: 預測均值 {allp[m].mean():.3f}"
+                   f" vs 實際 {ally[m].mean():.3f}（n={int(m.sum())}）")
+
+
 @mlb_group.command("weather-probe")
 @click.option("--date", default=None, help="日期 YYYY-MM-DD（預設今天美東）")
 def mlb_weather_probe(date):

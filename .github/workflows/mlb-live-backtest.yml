@@ -1,0 +1,54 @@
+name: MLB 走地回測（手動）
+
+# 驗證走地勝率引擎：用歷史逐局比分還原每個半局邊界 → 勝率校準 +
+# 對「賽前機率凍結」基準的對數損失。唯讀，不部署、不耗 odds-api 額度。
+on:
+  workflow_dispatch:
+    inputs:
+      start:
+        description: "測試起日（之前訓練 NB，walk-forward）"
+        default: "2026-06-01"
+        required: true
+      end:
+        description: "測試迄日"
+        default: "2026-07-10"
+        required: true
+      max_games:
+        description: "限制場數（0=全部）"
+        default: "0"
+        required: true
+
+permissions:
+  contents: read
+
+jobs:
+  backtest:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+
+      - name: 安裝套件
+        run: pip install -e .
+
+      - name: 跑走地回測
+        run: |
+          set -o pipefail
+          footy mlb backtest-live \
+            --start "${{ inputs.start }}" \
+            --end "${{ inputs.end }}" \
+            --max-games "${{ inputs.max_games }}" \
+            2>&1 | tee live-backtest-result.txt
+
+      - name: 上傳結果
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: live-backtest-result
+          path: live-backtest-result.txt
