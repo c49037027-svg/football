@@ -149,17 +149,20 @@ def parse_leaguegamelog(payload: dict) -> list[dict]:
 ESPN_SCOREBOARD = "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/scoreboard"
 
 
-def parse_espn_scoreboard(payload: dict) -> list[dict]:
-    """解析 ESPN scoreboard 成賽事列表（純函式）。只留例行(2)/季後(3)且已完賽。
+def parse_espn_scoreboard(payload: dict, completed_only: bool = True) -> list[dict]:
+    """解析 ESPN scoreboard 成賽事列表（純函式）。只留例行(2)/季後(3)。
 
-    回 [{date, home, away, home_goals, away_goals, game_pk}]（game_pk=ESPN id）。
+    回 [{date, home, away, home_goals, away_goals, game_pk, game_date_iso, status}]
+    （game_pk=ESPN id）。completed_only=False 時含未開打/進行中（比分為 None）。
     """
     out = []
     for ev in payload.get("events") or []:
         if (ev.get("season") or {}).get("type") not in (2, 3):
             continue
         comp = (ev.get("competitions") or [{}])[0]
-        if not ((ev.get("status") or {}).get("type") or {}).get("completed"):
+        st = (ev.get("status") or {}).get("type") or {}
+        final = bool(st.get("completed"))
+        if completed_only and not final:
             continue
         home = away = None
         hs = as_ = None
@@ -174,24 +177,47 @@ def parse_espn_scoreboard(payload: dict) -> list[dict]:
                 home, hs = name, score
             elif c.get("homeAway") == "away":
                 away, as_ = name, score
-        if not home or not away or hs is None or as_ is None:
+        if not home or not away or (final and (hs is None or as_ is None)):
             continue
         gid = str(ev.get("id") or "")
         out.append({"date": _et_date(ev.get("date")), "home": home, "away": away,
-                    "home_goals": hs, "away_goals": as_,
-                    "game_pk": int(gid) if gid.isdigit() else None})
+                    "home_goals": hs if final else None,
+                    "away_goals": as_ if final else None,
+                    "game_pk": int(gid) if gid.isdigit() else None,
+                    "game_date_iso": ev.get("date") or "",
+                    "status": (st.get("shortDetail") or st.get("detail") or "").strip()})
     out.sort(key=lambda r: (r["date"], r["game_pk"] or 0))
     return out
 
 
-def fetch_espn_range(start_ymd: str, end_ymd: str, timeout: float = 30.0) -> list[dict]:
-    """抓一段日期區間的已完賽賽果（ESPN，YYYYMMDD；雲端可達，備援 stats.nba.com）。"""
+def fetch_espn_range(start_ymd: str, end_ymd: str, completed_only: bool = True,
+                     timeout: float = 30.0) -> list[dict]:
+    """抓一段日期區間的賽事（ESPN，YYYYMMDD）。主要來源——
+    cdn.nba.com 與 stats.nba.com 都會擋雲端 IP（403/逾時），ESPN 可達。"""
     import requests
     r = requests.get(ESPN_SCOREBOARD,
                      params={"dates": f"{start_ymd}-{end_ymd}", "limit": 1000},
                      headers={"User-Agent": "Mozilla/5.0"}, timeout=timeout)
     r.raise_for_status()
-    return parse_espn_scoreboard(r.json())
+    return parse_espn_scoreboard(r.json(), completed_only=completed_only)
+
+
+def current_season() -> str:
+    """今天所屬球季字串（7 月後算新球季，如 2026-08 → '2026-27'）。"""
+    import datetime as _dt
+    t = _dt.date.today()
+    y = t.year if t.month >= 7 else t.year - 1
+    return f"{y}-{(y + 1) % 100:02d}"
+
+
+def fetch_espn_window(center_date: str, days_back: int = 7,
+                      days_fwd: int = 1) -> list[dict]:
+    """抓 center_date（美東）前後窗口的賽事（含未開打），供建站+結算。"""
+    import datetime as _dt
+    d = _dt.date.fromisoformat(center_date)
+    a = (d - _dt.timedelta(days=days_back)).strftime("%Y%m%d")
+    b = (d + _dt.timedelta(days=days_fwd)).strftime("%Y%m%d")
+    return fetch_espn_range(a, b, completed_only=False)
 
 
 def season_months(season: str) -> list[tuple[str, str]]:
@@ -430,8 +456,10 @@ def build_site_page(model_path: str = "models/nba.pkl",
     note = ""
     sched: list[dict] = []
     try:
-        payload = schedule_payload or fetch_schedule()
-        sched = parse_schedule_v2(payload, finals_only=False)
+        if schedule_payload is not None:      # 測試注入用（cdn 格式）
+            sched = parse_schedule_v2(schedule_payload, finals_only=False)
+        else:                                 # 生產：ESPN（cdn/statsapi 擋雲端 IP）
+            sched = fetch_espn_window(date)
     except Exception as e:  # noqa: BLE001
         note = f"抓不到 NBA 賽程（{e}）。"
     # 結算：賽程裡的已完賽比分直接用（零額外請求）

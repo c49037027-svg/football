@@ -429,12 +429,28 @@ def nba_group():
 @nba_group.command("fetch")
 @click.option("--out", default="data/nba.csv")
 def nba_fetch(out):
-    """下載本季賽果（cdn.nba.com 賽程，一次呼叫）。沙箱擋，需在 Actions 跑。"""
+    """下載本季至今賽果（ESPN 逐月；cdn.nba.com 擋雲端 IP 403）。需在 Actions 跑。"""
+    import time as _t
+
     from . import nba
-    rows = nba.parse_schedule_v2(nba.fetch_schedule(), finals_only=True)
+    season = nba.current_season()
+    rows, seen = [], set()
+    for a, b in nba.season_months(season):
+        try:
+            got = nba.fetch_espn_range(a, b)
+        except Exception as e:  # noqa: BLE001
+            click.echo(f"[nba] {a[:6]} 失敗：{e}")
+            continue
+        for g in got:
+            key = (g["date"], g["home"], g["away"])
+            if key not in seen:
+                seen.add(key)
+                rows.append(g)
+        _t.sleep(0.3)
+    rows.sort(key=lambda r: r["date"])
     n = nba.write_games_csv(rows, out)
-    d = f"{rows[0]['date']}→{rows[-1]['date']}" if rows else "無"
-    click.echo(f"[nba] 已存 {n} 場到 {out}（{d}）")
+    d = f"{rows[0]['date']}→{rows[-1]['date']}" if rows else "無（休賽季/球季未開打）"
+    click.echo(f"[nba] {season} 季已存 {n} 場到 {out}（{d}）")
 
 
 @nba_group.command("fetch-history")

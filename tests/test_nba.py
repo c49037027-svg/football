@@ -231,3 +231,25 @@ def test_parse_espn_scoreboard_and_months():
     assert months[0] == ("20241001", "20241031")
     assert months[-1] == ("20250601", "20250630")
     assert len(months) == 9
+
+
+def test_parse_espn_uncompleted_and_window_fields():
+    payload = {"events": [
+        {"id": "401600001", "date": "2026-10-21T23:30Z",
+         "season": {"type": 2},
+         "status": {"type": {"completed": False, "shortDetail": "7:30 PM ET"}},
+         "competitions": [{"competitors": [
+             {"homeAway": "home", "score": "0",
+              "team": {"displayName": "Boston Celtics"}},
+             {"homeAway": "away", "score": "0",
+              "team": {"displayName": "New York Knicks"}}]}]},
+    ]}
+    assert nba.parse_espn_scoreboard(payload) == []          # 預設只留已完賽
+    rows = nba.parse_espn_scoreboard(payload, completed_only=False)
+    assert len(rows) == 1
+    g = rows[0]
+    assert g["home_goals"] is None and g["status"] == "7:30 PM ET"
+    assert g["game_date_iso"] == "2026-10-21T23:30Z"
+    assert g["date"] == "2026-10-21"
+    s = nba.current_season()
+    assert len(s) == 7 and s[4] == "-"
