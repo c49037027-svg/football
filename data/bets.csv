@@ -237,11 +237,11 @@ date,match_num,home,away,market,selection,line,odds,edge,source,close_odds,resul
 2026-06-13,5,Australia,Turkey,1X2,away,,,,model,,loss,
 2026-06-15,13,Belgium,Egypt,AH,主,-0.75,,,model,,loss,
 2026-06-16,19,France,Senegal,BTTS,否,,,,model,,loss,
-2026-07-11,99,Norway,England,BTTS,是,,,,model,,pending,
+2026-07-11,99,Norway,England,BTTS,是,,,,model,,win,
 2026-06-18,28,Switzerland,Bosnia and Herzegovina,AH,主,-1.75,,,model,,win,
 2026-06-27,68,Colombia,Portugal,BTTS,否,,,,model,,win,
 2026-07-07,96,Switzerland,Colombia,BTTS,否,,,,model,,win,
-2026-07-11,100,Argentina,Switzerland,BTTS,否,,,,model,,pending,
+2026-07-11,100,Argentina,Switzerland,BTTS,否,,,,model,,loss,
 2026-07-02,83,Portugal,Croatia,BTTS,否,,,,model,,loss,
 2026-07-06,93,Portugal,Spain,BTTS,否,,,,model,,win,
 2026-06-11,2,South Korea,Czech Republic,BTTS,是,,,,model,,win,
@@ -424,12 +424,12 @@ date,match_num,home,away,market,selection,line,odds,edge,source,close_odds,resul
 2026-07-09,97,France,Morocco,AH,客,-0.5,2.36,,market,2.35,loss,-1.0
 2026-07-10,98,Spain,Belgium,1X2,home,,1.65,,market,1.65,win,0.65
 2026-07-10,98,Spain,Belgium,AH,主,-0.75,1.85,,market,1.85,win,0.425
-2026-07-11,99,Norway,England,1X2,away,,1.9,,market,1.9,pending,
-2026-07-11,99,Norway,England,OU,小,2.5,2.1,,market,2.23,pending,
-2026-07-11,99,Norway,England,AH,主,0.5,1.92,,market,1.88,pending,
-2026-07-11,100,Argentina,Switzerland,1X2,home,,1.71,,market,1.72,pending,
-2026-07-11,100,Argentina,Switzerland,OU,小,2.5,1.64,,market,1.6,pending,
-2026-07-11,100,Argentina,Switzerland,AH,主,-0.5,1.72,,market,1.7,pending,
-2026-07-14,101,France,Spain,1X2,away,,3.0,,market,3.0,pending,
+2026-07-11,99,Norway,England,1X2,away,,1.9,,market,1.9,loss,-1.0
+2026-07-11,99,Norway,England,OU,小,2.5,2.1,,market,2.23,win,1.1
+2026-07-11,99,Norway,England,AH,主,0.5,1.92,,market,1.88,win,0.92
+2026-07-11,100,Argentina,Switzerland,1X2,home,,1.71,,market,1.72,loss,-1.0
+2026-07-11,100,Argentina,Switzerland,OU,小,2.5,1.64,,market,1.6,win,0.64
+2026-07-11,100,Argentina,Switzerland,AH,主,-0.5,1.72,,market,1.7,loss,-1.0
+2026-07-14,101,France,Spain,1X2,away,,3.0,,market,3.3,pending,
 2026-07-14,101,France,Spain,OU,小,2.5,1.8,,market,1.8,pending,
-2026-07-14,101,France,Spain,AH,客,-0.25,1.85,,market,1.86,pending,
+2026-07-14,101,France,Spain,AH,客,-0.25,1.85,,market,1.9,pending,
