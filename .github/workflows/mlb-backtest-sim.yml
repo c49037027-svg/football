@@ -1,7 +1,8 @@
 name: MLB event-sim 回測（手動）
 
-# 手動觸發的研究用回測：event-sim（log5+規則引擎+蒙地卡羅）vs 負二項(NB)
+# 手動觸發的研究用回測：NB vs 各改進層（投手近況/打線/天氣/牛棚，選配 event-sim）
 # 樣本外比較錢線/大小 log-loss。唯讀——不部署、不回寫帳本。
+# 牛棚層驗證：看輸出末尾「大小 log-loss：NB+近況投手 vs +牛棚」的 ✅/❌。
 # 結果印在 Actions log，也存成 artifact（backtest-result.txt）。
 on:
   workflow_dispatch:

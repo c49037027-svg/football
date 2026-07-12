@@ -502,3 +502,87 @@ def test_market_confidence_and_top5_weighting(tmp_path):
     p_adj = report.render_mlb_page(rows2, date="d", mkt_conf=mc)
     assert re.findall(r"錢線|讓分", p_plain)[0] == "錢線"   # 純 edge → 錢線先
     assert re.findall(r"錢線|讓分", p_adj)[0] == "讓分"     # 勝率加權 → 讓分先
+
+
+def test_bullpen_book_directions_and_pit():
+    # 兩隊整季牛棚相同(季 RA/9 ≈ 4.5)，但 A 隊近期爆、B 隊近期神
+    def mk_games(team, opp, allowed_seq, start_day=1):
+        out = []
+        for i, a in enumerate(allowed_seq):
+            out.append({"date": f"2025-06-{start_day + i:02d}", "home": team,
+                        "away": opp, "home_goals": 4, "away_goals": a})
+        return out
+    # 先發每場 6 局失 2 分 → 牛棚 3 局失 (allowed-2) 分
+    seq_a = [3] * 10 + [6, 6, 6, 6]      # A：季常 1 分/3局，近期 4 分/3局(爆)
+    seq_b = [6] * 4 + [3] * 6 + [2, 2, 2, 2]   # B：近期 0 分/3局(神)
+    games = mk_games("Alpha", "X", seq_a) + mk_games("Beta", "X", seq_b)
+    logs, pid_team = {}, {}
+    pid = 100
+    for team, seq in (("Alpha", seq_a), ("Beta", seq_b)):
+        rows = [{"date": f"2025-06-{i + 1:02d}", "ip": 6.0, "r": 2,
+                 "so": 5, "bb": 2, "hr": 0, "gs": 1} for i in range(len(seq))]
+        logs[pid] = rows
+        pid_team[pid] = team
+        pid += 1
+    bp = mlb.BullpenBook(games, logs, pid_team, prior_ip=10.0, halflife_days=4.0)
+    as_of = "2025-06-20"
+    fa, fb = bp.factor("Alpha", as_of), bp.factor("Beta", as_of)
+    assert fa > 1.0 > fb                     # 近期爆 → 放大對手得分；近期神 → 壓低
+    # point-in-time：更早的 as_of 不看之後的比賽
+    fa_early = bp.factor("Alpha", "2025-06-08")   # 只看到穩定期
+    assert abs(fa_early - 1.0) < abs(fa - 1.0)
+    # 查無隊 / 樣本不足 → 中性
+    assert bp.factor("Nobody", as_of) == 1.0
+    assert bp.factor("Alpha", "2025-06-02") == 1.0
+    # 夾限：係數落在 1 ± BP_SHARE*(CLIP-1) 內
+    lo = 1.0 + mlb.BullpenBook.BP_SHARE * (mlb.BullpenBook.CLIP[0] - 1.0)
+    hi = 1.0 + mlb.BullpenBook.BP_SHARE * (mlb.BullpenBook.CLIP[1] - 1.0)
+    assert lo <= fb < 1.0 < fa <= hi
+
+
+def test_bullpen_book_skips_partial_doubleheader():
+    # 同日雙重賽只有 1 筆先發紀錄 → 該隊日必須整日略過（避免錯算牛棚失分）
+    games = [{"date": "2025-06-01", "home": "DH", "away": "X",
+              "home_goals": 4, "away_goals": 3},
+             {"date": "2025-06-01", "home": "DH", "away": "X",
+              "home_goals": 2, "away_goals": 8}]
+    logs = {7: [{"date": "2025-06-01", "ip": 6.0, "r": 2, "so": 5, "bb": 1,
+                 "hr": 0, "gs": 1}]}
+    bp = mlb.BullpenBook(games, logs, {7: "DH"})
+    assert "DH" not in bp.team_games
+    # 補齊第二筆 → 納入，且牛棚失分 = 總失分 11 − 先發 2+3 = 6、局數 18−12=6
+    logs[8] = [{"date": "2025-06-01", "ip": 6.0, "r": 3, "so": 4, "bb": 2,
+                "hr": 1, "gs": 1}]
+    bp2 = mlb.BullpenBook(games, logs, {7: "DH", 8: "DH"})
+    assert bp2.team_games["DH"] == [("2025-06-01", 6.0, 6.0)]
+
+
+def test_bullpen_relief_appearance_excluded():
+    # gs=0 的出賽（假先發/長中繼）不得算進先發合計
+    games = [{"date": "2025-06-01", "home": "T", "away": "X",
+              "home_goals": 4, "away_goals": 5}]
+    logs = {1: [{"date": "2025-06-01", "ip": 5.0, "r": 2, "so": 4, "bb": 1,
+                 "hr": 0, "gs": 1}],
+            2: [{"date": "2025-06-01", "ip": 2.0, "r": 1, "so": 2, "bb": 0,
+                 "hr": 0, "gs": 0}]}   # 後援
+    bp = mlb.BullpenBook(games, logs, {1: "T", 2: "T"})
+    # 牛棚失分 = 5 − 先發 2 = 3；局數 = 9 − 5 = 4（後援那 2 局屬牛棚，不扣）
+    assert bp.team_games["T"] == [("2025-06-01", 3.0, 4.0)]
+
+
+def test_bullpen_predictor_shifts_totals():
+    from footy import mlb_sim
+    model = _mlb_model()
+    games = []
+    for i in range(20):
+        games.append({"date": f"2025-06-{i + 1:02d}", "home": "Team0",
+                      "away": "Team5", "home_goals": 4,
+                      "away_goals": 3 if i < 14 else 8})   # Team0 牛棚近期爆
+    logs = {9: [{"date": f"2025-06-{i + 1:02d}", "ip": 6.0, "r": 2, "so": 5,
+                 "bb": 1, "hr": 0, "gs": 1} for i in range(20)]}
+    bp = mlb.BullpenBook(games, logs, {9: "Team0"}, prior_ip=10.0, halflife_days=4.0)
+    g = {"home": "Team0", "away": "Team5", "date": "2025-06-25",
+         "_total_line": 8.5, "run_line": -1.5, "park": 1.0}
+    base = mlb_sim.nb_predictor(model)(g)
+    with_bp = mlb_sim.nb_bullpen_predictor(model, bp)(g)
+    assert with_bp["p_over"] > base["p_over"]   # 主隊牛棚爆 → 客隊得分↑ → 大分機率↑

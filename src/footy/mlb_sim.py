@@ -634,6 +634,45 @@ def nb_pitcher_predictor(model, form_book, halflife: float, dispersion: float | 
     return f
 
 
+def nb_bullpen_predictor(model, bullpen_book, dispersion: float | None = None):
+    """NB + 牛棚近況（單獨隔離牛棚效果）：主隊牛棚係數壓/放客隊得分，反之亦然。"""
+    from . import mlb
+
+    def f(g):
+        if g["home"] not in model.attack or g["away"] not in model.attack:
+            return None
+        as_of = g.get("date")
+        hbf = bullpen_book.factor(g["home"], as_of=as_of)
+        abf = bullpen_book.factor(g["away"], as_of=as_of)
+        m = mlb.analyze_game(model, g["home"], g["away"], total_line=g["_total_line"],
+                             run_line=g.get("run_line", -1.5), park_factor=g.get("park", 1.0),
+                             dispersion=dispersion,
+                             home_pitcher_factor=hbf, away_pitcher_factor=abf)
+        return {"p_home": m.p_home, "p_over": m.p_over, "p_cover_home": m.p_cover_home}
+    return f
+
+
+def nb_pitcher_bullpen_predictor(model, form_book, bullpen_book, halflife: float,
+                                 dispersion: float | None = None):
+    """NB + 先發近況 + 牛棚近況：兩係數同乘在對手 λ 上（決策比較的主角）。"""
+    from . import mlb
+
+    def f(g):
+        if g["home"] not in model.attack or g["away"] not in model.attack:
+            return None
+        as_of = g.get("date")
+        hpf = (form_book.factor(g.get("home_sp"), as_of=as_of, halflife=halflife)
+               * bullpen_book.factor(g["home"], as_of=as_of))
+        apf = (form_book.factor(g.get("away_sp"), as_of=as_of, halflife=halflife)
+               * bullpen_book.factor(g["away"], as_of=as_of))
+        m = mlb.analyze_game(model, g["home"], g["away"], total_line=g["_total_line"],
+                             run_line=g.get("run_line", -1.5), park_factor=g.get("park", 1.0),
+                             dispersion=dispersion,
+                             home_pitcher_factor=hpf, away_pitcher_factor=apf)
+        return {"p_home": m.p_home, "p_over": m.p_over, "p_cover_home": m.p_cover_home}
+    return f
+
+
 def nb_weather_predictor(model, dispersion: float | None = None):
     """NB + 天氣：把天氣得分環境乘數併入 park_factor（對兩隊對稱，只動大小盤）。"""
     from . import mlb

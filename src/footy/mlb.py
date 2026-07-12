@@ -292,6 +292,7 @@ def parse_pitcher_gamelog(payload: dict) -> list[dict]:
                 "so": int(st.get("strikeOuts") or 0),
                 "bb": int(st.get("baseOnBalls") or 0),
                 "hr": int(st.get("homeRuns") or 0),
+                "gs": int(st.get("gamesStarted") or 0),   # 供牛棚簿分離先發/後援
             })
     rows.sort(key=lambda g: g["date"])
     return rows
@@ -394,6 +395,100 @@ class PitcherFormBook:
         raw = r / base if base > 0 else 1.0
         raw = min(max(raw, self.CLIP[0]), self.CLIP[1])
         return self.STARTER_SHARE * raw + (1.0 - self.STARTER_SHARE)
+
+
+class BullpenBook:
+    """牛棚近況簿：由「全隊該日失分 − 先發失分」推算每隊牛棚逐日 RA/9，
+    比較近況（指數衰減）vs 自家季平均 → 對手得分乘數。
+
+    設計重點（避免與 NB 隊防守重複計算）：NB 隊防守已含先發+牛棚的季平均
+    強度，故本簿不算絕對強弱，只修正「牛棚目前狀態相對自家季平均」的偏差
+    ——係數 = 近況 RA/9 ÷ 季 RA/9（收縮後夾限），再按牛棚局數比重（~0.4）
+    混入。point-in-time：factor(as_of) 只用日期 < as_of 的比賽（零洩漏）。
+
+    資料近似（誠實揭露）：牛棚失分 = 該隊該日總失分 − 該日先發（gs>0 出賽）
+    失分；牛棚局數 = 9×場數 − 先發局數（延長/提前結束的誤差在大樣本抵銷）。
+    該隊日若無先發紀錄、或雙重賽先發紀錄不齊（2 場只有 1 筆），整日略過，
+    避免把另一位先發的失分錯算給牛棚。
+    """
+
+    CLIP = (0.85, 1.2)
+    BP_SHARE = 0.4        # 牛棚約吃 4/9 局數 → 套用權重
+
+    def __init__(self, games: list[dict], logs: dict, pid_team: dict,
+                 prior_ip: float = 30.0, halflife_days: float = 14.0):
+        """games：[{date, home, away, home_goals, away_goals}]（全季賽果）；
+        logs：{pid: 逐場列}（parse_pitcher_gamelog 產物）；pid_team：{pid: 隊名}。"""
+        self.prior_ip = prior_ip
+        self.halflife = halflife_days
+        # (隊, 日) → [先發失分, 先發局數, 先發筆數]
+        sp: dict[tuple, list] = {}
+        for pid, rows in logs.items():
+            team = (pid_team or {}).get(int(pid))
+            if not team:
+                continue
+            for g in rows:
+                if not g.get("gs", 1):        # 只算先發出賽；舊資料無 gs 欄則全算
+                    continue
+                agg = sp.setdefault((team, g["date"]), [0.0, 0.0, 0])
+                agg[0] += int(g["r"]); agg[1] += float(g["ip"]); agg[2] += 1
+        # (隊, 日) → [總失分, 場數]
+        per: dict[tuple, list] = {}
+        for g in games:
+            d = str(g["date"])[:10]
+            for team, allowed in ((g["home"], g["away_goals"]),
+                                  (g["away"], g["home_goals"])):
+                agg = per.setdefault((team, d), [0.0, 0])
+                agg[0] += int(allowed); agg[1] += 1
+        # 隊 → [(日, 牛棚失分, 牛棚局數)]（依日排序）
+        self.team_games: dict[str, list] = {}
+        for (team, d), (allowed, n) in per.items():
+            s = sp.get((team, d))
+            if not s or s[2] != n:            # 無先發紀錄或雙重賽不齊 → 略過
+                continue
+            bp_ip = 9.0 * n - s[1]
+            if bp_ip < 0.5:                   # 近乎完投，無牛棚樣本
+                continue
+            bp_r = max(0.0, allowed - s[0])
+            self.team_games.setdefault(team, []).append((d, bp_r, bp_ip))
+        for v in self.team_games.values():
+            v.sort()
+
+    def _wsum(self, team: str, as_of: str | None,
+              halflife: float | None) -> tuple[float, float]:
+        """指數衰減加權的（失分, 局數）合計；halflife=None → 等權（季至今）。"""
+        import datetime as _dt
+        rows = [g for g in self.team_games.get(team, [])
+                if not as_of or g[0] < as_of]
+        if not rows:
+            return 0.0, 0.0
+        anchor = _dt.date.fromisoformat((as_of or rows[-1][0])[:10])
+        w_r = w_ip = 0.0
+        for d, r, ip in rows:
+            if halflife and halflife < 1e6:
+                age = (anchor - _dt.date.fromisoformat(d)).days
+                wt = 0.5 ** (max(age, 0) / halflife)
+            else:
+                wt = 1.0
+            w_r += wt * r; w_ip += wt * ip
+        return w_r, w_ip
+
+    def factor(self, team: str, as_of: str | None = None) -> float:
+        """對手得分乘數（已混牛棚比重）；資料不足 → 1.0。
+
+        近況 RA/9 以 prior_ip 局的「自家季平均」收縮（樣本少 → 趨近 1），
+        比率夾在 CLIP 再按 BP_SHARE 混合：牛棚近期失分多 → 係數 >1。
+        """
+        sr, sip = self._wsum(team, as_of, None)
+        rr, rip = self._wsum(team, as_of, self.halflife)
+        if sip < self.prior_ip or rip <= 0:   # 季樣本太少，不做修正
+            return 1.0
+        season = 9.0 * sr / sip
+        if season <= 0:
+            return 1.0
+        recent = 9.0 * (rr + season / 9.0 * self.prior_ip) / (rip + self.prior_ip)
+        raw = min(max(recent / season, self.CLIP[0]), self.CLIP[1])
+        return 1.0 + self.BP_SHARE * (raw - 1.0)
 
 
 def fetch_pitchers(season: int, out_path: str | Path | None = None,

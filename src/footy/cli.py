@@ -698,6 +698,30 @@ def mlb_backtest_sim(data_path, start, end, rates_season, n_sims, max_games, wit
     form = mlb.PitcherFormBook(logs, pid_team=pid_team)
     click.echo(f"[bt] 先發 game log：{len(logs)}/{len(sp_ids)} 位投手（隊基準 {len(form.team_base)} 隊）")
 
+    # 3c) 牛棚近況簿：補抓「全聯盟先發（gs>0）」gamelog 提升涵蓋，
+    #     由「全隊該日失分 − 先發失分」推算牛棚逐日 RA/9（point-in-time）
+    bp = None
+    try:
+        season_rows = mlb.fetch_pitchers(season_year)
+        pid_team_all = {int(r["id"]): r["team"] for r in season_rows if r.get("team")}
+        pid_team_all.update(pid_team)         # boxscore 實際先發隊優先
+        gs_ids = {int(r["id"]) for r in season_rows if int(r.get("gs") or 0) > 0}
+        extra = 0
+        for pid in gs_ids - set(logs):
+            try:
+                logs[int(pid)] = mlb.fetch_pitcher_gamelog(int(pid), season_year)
+                extra += 1
+            except Exception:  # noqa: BLE001
+                continue
+        game_rows = df[["date", "home", "away", "home_goals", "away_goals"]] \
+            .to_dict("records")
+        bp = mlb.BullpenBook(game_rows, logs, pid_team_all)
+        cov = sum(len(v) for v in bp.team_games.values())
+        click.echo(f"[bt] 牛棚簿：{len(bp.team_games)} 隊、{cov} 個隊日樣本"
+                   f"（補抓 {extra} 位先發 gamelog）")
+    except Exception as e:  # noqa: BLE001
+        click.echo(f"[bt] 牛棚簿建立失敗，略過：{e}")
+
     # 4) 比對：NB / NB+季投手 / NB+近況投手（主角），另列 NB+打線；選配 event-sim
     book = mlb_sim.LineupBook(bat_lines, league)
     preds = {
@@ -707,6 +731,10 @@ def mlb_backtest_sim(data_path, start, end, rates_season, n_sims, max_games, wit
         "NB+打線": mlb_sim.nb_lineup_predictor(model, book, dispersion=disp),
         "NB+天氣": mlb_sim.nb_weather_predictor(model, dispersion=disp),
     }
+    if bp is not None:
+        preds["NB+牛棚"] = mlb_sim.nb_bullpen_predictor(model, bp, dispersion=disp)
+        preds["NB+近況投手+牛棚"] = mlb_sim.nb_pitcher_bullpen_predictor(
+            model, form, bp, halflife=4.0, dispersion=disp)
     if with_sim:
         preds["event-sim"] = mlb_sim.sim_predictor(n_sims=n_sims, seed=0)
     res = mlb_sim.compare_backtest(games, preds)
@@ -726,6 +754,19 @@ def mlb_backtest_sim(data_path, start, end, rates_season, n_sims, max_games, wit
     if None not in (nb_ou, wx_ou):
         click.echo(f"大小 log-loss：NB {nb_ou:.4f}｜NB+天氣 {wx_ou:.4f} → "
                    f"{'✅ 天氣有幫助' if wx_ou < nb_ou else '❌ 無'}（{wx_ou - nb_ou:+.4f}）")
+    # 牛棚是大小盤訊號：決策比較 = NB+近況投手 vs +牛棚 的 OU log-loss/Brier
+    if bp is not None and "NB+近況投手+牛棚" in res:
+        base_ou = res["NB+近況投手"]["ou"]
+        bp_ou = res["NB+近況投手+牛棚"]["ou"]
+        if None not in (base_ou["logloss"], bp_ou["logloss"]):
+            d_ll = bp_ou["logloss"] - base_ou["logloss"]
+            d_br = bp_ou["brier"] - base_ou["brier"]
+            click.echo(f"大小 log-loss：NB+近況投手 {base_ou['logloss']:.4f}｜"
+                       f"+牛棚 {bp_ou['logloss']:.4f} → "
+                       f"{'✅ 牛棚有幫助' if d_ll < 0 else '❌ 無'}（{d_ll:+.4f}）")
+            click.echo(f"大小 Brier   ：NB+近況投手 {base_ou['brier']:.4f}｜"
+                       f"+牛棚 {bp_ou['brier']:.4f} → "
+                       f"{'✅' if d_br < 0 else '❌'}（{d_br:+.4f}）")
 
 
 @mlb_group.command("weather-probe")
