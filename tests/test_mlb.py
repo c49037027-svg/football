@@ -586,3 +586,21 @@ def test_bullpen_predictor_shifts_totals():
     base = mlb_sim.nb_predictor(model)(g)
     with_bp = mlb_sim.nb_bullpen_predictor(model, bp)(g)
     assert with_bp["p_over"] > base["p_over"]   # 主隊牛棚爆 → 客隊得分↑ → 大分機率↑
+
+
+def test_load_with_history(tmp_path):
+    cur = tmp_path / "mlb.csv"
+    hist = tmp_path / "mlb_hist.csv"
+    cur.write_text("date,home,away,home_goals,away_goals\n"
+                   "2025-04-01,Cleveland Guardians,Athletics,3,2\n")
+    hist.write_text("date,home,away,home_goals,away_goals\n"
+                    "2021-05-01,Cleveland Indians,Oakland Athletics,4,1\n"
+                    "2025-04-01,Cleveland Guardians,Athletics,3,2\n")   # 重複列
+    df = mlb.load_with_history(cur, hist)
+    assert len(df) == 2                                  # 去重
+    assert set(df["home"]) == {"Cleveland Guardians"}    # 舊名 → 現名
+    assert set(df["away"]) == {"Athletics"}
+    assert df.iloc[0]["date"].year == 2021               # 依日排序
+    # 無歷史檔 → 只載現行
+    df2 = mlb.load_with_history(cur, tmp_path / "nope.csv")
+    assert len(df2) == 1

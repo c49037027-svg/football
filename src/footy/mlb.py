@@ -45,6 +45,31 @@ MLB_ZH = {
     "Washington Nationals": "國民",
 }
 
+# 跨季改名（歷史資料 → 現名），合併多季訓練時套用
+MLB_TEAM_RENAMES = {
+    "Cleveland Indians": "Cleveland Guardians",   # 2022 改名
+    "Oakland Athletics": "Athletics",             # 2025 遷沙加緬度
+}
+
+
+def load_with_history(data_path: str | Path,
+                      hist_path: str | Path | None = "data/mlb_hist.csv"):
+    """載入賽果並（若存在）合併歷史賽季，統一隊名、去重、依日排序。
+
+    回測驗證（docs/FINDINGS.md）：隊伍強度用全史+半衰期 365 天訓練，
+    大小盤四窗口全贏現行 2 季/120 天；球場係數/離散度仍用近 2 季（data_path）。
+    """
+    import pandas as pd
+    df = pd.read_csv(data_path)
+    if hist_path and Path(hist_path).exists():
+        hist = pd.read_csv(hist_path)
+        df = pd.concat([hist, df], ignore_index=True)
+    for c in ("home", "away"):
+        df[c] = df[c].replace(MLB_TEAM_RENAMES)
+    df["date"] = pd.to_datetime(df["date"])
+    df = df.drop_duplicates(subset=["date", "home", "away"])
+    return df.sort_values("date").reset_index(drop=True)
+
 
 def zh_mlb(name: str) -> str:
     return MLB_ZH.get(name, name)

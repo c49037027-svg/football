@@ -434,14 +434,22 @@ def mlb_fetch(seasons, out):
 
 @mlb_group.command("train")
 @click.option("--data", "data_path", default="data/mlb.csv")
+@click.option("--hist", "hist_path", default="data/mlb_hist.csv",
+              help="歷史賽季 CSV（存在則合併訓練；傳空字串停用）")
 @click.option("--out", default="models/mlb.pkl")
-@click.option("--half-life", default=120.0, type=float,
-              help="時間衰減半衰期（天）。棒球狀態變化快，預設 120")
+@click.option("--half-life", default=365.0, type=float,
+              help="時間衰減半衰期（天）。回測：全史+365 天四窗口勝 2 季+120 天")
 @click.option("--reg", default=0.3, type=float, help="L2 正則化（往聯盟平均收縮）")
-def mlb_train(data_path, out, half_life, reg):
-    """以得分（runs）訓練 Dixon–Coles（max_goals=20、無低比分修正）。"""
-    df = loader.load_csv(data_path)
-    click.echo(f"[mlb] 載入 {len(df)} 場，擬合中（half_life={half_life}天, reg={reg}）…")
+def mlb_train(data_path, hist_path, out, half_life, reg):
+    """以得分（runs）訓練 Dixon–Coles（max_goals=20、無低比分修正）。
+
+    隊伍強度用「全史+半衰期」訓練；球場係數/離散度另在建站時以近 2 季
+    （data/mlb.csv）估計——回測顯示結構參數用短窗口較準（FINDINGS）。
+    """
+    from . import mlb
+    df = mlb.load_with_history(data_path, hist_path or None)
+    click.echo(f"[mlb] 載入 {len(df)} 場（{df['date'].min().date()}→"
+               f"{df['date'].max().date()}），擬合中（half_life={half_life}天, reg={reg}）…")
     model = dc.fit(df, half_life_days=half_life, max_goals=20, rho_init=0.0,
                    reg=reg, verbose=True)
     model.save(out)
@@ -629,18 +637,20 @@ def mlb_backtest_sim(data_path, start, end, rates_season, n_sims, max_games, wit
     import pandas as pd
 
     from . import mlb, mlb_sim
-    # 1) NB 模型：只用切分日之前的賽果訓練（無前視）
-    df = pd.read_csv(data_path)
-    df["date"] = pd.to_datetime(df["date"])
+    # 1) NB 模型：只用切分日之前的賽果訓練（無前視）。
+    #    鏡射生產配置：強度=全史+半衰期 365；球場係數/離散度=近 2 季（FINDINGS）
+    df = mlb.load_with_history(data_path)
     cut = pd.Timestamp(start)
     train = df[df["date"] < cut]
     if train.empty:
         raise click.ClickException("切分日之前無訓練資料。")
-    model = dc.fit(train, half_life_days=120, max_goals=20, rho_init=0.0,
+    model = dc.fit(train, half_life_days=365, max_goals=20, rho_init=0.0,
                    reg=0.3, reference_date=cut)
-    disp = mlb.dispersion_from_df(train)
-    pf_map = mlb.park_factors(train) if len(train) else {}
-    click.echo(f"[bt] NB 訓練 {len(train)} 場（<{start}）｜k={disp:.2f}" if disp else "[bt] 無過度離散")
+    struct = train[train["date"] >= cut - pd.Timedelta(days=731)]
+    disp = mlb.dispersion_from_df(struct)
+    pf_map = mlb.park_factors(struct) if len(struct) else {}
+    click.echo(f"[bt] NB 訓練 {len(train)} 場（<{start}，hl=365）｜"
+               f"結構參數近 2 季 {len(struct)} 場｜k={disp:.2f}" if disp else "[bt] 無過度離散")
 
     # 2) 前一季事件率（point-in-time 近似）
     try:
