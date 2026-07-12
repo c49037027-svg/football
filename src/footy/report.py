@@ -702,6 +702,7 @@ def _navbar(active: str) -> str:
     return (f"<div class='nav'><a href='index.html'{cls('home')}>🏆 首頁</a>"
             f"<a href='knockout.html'{cls('knockout')}>🏟️ 晉級&對陣</a>"
             f"<a href='mlb.html'{cls('mlb')}>⚾ MLB</a>"
+            f"<a href='nba.html'{cls('nba')}>🏀 NBA</a>"
             f"<a href='performance.html'{cls('perf')}>📈 績效</a>"
             f"<a href='/custom'{cls('custom')}>🔧 自訂分析</a></div>")
 
@@ -1226,7 +1227,7 @@ def _mlb_card(r, zh_t) -> str:
         wx_note = f"<span class='pf' style='color:#6ea8fe' title='{tip}'>🌤 {' '.join(parts)}</span>"
     t = r.get("time")
     time_note = f"<div class='mtime'>🕒 {html.escape(t)}</div>" if t else ""
-    tops = "、".join(f"{h}-{a}" for (h, a), p in m.top_scores[:3])
+    tops = "、".join(f"{h}-{a}" for (h, a), p in m.top_scores[:3]) if m.top_scores else ""
     # 診斷標記（HTML 註解，不顯示）：每場天氣是否抓到 + 總分係數，供建站自我檢查
     diag = f"<!--wx:{'fetched' if wx else 'none'} wxf:{(wf or 1.0):.3f}-->"
     return (
@@ -1234,7 +1235,7 @@ def _mlb_card(r, zh_t) -> str:
         f"<div class='mhd'><b>{az}</b> <span class='at'>@</span> <b>{hz}</b>"
         f"<span class='xr'>{m.exp_away:.1f}–{m.exp_home:.1f}</span>{pf_note}{wx_note}</div>"
         f"{time_note}{pit}<div class='mtab'>{mtable}</div>"
-        f"<div class='mtop'>可能比分 {tops}</div></div>")
+        + (f"<div class='mtop'>可能比分 {tops}</div>" if tops else "") + "</div>")
 
 
 def _mlb_top5(rows, zh_t, mkt_conf=None) -> str:
@@ -1305,10 +1306,19 @@ def _mlb_top5(rows, zh_t, mkt_conf=None) -> str:
 
 
 def render_mlb_page(rows, date: str, power=None, track_text=None,
-                    note: str = "", title: str = "MLB 今日預測", mkt_conf=None) -> str:
-    """MLB 分頁：TOP5 最推薦 + 今日各場預測卡（含買/觀望、開賽時間）+ 戰力表 + 戰績。"""
+                    note: str = "", title: str = "MLB 今日預測", mkt_conf=None,
+                    zh=None, sport: str = "MLB") -> str:
+    """MLB/NBA 分頁：TOP5 最推薦 + 今日各場預測卡（含買/觀望、開賽時間）+ 戰力表 + 戰績。
+
+    sport="NBA" 時換圖示/導覽/說明字樣與績效連結，其餘結構共用（zh 傳該運動譯名函式）。
+    """
     from . import mlb as _mlb
-    zh_t = _mlb.zh_mlb
+    zh_t = zh or _mlb.zh_mlb
+    icon = "🏀" if sport == "NBA" else "⚾"
+    nav_key = sport.lower()
+    perf_href = f"{sport.lower()}_perf.html"
+    sub_desc = ("攻防評分（加權嶺回歸）+ 常態分布盤口機率" if sport == "NBA" else
+                "負二項得分模型 + 先發投手(RA/9+FIP) + 球場因子 + 天氣")
     top5 = _mlb_top5(rows, zh_t, mkt_conf)
     cards = [_mlb_card(r, zh_t) for r in rows]
     body = ("<div class='mgrid'>" + "".join(cards) + "</div>") if cards else (
@@ -1317,7 +1327,7 @@ def render_mlb_page(rows, date: str, power=None, track_text=None,
     body = top5 + body
     track_html = ""
     if track_text:
-        track_html = (f"<div class='card'><div class='sec'>📒 MLB 推薦戰績</div>"
+        track_html = (f"<div class='card'><div class='sec'>📒 {sport} 推薦戰績</div>"
                       f"<div class='small' style='white-space:pre-line;color:#cdd9e5'>"
                       f"{html.escape(track_text)}</div></div>")
     power_html = ""
@@ -1367,9 +1377,9 @@ font-size:13px;padding:5px 0;border-bottom:1px solid #171e26}}
 .sec-collapse>summary::before{{content:'▸ '}}.sec-collapse[open]>summary::before{{content:'▾ '}}
 </style></head>
 <body><div class="wrap">
-  {_navbar('mlb')}
-  <h1>⚾ {html.escape(title)}</h1>
-  <div class="sub">{html.escape(date)}（美東賽程日）· 負二項得分模型 + 先發投手(RA/9+FIP) + 球場因子 + 天氣 · <a href="mlb_perf.html" style="color:var(--accent)">📈 MLB 績效</a></div>
+  {_navbar(nav_key)}
+  <h1>{icon} {html.escape(title)}</h1>
+  <div class="sub">{html.escape(date)}（美東賽程日）· {sub_desc} · <a href="{perf_href}" style="color:var(--accent)">📈 {sport} 績效</a></div>
   <div class="disc">⚠️ 純機率預測，非投注建議。只列模型較看好的一側；<b class="bs buy" style="font-size:10px">買</b>=融合市場後 +EV 且過風控、<b class="bs wait" style="font-size:10px">觀望</b>=無正期望值；時間為台北時區。</div>
   {('<div class="small" style="color:var(--warn);margin-bottom:8px">' + html.escape(note) + '</div>') if note else ''}
   {track_html}
@@ -1382,8 +1392,10 @@ font-size:13px;padding:5px 0;border-bottom:1px solid #171e26}}
 _MLB_MK_ZH = {"1X2": "錢線", "OU": "大小", "AH": "讓分"}
 
 
-def _mlb_perf_doc(title, sub, body):
-    """MLB 績效頁殼（導覽列 MLB 高亮 + 返回 MLB 預測連結）。"""
+def _mlb_perf_doc(title, sub, body, sport: str = "MLB"):
+    """MLB/NBA 績效頁殼（導覽列高亮 + 返回預測頁連結）。"""
+    icon = "🏀" if sport == "NBA" else "⚾"
+    nav_key, back = sport.lower(), f"{sport.lower()}.html"
     return f"""<!doctype html><html lang="zh-Hant"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>{html.escape(title)}</title><style>{_CSS}
@@ -1403,18 +1415,18 @@ border-radius:14px;padding:16px 18px;margin:4px 0 10px}}
 @media(max-width:480px){{.hero-main b{{font-size:28px}}}}
 </style></head>
 <body><div class="wrap">
-  {_navbar('mlb')}
-  <h1>⚾ {html.escape(title)}</h1>
-  <div class="sub">{sub} · <a href="mlb.html" style="color:var(--accent)">← 回今日預測</a></div>
+  {_navbar(nav_key)}
+  <h1>{icon} {html.escape(title)}</h1>
+  <div class="sub">{sub} · <a href="{back}" style="color:var(--accent)">← 回今日預測</a></div>
   {body}
   <div class="foot">Generated by footy · 研究與教育用途，非投注建議</div>
 </div></body></html>"""
 
 
-def _mlb_pending_body(pending):
-    """MLB 已連結真實盤口、尚未結算時：列出待結算 +EV 推薦（依 edge 排序）。"""
+def _mlb_pending_body(pending, zh=None):
+    """MLB/NBA 已連結真實盤口、尚未結算時：列出待結算 +EV 推薦（依 edge 排序）。"""
     from . import mlb as _mlb
-    zt = _mlb.zh_mlb
+    zt = zh or _mlb.zh_mlb
     rows = sorted(pending, key=lambda r: -(r.get("edge") or 0))
     trs = ""
     for r in rows[:60]:
@@ -1442,26 +1454,27 @@ def _mlb_pending_body(pending):
 
 
 def render_mlb_perf_page(hist, track_text=None, pending=None,
-                         title="MLB 下注績效 & CLV") -> str:
+                         title="MLB 下注績效 & CLV", zh=None,
+                         sport: str = "MLB") -> str:
     """MLB 獨立績效頁：累積損益/ROI 主視覺 + CLV 折線 + 逐注過/沒過紀錄。
 
     與足球績效頁同結構，改用棒球盤口名（錢線/大小/讓分）與台灣譯名。
     三態：已結算→完整圖表；已連結全待結算→列出 +EV 推薦；皆無→引導設定盤口金鑰。
     """
     from . import mlb as _mlb
-    zt = _mlb.zh_mlb
+    zt = zh or _mlb.zh_mlb
     today = _dt.date.today().isoformat()
     track_card = _track_card(track_text)
     if not hist:
         if pending:
-            return _mlb_perf_doc(title, today, _mlb_pending_body(pending) + track_card)
+            return _mlb_perf_doc(title, today, _mlb_pending_body(pending, zh=zt) + track_card, sport=sport)
         body = ("<div class='card'><div class='sec'>📈 尚無收益紀錄（無已結算的真實盤口下注）</div>"
                 "<div class='small' style='color:var(--muted);line-height:1.7'>"
                 "需要部署環境設定 <code>ODDS_API_KEY</code>，系統才會抓 MLB 真實盤口、"
                 "只記模型相對市場有正期望值(+EV)的推薦，並在賽後用下注/收盤賠率"
                 "算實際 ROI 與 CLV。<br>累積足夠注數後，這裡會出現："
                 "<b>累積收益曲線、ROI、CLV 走勢</b>與勝過收盤比例。</div></div>")
-        return _mlb_perf_doc(title, today, body + track_card)
+        return _mlb_perf_doc(title, today, body + track_card, sport=sport)
 
     last = hist[-1]
     pl_pts = [r["cum_pl"] for r in hist]
@@ -1499,13 +1512,14 @@ def render_mlb_perf_page(hist, track_text=None, pending=None,
     note = ("<div class='small' style='color:var(--muted);margin-top:4px'>"
             "CLV（closing line value）= 你拿到的賠率 vs 收盤賠率；長期 CLV&gt;0 是"
             "判斷模型能否真正贏過市場最可靠的領先指標，比短期勝率/ROI 抗雜訊。</div>")
-    return _mlb_perf_doc(title, sub, hero + kpis + charts + note + log_html + track_card)
+    return _mlb_perf_doc(title, sub, hero + kpis + charts + note + log_html + track_card, sport=sport)
 
 
 def write_worldcup_site(result, model, matches, outdir, history=None,
                         title="2026 世界盃預測", n_sims=20000, injury_counts=None,
                         track_text=None, ledger_path=None, odds_index=None,
-                        mlb_html=None, mlb_perf_html=None, interactive=False):
+                        mlb_html=None, mlb_perf_html=None,
+                        nba_html=None, nba_perf_html=None, interactive=False):
     """產生多頁網站：index.html + 每場可分析的 match_<num>.html。
 
     可分析 = 雙方皆為模型已知球隊（小組賽全部；淘汰賽待隊伍確定後）。
@@ -1622,4 +1636,37 @@ def write_worldcup_site(result, model, matches, outdir, history=None,
         except Exception:  # noqa: BLE001
             mlb_perf_html = render_mlb_perf_page([], pending=[])
     (outdir / "mlb_perf.html").write_text(mlb_perf_html, encoding="utf-8")
+    # NBA 分頁 + 績效頁（結構同 MLB；沒有現成 HTML 就寫引導頁/自算，連結不 404）
+    if nba_html is None:
+        import datetime as _dt3
+
+        from . import nba as _nbamod
+        nba_html = render_mlb_page(
+            [], date=_dt3.date.today().isoformat(), zh=_nbamod.zh_nba, sport="NBA",
+            title="NBA 今日預測",
+            note="NBA 預測需在部署環境啟用：footy nba fetch → train，每日建站自動更新本頁。")
+    (outdir / "nba.html").write_text(nba_html, encoding="utf-8")
+    if nba_perf_html is None:
+        try:
+            from . import nba as _nbamod2, tracker as _tr2
+            nba_hist = _tr2.history(_nbamod2.NBA_LEDGER)
+            nba_pending = []
+            if Path(_nbamod2.NBA_LEDGER).exists():
+                ndf = _tr2.load_ledger(_nbamod2.NBA_LEDGER)
+                np_ = ndf[(ndf["source"] == "market") & (ndf["result"] == "pending")]
+                for _, r in np_.iterrows():
+                    nba_pending.append({"date": r["date"], "home": r["home"],
+                                        "away": r["away"], "market": r["market"],
+                                        "selection": r["selection"], "line": r["line"],
+                                        "odds": _tr2._to_float(r["odds"]),
+                                        "edge": _tr2._to_float(r["edge"])})
+            from . import mlb as _mlbmod2
+            nba_perf_html = render_mlb_perf_page(
+                nba_hist, track_text=_mlbmod2.summary_text(_nbamod2.NBA_LEDGER, label="NBA"),
+                pending=nba_pending, title="NBA 下注績效 & CLV",
+                zh=_nbamod2.zh_nba, sport="NBA")
+        except Exception:  # noqa: BLE001
+            nba_perf_html = render_mlb_perf_page([], pending=[], title="NBA 下注績效 & CLV",
+                                                 sport="NBA")
+    (outdir / "nba_perf.html").write_text(nba_perf_html, encoding="utf-8")
     return outdir, len(linked)

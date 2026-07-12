@@ -53,6 +53,11 @@ jobs:
           footy mlb fetch-pitchers --season 2026 --out data/mlb_pitchers.csv || true
           test -f data/mlb.csv && footy mlb train || echo "無 MLB 資料，略過訓練"
 
+      - name: NBA 資料 + 模型（失敗不中斷；休賽季賽程可能為空，靠歷史資料訓練）
+        run: |
+          footy nba fetch --out data/nba.csv || true
+          (test -f data/nba.csv || test -f data/nba_hist.csv) && footy nba train || echo "無 NBA 資料，略過訓練"
+
       - name: AI 連線自我檢查（非必須，失敗不中斷）
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
@@ -101,6 +106,7 @@ jobs:
           git config user.email "actions@github.com"
           git add -f data/bets.csv data/odds_log.csv || true
           git add -f data/mlb.csv data/mlb_pitchers.csv data/mlb_bets.csv models/mlb.pkl 2>/dev/null || true
+          git add -f data/nba.csv data/nba_bets.csv models/nba.pkl 2>/dev/null || true
           git commit -m "chore: 更新戰績帳本/賠率快照/MLB 資料與模型 [skip ci]" || echo "無變更"
           git push || echo "推送略過"
 

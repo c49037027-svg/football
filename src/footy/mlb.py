@@ -861,8 +861,8 @@ def settle_ledger(ledger_path, days_back: int = 5) -> int:
     return tracker.settle(ledger_path, results)
 
 
-def summary_text(ledger_path) -> str | None:
-    """MLB 戰績摘要（沿用 tracker 統計，改棒球盤口名）。無紀錄回 None。"""
+def summary_text(ledger_path, label: str = "MLB") -> str | None:
+    """MLB/NBA 戰績摘要（沿用 tracker 統計，盤口名共用 錢線/大小/讓分）。無紀錄回 None。"""
     from pathlib import Path as _P
 
     from . import tracker
@@ -876,7 +876,7 @@ def summary_text(ledger_path) -> str | None:
         d = w + l
         rt = f"{w/d:.0%}" if d else "—"
         parts.append(f"{_MLB_MARKET_ZH.get(mk, mk)} {w}–{l}（{rt}）")
-    head = (f"MLB 推薦戰績｜{s.wins} 勝 {s.losses} 敗"
+    head = (f"{label} 推薦戰績｜{s.wins} 勝 {s.losses} 敗"
             f"{f' {s.pushes} 走盤' if s.pushes else ''}"
             f"｜勝率 {s.win_rate:.1%}（待結 {s.pending}）")
     lines = [head]

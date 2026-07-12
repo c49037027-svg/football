@@ -421,6 +421,135 @@ def mlb_group():
     """MLB 美國職棒預測（錢線/讓分/大小）。資料源 statsapi.mlb.com（免費）。"""
 
 
+@cli.group("nba")
+def nba_group():
+    """NBA 美國職籃預測（錢線/讓分/大小）。資料源 nba.com（免費）。"""
+
+
+@nba_group.command("fetch")
+@click.option("--out", default="data/nba.csv")
+def nba_fetch(out):
+    """下載本季賽果（cdn.nba.com 賽程，一次呼叫）。沙箱擋，需在 Actions 跑。"""
+    from . import nba
+    rows = nba.parse_schedule_v2(nba.fetch_schedule(), finals_only=True)
+    n = nba.write_games_csv(rows, out)
+    d = f"{rows[0]['date']}→{rows[-1]['date']}" if rows else "無"
+    click.echo(f"[nba] 已存 {n} 場到 {out}（{d}）")
+
+
+@nba_group.command("fetch-history")
+@click.option("--seasons", multiple=True, required=True,
+              help="球季，可多個：--seasons 2021-22 --seasons 2022-23 …")
+@click.option("--out", default="data/nba_hist.csv")
+@click.option("--playoffs/--no-playoffs", default=True, help="是否含季後賽")
+def nba_fetch_history(seasons, out, playoffs):
+    """下載歷史賽季（stats.nba.com leaguegamelog）。需在 Actions 跑。"""
+    import time as _t
+
+    from . import nba
+    rows = []
+    for s in seasons:
+        for st in (["Regular Season", "Playoffs"] if playoffs else ["Regular Season"]):
+            try:
+                got = nba.fetch_gamelog(s, season_type=st)
+                rows.extend(got)
+                click.echo(f"[nba] {s} {st}：{len(got)} 場")
+            except Exception as e:  # noqa: BLE001
+                click.echo(f"[nba] {s} {st} 失敗：{e}")
+            _t.sleep(1.0)          # stats.nba.com 對頻繁請求敏感
+    rows.sort(key=lambda r: r["date"])
+    n = nba.write_games_csv(rows, out)
+    click.echo(f"[nba] 共 {n} 場 → {out}")
+
+
+@nba_group.command("train")
+@click.option("--data", "data_path", default="data/nba.csv")
+@click.option("--hist", "hist_path", default="data/nba_hist.csv",
+              help="歷史賽季 CSV（存在則合併；傳空字串停用）")
+@click.option("--out", default="models/nba.pkl")
+@click.option("--half-life", default=300.0, type=float,
+              help="時間衰減半衰期（天）")
+@click.option("--reg", default=8.0, type=float, help="攻防評分 L2 收縮強度")
+def nba_train(data_path, hist_path, out, half_life, reg):
+    """訓練攻防評分模型（加權嶺回歸 + 常態殘差）。"""
+    from . import nba
+    df = nba.load_with_history(data_path, hist_path or None)
+    click.echo(f"[nba] 載入 {len(df)} 場（{df['date'].min().date()}→"
+               f"{df['date'].max().date()}），擬合中（half_life={half_life}天, reg={reg}）…")
+    model = nba.fit_ratings(df, half_life_days=half_life, reg=reg)
+    model.save(out)
+    click.echo(f"[ok] 模型已存：{out}（{len(model.teams)} 隊，主場優勢="
+               f"{model.home_adv:+.2f} 分，σ分差={model.sigma_margin:.1f}"
+               f"，σ總分={model.sigma_total:.1f}）")
+
+
+@nba_group.command("today")
+@click.option("--model", "model_path", default="models/nba.pkl")
+@click.option("--date", default=None, help="美東賽程日 YYYY-MM-DD（預設今天）")
+def nba_today(model_path, date):
+    """列出今日各場模型看法（無盤口版；網站版含盤口）。"""
+    from . import mlb, nba
+    model = nba.NBAModel.load(model_path)
+    date = date or mlb.us_today()
+    sched = nba.parse_schedule_v2(nba.fetch_schedule(), finals_only=False)
+    games = [g for g in sched if g["date"] == date
+             and g["home"] in model.off and g["away"] in model.off]
+    if not games:
+        click.echo(f"{date} 無 NBA 賽事（或休賽季）。")
+        return
+    for g in games:
+        m = nba.analyze_game(model, g["home"], g["away"])
+        hz, az = nba.zh_nba(g["home"]), nba.zh_nba(g["away"])
+        click.echo(f"{az} @ {hz}｜預期 {m.exp_away:.0f}–{m.exp_home:.0f}"
+                   f"｜主勝 {m.p_home:.0%}｜大小 {m.total_line:g} 大 {m.p_over:.0%}"
+                   f"｜讓分 {m.run_line:+g} 主過盤 {m.p_cover_home:.0%}")
+
+
+@nba_group.command("backtest")
+@click.option("--data", "data_path", default="data/nba.csv")
+@click.option("--hist", "hist_path", default="data/nba_hist.csv")
+@click.option("--cut", required=True, help="測試起日（之前訓練，walk-forward）")
+@click.option("--end", default="9999-12-31", help="測試迄日")
+@click.option("--half-life", "half_lives", multiple=True, type=float,
+              default=(150.0, 300.0, 500.0, 1e9), help="半衰期網格")
+@click.option("--reg", default=8.0, type=float)
+def nba_backtest(data_path, hist_path, cut, end, half_lives, reg):
+    """walk-forward 回測：錢線/大小/讓分 log-loss（線用模型預期最近 .5，公平對比）。"""
+    import numpy as np
+    import pandas as pd
+
+    from . import nba
+    df = nba.load_with_history(data_path, hist_path or None)
+    cut_ts, end_ts = pd.Timestamp(cut), pd.Timestamp(end)
+    test = df[(df["date"] >= cut_ts) & (df["date"] <= end_ts)]
+    train_all = df[df["date"] < cut_ts]
+    click.echo(f"[nba-bt] 訓練 {len(train_all)} 場（<{cut}）｜測試 {len(test)} 場")
+    eps = 1e-12
+    # 大小/讓分若用「模型自取線」評估會恆為五五波（無資訊），故用不依賴盤口線的
+    # 分差/總分 MAE + 錢線 log-loss/準確率/校準來比。
+    print(f"{'半衰期':>8} | 錢線LL | 準確率 | 分差MAE | 總分MAE | 平均P(主) vs 實際 | n")
+    for hl in half_lives:
+        model = nba.fit_ratings(train_all, half_life_days=hl, reg=reg,
+                                reference_date=cut_ts)
+        ml = mae_m = mae_t = cal_p = cal_y = 0.0
+        acc = n = 0
+        for r in test.itertuples():
+            if r.home not in model.off or r.away not in model.off:
+                continue
+            m = nba.analyze_game(model, r.home, r.away)
+            hg, ag = int(r.home_goals), int(r.away_goals)
+            y = 1.0 if hg > ag else 0.0
+            ml -= y * np.log(max(m.p_home, eps)) + (1 - y) * np.log(max(1 - m.p_home, eps))
+            acc += (m.p_home >= 0.5) == (y == 1.0)
+            mae_m += abs((hg - ag) - (m.exp_home - m.exp_away))
+            mae_t += abs((hg + ag) - (m.exp_home + m.exp_away))
+            cal_p += m.p_home; cal_y += y
+            n += 1
+        name = "等權" if hl >= 1e6 else f"{hl:.0f}天"
+        print(f"{name:>8} | {ml/n:.4f} | {acc/n:.1%} | {mae_m/n:.2f} | {mae_t/n:.2f}"
+              f" | {cal_p/n:.3f} vs {cal_y/n:.3f} | {n}")
+
+
 @mlb_group.command("fetch")
 @click.option("--seasons", multiple=True, type=int, required=True,
               help="球季年份，可多個：--seasons 2024 --seasons 2025 --seasons 2026")
@@ -959,12 +1088,21 @@ def wc_site(ctx, model_path, schedule, history_path, outdir, n_sims, match_sims,
     except Exception as e:  # noqa: BLE001
         click.echo(f"[wc-site] MLB 分頁略過：{e}")
 
+    # NBA 分頁（有 models/nba.pkl 才會有內容；失敗/休賽季寫引導頁）
+    nba_html = None
+    try:
+        from . import nba as nbamod
+        nba_html = nbamod.build_site_page()
+        click.echo("[wc-site] NBA 分頁已產生")
+    except Exception as e:  # noqa: BLE001
+        click.echo(f"[wc-site] NBA 分頁略過：{e}")
+
     click.echo("[wc] 產生首頁與各場分析頁…")
     out, n = report.write_worldcup_site(result, model, matches, outdir,
                                         history=hist, title=title, n_sims=match_sims,
                                         injury_counts=injury_counts, track_text=track_text,
                                         ledger_path=ledger, odds_index=odds_index,
-                                        mlb_html=mlb_html)
+                                        mlb_html=mlb_html, nba_html=nba_html)
     champ = sorted(result.champion.items(), key=lambda x: x[1], reverse=True)[:5]
     click.echo("奪冠機率前五：" + "  ".join(f"{zh(t)} {p:.1%}" for t, p in champ))
     click.echo(f"[ok] 網站已輸出到 {out}/（首頁 index.html，{n} 場分析頁）")
