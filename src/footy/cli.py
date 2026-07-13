@@ -945,32 +945,19 @@ def mlb_live_cmd(model_path, data_path, date, n_sims):
     當日先發層（差異已部分反映在比分裡）。
     """
     from . import mlb, mlb_live
-    from .models.dixon_coles import DixonColesModel
-    model = DixonColesModel.load(model_path)
-    pf_map = mlb.park_factors_from_csv(data_path)
-    disp = mlb.dispersion_from_csv(data_path)
-    date = date or mlb.us_today()
-    payload = mlb_live.fetch_schedule_linescores(date, date)
-    games = mlb_live.parse_schedule_linescores(payload, finals_only=False)
-    live = [g for g in games if g["status"] == "Live"]
-    if not live:
-        click.echo(f"{date} 目前無進行中的比賽。")
+    snap = mlb_live.live_snapshot(model_path, data_path, date, n_sims)
+    if not snap["rows"]:
+        click.echo(f"{snap['date']} 目前無進行中的比賽。")
         return
-    for g in live:
-        if g["home"] not in model.attack or g["away"] not in model.attack:
-            continue
-        st = mlb_live.parse_linescore_state(g["linescore"])
-        if st is None:
-            continue
-        lam, mu = model.expected_goals(g["home"], g["away"])
-        pf = pf_map.get(g["home"], 1.0)
-        r = mlb_live.simulate(st, lam * pf, mu * pf, k=disp, n_sims=n_sims)
+    for r in snap["rows"]:
+        g, st = r["game"], r["state"]
         hz, az = mlb.zh_mlb(g["home"]), mlb.zh_mlb(g["away"])
         half = "上" if st.half == "top" else "下"
         bases = "".join(b for b, f in zip("一二三", st.bases) if f == "1") or "無人"
         click.echo(f"{az} {st.away_score}–{st.home_score} {hz}"
                    f"｜{st.inning}局{half} {st.outs}出局 壘上{bases}"
-                   f"｜主勝 {r['p_home']:.1%}｜預期總分 {r['exp_total']:.1f}")
+                   f"｜主勝 {r['p_home']:.1%}｜預期總分 {r['exp_total']:.1f}"
+                   f"｜公平賠率 主 {r['fair']['home_odds']:.2f}/客 {r['fair']['away_odds']:.2f}")
 
 
 @mlb_group.command("backtest-live")

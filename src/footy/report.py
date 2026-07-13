@@ -702,6 +702,7 @@ def _navbar(active: str) -> str:
     return (f"<div class='nav'><a href='index.html'{cls('home')}>🏆 首頁</a>"
             f"<a href='knockout.html'{cls('knockout')}>🏟️ 晉級&對陣</a>"
             f"<a href='mlb.html'{cls('mlb')}>⚾ MLB</a>"
+            f"<a href='/mlb-live'{cls('mlb-live')}>🔴 走地</a>"
             f"<a href='nba.html'{cls('nba')}>🏀 NBA</a>"
             f"<a href='performance.html'{cls('perf')}>📈 績效</a>"
             f"<a href='/custom'{cls('custom')}>🔧 自訂分析</a></div>")

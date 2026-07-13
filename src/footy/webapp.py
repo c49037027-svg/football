@@ -110,6 +110,16 @@ class _Handler(BaseHTTPRequestHandler):
         if path == "/custom":
             self._send(render_form(self.teams))
             return
+        # MLB 走地（即時勝率；Render 可達 statsapi，每次請求現算）
+        if path == "/mlb-live":
+            try:
+                from . import mlb_live
+                snap = mlb_live.live_snapshot()
+                self._send(mlb_live.render_live_page(snap))
+            except Exception as e:  # noqa: BLE001
+                self._send(f"<div class='wrap'><p>走地頁載入失敗：{_html.escape(str(e))}"
+                           f"</p><p>需要 models/mlb.pkl 與可達 statsapi 的環境。</p></div>", 500)
+            return
         # 互動分析結果
         if path == "/analyze":
             q = {k: v[0] for k, v in parse_qs(parsed.query).items()}

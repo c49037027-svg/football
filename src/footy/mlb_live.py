@@ -39,6 +39,12 @@ GHOST_BONUS = 0.55      # 延長賽幽靈跑者：每半局期望得分加成（
 MAX_EXTRA = 15          # 模擬延長上限（之後判半，機率 <1e-6）
 
 
+def _half(x: float) -> float:
+    """取最近的 .5 盤口線。"""
+    import math
+    return math.floor(x) + 0.5
+
+
 @dataclass
 class LiveState:
     """走地狀態。inning 從 1 起；half ∈ {"top","bottom"}；
@@ -252,6 +258,107 @@ def fetch_schedule_linescores(start: str, end: str,
                      headers={"User-Agent": "Mozilla/5.0"}, timeout=timeout)
     r.raise_for_status()
     return r.json()
+
+
+def live_snapshot(model_path: str = "models/mlb.pkl",
+                  data_path: str = "data/mlb.csv",
+                  date: str | None = None, n_sims: int = 20000,
+                  schedule_payload: dict | None = None) -> dict:
+    """今日進行中比賽的走地快照（CLI 與 /mlb-live 網頁共用）。
+
+    回 {"date", "rows": [{game, state, p_home, exp_total, fair}], "others": [...]}；
+    fair = {"home_odds", "away_odds", "over_lines": [(line, p_over)...]}。
+    """
+    from . import mlb
+    from .models.dixon_coles import DixonColesModel
+    model = DixonColesModel.load(model_path)
+    pf_map = mlb.park_factors_from_csv(data_path)
+    disp = mlb.dispersion_from_csv(data_path)
+    date = date or mlb.us_today()
+    payload = schedule_payload or fetch_schedule_linescores(date, date)
+    games = parse_schedule_linescores(payload, finals_only=False)
+    rows, others = [], []
+    for g in games:
+        if g["home"] not in model.attack or g["away"] not in model.attack:
+            continue
+        if g["status"] != "Live":
+            others.append(g)
+            continue
+        st = parse_linescore_state(g["linescore"])
+        if st is None:
+            others.append(g)
+            continue
+        lam, mu = model.expected_goals(g["home"], g["away"])
+        pf = pf_map.get(g["home"], 1.0)
+        r = simulate(st, lam * pf, mu * pf, k=disp, n_sims=n_sims,
+                     seed=int(g.get("game_pk") or 0) % 100000)
+        p = min(max(r["p_home"], 0.005), 0.995)
+        base = _half(r["exp_total"])
+        over_lines = [(ln, p_over(r, ln)) for ln in (base - 1, base, base + 1)]
+        rows.append({"game": g, "state": st, "p_home": r["p_home"],
+                     "exp_total": r["exp_total"],
+                     "fair": {"home_odds": 1.0 / p, "away_odds": 1.0 / (1.0 - p),
+                              "over_lines": over_lines}})
+    return {"date": date, "rows": rows, "others": others}
+
+
+def render_live_page(snap: dict, refresh_sec: int = 45) -> str:
+    """走地頁 HTML（Render /mlb-live 用；meta refresh 自動更新）。"""
+    import html as _h
+
+    from . import mlb, report
+    zh = mlb.zh_mlb
+    cards = []
+    for r in sorted(snap["rows"], key=lambda x: -abs(x["p_home"] - 0.5)):
+        g, st = r["game"], r["state"]
+        hz, az = zh(g["home"]), zh(g["away"])
+        half = "上" if st.half == "top" else "下"
+        bases = "".join(b for b, f in zip("一二三", st.bases) if f == "1") or "無人"
+        p = r["p_home"]
+        bar = int(round(p * 100))
+        fair = r["fair"]
+        ou_rows = "".join(
+            f"<tr><td>大 {ln:g}</td><td>{po:.1%}</td>"
+            f"<td>{1 / max(po, 0.005):.2f}</td>"
+            f"<td>{1 / max(1 - po, 0.005):.2f}</td></tr>"
+            for ln, po in fair["over_lines"])
+        cards.append(f"""
+  <div class='card mgame'>
+    <div class='mhd'><b>{_h.escape(az)}</b> <span class='at'>{st.away_score}</span>
+      <span class='at'>–</span> <span class='at'>{st.home_score}</span> <b>{_h.escape(hz)}</b>
+      <span class='xr'>{st.inning}局{half}・{st.outs}出局・壘上{_h.escape(bases)}</span></div>
+    <div class='lbar'><div class='lfill' style='width:{bar}%'></div></div>
+    <div class='lrow'><span>主勝 <b>{p:.1%}</b>（公平賠率 主 {fair['home_odds']:.2f}／客 {fair['away_odds']:.2f}）</span>
+      <span>預期總分 <b>{r['exp_total']:.1f}</b></span></div>
+    <table class='ltab'><thead><tr><th>大小線</th><th>大分機率</th><th>大·公平賠率</th><th>小·公平賠率</th></tr></thead>
+    <tbody>{ou_rows}</tbody></table>
+  </div>""")
+    body = "".join(cards) if cards else (
+        "<div class='card'><div class='sec'>目前無進行中的比賽</div>"
+        "<div class='small' style='color:var(--muted)'>開賽後本頁自動出現即時勝率（每 "
+        f"{refresh_sec} 秒更新）。美東賽程日：{_h.escape(snap['date'])}</div></div>")
+    return f"""<!doctype html><html lang="zh-Hant"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta http-equiv="refresh" content="{refresh_sec}">
+<title>MLB 走地</title><style>{report._CSS}
+.mgame{{padding:12px 14px;margin-bottom:12px}}
+.mhd{{display:flex;align-items:baseline;gap:6px;font-size:16px}}
+.mhd .at{{color:#cdd9e5;font-weight:700}}
+.mhd .xr{{margin-left:auto;font-size:12px;color:var(--muted)}}
+.lbar{{height:8px;background:#2a1c1c;border-radius:4px;margin:8px 0 4px;overflow:hidden}}
+.lfill{{height:100%;background:linear-gradient(90deg,#2e5c42,#7be0b0)}}
+.lrow{{display:flex;justify-content:space-between;font-size:13px;color:#cdd9e5;margin:4px 0 8px}}
+.ltab{{width:100%;border-collapse:collapse;font-size:12px}}
+.ltab th,.ltab td{{padding:4px 6px;text-align:center;border-bottom:1px solid var(--line)}}
+.ltab th{{color:var(--muted);font-size:11px}}
+</style></head><body><div class="wrap">
+  <h1>🔴 MLB 走地（即時勝率）</h1>
+  <div class="sub">每 {refresh_sec} 秒自動更新 · 機率經 527 場/9253 邊界回測校準（誤差 ≤2.5pp）·
+  <a href="/mlb.html" style="color:var(--accent)">← 回 MLB 預測</a></div>
+  <div class="disc">⚠️ 公平賠率=無水錢的理論價；莊家走地賠率高於公平價才有正期望值。走地盤 vig 較高，門檻請比賽前盤嚴。</div>
+  {body}
+  <div class="foot">Generated by footy · 研究與教育用途</div>
+</div></body></html>"""
 
 
 def fetch_live_feed(game_pk: int, timeout: float = 20.0) -> dict:

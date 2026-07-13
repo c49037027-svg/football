@@ -104,3 +104,58 @@ def test_walkoff_truncation_totals():
     tied = _sim(LiveState(9, "top", 0, "000", 4, 4))
     # 9 上結束平手時,還有 9 下(可能延長) → 期望總分至少 +0.4
     assert tied["exp_total"] > 8.0 + 0.4
+
+
+def test_live_snapshot_and_page(tmp_path):
+    """live_snapshot + render_live_page:注入假 schedule payload,不打網路。"""
+    import pandas as pd
+    from footy.models import dixon_coles as dc
+
+    # 迷你模型(兩隊)與資料檔(球場係數/離散度用)
+    rows = []
+    d = pd.Timestamp("2026-06-01")
+    rng_scores = [(5, 3), (4, 2), (6, 5), (3, 4), (5, 2), (4, 4)] * 10
+    for i, (h, a) in enumerate(rng_scores):
+        rows.append({"date": (d + pd.Timedelta(days=i)).date().isoformat(),
+                     "home": "New York Yankees", "away": "Boston Red Sox",
+                     "home_goals": h, "away_goals": a})
+        rows.append({"date": (d + pd.Timedelta(days=i)).date().isoformat(),
+                     "home": "Boston Red Sox", "away": "New York Yankees",
+                     "home_goals": a, "away_goals": h})
+    df = pd.DataFrame(rows)
+    csv = tmp_path / "mlb.csv"
+    df.to_csv(csv, index=False)
+    df["date"] = pd.to_datetime(df["date"])
+    model = dc.fit(df, half_life_days=1e9, max_goals=20, rho_init=0.0, reg=0.3)
+    mp = tmp_path / "mlb.pkl"
+    model.save(mp)
+    payload = {"dates": [{"date": "2026-07-12", "games": [
+        {"gamePk": 111, "gameType": "R", "officialDate": "2026-07-12",
+         "gameDate": "2026-07-12T23:00:00Z",
+         "status": {"abstractGameState": "Live"},
+         "teams": {"home": {"team": {"name": "New York Yankees"}, "score": 3},
+                   "away": {"team": {"name": "Boston Red Sox"}, "score": 2}},
+         "linescore": {"currentInning": 6, "inningState": "Bottom", "outs": 1,
+                       "teams": {"home": {"runs": 3}, "away": {"runs": 2}},
+                       "offense": {"second": {"id": 9}}}},
+        {"gamePk": 222, "gameType": "R", "officialDate": "2026-07-12",
+         "gameDate": "2026-07-12T23:00:00Z",
+         "status": {"abstractGameState": "Preview"},
+         "teams": {"home": {"team": {"name": "New York Yankees"}, "score": 0},
+                   "away": {"team": {"name": "Boston Red Sox"}, "score": 0}},
+         "linescore": {}},
+    ]}]}
+    snap = mlb_live.live_snapshot(str(mp), str(csv), date="2026-07-12",
+                                  n_sims=5000, schedule_payload=payload)
+    assert len(snap["rows"]) == 1 and len(snap["others"]) == 1
+    r = snap["rows"][0]
+    assert r["p_home"] > 0.5                 # 6 局下領先 1 分且強隊 → 主勝率過半
+    assert r["fair"]["home_odds"] < r["fair"]["away_odds"]
+    lines = [ln for ln, _ in r["fair"]["over_lines"]]
+    assert len(lines) == 3 and all(ln % 1 == 0.5 for ln in lines)
+    html_out = mlb_live.render_live_page(snap)
+    assert "MLB 走地" in html_out and "洋基" in html_out and "紅襪" in html_out
+    assert "6局下" in html_out and "公平賠率" in html_out
+    # 無比賽時的降級頁
+    empty = mlb_live.render_live_page({"date": "2026-07-12", "rows": [], "others": []})
+    assert "目前無進行中的比賽" in empty
