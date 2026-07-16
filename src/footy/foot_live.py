@@ -19,6 +19,7 @@ import numpy as np
 ESPN_SOCCER = "https://site.api.espn.com/apis/site/v2/sports/soccer/{code}/scoreboard"
 LEAGUE_CODES = ["fifa.world"]        # 世界盃結束後改五大聯賽 codes
 BIG5_CODES = ["eng.1", "esp.1", "ita.1", "ger.1", "fra.1"]
+NEUTRAL_CODES = {"fifa.world"}       # 中立場賽事：不套主場優勢（與賽前 worldcup.py 一致）
 
 # 驗證出的走地修正參數（FINDINGS：足球走地）
 SECOND_HALF_SCALE = 1.11     # 半場後的進球升溫係數
@@ -41,7 +42,8 @@ def _rate_scale(minute: int) -> float:
 
 def live_probs(model, home: str, away: str, minute: int,
                home_goals: int, away_goals: int,
-               home_red: int = 0, away_red: int = 0) -> dict:
+               home_red: int = 0, away_red: int = 0,
+               neutral: bool = False) -> dict:
     """走地 1X2 + 總進球分布。回 {p_home, p_draw, p_away, exp_total, total_dist}。"""
     from .live import inplay
     hf = af = 1.0
@@ -54,7 +56,8 @@ def live_probs(model, home: str, away: str, minute: int,
         hf, af = hf * rf_h, af * rf_a
     rem = inplay.remaining_score_matrix(model, home, away, minute,
                                         _rate_scale(minute),
-                                        home_factor=hf, away_factor=af)
+                                        home_factor=hf, away_factor=af,
+                                        neutral=neutral)
     n = rem.shape[0]
     size = n + max(home_goals, away_goals)
     mat = np.zeros((size, size))
@@ -110,7 +113,9 @@ def parse_espn_soccer(payload: dict) -> list[dict]:
             continue
         ht = "HALFTIME" in (tp.get("name") or "")
         clock = str(st.get("displayClock") or "")
-        digits = "".join(ch for ch in clock.split("+")[0] if ch.isdigit())
+        # 只取分鐘：先去補時（+），再去秒（:）。"45:30" 若不切會被讀成 4530。
+        digits = "".join(ch for ch in clock.split("+")[0].split(":")[0]
+                         if ch.isdigit())
         minute = 45 if ht else min(int(digits) if digits else 0, 90)
         out.append({"home": home, "away": away, "home_goals": hs,
                     "away_goals": as_, "minute": minute,
@@ -129,7 +134,10 @@ def fetch_live_scores(codes: list[str] | None = None,
             r = requests.get(ESPN_SOCCER.format(code=code),
                              headers={"User-Agent": "Mozilla/5.0"}, timeout=timeout)
             r.raise_for_status()
-            rows.extend(parse_espn_soccer(r.json()))
+            parsed = parse_espn_soccer(r.json())
+            for row in parsed:
+                row["neutral"] = code in NEUTRAL_CODES
+            rows.extend(parsed)
         except Exception:  # noqa: BLE001
             continue
     return rows
@@ -148,7 +156,8 @@ def live_snapshot(model_path: str = "models/intl.pkl",
             skipped.append(f"{g['home']} vs {g['away']}")
             continue
         r = live_probs(model, g["home"], g["away"], g["minute"],
-                       g["home_goals"], g["away_goals"])
+                       g["home_goals"], g["away_goals"],
+                       neutral=g.get("neutral", False))
         base = int(g["home_goals"] + g["away_goals"]) + 0.5
         lines = [base, base + 1, base + 2]
         fair = {
@@ -171,6 +180,8 @@ def render_live_section(snap: dict) -> str:
         g, p, fair = r["game"], r["p"], r["fair"]
         hz, az = zh(g["home"]), zh(g["away"])
         phase = "中場" if g["phase"] == "ht" else f"{g['minute']}'"
+        if g["phase"] != "ht" and g["minute"] >= 90:
+            phase += "＋ ⚠️補時/加時未建模，本場價格不可用"
         ou_rows = "".join(
             f"<tr><td>大 {ln:g}</td><td>{po:.1%}</td>"
             f"<td>{1 / max(po, 0.005):.2f}</td><td>{1 / max(1 - po, 0.005):.2f}</td></tr>"

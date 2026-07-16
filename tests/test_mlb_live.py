@@ -159,3 +159,15 @@ def test_live_snapshot_and_page(tmp_path):
     # 無比賽時的降級頁
     empty = mlb_live.render_live_page({"date": "2026-07-12", "rows": [], "others": []})
     assert "目前無進行中的比賽" in empty
+
+
+def test_simulate_extra_inning_top_plays_bottom_half():
+    """延長賽上半局狀態：主隊該局下半必須被模擬（回歸：曾被 while inn<=9 跳過）。"""
+    st = mlb_live.LiveState(inning=10, half="top", outs=0, bases="010",
+                            home_score=5, away_score=5)
+    r = mlb_live.simulate(st, 4.5, 4.5, seed=1)
+    assert 0.40 < r["p_home"] < 0.60          # 平手 10 上 ≈ 五五波
+    st2 = mlb_live.LiveState(inning=10, half="top", outs=1, bases="000",
+                             home_score=5, away_score=6)
+    r2 = mlb_live.simulate(st2, 4.5, 4.5, seed=1)
+    assert 0.15 < r2["p_home"] < 0.40         # 落後 1 分仍有幽靈跑者反攻，不趨近 0

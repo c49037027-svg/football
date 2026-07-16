@@ -94,3 +94,26 @@ def test_live_snapshot_and_section(tmp_path):
     assert "大小線" in html_out and "預期總球" in html_out
     empty = foot_live.render_live_section({"rows": [], "skipped": []})
     assert "無進行中的比賽" in empty
+
+
+def test_live_probs_neutral_no_home_advantage():
+    """中立場（世界盃）：neutral=True 不套主場優勢（回歸：走地路徑曾漏傳）。"""
+    m = _model()
+    neu = foot_live.live_probs(m, "Alpha", "Beta", 0, 0, 0, neutral=True)
+    mat = m.score_matrix("Alpha", "Beta", neutral=True)
+    pre_h = float(np.tril(mat, -1).sum() / mat.sum())
+    assert abs(neu["p_home"] - pre_h) < 0.03
+    home = foot_live.live_probs(m, "Alpha", "Beta", 0, 0, 0)
+    assert neu["p_home"] < home["p_home"]           # 拿掉主場優勢 → 主勝率降
+
+
+def test_parse_clock_minutes_and_seconds():
+    """'45:30' 式時鐘只取分鐘（回歸：曾被讀成 4530 → 夾成 90'）。"""
+    payload = {"events": [{
+        "status": {"displayClock": "45:30", "type": {"state": "in", "name": ""}},
+        "competitions": [{"competitors": [
+            {"homeAway": "home", "team": {"displayName": "A"}, "score": "1"},
+            {"homeAway": "away", "team": {"displayName": "B"}, "score": "0"},
+        ]}]}]}
+    rows = foot_live.parse_espn_soccer(payload)
+    assert rows[0]["minute"] == 45

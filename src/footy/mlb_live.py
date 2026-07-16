@@ -112,6 +112,14 @@ def simulate(state: LiveState, lam_home: float, lam_away: float,
             inn += 1
 
     # 特例：狀態已在 9 局下（或更晚）且主隊領先 → 比賽其實已結束（防呆）
+    # 2b) 狀態在延長賽上半：該局下半主隊還沒打（步驟 2 的 while 涵蓋不到、
+    #     步驟 3 只處理平手者）——落後/平手的主隊要帶幽靈跑者打完
+    if state.inning > 9 and state.half == "top":
+        need = hs <= as_
+        add = _nb_half_innings(rng, m_h + GHOST_BONUS * env_h, k9, int(need.sum()))
+        hs = hs.copy()
+        hs[need] += add
+
     # 3) 延長賽：平手者逐局打（幽靈跑者加成），主隊下半同樣「落後/平手才打」規則
     #    對勝率等價於比較單局得分；平手繼續。
     for _ in range(MAX_EXTRA):

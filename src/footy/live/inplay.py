@@ -40,9 +40,10 @@ def remaining_score_matrix(model: DixonColesModel, home: str, away: str,
                            minute: int, rate_scale: float = 1.0,
                            total_minutes: int = 90,
                            home_factor: float = 1.0,
-                           away_factor: float = 1.0) -> np.ndarray:
-    """剩餘時間內『還會再進 (h, a) 球』的機率矩陣。"""
-    lam, mu = model.expected_goals(home, away)
+                           away_factor: float = 1.0,
+                           neutral: bool = False) -> np.ndarray:
+    """剩餘時間內『還會再進 (h, a) 球』的機率矩陣。neutral=中立場（不套主場優勢）。"""
+    lam, mu = model.expected_goals(home, away, neutral=neutral)
     r = max(0.0, (total_minutes - minute) / total_minutes) * rate_scale
     lam_r = max(1e-8, lam * r * home_factor)
     mu_r = max(1e-8, mu * r * away_factor)
