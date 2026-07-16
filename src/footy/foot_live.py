@@ -25,7 +25,8 @@ NEUTRAL_CODES = {"fifa.world"}       # 中立場賽事：不套主場優勢（�
 SECOND_HALF_SCALE = 1.11     # 半場後的進球升溫係數
 TRAIL_BOOST = 1.10           # 落後方進球率乘數（2018-22 擬合；該期強度屬 in-sample，但僅 2 全域參數且 2022-25 測試期增益成立）
 LEAD_DAMP = 0.95             # 領先方進球率乘數
-TAU = 0.95                   # 機率溫度縮放（<1 = 軟化）；只驗證/套用於 1X2，大小盤維持原始機率（未驗證不套）
+TAU = 0.95                   # 機率溫度縮放（<1 = 軟化）；只驗證/套用於英超 1X2。
+                             # 大小盤與中立場國際賽（域外）不套——見 live_probs。
 
 # ESPN → 模型隊名（國家隊；不在表中且不在模型 → 跳過該場）
 ESPN_RENAMES = {
@@ -66,7 +67,10 @@ def live_probs(model, home: str, away: str, minute: int,
     pd_ = float(np.trace(mat))
     pa = float(np.triu(mat, 1).sum())
     p = np.array([ph, pd_, pa])
-    p = np.maximum(p / p.sum(), 1e-12) ** TAU
+    # τ 只在英超（擬合域）套用；中立場國際賽（世界盃）屬域外、τ 又是三層中
+    # 證據最弱的一層（增益在噪音內、無訓練期依據），域外不套。
+    tau = 1.0 if neutral else TAU
+    p = np.maximum(p / p.sum(), 1e-12) ** tau
     p /= p.sum()
     tot = np.zeros(2 * size - 1)
     for i in range(size):
@@ -98,19 +102,31 @@ def parse_espn_soccer(payload: dict) -> list[dict]:
         comp = (ev.get("competitions") or [{}])[0]
         home = away = None
         hs = as_ = 0
+        home_id = away_id = ""
         for c in comp.get("competitors") or []:
-            name = ((c.get("team") or {}).get("displayName") or "").strip()
+            team = c.get("team") or {}
+            name = (team.get("displayName") or "").strip()
             name = ESPN_RENAMES.get(name, name)
+            tid = str(team.get("id") or "")
             try:
                 sc = int(c.get("score") or 0)
             except (TypeError, ValueError):
                 sc = 0
             if c.get("homeAway") == "home":
-                home, hs = name, sc
+                home, hs, home_id = name, sc, tid
             else:
-                away, as_ = name, sc
+                away, as_, away_id = name, sc, tid
         if not home or not away:
             continue
+        # 紅牌：details 事件流（redCard 旗標 + team.id）。缺 details 時安全為 0。
+        hred = ared = 0
+        for d in comp.get("details") or []:
+            if d.get("redCard"):
+                tid = str((d.get("team") or {}).get("id") or "")
+                if tid and tid == home_id:
+                    hred += 1
+                elif tid and tid == away_id:
+                    ared += 1
         ht = "HALFTIME" in (tp.get("name") or "")
         clock = str(st.get("displayClock") or "")
         # 只取分鐘：先去補時（+），再去秒（:）。"45:30" 若不切會被讀成 4530。
@@ -120,13 +136,20 @@ def parse_espn_soccer(payload: dict) -> list[dict]:
         out.append({"home": home, "away": away, "home_goals": hs,
                     "away_goals": as_, "minute": minute,
                     "phase": "ht" if ht else "in",
+                    "home_red": hred, "away_red": ared,
                     "league": (ev.get("season") or {}).get("slug") or ""})
     return out
 
 
 def fetch_live_scores(codes: list[str] | None = None,
-                      timeout: float = 20.0) -> list[dict]:
-    """抓各聯賽進行中比賽（每聯賽一請求，免金鑰）。"""
+                      timeout: float = 8.0,
+                      errors: list[str] | None = None) -> list[dict]:
+    """抓各聯賽進行中比賽（每聯賽一請求，免金鑰）。
+
+    errors：呼叫端傳 list 進來可收到抓取失敗的聯賽代碼——「來源故障」
+    和「真的沒比賽」必須能區分，否則故障會被顯示成無比賽。
+    timeout 取 8 秒：/live 是同步序列抓取，逾時直接墊高頁面延遲。
+    """
     import requests
     rows = []
     for code in codes or LEAGUE_CODES:
@@ -139,6 +162,8 @@ def fetch_live_scores(codes: list[str] | None = None,
                 row["neutral"] = code in NEUTRAL_CODES
             rows.extend(parsed)
         except Exception:  # noqa: BLE001
+            if errors is not None:
+                errors.append(code)
             continue
     return rows
 
@@ -149,7 +174,9 @@ def live_snapshot(model_path: str = "models/intl.pkl",
     """足球走地快照（網頁/CLI 共用）。matches 供測試注入。"""
     from .models.dixon_coles import DixonColesModel
     model = DixonColesModel.load(model_path)
-    games = matches if matches is not None else fetch_live_scores(codes)
+    src_errors: list[str] = []
+    games = (matches if matches is not None
+             else fetch_live_scores(codes, errors=src_errors))
     rows, skipped = [], []
     for g in games:
         if g["home"] not in model.attack or g["away"] not in model.attack:
@@ -157,6 +184,8 @@ def live_snapshot(model_path: str = "models/intl.pkl",
             continue
         r = live_probs(model, g["home"], g["away"], g["minute"],
                        g["home_goals"], g["away_goals"],
+                       home_red=g.get("home_red", 0),
+                       away_red=g.get("away_red", 0),
                        neutral=g.get("neutral", False))
         base = int(g["home_goals"] + g["away_goals"]) + 0.5
         lines = [base, base + 1, base + 2]
@@ -167,7 +196,7 @@ def live_snapshot(model_path: str = "models/intl.pkl",
             "over_lines": [(ln, p_over(r, ln)) for ln in lines],
         }
         rows.append({"game": g, "p": r, "fair": fair})
-    return {"rows": rows, "skipped": skipped}
+    return {"rows": rows, "skipped": skipped, "source_errors": src_errors}
 
 
 def render_live_section(snap: dict) -> str:
@@ -182,6 +211,20 @@ def render_live_section(snap: dict) -> str:
         phase = "中場" if g["phase"] == "ht" else f"{g['minute']}'"
         if g["phase"] != "ht" and g["minute"] >= 90:
             phase += "＋ ⚠️補時/加時未建模，本場價格不可用"
+        reds = ""
+        if g.get("home_red") or g.get("away_red"):
+            reds = (f" 🟥{g.get('home_red', 0)}-{g.get('away_red', 0)}"
+                    if g.get("home_red") and g.get("away_red")
+                    else (f" 🟥主{g.get('home_red')}" if g.get("home_red")
+                          else f" 🟥客{g.get('away_red')}"))
+        # 已知校準偏差（FINDINGS：足球走地）：主隊下半場落後、模型主勝 10-20% 時
+        # 歷史實際逆轉率 ~21%——低估 6-7pp，公平價會偏貴
+        warn = ""
+        if (g["phase"] != "ht" and 45 <= g["minute"] < 90
+                and g["home_goals"] < g["away_goals"]
+                and 0.10 <= p["p_home"] <= 0.20):
+            warn = ("<div class='small'>⚠️ 已知校準偏差：此類狀態（主隊下半場落後）"
+                    "的主勝實際機率歷史上偏高約 6pp，主勝公平價僅供參考</div>")
         ou_rows = "".join(
             f"<tr><td>大 {ln:g}</td><td>{po:.1%}</td>"
             f"<td>{1 / max(po, 0.005):.2f}</td><td>{1 / max(1 - po, 0.005):.2f}</td></tr>"
@@ -190,7 +233,7 @@ def render_live_section(snap: dict) -> str:
   <div class='card mgame'>
     <div class='mhd'><b>{_h.escape(hz)}</b> <span class='at'>{g['home_goals']}</span>
       <span class='at'>–</span> <span class='at'>{g['away_goals']}</span> <b>{_h.escape(az)}</b>
-      <span class='xr'>{_h.escape(phase)}</span></div>
+      <span class='xr'>{_h.escape(phase + reds)}</span></div>{warn}
     <div class='lrow'><span>主勝 <b>{p['p_home']:.1%}</b>（{fair['home_odds']:.2f}）</span>
       <span>和 <b>{p['p_draw']:.1%}</b>（{fair['draw_odds']:.2f}）</span>
       <span>客勝 <b>{p['p_away']:.1%}</b>（{fair['away_odds']:.2f}）</span>
@@ -199,6 +242,12 @@ def render_live_section(snap: dict) -> str:
     <tbody>{ou_rows}</tbody></table>
   </div>""")
     if not cards:
+        if snap.get("source_errors"):
+            codes = ", ".join(snap["source_errors"])
+            return (f"<div class='card'><div class='sec'>⚽ 足球：比分源暫時故障"
+                    f"（{_h.escape(codes)}）</div>"
+                    "<div class='small' style='color:var(--muted)'>ESPN 抓取失敗，"
+                    "非「無比賽」——稍後自動重試。</div></div>")
         return ("<div class='card'><div class='sec'>⚽ 足球：目前無進行中的比賽</div>"
                 "<div class='small' style='color:var(--muted)'>開賽後自動出現。"
                 "世界盃期間追蹤 WC；之後換五大聯賽。</div></div>")

@@ -9,12 +9,34 @@ http.server 起一個本機網站：表單送出 → 跑 analysis.analyze → �
 from __future__ import annotations
 
 import html as _html
+import threading
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import parse_qs, urlparse
 
 from . import analysis, context, report
 from .i18n import zh
 from .models.dixon_coles import DixonColesModel
+
+# 走地頁 TTL 快取：命中直接回 HTML，上游請求上限 = 每 TTL 週期一輪，
+# 與同時瀏覽人數脫鉤。TTL 20 秒 < 頁面 45 秒 refresh。
+_LIVE_TTL = 20.0
+_live_cache: dict[str, tuple[float, str]] = {}
+_live_lock = threading.Lock()
+
+
+def _live_cache_get(key: str) -> str | None:
+    import time
+    with _live_lock:
+        hit = _live_cache.get(key)
+    if hit and time.monotonic() - hit[0] < _LIVE_TTL:
+        return hit[1]
+    return None
+
+
+def _live_cache_put(key: str, html: str) -> None:
+    import time
+    with _live_lock:
+        _live_cache[key] = (time.monotonic(), html)
 
 _FORMATIONS = ["", "4-4-2", "4-3-3", "4-2-3-1", "4-1-4-1", "4-5-1", "4-4-1-1",
                "4-1-2-1-2", "4-3-1-2", "4-2-2-2", "4-1-3-2", "4-3-2-1",
@@ -110,25 +132,44 @@ class _Handler(BaseHTTPRequestHandler):
         if path == "/custom":
             self._send(render_form(self.teams))
             return
-        # 走地（即時勝率；Render 可達 statsapi/ESPN，每次請求現算）
+        # 輕量健康檢查（保溫 ping 用；不觸發上游 API 與模擬）
+        if path == "/healthz":
+            self._send("ok")
+            return
+        # 走地（即時勝率；Render 可達 statsapi/ESPN）
         # /live = 足球+MLB 綜合；/mlb-live = 只看 MLB
+        # 20 秒 TTL 快取：上游請求量與同時瀏覽人數脫鉤（meta refresh 45s × N 人）
         if path in ("/live", "/mlb-live"):
+            cached = _live_cache_get(path)
+            if cached is not None:
+                self._send(cached)
+                return
             try:
                 from . import mlb_live
-                snap = mlb_live.live_snapshot()
-                extra = None
+                # MLB 與足球各自隔離：statsapi 掛掉不能拖垮足球區塊（反之亦然）
+                try:
+                    snap = mlb_live.live_snapshot()
+                    mlb_err = None
+                except Exception as me:  # noqa: BLE001
+                    snap = {"date": "-", "rows": [], "others": []}
+                    mlb_err = (f"<div class='card'><div class='small'>⚾ MLB 走地載入失敗"
+                               f"（statsapi）：{_html.escape(str(me))}</div></div>")
+                extra = [mlb_err] if mlb_err else None
                 title = "MLB 走地"
                 if path == "/live":
                     title = "走地"
+                    extra = [mlb_err] if mlb_err else []
                     try:
                         from . import foot_live
                         fsnap = foot_live.live_snapshot()
-                        extra = [foot_live.render_live_section(fsnap)]
+                        extra.append(foot_live.render_live_section(fsnap))
                     except Exception as fe:  # noqa: BLE001
-                        extra = [f"<div class='card'><div class='small'>足球走地載入失敗："
-                                 f"{_html.escape(str(fe))}</div></div>"]
-                self._send(mlb_live.render_live_page(snap, extra_sections=extra,
-                                                     title=title))
+                        extra.append(f"<div class='card'><div class='small'>足球走地載入失敗："
+                                     f"{_html.escape(str(fe))}</div></div>")
+                html_page = mlb_live.render_live_page(snap, extra_sections=extra,
+                                                      title=title)
+                _live_cache_put(path, html_page)
+                self._send(html_page)
             except Exception as e:  # noqa: BLE001
                 self._send(f"<div class='wrap'><p>走地頁載入失敗：{_html.escape(str(e))}"
                            f"</p><p>需要 models/*.pkl 與可達 statsapi/ESPN 的環境。</p></div>", 500)

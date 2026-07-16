@@ -117,3 +117,34 @@ def test_parse_clock_minutes_and_seconds():
         ]}]}]}
     rows = foot_live.parse_espn_soccer(payload)
     assert rows[0]["minute"] == 45
+
+
+def test_parse_espn_red_cards():
+    """紅牌從 competitions[0].details 讀取並對照 team.id 記到主/客。"""
+    payload = {"events": [{
+        "status": {"displayClock": "70'", "type": {"state": "in", "name": ""}},
+        "competitions": [{
+            "competitors": [
+                {"homeAway": "home", "score": "0", "team": {"displayName": "A", "id": "10"}},
+                {"homeAway": "away", "score": "1", "team": {"displayName": "B", "id": "20"}}],
+            "details": [
+                {"redCard": True, "team": {"id": "10"}},
+                {"redCard": False, "team": {"id": "20"}},      # 黃牌等 → 不算
+                {"redCard": True, "team": {"id": "20"}},
+            ]}]}]}
+    g = foot_live.parse_espn_soccer(payload)[0]
+    assert (g["home_red"], g["away_red"]) == (1, 1)
+    # 無 details → 安全為 0
+    payload["events"][0]["competitions"][0].pop("details")
+    g2 = foot_live.parse_espn_soccer(payload)[0]
+    assert (g2["home_red"], g2["away_red"]) == (0, 0)
+
+
+def test_tau_not_applied_on_neutral():
+    """域外撤 τ：中立場 0' 應與賽前中立機率完全一致（英超路徑仍套 τ）。"""
+    m = _model()
+    neu = foot_live.live_probs(m, "Alpha", "Beta", 0, 0, 0, neutral=True)
+    mat = m.score_matrix("Alpha", "Beta", neutral=True)
+    tot = mat.sum()
+    assert abs(neu["p_home"] - float(np.tril(mat, -1).sum() / tot)) < 1e-9
+    assert abs(neu["p_draw"] - float(np.trace(mat) / tot)) < 1e-9

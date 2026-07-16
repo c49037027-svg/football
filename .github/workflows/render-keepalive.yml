@@ -1,0 +1,25 @@
+# Render free 方案閒置 ~15 分鐘會休眠，冷啟動 30-60 秒——走地頁使用者會以為壞了。
+# 每 12 分鐘 ping /healthz（輕量端點，不觸發上游 API 與模擬）保溫。
+# 需在 Repo Variables 設 FOOTY_LIVE_URL（Render 網址，如 https://xxx.onrender.com）。
+name: Render 保溫 ping
+
+on:
+  schedule:
+    - cron: "*/12 * * * *"
+  workflow_dispatch: {}
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - name: ping /healthz
+        env:
+          BASE: ${{ vars.FOOTY_LIVE_URL }}
+        run: |
+          if [ -z "$BASE" ] || [ "$BASE" = "/live" ]; then
+            echo "未設定 FOOTY_LIVE_URL（Repo Variables），略過"; exit 0
+          fi
+          # 去掉結尾的 /live 或斜線，接 /healthz
+          base="${BASE%/live}"; base="${base%/}"
+          curl -fsS --max-time 90 "$base/healthz" && echo "ok" || echo "ping 失敗（容忍）"

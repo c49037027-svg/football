@@ -699,10 +699,14 @@ def _navbar(active: str) -> str:
     """頂部導覽列。active: 'home' / 'knockout' / 'custom'。"""
     def cls(k):
         return " class='on'" if k == active else ""
+    # /live、/custom 只存在於 Render 動態站；靜態站（GitHub Pages）需以
+    # FOOTY_LIVE_URL 環境變數（建置時）注入 Render 絕對網址，否則會 404。
+    import os
+    live_url = os.environ.get("FOOTY_LIVE_URL", "/live")
     return (f"<div class='nav'><a href='index.html'{cls('home')}>🏆 首頁</a>"
             f"<a href='knockout.html'{cls('knockout')}>🏟️ 晉級&對陣</a>"
             f"<a href='mlb.html'{cls('mlb')}>⚾ MLB</a>"
-            f"<a href='/live'{cls('live')}>🔴 走地</a>"
+            f"<a href='{live_url}'{cls('live')}>🔴 走地</a>"
             f"<a href='nba.html'{cls('nba')}>🏀 NBA</a>"
             f"<a href='performance.html'{cls('perf')}>📈 績效</a>"
             f"<a href='/custom'{cls('custom')}>🔧 自訂分析</a></div>")

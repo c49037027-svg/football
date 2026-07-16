@@ -75,6 +75,18 @@ def test_parse_linescore_state():
                                 "teams": {"home": {"runs": 2}, "away": {"runs": 1}}})
     assert (s3.inning, s3.half) == (8, "top")
     assert parse_linescore_state({}) is None
+    # outs=3 過渡窗口（第三出局後、狀態翻 Middle 前）：視為下個半局開局
+    s4 = parse_linescore_state({"currentInning": 5, "inningState": "Top",
+                                "outs": 3, "offense": {"first": {"id": 9}},
+                                "teams": {"home": {"runs": 1}, "away": {"runs": 4}}})
+    assert (s4.inning, s4.half, s4.outs, s4.bases) == (5, "bottom", 0, "000")
+    s5 = parse_linescore_state({"currentInning": 5, "inningState": "Bottom",
+                                "outs": 3, "teams": {"home": {"runs": 1},
+                                                     "away": {"runs": 4}}})
+    assert (s5.inning, s5.half, s5.outs) == (6, "top", 0)
+    # 進行中但比分缺失 ≠ 0-0：不出價
+    assert parse_linescore_state({"currentInning": 3, "inningState": "Top",
+                                  "teams": {"home": {}, "away": {"runs": 2}}}) is None
 
 
 def test_boundary_states_from_innings():

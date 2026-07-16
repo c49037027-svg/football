@@ -166,8 +166,11 @@ def parse_linescore_state(ls: dict, default_inning: int = 1) -> LiveState | None
         return None
     try:
         teams = ls.get("teams") or {}
-        hsc = int(((teams.get("home") or {}).get("runs")) or 0)
-        asc = int(((teams.get("away") or {}).get("runs")) or 0)
+        h_runs = (teams.get("home") or {}).get("runs")
+        a_runs = (teams.get("away") or {}).get("runs")
+        if h_runs is None or a_runs is None:
+            return None                 # 比分缺失 ≠ 0-0，寧可不出價
+        hsc, asc = int(h_runs), int(a_runs)
         inning = int(ls.get("currentInning") or default_inning)
         st = (ls.get("inningState") or ls.get("inningHalf") or "Top").lower()
         half = "bottom" if st.startswith(("bot", "end")) else "top"
@@ -180,6 +183,16 @@ def parse_linescore_state(ls: dict, default_inning: int = 1) -> LiveState | None
         outs = int(ls.get("outs") or 0)
         if st.startswith(("mid", "end")):
             outs = 0
+        elif outs >= 3:
+            # 第三出局後、inningState 翻 Middle/End 前的過渡窗口：
+            # 該半局其實已結束，視為下個半局開局（跑者/出局歸零）
+            if half == "top":
+                half = "bottom"
+            else:
+                half, inning = "top", inning + 1
+            outs = 0
+            return LiveState(inning=inning, half=half, outs=0, bases="000",
+                             home_score=hsc, away_score=asc)
         off = ls.get("offense") or {}
         bases = "".join("1" if off.get(b) else "0"
                         for b in ("first", "second", "third"))
@@ -238,11 +251,13 @@ def parse_schedule_linescores(payload: dict, finals_only: bool = True) -> list[d
             teams = g.get("teams", {})
             home, away = teams.get("home", {}), teams.get("away", {})
             status = (g.get("status") or {}).get("abstractGameState", "")
+            detail = (g.get("status") or {}).get("detailedState", "")
             if finals_only and status != "Final":
                 continue
             ls = g.get("linescore") or {}
             rows.append({
                 "game_pk": g.get("gamePk"),
+                "detail": detail,
                 "date": g.get("officialDate") or day.get("date"),
                 "home": (home.get("team") or {}).get("name", ""),
                 "away": (away.get("team") or {}).get("name", ""),
@@ -283,7 +298,7 @@ def live_snapshot(model_path: str = "models/mlb.pkl",
     pf_map = mlb.park_factors_from_csv(data_path)
     disp = mlb.dispersion_from_csv(data_path)
     date = date or mlb.us_today()
-    payload = schedule_payload or fetch_schedule_linescores(date, date)
+    payload = schedule_payload or fetch_schedule_linescores(date, date, timeout=10.0)
     games = parse_schedule_linescores(payload, finals_only=False)
     rows, others = [], []
     for g in games:
@@ -292,14 +307,22 @@ def live_snapshot(model_path: str = "models/mlb.pkl",
         if g["status"] != "Live":
             others.append(g)
             continue
+        # 雨延/中止/熱身的 abstractGameState 也是 "Live"：舊 linescore 不可出價
+        if str(g.get("detail") or "").startswith(("Delayed", "Suspended", "Warmup")):
+            others.append(g)
+            continue
         st = parse_linescore_state(g["linescore"])
         if st is None:
             others.append(g)
             continue
         lam, mu = model.expected_goals(g["home"], g["away"])
         pf = pf_map.get(g["home"], 1.0)
-        r = simulate(st, lam * pf, mu * pf, k=disp, n_sims=n_sims,
-                     seed=int(g.get("game_pk") or 0) % 100000)
+        # seed 混入時間：讓 MC 誤差（~0.3pp）隨每次刷新獨立抽樣、被平均掉，
+        # 而不是同一狀態永遠帶同一個固定方向的偏差
+        import time as _time
+        seed = (int(g.get("game_pk") or 0) * 1_000_003
+                + _time.time_ns()) % (2 ** 32)
+        r = simulate(st, lam * pf, mu * pf, k=disp, n_sims=n_sims, seed=seed)
         p = min(max(r["p_home"], 0.005), 0.995)
         base = _half(r["exp_total"])
         over_lines = [(ln, p_over(r, ln)) for ln in (base - 1, base, base + 1)]
@@ -367,19 +390,24 @@ def render_live_page(snap: dict, refresh_sec: int = 45,
                      title: str = "MLB 走地") -> str:
     """走地頁 HTML（meta refresh 自動更新）。extra_sections 供 /live 綜合頁疊加。"""
     import html as _h
+    from datetime import datetime, timedelta, timezone
 
     from . import report
     body = "".join(extra_sections or []) + render_live_section(snap)
+    ts = datetime.now(timezone(timedelta(hours=8))).strftime("%H:%M:%S")
     return f"""<!doctype html><html lang="zh-Hant"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <meta http-equiv="refresh" content="{refresh_sec}">
 <title>{_h.escape(title)}</title><style>{report._CSS}{LIVE_CSS}
 </style></head><body><div class="wrap">
   <h1>🔴 {_h.escape(title)}（即時勝率）</h1>
-  <div class="sub">每 {refresh_sec} 秒自動更新 · 勝率經歷史回測驗證（MLB 527 場半局邊界／足球 990 場半場 1X2）；
+  <div class="sub">資料時間 {ts}（台北）· 每 {refresh_sec} 秒自動更新 ·
+  勝率經歷史回測驗證（MLB 527 場半局邊界／足球 990 場半場 1X2·英超）；
   大小盤與局中細部狀態（壘包/出局、45' 以外時點）為模型延伸、未經獨立回測，參考價值較低 ·
   <a href="/index.html" style="color:var(--accent)">← 回首頁</a></div>
-  <div class="disc">⚠️ 公平賠率=無水錢的理論價；莊家走地賠率高於公平價才有正期望值。走地盤 vig 較高，門檻請比賽前盤嚴。<b>比分源有 30~90 秒延遲：進球/得分後的 1-2 分鐘內本頁價格是舊狀態，此時與莊家的價差是延遲假象、不是 edge，切勿在劇烈變化剛發生時下注。</b></div>
+  <div class="disc">⚠️ 公平賠率=無水錢的理論價；莊家走地賠率高於公平價才有正期望值。走地盤 vig 較高，門檻請比賽前盤嚴。<b>比分源有 30~90 秒延遲：進球/得分後的 1-2 分鐘內本頁價格是舊狀態，此時與莊家的價差是延遲假象、不是 edge，切勿在劇烈變化剛發生時下注。</b>
+  另注意：MLB 走地為隊級模型、<b>未含當日先發投手</b>——王牌/替補先發比賽的前段局數價差多為模型誤差而非 edge；
+  足球三層走地修正由英超資料擬合，套用於世界盃等其他賽事屬外推、未經該域驗證。</div>
   {body}
   <div class="foot">Generated by footy · 研究與教育用途</div>
 </div></body></html>"""

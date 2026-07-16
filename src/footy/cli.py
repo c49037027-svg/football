@@ -963,7 +963,7 @@ def mlb_live_cmd(model_path, data_path, date, n_sims):
 @mlb_group.command("backtest-live")
 @click.option("--data", "data_path", default="data/mlb.csv")
 @click.option("--hist", "hist_path", default="data/mlb_hist.csv")
-@click.option("--start", required=True, help="測試起日（之前訓練，walk-forward）")
+@click.option("--start", required=True, help="測試起日（之前訓練一次凍結，無 refit）")
 @click.option("--end", required=True, help="測試迄日")
 @click.option("--max-games", default=0, type=int, help="限制場數（0=全部）")
 @click.option("--n-sims", default=4000, type=int)
