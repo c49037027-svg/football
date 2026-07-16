@@ -1,7 +1,9 @@
 """足球走地：即時比分（ESPN）→ 1X2/大小 的即時機率與公平賠率。
 
 引擎重用 live/inplay（剩餘時間 Poisson-DC 重算），本模組加上三層
-**經 990 場英超半場狀態 walk-forward 驗證**的修正（docs/FINDINGS.md）：
+**經 990 場英超半場狀態 walk-forward 驗證**的修正（docs/FINDINGS.md；
+重現：scripts/backtest_foot_live.py。驗證樣本不含升級新軍且採納含
+test-set reuse，警語見 FINDINGS「足球走地」節）：
   1. 下半場升溫：進球率隨比賽進行上升（半場後 ×1.11，由 22 季訓練期擬合）
   2. 比分狀態效應：落後方壓上 ×1.10、領先方收縮 ×0.95
   3. 溫度縮放 τ=0.95：修正殘餘過度自信
