@@ -465,3 +465,6 @@ date,match_num,home,away,market,selection,line,odds,edge,source,close_odds,resul
 2026-07-17,823115,Seattle Mariners,San Francisco Giants,1X2,home,,1.65,-0.0758,market,1.65,pending,
 2026-07-17,823115,Seattle Mariners,San Francisco Giants,OU,大,6.5,1.71,-0.06,market,1.71,pending,
 2026-07-17,823115,Seattle Mariners,San Francisco Giants,AH,客,-1.5,1.53,-0.0506,market,1.53,pending,
+2026-07-17,824766,Boston Red Sox,Tampa Bay Rays,AH,主,1.5,1.5,-0.0094,market,1.5,pending,
+2026-07-17,824737,Boston Red Sox,Tampa Bay Rays,AH,主,1.5,1.5,-0.0291,market,1.5,pending,
+2026-07-17,823115,Seattle Mariners,San Francisco Giants,OU,小,7.5,1.75,-0.0379,market,1.75,pending,

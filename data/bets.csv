@@ -446,7 +446,7 @@ date,match_num,home,away,market,selection,line,odds,edge,source,close_odds,resul
 2026-07-15,102,England,Argentina,1X2,away,,3.11,,market,3.09,win,2.11
 2026-07-15,102,England,Argentina,AH,客,0.0,2.11,,market,2.07,win,1.11
 2026-07-18,103,France,England,1X2,home,,1.9,,market,1.85,pending,
-2026-07-18,103,France,England,AH,客,-0.5,1.81,,market,1.86,pending,
+2026-07-18,103,France,England,AH,客,-0.5,1.81,,market,1.85,pending,
 2026-07-19,104,Spain,Argentina,1X2,away,,3.85,,market,3.8,pending,
 2026-07-19,104,Spain,Argentina,OU,小,2.5,1.6,,market,1.69,pending,
 2026-07-19,104,Spain,Argentina,AH,客,-0.25,1.93,,market,1.94,pending,
