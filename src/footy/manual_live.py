@@ -146,7 +146,9 @@ def mlb_manual_result(q: dict, model_path: str = "models/mlb.pkl",
     base = mlb_live._half(r["exp_total"])
     fair = {"home_odds": 1.0 / p, "away_odds": 1.0 / (1.0 - p),
             "over_lines": [(ln, mlb_live.p_over(r, ln))
-                           for ln in (base - 1, base, base + 1)]}
+                           for ln in (base - 1, base, base + 1)],
+            "run_lines": [(sl, mlb_live.p_cover_home(r, sl))
+                          for sl in (-1.5, 1.5)]}
     snap = {"date": "-", "rows": [{
         "game": {"home": home, "away": away}, "state": st,
         "p_home": r["p_home"], "exp_total": r["exp_total"], "fair": fair}]}
@@ -161,6 +163,17 @@ def mlb_manual_result(q: dict, model_path: str = "models/mlb.pkl",
             tl += 0.5
         po = mlb_live.p_over(r, tl)
         entries += [(f"大 {tl:g}", po, "m_oto"), (f"小 {tl:g}", 1 - po, "m_otu")]
+    try:
+        sl = float(q.get("m_osl", "") or 0)     # 主隊讓分線（主讓 1.5 填 -1.5）
+    except (TypeError, ValueError):
+        sl = 0.0
+    if sl != 0:
+        sl = round(sl * 2) / 2
+        if sl == int(sl):                        # 整數線退款未建模 → 取到 .5
+            sl += 0.5 if sl > 0 else -0.5
+        pc = mlb_live.p_cover_home(r, sl)
+        entries += [(f"主 {sl:+g} 過盤", pc, "m_osho"),
+                    (f"客 {-sl:+g} 過盤", 1 - pc, "m_osao")]
     return mlb_live.render_live_section(snap) + _edge_card(q, entries)
 
 
@@ -222,6 +235,20 @@ def nba_manual_result(q: dict, model_path: str = "models/nba.pkl") -> str:
         f"<td>{1 / max(p_over(ln), 0.005):.2f}</td>"
         f"<td>{1 / max(1 - p_over(ln), 0.005):.2f}</td></tr>"
         for ln in (base - 5, base, base + 5))
+
+    def p_cover(sl: float) -> float:
+        """主隊讓分過盤機率（sl=主隊讓分線，主讓 5.5 → -5.5）。"""
+        return 1.0 - 0.5 * (1.0 + math.erf(
+            (-sl - diff - mu_m_rem) / sd_m / math.sqrt(2)))
+
+    sl0 = -round((diff + mu_m_rem) * 2) / 2      # 公平線（過盤 ≈50%）
+    if sl0 == int(sl0):
+        sl0 += 0.5
+    sp_rows = "".join(
+        f"<tr><td>主 {sl:+g}</td><td>{p_cover(sl):.1%}</td>"
+        f"<td>{1 / max(p_cover(sl), 0.005):.2f}</td>"
+        f"<td>{1 / max(1 - p_cover(sl), 0.005):.2f}</td></tr>"
+        for sl in (sl0 - 2, sl0, sl0 + 2))
     ph_bar = int(round(p_home * 100))
     qlab = "OT" if quarter == 5 else f"第{quarter}節"
     card = f"""
@@ -234,6 +261,8 @@ def nba_manual_result(q: dict, model_path: str = "models/nba.pkl") -> str:
       <span>預期總分 <b>{exp_total:.1f}</b></span></div>
     <table class='ltab'><thead><tr><th>大小線</th><th>大分機率</th><th>大·公平賠率</th><th>小·公平賠率</th></tr></thead>
     <tbody>{ou_rows}</tbody></table>
+    <table class='ltab'><thead><tr><th>讓分線</th><th>主過盤機率</th><th>主過盤·公平</th><th>客受讓·公平</th></tr></thead>
+    <tbody>{sp_rows}</tbody></table>
     <div class='small'>⚠️ NBA 走地為賽前模型的時間衰減延伸，<b>未經走地資料回測</b>（末節分差保護、
     犯規戰術等未建模），越接近終場越不可靠；賽前版已驗證（5 季勝負準確率 64-70%）。</div>
   </div>"""
@@ -250,10 +279,9 @@ def nba_manual_result(q: dict, model_path: str = "models/nba.pkl") -> str:
     except (TypeError, ValueError):
         sl = 0.0
     if sl != 0:
-        p_cover = 1.0 - 0.5 * (1.0 + math.erf(
-            (-sl - diff - mu_m_rem) / sd_m / math.sqrt(2)))
-        entries += [(f"主 {sl:+g} 過盤", p_cover, "n_osho"),
-                    (f"客 {-sl:+g} 過盤", 1 - p_cover, "n_osao")]
+        pc = p_cover(sl)
+        entries += [(f"主 {sl:+g} 過盤", pc, "n_osho"),
+                    (f"客 {-sl:+g} 過盤", 1 - pc, "n_osao")]
     return card + _edge_card(q, entries)
 
 
@@ -341,6 +369,8 @@ def render_manual_page(foot_model, q: dict | None = None,
       客勝 <input name='m_oa' value='{v("m_oa")}'>
       ｜大小線 <input name='m_otl' value='{v("m_otl")}'>
       大 <input name='m_oto' value='{v("m_oto")}'> 小 <input name='m_otu' value='{v("m_otu")}'>
+      ｜主讓分線 <input name='m_osl' value='{v("m_osl")}' placeholder='-1.5'>
+      主過盤 <input name='m_osho' value='{v("m_osho")}'> 客過盤 <input name='m_osao' value='{v("m_osao")}'>
       <button type='submit'>計算</button></div>
   </form>"""
     except Exception:  # noqa: BLE001

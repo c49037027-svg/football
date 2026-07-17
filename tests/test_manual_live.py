@@ -139,3 +139,39 @@ def test_edge_card_ev(tmp_path):
     q3 = dict(q, f_otl="2.5", f_oto="2.2", f_otu="1.6")
     html3 = manual_live.foot_manual_result(m, q3)
     assert "大 2.5" in html3 and "小 2.5" in html3
+
+
+def test_run_line_and_spread(tmp_path):
+    """讓分盤：MLB 模擬分差方向 + 手動頁讓分顯示與 EV。"""
+    from footy import mlb_live
+    # MLB:主讓 -1.5 過盤機率 < 勝率(要贏 2 分以上);受讓 +1.5 > 勝率
+    st = mlb_live.LiveState(inning=5, half="top", outs=0, bases="000",
+                            home_score=3, away_score=2)
+    r = mlb_live.simulate(st, 4.5, 4.5, seed=7)
+    assert mlb_live.p_cover_home(r, -1.5) < r["p_home"] < mlb_live.p_cover_home(r, 1.5)
+    # MLB 手動卡片含讓分表 + 讓分 EV
+    m = _foot_model()
+    mp = tmp_path / "mlb.pkl"; m.save(mp)
+    csv = tmp_path / "mlb.csv"
+    csv.write_text("date,home,away,home_goals,away_goals,game_pk\n"
+                   "2025-05-01,Alpha,Beta,4,3,1\n")
+    html = manual_live.mlb_manual_result(
+        {"mhome": "Alpha", "maway": "Beta", "inning": "5", "hs": "3", "as": "2",
+         "m_osl": "-1.5", "m_osho": "2.0"},
+        model_path=str(mp), data_path=str(csv))
+    assert "讓分線" in html and "主 -1.5" in html and "過盤" in html
+    # NBA 手動卡片含讓分公平表;讓分 EV 也在
+    nm = _nba_model()
+    np_ = tmp_path / "nba.pkl"; nm.save(np_)
+    html2 = manual_live.nba_manual_result(
+        {"nhome": "Strong", "naway": "Weak", "quarter": "2", "qmin": "6",
+         "nhs": "55", "nas": "50", "n_osl": "-7.5", "n_osho": "1.9"},
+        model_path=str(np_))
+    assert "讓分線" in html2 and "主 -7.5 過盤" in html2
+    # 方向:讓越多過盤機率越低
+    import re
+    def cover_ps(h):
+        return [float(x) / 100 for x in re.findall(r"<td>主 [+-][\d.]+</td><td>([\d.]+)%", h)]
+    ps = cover_ps(html2)
+    # sl 越負=讓越多=過盤越難:sl0-2(讓更多,<50%) → sl0(≈50%) → sl0+2(>50%) 遞增
+    assert ps == sorted(ps) and ps[0] < 0.5 < ps[-1]

@@ -149,6 +149,7 @@ def simulate(state: LiveState, lam_home: float, lam_away: float,
         "exp_home": float(hs.mean()), "exp_away": float(as_.mean()),
         "exp_total": float(total.mean()),
         "total_dist": total,
+        "margin_dist": hs - as_,
     }
 
 
@@ -156,6 +157,12 @@ def p_over(result: dict, line: float) -> float:
     """由模擬結果算大分機率（>line；.5 線無和局）。"""
     t = result["total_dist"]
     return float((t > line).mean())
+
+
+def p_cover_home(result: dict, spread: float) -> float:
+    """主隊讓分過盤機率。spread=主隊讓分線（主讓 1.5 → -1.5）；.5 線無退款。"""
+    m = result["margin_dist"]
+    return float((m + spread > 0).mean())
 
 
 # ---------------- statsapi 狀態解析（純函式可測） ----------------
@@ -326,10 +333,11 @@ def live_snapshot(model_path: str = "models/mlb.pkl",
         p = min(max(r["p_home"], 0.005), 0.995)
         base = _half(r["exp_total"])
         over_lines = [(ln, p_over(r, ln)) for ln in (base - 1, base, base + 1)]
+        run_lines = [(sl, p_cover_home(r, sl)) for sl in (-1.5, 1.5)]
         rows.append({"game": g, "state": st, "p_home": r["p_home"],
                      "exp_total": r["exp_total"],
                      "fair": {"home_odds": 1.0 / p, "away_odds": 1.0 / (1.0 - p),
-                              "over_lines": over_lines}})
+                              "over_lines": over_lines, "run_lines": run_lines}})
     return {"date": date, "rows": rows, "others": others}
 
 
@@ -353,6 +361,15 @@ def render_live_section(snap: dict) -> str:
             f"<td>{1 / max(po, 0.005):.2f}</td>"
             f"<td>{1 / max(1 - po, 0.005):.2f}</td></tr>"
             for ln, po in fair["over_lines"])
+        rl_rows = "".join(
+            f"<tr><td>主 {sl:+g}</td><td>{pc:.1%}</td>"
+            f"<td>{1 / max(pc, 0.005):.2f}</td>"
+            f"<td>{1 / max(1 - pc, 0.005):.2f}</td></tr>"
+            for sl, pc in fair.get("run_lines") or [])
+        rl_tab = ("" if not rl_rows else
+                  "<table class='ltab'><thead><tr><th>讓分線</th><th>主過盤機率</th>"
+                  "<th>主過盤·公平</th><th>客受讓·公平</th></tr></thead>"
+                  f"<tbody>{rl_rows}</tbody></table>")
         cards.append(f"""
   <div class='card mgame'>
     <div class='mhd'><b>{_h.escape(az)}</b> <span class='at'>{st.away_score}</span>
@@ -362,7 +379,7 @@ def render_live_section(snap: dict) -> str:
     <div class='lrow'><span>主勝 <b>{p:.1%}</b>（公平賠率 主 {fair['home_odds']:.2f}／客 {fair['away_odds']:.2f}）</span>
       <span>預期總分 <b>{r['exp_total']:.1f}</b></span></div>
     <table class='ltab'><thead><tr><th>大小線</th><th>大分機率</th><th>大·公平賠率</th><th>小·公平賠率</th></tr></thead>
-    <tbody>{ou_rows}</tbody></table>
+    <tbody>{ou_rows}</tbody></table>{rl_tab}
   </div>""")
     if not cards:
         return ("<div class='card'><div class='sec'>⚾ MLB：目前無進行中的比賽</div>"
