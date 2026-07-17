@@ -148,23 +148,31 @@ def fetch_live_scores(codes: list[str] | None = None,
 
     errors：呼叫端傳 list 進來可收到抓取失敗的聯賽代碼——「來源故障」
     和「真的沒比賽」必須能區分，否則故障會被顯示成無比賽。
-    timeout 取 8 秒：/live 是同步序列抓取，逾時直接墊高頁面延遲。
+    各聯賽並行抓取：最壞延遲 = 單一 timeout（8 秒），不隨聯賽數累加
+    （五大聯賽 5 個 codes 序列抓最壞會到 40 秒）。
     """
+    from concurrent.futures import ThreadPoolExecutor
+
     import requests
+
+    def one(code: str) -> list[dict]:
+        r = requests.get(ESPN_SOCCER.format(code=code),
+                         headers={"User-Agent": "Mozilla/5.0"}, timeout=timeout)
+        r.raise_for_status()
+        parsed = parse_espn_soccer(r.json())
+        for row in parsed:
+            row["neutral"] = code in NEUTRAL_CODES
+        return parsed
+
+    codes = list(codes or LEAGUE_CODES)
     rows = []
-    for code in codes or LEAGUE_CODES:
-        try:
-            r = requests.get(ESPN_SOCCER.format(code=code),
-                             headers={"User-Agent": "Mozilla/5.0"}, timeout=timeout)
-            r.raise_for_status()
-            parsed = parse_espn_soccer(r.json())
-            for row in parsed:
-                row["neutral"] = code in NEUTRAL_CODES
-            rows.extend(parsed)
-        except Exception:  # noqa: BLE001
-            if errors is not None:
-                errors.append(code)
-            continue
+    with ThreadPoolExecutor(max_workers=min(len(codes), 8)) as ex:
+        for code, fut in [(c, ex.submit(one, c)) for c in codes]:
+            try:
+                rows.extend(fut.result())
+            except Exception:  # noqa: BLE001
+                if errors is not None:
+                    errors.append(code)
     return rows
 
 
@@ -255,4 +263,9 @@ def render_live_section(snap: dict) -> str:
     if snap["skipped"]:
         note = ("<div class='small' style='color:var(--muted)'>未涵蓋（隊名不在模型）："
                 + _h.escape("、".join(snap["skipped"][:5])) + "</div>")
+    # 部分聯賽故障（其他聯賽有比賽）也要可見，不能只在整頁空白時才報
+    if snap.get("source_errors"):
+        note += ("<div class='small'>⚠️ 部分比分源抓取失敗："
+                 + _h.escape(", ".join(snap["source_errors"]))
+                 + "——這些聯賽的比賽暫缺，非無比賽。</div>")
     return "<h2 style='margin:14px 0 8px'>⚽ 足球走地</h2>" + "".join(cards) + note

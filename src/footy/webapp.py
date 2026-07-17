@@ -19,9 +19,12 @@ from .models.dixon_coles import DixonColesModel
 
 # 走地頁 TTL 快取：命中直接回 HTML，上游請求上限 = 每 TTL 週期一輪，
 # 與同時瀏覽人數脫鉤。TTL 20 秒 < 頁面 45 秒 refresh。
+# _live_build_lock = single-flight：快取過期瞬間的併發請求只讓一個重建、
+# 其餘等它寫回後讀快取，避免一起打上游（stampede）。
 _LIVE_TTL = 20.0
 _live_cache: dict[str, tuple[float, str]] = {}
 _live_lock = threading.Lock()
+_live_build_lock = threading.Lock()
 
 
 def _live_cache_get(key: str) -> str | None:
@@ -144,35 +147,13 @@ class _Handler(BaseHTTPRequestHandler):
             if cached is not None:
                 self._send(cached)
                 return
-            try:
-                from . import mlb_live
-                # MLB 與足球各自隔離：statsapi 掛掉不能拖垮足球區塊（反之亦然）
-                try:
-                    snap = mlb_live.live_snapshot()
-                    mlb_err = None
-                except Exception as me:  # noqa: BLE001
-                    snap = {"date": "-", "rows": [], "others": []}
-                    mlb_err = (f"<div class='card'><div class='small'>⚾ MLB 走地載入失敗"
-                               f"（statsapi）：{_html.escape(str(me))}</div></div>")
-                extra = [mlb_err] if mlb_err else None
-                title = "MLB 走地"
-                if path == "/live":
-                    title = "走地"
-                    extra = [mlb_err] if mlb_err else []
-                    try:
-                        from . import foot_live
-                        fsnap = foot_live.live_snapshot()
-                        extra.append(foot_live.render_live_section(fsnap))
-                    except Exception as fe:  # noqa: BLE001
-                        extra.append(f"<div class='card'><div class='small'>足球走地載入失敗："
-                                     f"{_html.escape(str(fe))}</div></div>")
-                html_page = mlb_live.render_live_page(snap, extra_sections=extra,
-                                                      title=title)
-                _live_cache_put(path, html_page)
-                self._send(html_page)
-            except Exception as e:  # noqa: BLE001
-                self._send(f"<div class='wrap'><p>走地頁載入失敗：{_html.escape(str(e))}"
-                           f"</p><p>需要 models/*.pkl 與可達 statsapi/ESPN 的環境。</p></div>", 500)
+            # single-flight：過期瞬間的併發請求只讓一個重建，其餘等快取
+            with _live_build_lock:
+                cached = _live_cache_get(path)   # 排隊期間可能已被前一位建好
+                if cached is not None:
+                    self._send(cached)
+                    return
+                self._build_live(path)
             return
         # 互動分析結果
         if path == "/analyze":
@@ -196,6 +177,38 @@ class _Handler(BaseHTTPRequestHandler):
             self._send(render_form(self.teams))
             return
         self._send("<p>Not found</p>", 404)
+
+    def _build_live(self, path: str) -> None:
+        """現算走地頁、寫入快取並回應（呼叫端已持 _live_build_lock）。"""
+        try:
+            from . import mlb_live
+            # MLB 與足球各自隔離：statsapi 掛掉不能拖垮足球區塊（反之亦然）
+            try:
+                snap = mlb_live.live_snapshot()
+                mlb_err = None
+            except Exception as me:  # noqa: BLE001
+                snap = {"date": "-", "rows": [], "others": []}
+                mlb_err = (f"<div class='card'><div class='small'>⚾ MLB 走地載入失敗"
+                           f"（statsapi）：{_html.escape(str(me))}</div></div>")
+            extra = [mlb_err] if mlb_err else None
+            title = "MLB 走地"
+            if path == "/live":
+                title = "走地"
+                extra = [mlb_err] if mlb_err else []
+                try:
+                    from . import foot_live
+                    fsnap = foot_live.live_snapshot()
+                    extra.append(foot_live.render_live_section(fsnap))
+                except Exception as fe:  # noqa: BLE001
+                    extra.append(f"<div class='card'><div class='small'>足球走地載入失敗："
+                                 f"{_html.escape(str(fe))}</div></div>")
+            html_page = mlb_live.render_live_page(snap, extra_sections=extra,
+                                                  title=title)
+            _live_cache_put(path, html_page)
+            self._send(html_page)
+        except Exception as e:  # noqa: BLE001
+            self._send(f"<div class='wrap'><p>走地頁載入失敗：{_html.escape(str(e))}"
+                       f"</p><p>需要 models/*.pkl 與可達 statsapi/ESPN 的環境。</p></div>", 500)
 
     def _analyze(self, q: dict) -> str:
         home, away = q.get("home"), q.get("away")
