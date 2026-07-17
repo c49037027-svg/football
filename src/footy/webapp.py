@@ -155,6 +155,15 @@ class _Handler(BaseHTTPRequestHandler):
                     return
                 self._build_live(path)
             return
+        # 手動走地：看直播自行輸入比分 → 即時分析（繞過比分源 30-90 秒延遲）
+        if path == "/manual":
+            q = {k: v[0] for k, v in parse_qs(parsed.query).items()}
+            try:
+                from . import manual_live
+                self._send(manual_live.render_manual_page(self.model, q))
+            except Exception as e:  # noqa: BLE001
+                self._send(f"<p>手動走地載入失敗：{_html.escape(str(e))}</p>", 500)
+            return
         # 互動分析結果
         if path == "/analyze":
             q = {k: v[0] for k, v in parse_qs(parsed.query).items()}

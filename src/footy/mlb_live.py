@@ -404,6 +404,7 @@ def render_live_page(snap: dict, refresh_sec: int = 45,
   <div class="sub">資料時間 {ts}（台北）· 每 {refresh_sec} 秒自動更新 ·
   勝率經歷史回測驗證（MLB 527 場半局邊界／足球 990 場半場 1X2·英超）；
   大小盤與局中細部狀態（壘包/出局、45' 以外時點）為模型延伸、未經獨立回測，參考價值較低 ·
+  <a href="/manual" style="color:var(--accent)">✍️ 比分源慢半拍？手動輸入比分即時算</a> ·
   <a href="/index.html" style="color:var(--accent)">← 回首頁</a></div>
   <div class="disc">⚠️ 公平賠率=無水錢的理論價；莊家走地賠率高於公平價才有正期望值。走地盤 vig 較高，門檻請比賽前盤嚴。<b>比分源有 30~90 秒延遲：進球/得分後的 1-2 分鐘內本頁價格是舊狀態，此時與莊家的價差是延遲假象、不是 edge，切勿在劇烈變化剛發生時下注。</b>
   另注意：MLB 走地為隊級模型、<b>未含當日先發投手</b>——王牌/替補先發比賽的前段局數價差多為模型誤差而非 edge；
