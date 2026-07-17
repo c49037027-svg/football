@@ -20,6 +20,7 @@ jobs:
           if [ -z "$BASE" ] || [ "$BASE" = "/live" ]; then
             echo "未設定 FOOTY_LIVE_URL（Repo Variables），略過"; exit 0
           fi
-          # 去掉結尾的 /live 或斜線，接 /healthz
-          base="${BASE%/live}"; base="${base%/}"
+          # 清掉貼上時夾帶的雜字元（<>、空白），去掉結尾 /live 或斜線，接 /healthz
+          base="$(echo "$BASE" | tr -d '<> \t')"
+          base="${base%/live}"; base="${base%/}"
           curl -fsS --max-time 90 "$base/healthz" && echo "ok" || echo "ping 失敗（容忍）"
