@@ -639,8 +639,8 @@ def test_ou_recommend_disabled_by_default(monkeypatch):
         p_over, p_under = 0.62, 0.38          # 模型強烈看大
         p_cover_home = 0.50
         total_line, run_line = 8.5, -1.5
-    quotes = [MarketQuote("OU", "over", 2.10, line=8.5),   # p*odds-1 = +30% 假 edge
-              MarketQuote("OU", "under", 1.75, line=8.5)]
+    quotes = [MarketQuote("OU", "over", 1.90, line=8.5),   # 融合後 edge ≈ +6%（在風控範圍內）
+              MarketQuote("OU", "under", 1.90, line=8.5)]
     sig = mlb.bet_signals(M(), quotes)
     assert sig["OU"]["edge"] is not None and sig["OU"]["edge"] > 0
     assert sig["OU"]["verdict"] == "觀望"       # 有正 edge 也不買

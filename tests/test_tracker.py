@@ -92,7 +92,7 @@ def test_ev_engine_blend(synthetic_df):
     h, a = model.teams[0], model.teams[1]
     o = tracker.markets.outcome_1x2(model.score_matrix(h, a, neutral=True))
     # 灌水主勝賠率：純模型(weight=1)會視為 +EV；純市場(weight=0)去 vig 後消失
-    quotes = [MarketQuote("1X2", "home", round(1.0 / o["home"] * 1.15, 3)),
+    quotes = [MarketQuote("1X2", "home", round(1.0 / o["home"] * 1.08, 3)),   # 灌 8%（在 MAX_EDGE=10% 風控內）
               MarketQuote("1X2", "draw", round(1.0 / o["draw"] * 0.95, 3)),
               MarketQuote("1X2", "away", round(1.0 / o["away"] * 0.95, 3))]
     e1 = [r for r in tracker._market_edges(model, h, a, quotes, weight=1.0) if r["market"] == "1X2"]
