@@ -732,6 +732,14 @@ def fetch_mlb_odds(games: list, **kw) -> dict:
 MLB_LEDGER = "data/mlb_bets.csv"          # 有 edge 追蹤：每場三盤傾向＋市場賠率/edge
 MLB_MODEL_LEDGER = "data/mlb_model_bets.csv"   # 純模型追蹤：每場信心最高一注，不看盤口
 
+# 大小盤推薦停用（帳本實證 2026-07：OU 153 注勝率 43%、edge 反向預測——
+# edge>0 的 54 注只贏 33%（顯著差於損益兩平, p<0.005）、負 edge 反而贏 65%+。
+# 買「大」尤慘（38.5%、每注 -37.8%），與「凌晨建站缺先發資訊 → 王牌對決
+# 高估總分」一致。中午場建站補上先發後累積 ≥100 筆且 edge>0 子集勝率 >52%
+# 再考慮重開。環境變數 FOOTY_OU_RECOMMEND=1 可強制打開（研究用）。
+import os as _os
+OU_RECOMMEND = _os.environ.get("FOOTY_OU_RECOMMEND", "0") == "1"
+
 
 def _derive_model_ledger(ledger_path) -> str:
     """由主帳本路徑推導純模型帳本路徑（xxx_bets.csv → xxx_model_bets.csv）。"""
@@ -823,6 +831,8 @@ def bet_signals(m: MLBMarkets, quotes=None, weight=None) -> dict:
             return {"side": fav, "odds": None, "edge": None, "verdict": None, "p": p}
         edge = p * odds - 1.0
         buy = (0.0 < edge <= tracker.MAX_EDGE and p >= tracker.MIN_PROB)
+        if market == "OU" and not OU_RECOMMEND:
+            buy = False              # 大小盤停買（見 OU_RECOMMEND 註解的帳本實證）
         return {"side": fav, "odds": float(odds), "edge": edge,
                 "verdict": "買" if buy else "觀望", "p": p}
 

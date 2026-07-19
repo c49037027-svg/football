@@ -627,3 +627,24 @@ def test_confidence_pick_and_dual_ledger(tmp_path):
     n = mlb.log_picks(str(lp), "2026-07-18",
                       {"game_pk": 1, "home": "A", "away": "B"}, cp)
     assert n == 1 and lp.exists()
+
+
+def test_ou_recommend_disabled_by_default(monkeypatch):
+    """OU 停買:帳本實證 edge 反向(43% 勝率/edge>0 只贏 33%),預設不出「買」。"""
+    from footy import mlb
+    from footy.prematch import MarketQuote
+
+    class M:
+        p_home, p_away = 0.52, 0.48
+        p_over, p_under = 0.62, 0.38          # 模型強烈看大
+        p_cover_home = 0.50
+        total_line, run_line = 8.5, -1.5
+    quotes = [MarketQuote("OU", "over", 2.10, line=8.5),   # p*odds-1 = +30% 假 edge
+              MarketQuote("OU", "under", 1.75, line=8.5)]
+    sig = mlb.bet_signals(M(), quotes)
+    assert sig["OU"]["edge"] is not None and sig["OU"]["edge"] > 0
+    assert sig["OU"]["verdict"] == "觀望"       # 有正 edge 也不買
+    # 研究用開關可重開
+    monkeypatch.setattr(mlb, "OU_RECOMMEND", True)
+    sig2 = mlb.bet_signals(M(), quotes)
+    assert sig2["OU"]["verdict"] == "買"

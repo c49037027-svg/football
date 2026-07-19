@@ -1251,6 +1251,7 @@ def _mlb_top5(rows, zh_t, mkt_conf=None) -> str:
     mkt_conf = mlb.market_confidence 產物 {"mult":{盤口:乘數}, "winrate":{盤口:勝率}}。
     歷史贏面高的盤口(如讓分)排序被加權;無帳本時乘數全 1.0(退回純 edge)。
     """
+    from . import mlb as _mlb
     mult = (mkt_conf or {}).get("mult", {})
     wr = (mkt_conf or {}).get("winrate", {})
     picks = []
@@ -1261,6 +1262,8 @@ def _mlb_top5(rows, zh_t, mkt_conf=None) -> str:
         for k, s in sig.items():
             e = s.get("edge")
             if e is None:                               # 無賠率的盤口跳過
+                continue
+            if k == "OU" and not _mlb.OU_RECOMMEND:     # OU edge 實證反向，不入榜
                 continue
             adj = e * mult.get(k, 1.0)                  # 依歷史勝率加權
             if best is None or adj > best_adj:
