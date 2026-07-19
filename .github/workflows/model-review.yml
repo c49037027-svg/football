@@ -23,11 +23,11 @@ jobs:
           cache: pip
       - name: 安裝套件
         run: pip install -e .
-      - name: 跑審查 agents
+      - name: 跑模型改進團隊（守門端＋進攻端）
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           LLM_MODEL: claude-haiku-4-5
-        run: footy agent review --out docs/reports
+        run: footy agent team --out docs/reports
       - name: 提交報告與閘門
         run: |
           git config user.name "github-actions"

@@ -60,3 +60,37 @@ def test_run_review_and_report(tmp_path):
     rep = rv.compose_report(res, "2026-07-20")
     assert "帳本法醫" in rep and "自動關閘" in rep and "測" in rep
     assert "校準哨兵" in rep and "權重調參" in rep
+
+
+# ---------------- 進攻端(team.py) ----------------
+def test_data_auditor_checks(tmp_path, monkeypatch):
+    from footy.agents import team
+    monkeypatch.chdir(tmp_path)          # 空目錄:檔案缺失但不炸
+    out = team.data_auditor(today="2026-07-20")
+    names = {c["name"] for c in out["checks"]}
+    assert "MLB 比賽資料" in names and "市場閘門檔" in names
+    # 球季中資料缺失 → WARN
+    assert any(c["status"] == "WARN" for c in out["checks"])
+
+
+def test_postmortem_agent_finds_upsets(tmp_path, monkeypatch):
+    from footy.agents import team
+    monkeypatch.chdir(tmp_path)
+    (tmp_path / "data").mkdir()
+    pd.DataFrame([
+        dict(date="2026-07-18", match_num=1, home="A", away="B", market="1X2",
+             selection="home", line="", odds=1.50, edge=0.02, source="market",
+             close_odds=1.50, result="loss", pl=-1.0),      # 高信心失手
+        dict(date="2026-07-18", match_num=2, home="C", away="D", market="1X2",
+             selection="home", line="", odds=2.50, edge=0.02, source="market",
+             close_odds=2.50, result="loss", pl=-1.0),      # 冷門輸,不算
+    ]).to_csv(tmp_path / "data" / "mlb_bets.csv", index=False)
+    out = team.postmortem_agent(today="2026-07-20")
+    assert out["n"] == 1 and out["upsets"][0]["home"] == "A"
+
+
+def test_run_team_report(tmp_path, monkeypatch):
+    from footy.agents import team
+    monkeypatch.chdir(tmp_path)          # 全空環境也要能出報告
+    res, rep = team.run_team(today="2026-07-20")
+    assert "帳本法醫" in rep and "資料稽核員" in rep and "賽後檢討員" in rep

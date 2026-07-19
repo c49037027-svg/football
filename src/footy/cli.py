@@ -354,6 +354,32 @@ def agent_review(outdir):
         click.echo("[review] ⚠️ 足球校準漂移警報（近 30 天 Brier 惡化 >15%）")
 
 
+@agent.command("team")
+@click.option("--out", "outdir", default="docs/reports", help="週報輸出目錄")
+def agent_team(outdir):
+    """模型改進 AI 團隊週會：守門端（法醫/校準/調參）＋進攻端（稽核/檢討/提案）。
+
+    產出單一週報；自動關閘照 review 規則執行。無 ANTHROPIC_API_KEY 時
+    LLM 敘事段落略過、數據段照常。
+    """
+    import datetime as _dt
+    from pathlib import Path as _P
+
+    from .agents import team as tm
+    today = _dt.date.today().isoformat()
+    res, report = tm.run_team(today=today)
+    p = _P(outdir) / f"team-{today}.md"
+    p.parent.mkdir(parents=True, exist_ok=True)
+    p.write_text(report, encoding="utf-8")
+    click.echo(f"[team] 週報已存 {p}")
+    for a in res["review"]["gates_applied"]:
+        click.echo(f"[team] {a}")
+    if res["review"]["calibration"].get("drift_alert"):
+        click.echo("[team] ⚠️ 校準漂移警報")
+    if res["audit"]["n_warn"]:
+        click.echo(f"[team] ⚠️ 資料稽核 {res['audit']['n_warn']} 項警告")
+
+
 @agent.command("preview")
 @click.option("--model", "model_path", default="models/intl.pkl")
 @click.option("--schedule", default="data/wc2026.json")

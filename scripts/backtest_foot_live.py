@@ -75,6 +75,9 @@ def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--csv", default=None, help="本地 Matches.csv（省下載）")
     ap.add_argument("--half-life", type=float, default=180.0)
+    ap.add_argument("--check-baseline", type=float, default=None,
+                    help="上線配置 LL 基準（如 0.8276）；偏離 >tolerance 印 WARN")
+    ap.add_argument("--tolerance", type=float, default=0.02)
     args = ap.parse_args()
 
     raw = load_raw(args.csv)
@@ -108,6 +111,7 @@ def main() -> None:
     ]
     y = np.sign(test["FTHome"].values - test["FTAway"].values)  # 1/0/-1
     idx = np.where(y > 0, 0, np.where(y == 0, 1, 2))
+    final_ll = None
     for name, kw in configs:
         lls = []
         for k, (_, g) in enumerate(test.iterrows()):
@@ -117,7 +121,14 @@ def main() -> None:
                 p = live_1x2(model, g["HomeTeam"], g["AwayTeam"],
                              int(g["HTHome"]), int(g["HTAway"]), **kw)
             lls.append(-np.log(max(p[idx[k]], 1e-12)))
-        print(f"{name:<28s} LL={np.mean(lls):.4f}")
+        final_ll = float(np.mean(lls))
+        print(f"{name:<28s} LL={final_ll:.4f}")
+    # 回歸防護：上線配置 LL 對基準漂移過大 = 程式或資料被改壞（月度 workflow 用）
+    if args.check_baseline is not None and final_ll is not None:
+        drift = final_ll - args.check_baseline
+        status = "PASS" if abs(drift) <= args.tolerance else "WARN"
+        print(f"[baseline-check] {status}：上線配置 LL {final_ll:.4f} vs 基準 "
+              f"{args.check_baseline:.4f}（漂移 {drift:+.4f}，容忍 ±{args.tolerance:g}）")
 
 
 if __name__ == "__main__":
