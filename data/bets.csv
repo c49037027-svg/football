@@ -256,6 +256,7 @@ date,match_num,home,away,market,selection,line,odds,edge,source,close_odds,resul
 2026-07-18,103,France,England,OU,小,2.5,,,model,,loss,
 2026-07-18,103,France,England,BTTS,否,,,,model,,loss,
 2026-07-19,104,Spain,Argentina,BTTS,否,,,,model,,pending,
+2026-07-18,103,France,England,BTTS,是,,,,model,,win,
 2026-06-20,33,Ecuador,Curaçao,1X2,home,,1.12,,market,1.16,loss,-1.0
 2026-06-20,33,Ecuador,Curaçao,OU,大,2.5,1.54,,market,1.54,loss,-1.0
 2026-06-20,33,Ecuador,Curaçao,AH,客,-2.5,1.69,,market,1.64,win,0.69
