@@ -1336,7 +1336,7 @@ def _mlb_pure_board(rows, zh_t) -> str:
     def cell(pick: str, p: float) -> str:
         return f"<b>{html.escape(pick)}</b> {p:.0%}·{1 / max(p, 0.005):.2f}"
 
-    ml_e, ou_e, ah_e = [], [], []
+    pool = []       # (機率, 對戰, 時間, 盤口名, 方向格)——三盤口同池競逐
     any_default = False
     for r in rows:
         g, m = r["game"], r["m"]
@@ -1347,47 +1347,36 @@ def _mlb_pure_board(rows, zh_t) -> str:
         star = "" if r.get("has_quotes") else "＊"
         any_default = any_default or not r.get("has_quotes")
         p = max(m.p_home, m.p_away)
-        ml_e.append((p, vs, tm, cell(hz if m.p_home >= m.p_away else az, p)))
-        if abs(m.p_over - 0.5) >= 0.03:      # 模型無明顯方向的不入榜
+        pool.append((p, vs, tm, "錢線",
+                     cell(hz if m.p_home >= m.p_away else az, p)))
+        if abs(m.p_over - 0.5) >= 0.03:      # 模型無明顯方向的不入池
             p = max(m.p_over, m.p_under)
-            ou_e.append((p, vs, tm,
+            pool.append((p, vs, tm, "大小",
                          cell(f"{'大' if m.p_over >= 0.5 else '小'} "
                               f"{m.total_line:g}{star}", p)))
         p = max(m.p_cover_home, 1 - m.p_cover_home)
-        ah_e.append((p, vs, tm,
+        pool.append((p, vs, tm, "讓分",
                      cell(f"{hz} {m.run_line:+g}{star}", p) if m.p_cover_home >= 0.5
                      else cell(f"{az} {-m.run_line:+g}{star}", p)))
-    if not ml_e and not ou_e and not ah_e:
+    if not pool:
         return ""
-
-    def top5(entries):
-        """前五名；顯示到同一個百分比者視為同機率、並列全收。"""
-        entries.sort(key=lambda e: -e[0])
-        if len(entries) > 5:
-            cutoff = round(entries[4][0] * 100)
-            entries = [e for e in entries if round(e[0] * 100) >= cutoff]
-        return entries
-
-    sections = []
-    for title, es in (("錢線", ml_e), ("大小", ou_e), ("讓分", ah_e)):
-        es = top5(es)
-        if not es:
-            continue
-        trs = "".join(
-            f"<tr><td class='rk'>{i}</td><td class='tm'>{html.escape(t)}</td>"
-            f"<td class='small' style='color:var(--muted)'>{html.escape(tmv)}</td>"
-            f"<td>{pk}</td></tr>"
-            for i, (_, t, tmv, pk) in enumerate(es, 1))
-        sections.append(
-            f"<div style='margin-top:8px'><b class='small'>{title} TOP 5</b>"
-            "<table style='margin-top:4px'><thead><tr><th>#</th><th>對戰</th>"
-            f"<th>時間</th><th>方向 機率·公平賠率</th></tr></thead>"
-            f"<tbody>{trs}</tbody></table></div>")
+    # 三盤口一起比，取機率最高 5 注；顯示到同一百分比者視為同機率、並列全收
+    pool.sort(key=lambda e: -e[0])
+    if len(pool) > 5:
+        cutoff = round(pool[4][0] * 100)
+        pool = [e for e in pool if round(e[0] * 100) >= cutoff]
+    trs = "".join(
+        f"<tr><td class='rk'>{i}</td><td class='tm'>{html.escape(t)}</td>"
+        f"<td class='small' style='color:var(--muted)'>{html.escape(tmv)}</td>"
+        f"<td>{mk}</td><td>{pk}</td></tr>"
+        for i, (_, t, tmv, mk, pk) in enumerate(pool, 1))
     return (
         "<div class='card'><div class='sec'>📊 純模型推薦 TOP 5"
         "<span class='small' style='color:var(--muted);font-weight:400'>"
-        "（照盤口不看賠率 · 錢線／大小／讓分各取機率前五，同機率並列）</span></div>"
-        + "".join(sections)
+        "（照盤口不看賠率 · 錢線＋大小＋讓分同池取機率最高 5 注，同機率並列）</span></div>"
+        "<table style='margin-top:6px'><thead><tr><th>#</th><th>對戰</th>"
+        "<th>時間</th><th>盤口</th><th>方向 機率·公平賠率</th></tr></thead>"
+        f"<tbody>{trs}</tbody></table>"
         + "<div class='small' style='color:var(--muted);margin-top:6px'>"
         "格式：方向 機率·公平賠率。線用莊家盤口，判斷純由模型、賠率不參與"
         "——莊家賠率高於公平賠率才有價值。此處僅顯示把握度前五（同機率並列）；"
