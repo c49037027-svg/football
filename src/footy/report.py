@@ -1303,9 +1303,9 @@ def _mlb_top5(rows, zh_t, mkt_conf=None, sport: str = "MLB") -> str:
                 f"<td style='color:{ec};font-weight:700'>{p['edge']:+.1%}</td></tr>")
     n_buy = sum(1 for p in picks[:5] if p["verdict"] == "買")
     return (
-        "<div class='card top5'><div class='sec'>🔥 今日最推薦 TOP 5"
+        "<div class='card top5'><div class='sec'>🔥 有 edge 推薦 TOP 5"
         "<span class='small' style='color:var(--muted);font-weight:400'>"
-        f"（模型最看好前 5 · edge×歷史勝率排序 · 其中 {n_buy} 場 +EV）</span></div>"
+        f"（市場融合＋風控 · edge×歷史勝率排序 · 其中 {n_buy} 場 +EV）</span></div>"
         "<table style='margin-top:6px'><thead><tr><th>#</th><th>對戰</th><th>時間</th>"
         f"<th>推薦</th><th>賠率</th><th>edge</th></tr></thead><tbody>{trs}</tbody></table>"
         "<div class='small' style='color:var(--muted);margin-top:6px'>"
@@ -1315,46 +1315,50 @@ def _mlb_top5(rows, zh_t, mkt_conf=None, sport: str = "MLB") -> str:
         "<a href='mlb_perf.html' style='color:var(--accent)'>MLB 績效頁</a> 的 CLV。</div></div>")
 
 
-def _mlb_conf_top(rows, zh_t, n: int = 5) -> str:
-    """模型信心榜：純模型機率排序，完全不看盤口/edge。
+def _mlb_pure_board(rows, zh_t) -> str:
+    """純模型推薦板：每場三盤口在市場線上的模型判斷——與純模型帳本一致。
 
-    存在理由：TOP5 需要賠率才能算 edge，盤口沒開時整個空白，使用者會以為
-    模型沒產出。此榜每場取模型最偏離五五波的一注，永遠有內容；同時明示
-    「未經盤口驗證」——把握度高 ≠ 有 +EV。
+    與 TOP5（有 edge·市場融合）並排的「沒 edge」推薦：線照盤口、賠率
+    完全不參與判斷。大小盤模型沒有明顯方向（|p-0.5|<3%）時顯示「—」
+    （與帳本的 min_lean 一致）。依模型最強一注的把握度排序。
     """
+    def cell(pick: str, p: float) -> str:
+        return f"<b>{html.escape(pick)}</b> {p:.0%}·{1 / max(p, 0.005):.2f}"
+
     entries = []
     for r in rows:
         g, m = r["game"], r["m"]
         hz, az = zh_t(g["home"]), zh_t(g["away"])
-        cands = [
-            ("錢線", hz if m.p_home >= m.p_away else az,
-             max(m.p_home, m.p_away)),
-            ("大小", f"大 {m.total_line:g}" if m.p_over >= 0.5 else f"小 {m.total_line:g}",
-             max(m.p_over, m.p_under)),
-            ("讓分", f"{hz} {m.run_line:+g}" if m.p_cover_home >= 0.5
-             else f"{az} {-m.run_line:+g}",
-             max(m.p_cover_home, 1 - m.p_cover_home)),
-        ]
-        mk, pick, p = max(cands, key=lambda c: c[2])
-        entries.append((p, f"{az} @ {hz}", mk, pick, r.get("time") or ""))
+        ml = cell(hz, m.p_home) if m.p_home >= m.p_away else cell(az, m.p_away)
+        if abs(m.p_over - 0.5) >= 0.03:
+            ou = (cell(f"大 {m.total_line:g}", m.p_over) if m.p_over >= 0.5
+                  else cell(f"小 {m.total_line:g}", m.p_under))
+        else:
+            ou = "<span class='dim'>—</span>"
+        ah = (cell(f"{hz} {m.run_line:+g}", m.p_cover_home) if m.p_cover_home >= 0.5
+              else cell(f"{az} {-m.run_line:+g}", 1 - m.p_cover_home))
+        conf = max(m.p_home, m.p_away, m.p_over, m.p_under,
+                   m.p_cover_home, 1 - m.p_cover_home)
+        entries.append((conf, f"{az} @ {hz}", r.get("time") or "", ml, ou, ah))
     if not entries:
         return ""
     entries.sort(key=lambda e: -e[0])
     trs = "".join(
-        f"<tr><td class='rk'>{i}</td><td class='tm'>{html.escape(t)}</td>"
+        f"<tr><td class='tm'>{html.escape(t)}</td>"
         f"<td class='small' style='color:var(--muted)'>{html.escape(tm)}</td>"
-        f"<td>{mk} <b>{html.escape(pk)}</b></td>"
-        f"<td>{p:.0%}</td><td>{1 / max(p, 0.005):.2f}</td></tr>"
-        for i, (p, t, mk, pk, tm) in enumerate(entries[:n], 1))
+        f"<td>{ml}</td><td>{ou}</td><td>{ah}</td></tr>"
+        for _, t, tm, ml, ou, ah in entries)
     return (
-        "<div class='card'><div class='sec'>📊 模型信心榜"
+        "<div class='card'><div class='sec'>📊 純模型推薦"
         "<span class='small' style='color:var(--muted);font-weight:400'>"
-        "（純模型 · 線用市場盤口 · 賠率不參與判斷）</span></div>"
-        "<table style='margin-top:6px'><thead><tr><th>#</th><th>對戰</th><th>時間</th>"
-        f"<th>模型方向</th><th>機率</th><th>公平賠率</th></tr></thead><tbody>{trs}</tbody></table>"
+        "（照盤口不看賠率 · 全場次全盤口 · 與上方有 edge 的 TOP 5 分軌記帳）</span></div>"
+        "<table style='margin-top:6px'><thead><tr><th>對戰</th><th>時間</th>"
+        "<th>錢線</th><th>大小</th><th>讓分</th></tr></thead>"
+        f"<tbody>{trs}</tbody></table>"
         "<div class='small' style='color:var(--muted);margin-top:6px'>"
-        "此榜只反映模型把握度，<b>賠率未參與、不代表 +EV</b>——莊家賠率高於"
-        "「公平賠率」欄才有價值；正式推薦（含去水錢與風控）看上方 TOP 5。</div></div>")
+        "格式：方向 機率·公平賠率。線用莊家盤口，判斷純由模型、賠率不參與"
+        "——莊家賠率高於公平賠率才有價值。此板每注入「純模型帳本」，"
+        "與 TOP 5（去水錢＋融合＋風控）分開結算，戰績卡兩軌對照。</div></div>")
 
 
 def render_mlb_page(rows, date: str, power=None, track_text=None,
@@ -1372,7 +1376,7 @@ def render_mlb_page(rows, date: str, power=None, track_text=None,
     sub_desc = ("攻防評分（加權嶺回歸）+ 常態分布盤口機率" if sport == "NBA" else
                 "負二項得分模型 + 先發投手(RA/9+FIP) + 球場因子 + 天氣")
     top5 = _mlb_top5(rows, zh_t, mkt_conf, sport=sport)
-    conf_top = _mlb_conf_top(rows, zh_t)
+    conf_top = _mlb_pure_board(rows, zh_t)
     cards = [_mlb_card(r, zh_t) for r in rows]
     body = ("<div class='mgrid'>" + "".join(cards) + "</div>") if cards else (
         f"<div class='card'><div class='sec'>今日無可預測比賽</div>"
