@@ -556,3 +556,6 @@ date,match_num,home,away,market,selection,line,odds,edge,source,close_odds,resul
 2026-07-19,825057,Arizona Diamondbacks,St. Louis Cardinals,1X2,home,,1.87,0.0035,market,1.87,pending,
 2026-07-19,825057,Arizona Diamondbacks,St. Louis Cardinals,OU,小,9.0,1.91,0.0237,market,1.91,pending,
 2026-07-19,825057,Arizona Diamondbacks,St. Louis Cardinals,AH,客,-1.5,1.53,-0.0582,market,1.53,pending,
+2026-07-19,824411,Cleveland Guardians,Pittsburgh Pirates,AH,客,-1.5,1.44,-0.0318,market,1.44,pending,
+2026-07-19,824086,Kansas City Royals,San Diego Padres,AH,主,1.5,1.53,-0.0446,market,1.53,pending,
+2026-07-19,824007,Los Angeles Angels,Detroit Tigers,OU,小,9.5,1.83,-0.0197,market,1.83,pending,
