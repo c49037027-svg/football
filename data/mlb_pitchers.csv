@@ -69,8 +69,8 @@ id,name,team,ip,runs,gs,so,bb,hr
 548384,Brooks Raley,New York Mets,35.666666666666664,11,0,37,14,2
 596133,Luke Weaver,New York Mets,40.0,10,0,43,11,3
 669084,DL Hall,Milwaukee Brewers,31.0,7,1,32,24,1
+693645,Cam Schlittler,New York Yankees,119.33333333333333,34,21,139,25,12
 573009,Joe Mantiply,Toronto Blue Jays,17.666666666666668,4,0,16,4,1
-693645,Cam Schlittler,New York Yankees,118.66666666666667,34,20,137,25,12
 547973,Aroldis Chapman,Boston Red Sox,30.666666666666668,8,0,38,14,1
 519242,Chris Sale,Atlanta Braves,105.0,29,18,123,25,8
 676477,Garrett Whitlock,Boston Red Sox,35.0,9,0,38,6,3
@@ -222,11 +222,11 @@ id,name,team,ip,runs,gs,so,bb,hr
 669302,Logan Gilbert,Seattle Mariners,114.0,42,19,119,24,14
 668933,Graham Ashcraft,Cincinnati Reds,27.0,11,0,32,16,2
 650633,Michael King,San Diego Padres,113.33333333333333,43,20,96,45,11
+680732,Sean Burke,Chicago White Sox,107.66666666666667,41,16,116,33,13
 676617,Riley O'Brien,St. Louis Cardinals,40.333333333333336,17,0,40,14,2
 668941,JoJo Romero,St. Louis Cardinals,43.0,17,0,43,16,5
 681252,Jack Anderson,Boston Red Sox,8.0,3,0,6,2,1
 666745,Jhony Brito,San Diego Padres,5.333333333333333,2,0,4,1,1
-680732,Sean Burke,Chicago White Sox,106.66666666666667,41,16,115,33,13
 676395,Robert Garcia,Texas Rangers,8.0,5,0,6,7,0
 663687,Hogan Harris,Athletics,42.666666666666664,17,0,57,27,5
 592662,Robbie Ray,San Francisco Giants,106.66666666666667,46,18,90,52,15
