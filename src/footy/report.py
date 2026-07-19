@@ -1360,22 +1360,26 @@ def _mlb_pure_board(rows, zh_t) -> str:
     if not entries:
         return ""
     entries.sort(key=lambda e: -e[0])
+    # 只顯示把握度前五；顯示到同一個百分比者視為同機率、並列全收
+    if len(entries) > 5:
+        cutoff = round(entries[4][0] * 100)
+        entries = [e for e in entries if round(e[0] * 100) >= cutoff]
     trs = "".join(
         f"<tr><td class='tm'>{html.escape(t)}</td>"
         f"<td class='small' style='color:var(--muted)'>{html.escape(tm)}</td>"
         f"<td>{ml}</td><td>{ou}</td><td>{ah}</td></tr>"
         for _, t, tm, ml, ou, ah in entries)
     return (
-        "<div class='card'><div class='sec'>📊 純模型推薦"
+        "<div class='card'><div class='sec'>📊 純模型推薦 TOP 5"
         "<span class='small' style='color:var(--muted);font-weight:400'>"
-        "（照盤口不看賠率 · 全場次全盤口 · 與上方有 edge 的 TOP 5 分軌記帳）</span></div>"
+        "（照盤口不看賠率 · 把握度排序，同機率並列 · 與上方有 edge 的 TOP 5 分軌記帳）</span></div>"
         "<table style='margin-top:6px'><thead><tr><th>對戰</th><th>時間</th>"
         "<th>錢線</th><th>大小</th><th>讓分</th></tr></thead>"
         f"<tbody>{trs}</tbody></table>"
         "<div class='small' style='color:var(--muted);margin-top:6px'>"
         "格式：方向 機率·公平賠率。線用莊家盤口，判斷純由模型、賠率不參與"
-        "——莊家賠率高於公平賠率才有價值。此板每注入「純模型帳本」，"
-        "與 TOP 5（去水錢＋融合＋風控）分開結算，戰績卡兩軌對照。"
+        "——莊家賠率高於公平賠率才有價值。此處僅顯示把握度前五（同機率並列）；"
+        "「純模型帳本」仍記**全部場次**的判斷，與有 edge 軌分開結算，戰績卡兩軌對照。"
         + ("<br>＊＝本次建站盤口未開，暫用標準線（大小 8.5／讓分 ±1.5）；"
            "台北 00:00 建站（美東中午）盤口已開，自動改用市場線。"
            if any_default else "")
