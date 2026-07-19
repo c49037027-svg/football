@@ -518,6 +518,7 @@ def build_site_page(model_path: str = "models/nba.pkl",
         rows.append({"game": g, "m": m, "pf": 1.0, "wx": None, "wf": 1.0,
                      "hp_note": "", "ap_note": "",
                      "signals": sig, "best_edge": mlb.best_edge(sig),
+                     "has_quotes": bool(quotes),
                      "time": mlb.taipei_time(g.get("game_date_iso")),
                      "status": g.get("status", "")})
     power = None

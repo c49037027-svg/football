@@ -1101,6 +1101,7 @@ def build_site_page(model_path: str = "models/mlb.pkl",
         rows.append({"game": g, "m": m, "pf": pf, "wx": wx, "wf": wf,
                      "hp_note": hn, "ap_note": an,
                      "signals": sig, "best_edge": best_edge(sig),
+                     "has_quotes": bool(quotes),
                      "time": taipei_time(g.get("game_date_iso")),
                      "status": g.get("status", "")})
     power = None

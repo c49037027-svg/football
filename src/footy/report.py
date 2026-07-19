@@ -1337,17 +1337,23 @@ def _mlb_pure_board(rows, zh_t) -> str:
         return f"<b>{html.escape(pick)}</b> {p:.0%}·{1 / max(p, 0.005):.2f}"
 
     entries = []
+    any_default = False
     for r in rows:
         g, m = r["game"], r["m"]
         hz, az = zh_t(g["home"]), zh_t(g["away"])
+        # 盤口未開時線是預設標準線（大小 8.5/讓分 ±1.5），加 ＊ 標示——
+        # 使用者必須能分辨「市場線」和「暫用線」
+        star = "" if r.get("has_quotes") else "＊"
+        any_default = any_default or not r.get("has_quotes")
         ml = cell(hz, m.p_home) if m.p_home >= m.p_away else cell(az, m.p_away)
         if abs(m.p_over - 0.5) >= 0.03:
-            ou = (cell(f"大 {m.total_line:g}", m.p_over) if m.p_over >= 0.5
-                  else cell(f"小 {m.total_line:g}", m.p_under))
+            ou = (cell(f"大 {m.total_line:g}{star}", m.p_over) if m.p_over >= 0.5
+                  else cell(f"小 {m.total_line:g}{star}", m.p_under))
         else:
             ou = "<span class='dim'>—</span>"
-        ah = (cell(f"{hz} {m.run_line:+g}", m.p_cover_home) if m.p_cover_home >= 0.5
-              else cell(f"{az} {-m.run_line:+g}", 1 - m.p_cover_home))
+        ah = (cell(f"{hz} {m.run_line:+g}{star}", m.p_cover_home)
+              if m.p_cover_home >= 0.5
+              else cell(f"{az} {-m.run_line:+g}{star}", 1 - m.p_cover_home))
         conf = max(m.p_home, m.p_away, m.p_over, m.p_under,
                    m.p_cover_home, 1 - m.p_cover_home)
         entries.append((conf, f"{az} @ {hz}", r.get("time") or "", ml, ou, ah))
@@ -1369,7 +1375,11 @@ def _mlb_pure_board(rows, zh_t) -> str:
         "<div class='small' style='color:var(--muted);margin-top:6px'>"
         "格式：方向 機率·公平賠率。線用莊家盤口，判斷純由模型、賠率不參與"
         "——莊家賠率高於公平賠率才有價值。此板每注入「純模型帳本」，"
-        "與 TOP 5（去水錢＋融合＋風控）分開結算，戰績卡兩軌對照。</div></div>")
+        "與 TOP 5（去水錢＋融合＋風控）分開結算，戰績卡兩軌對照。"
+        + ("<br>＊＝本次建站盤口未開，暫用標準線（大小 8.5／讓分 ±1.5）；"
+           "台北 00:00 建站（美東中午）盤口已開，自動改用市場線。"
+           if any_default else "")
+        + "</div></div>")
 
 
 def render_mlb_page(rows, date: str, power=None, track_text=None,
