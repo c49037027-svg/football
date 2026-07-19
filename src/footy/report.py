@@ -1336,47 +1336,59 @@ def _mlb_pure_board(rows, zh_t) -> str:
     def cell(pick: str, p: float) -> str:
         return f"<b>{html.escape(pick)}</b> {p:.0%}·{1 / max(p, 0.005):.2f}"
 
-    entries = []
+    ml_e, ou_e, ah_e = [], [], []
     any_default = False
     for r in rows:
         g, m = r["game"], r["m"]
         hz, az = zh_t(g["home"]), zh_t(g["away"])
+        vs, tm = f"{az} @ {hz}", r.get("time") or ""
         # 盤口未開時線是預設標準線（大小 8.5/讓分 ±1.5），加 ＊ 標示——
         # 使用者必須能分辨「市場線」和「暫用線」
         star = "" if r.get("has_quotes") else "＊"
         any_default = any_default or not r.get("has_quotes")
-        ml = cell(hz, m.p_home) if m.p_home >= m.p_away else cell(az, m.p_away)
-        if abs(m.p_over - 0.5) >= 0.03:
-            ou = (cell(f"大 {m.total_line:g}{star}", m.p_over) if m.p_over >= 0.5
-                  else cell(f"小 {m.total_line:g}{star}", m.p_under))
-        else:
-            ou = "<span class='dim'>—</span>"
-        ah = (cell(f"{hz} {m.run_line:+g}{star}", m.p_cover_home)
-              if m.p_cover_home >= 0.5
-              else cell(f"{az} {-m.run_line:+g}{star}", 1 - m.p_cover_home))
-        conf = max(m.p_home, m.p_away, m.p_over, m.p_under,
-                   m.p_cover_home, 1 - m.p_cover_home)
-        entries.append((conf, f"{az} @ {hz}", r.get("time") or "", ml, ou, ah))
-    if not entries:
+        p = max(m.p_home, m.p_away)
+        ml_e.append((p, vs, tm, cell(hz if m.p_home >= m.p_away else az, p)))
+        if abs(m.p_over - 0.5) >= 0.03:      # 模型無明顯方向的不入榜
+            p = max(m.p_over, m.p_under)
+            ou_e.append((p, vs, tm,
+                         cell(f"{'大' if m.p_over >= 0.5 else '小'} "
+                              f"{m.total_line:g}{star}", p)))
+        p = max(m.p_cover_home, 1 - m.p_cover_home)
+        ah_e.append((p, vs, tm,
+                     cell(f"{hz} {m.run_line:+g}{star}", p) if m.p_cover_home >= 0.5
+                     else cell(f"{az} {-m.run_line:+g}{star}", p)))
+    if not ml_e and not ou_e and not ah_e:
         return ""
-    entries.sort(key=lambda e: -e[0])
-    # 只顯示把握度前五；顯示到同一個百分比者視為同機率、並列全收
-    if len(entries) > 5:
-        cutoff = round(entries[4][0] * 100)
-        entries = [e for e in entries if round(e[0] * 100) >= cutoff]
-    trs = "".join(
-        f"<tr><td class='tm'>{html.escape(t)}</td>"
-        f"<td class='small' style='color:var(--muted)'>{html.escape(tm)}</td>"
-        f"<td>{ml}</td><td>{ou}</td><td>{ah}</td></tr>"
-        for _, t, tm, ml, ou, ah in entries)
+
+    def top5(entries):
+        """前五名；顯示到同一個百分比者視為同機率、並列全收。"""
+        entries.sort(key=lambda e: -e[0])
+        if len(entries) > 5:
+            cutoff = round(entries[4][0] * 100)
+            entries = [e for e in entries if round(e[0] * 100) >= cutoff]
+        return entries
+
+    sections = []
+    for title, es in (("錢線", ml_e), ("大小", ou_e), ("讓分", ah_e)):
+        es = top5(es)
+        if not es:
+            continue
+        trs = "".join(
+            f"<tr><td class='rk'>{i}</td><td class='tm'>{html.escape(t)}</td>"
+            f"<td class='small' style='color:var(--muted)'>{html.escape(tmv)}</td>"
+            f"<td>{pk}</td></tr>"
+            for i, (_, t, tmv, pk) in enumerate(es, 1))
+        sections.append(
+            f"<div style='margin-top:8px'><b class='small'>{title} TOP 5</b>"
+            "<table style='margin-top:4px'><thead><tr><th>#</th><th>對戰</th>"
+            f"<th>時間</th><th>方向 機率·公平賠率</th></tr></thead>"
+            f"<tbody>{trs}</tbody></table></div>")
     return (
         "<div class='card'><div class='sec'>📊 純模型推薦 TOP 5"
         "<span class='small' style='color:var(--muted);font-weight:400'>"
-        "（照盤口不看賠率 · 把握度排序，同機率並列 · 與上方有 edge 的 TOP 5 分軌記帳）</span></div>"
-        "<table style='margin-top:6px'><thead><tr><th>對戰</th><th>時間</th>"
-        "<th>錢線</th><th>大小</th><th>讓分</th></tr></thead>"
-        f"<tbody>{trs}</tbody></table>"
-        "<div class='small' style='color:var(--muted);margin-top:6px'>"
+        "（照盤口不看賠率 · 錢線／大小／讓分各取機率前五，同機率並列）</span></div>"
+        + "".join(sections)
+        + "<div class='small' style='color:var(--muted);margin-top:6px'>"
         "格式：方向 機率·公平賠率。線用莊家盤口，判斷純由模型、賠率不參與"
         "——莊家賠率高於公平賠率才有價值。此處僅顯示把握度前五（同機率並列）；"
         "「純模型帳本」仍記**全部場次**的判斷，與有 edge 軌分開結算，戰績卡兩軌對照。"
