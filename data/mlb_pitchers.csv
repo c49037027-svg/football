@@ -226,6 +226,7 @@ id,name,team,ip,runs,gs,so,bb,hr
 668941,JoJo Romero,St. Louis Cardinals,43.0,17,0,43,16,5
 681252,Jack Anderson,Boston Red Sox,8.0,3,0,6,2,1
 666745,Jhony Brito,San Diego Padres,5.333333333333333,2,0,4,1,1
+680732,Sean Burke,Chicago White Sox,106.66666666666667,41,16,115,33,13
 676395,Robert Garcia,Texas Rangers,8.0,5,0,6,7,0
 663687,Hogan Harris,Athletics,42.666666666666664,17,0,57,27,5
 592662,Robbie Ray,San Francisco Giants,106.66666666666667,46,18,90,52,15
@@ -233,7 +234,6 @@ id,name,team,ip,runs,gs,so,bb,hr
 681916,Dylan Smith,San Francisco Giants,13.333333333333334,6,0,13,6,2
 700413,Tyler Uberstine,Boston Red Sox,2.6666666666666665,1,0,2,1,1
 687931,Carson Whisenhunt,San Francisco Giants,10.666666666666666,4,2,6,6,1
-680732,Sean Burke,Chicago White Sox,105.66666666666667,41,15,115,33,13
 687064,Brandon Young,Baltimore Orioles,84.33333333333333,40,15,67,31,9
 672782,Yoendrys Gómez,Minnesota Twins,44.666666666666664,19,0,39,21,6
 666200,Jesús Luzardo,Philadelphia Phillies,115.33333333333333,50,20,143,37,10
@@ -277,12 +277,12 @@ id,name,team,ip,runs,gs,so,bb,hr
 656550,Grant Holmes,Atlanta Braves,87.33333333333333,37,17,76,39,15
 681982,Grant Anderson,Milwaukee Brewers,42.333333333333336,19,0,32,17,5
 690925,Clayton Beeter,Washington Nationals,27.333333333333332,11,0,31,18,4
+702056,Trey Yesavage,Toronto Blue Jays,77.0,32,15,74,40,7
 805123,AJ Blubaugh,Houston Astros,62.0,26,0,63,31,7
 670950,Trevor Richards,Chicago White Sox,37.0,15,0,36,11,8
 647315,Zach Pop,Philadelphia Phillies,7.333333333333333,3,1,6,3,0
 665622,Luis Medina,Athletics,43.666666666666664,22,1,52,22,4
 663855,Jordan Hicks,Chicago White Sox,26.666666666666668,11,0,30,18,1
-702056,Trey Yesavage,Toronto Blue Jays,75.0,32,14,69,39,7
 681517,Kyle Leahy,St. Louis Cardinals,89.33333333333333,37,18,75,33,9
 489446,Kirby Yates,Los Angeles Angels,21.666666666666668,10,0,28,8,2
 669711,Greg Weissert,Boston Red Sox,38.333333333333336,17,0,35,12,6

@@ -559,3 +559,5 @@ date,match_num,home,away,market,selection,line,odds,edge,source,close_odds,resul
 2026-07-19,824411,Cleveland Guardians,Pittsburgh Pirates,AH,客,-1.5,1.44,-0.0318,market,1.44,pending,
 2026-07-19,824086,Kansas City Royals,San Diego Padres,AH,主,1.5,1.53,-0.0446,market,1.53,pending,
 2026-07-19,824007,Los Angeles Angels,Detroit Tigers,OU,小,9.5,1.83,-0.0197,market,1.83,pending,
+2026-07-19,822786,Toronto Blue Jays,Chicago White Sox,OU,大,6.5,1.85,0.0608,market,1.85,pending,
+2026-07-19,822786,Toronto Blue Jays,Chicago White Sox,AH,客,-1.5,1.4,-0.1151,market,1.4,pending,
