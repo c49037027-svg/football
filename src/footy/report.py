@@ -1285,7 +1285,18 @@ def _mlb_top5(rows, zh_t, mkt_conf=None, sport: str = "MLB") -> str:
                       "time": r.get("time", ""),
                       "home": zh_t(g["home"]), "away": zh_t(g["away"])})
     if not picks:
-        return ""
+        if not rows:
+            return ""                    # 無比賽日：不顯示空板
+        # 有比賽但無賠率 → 顯示空狀態卡，不能無聲消失（會被誤讀成沒做/壞掉）
+        return (
+            "<div class='card top5'><div class='sec'>🔥 有 edge 推薦 TOP 5"
+            "<span class='small' style='color:var(--muted);font-weight:400'>"
+            "（市場融合＋風控）</span></div>"
+            "<div class='small' style='color:var(--muted);margin-top:6px'>"
+            "本次建站未取得莊家賠率（美東凌晨盤常未開，或 the-odds-api 暫時無資料）"
+            "——edge 需要賠率才能計算。每天台北 00:00 的建站（美東中午）盤口已開，"
+            "屆時本板自動出現；期間可先看下方「📊 純模型推薦」並自行對照莊家價。"
+            "</div></div>")
     picks.sort(key=lambda x: -x["adj"])                 # 依調整後分數排序
     trs = ""
     for i, p in enumerate(picks[:5], 1):
