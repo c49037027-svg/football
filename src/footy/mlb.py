@@ -729,7 +729,31 @@ def fetch_mlb_odds(games: list, **kw) -> dict:
 
 
 # ---------------- MLB 戰績追蹤（重用足球 tracker 的結算機制） ----------------
-MLB_LEDGER = "data/mlb_bets.csv"
+MLB_LEDGER = "data/mlb_bets.csv"          # 有 edge 追蹤：每場三盤傾向＋市場賠率/edge
+MLB_MODEL_LEDGER = "data/mlb_model_bets.csv"   # 純模型追蹤：每場信心最高一注，不看盤口
+
+
+def _derive_model_ledger(ledger_path) -> str:
+    """由主帳本路徑推導純模型帳本路徑（xxx_bets.csv → xxx_model_bets.csv）。"""
+    s = str(ledger_path)
+    out = s.replace("_bets.csv", "_model_bets.csv")
+    return out if out != s else s + ".model.csv"
+
+
+def confidence_pick(m: "MLBMarkets", picks: list[dict]) -> list[dict]:
+    """該場「模型信心最高的一注」（純模型策略＝信心榜的記帳版）。
+
+    從 picks_for_game 的傾向注中挑模型機率最偏離五五波者，複製一份
+    （不帶融合 edge——這本帳就是要量測純模型的成績）。
+    """
+    prob = {"1X2": max(m.p_home, m.p_away),
+            "OU": max(m.p_over, m.p_under),
+            "AH": max(m.p_cover_home, 1.0 - m.p_cover_home)}
+    cands = [p for p in picks if p["market"] in prob]
+    if not cands:
+        return []
+    best = max(cands, key=lambda p: prob[p["market"]])
+    return [{k: v for k, v in best.items() if k != "edge"}]
 _MLB_MARKET_ZH = {"1X2": "錢線", "OU": "大小", "AH": "讓分"}
 
 
@@ -997,11 +1021,13 @@ def build_site_page(model_path: str = "models/mlb.pkl",
             book = PitcherBook.load_csv(pitchers_path)
         except Exception:  # noqa: BLE001
             book = None
-    # 先結算舊推薦（抓近幾天賽果；網路失敗略過）
-    try:
-        settle_ledger(ledger_path)
-    except Exception:  # noqa: BLE001
-        pass
+    # 先結算舊推薦（抓近幾天賽果；網路失敗略過）；兩本帳都結
+    model_ledger = _derive_model_ledger(ledger_path)
+    for lp in (ledger_path, model_ledger):
+        try:
+            settle_ledger(lp)
+        except Exception:  # noqa: BLE001
+            pass
     note = ""
     try:
         games = fetch_today(date)
@@ -1051,12 +1077,14 @@ def build_site_page(model_path: str = "models/mlb.pkl",
                          park_factor=pf_eff, dispersion=disp)
         sig = bet_signals(m, quotes)
         picks = picks_for_game(m, quotes)
+        cpick = confidence_pick(m, picks)   # 先取純模型注（edge 附加前複製）
         for p in picks:  # 把融合後 edge 帶進帳本（待結算頁依此排序）
             s = sig.get(p["market"])
             if s and s.get("edge") is not None:
                 p["edge"] = s["edge"]
         try:
             log_picks(ledger_path, date, g, picks)
+            log_picks(model_ledger, date, g, cpick)
         except Exception:  # noqa: BLE001
             pass
         rows.append({"game": g, "m": m, "pf": pf, "wx": wx, "wf": wf,
@@ -1070,6 +1098,8 @@ def build_site_page(model_path: str = "models/mlb.pkl",
     except Exception:  # noqa: BLE001
         power = None
     track = summary_text(ledger_path)
+    mtrack = summary_text(model_ledger, label="📊 純模型信心")
+    track = "\n\n".join(t for t in (track, mtrack) if t) or None
     n_buy = sum(1 for r in rows if r.get("best_edge") is not None)
     print(f"[mlb-site] 賽程 {len(games)} 場｜盤口 {len(odds_index)} 場｜"
           f"買推薦 {n_buy} 場｜戰績卡 {'有' if track else '無'}", flush=True)

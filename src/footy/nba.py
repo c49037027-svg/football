@@ -462,13 +462,15 @@ def build_site_page(model_path: str = "models/nba.pkl",
             sched = fetch_espn_window(date)
     except Exception as e:  # noqa: BLE001
         note = f"抓不到 NBA 賽程（{e}）。"
-    # 結算：賽程裡的已完賽比分直接用（零額外請求）
+    # 結算：賽程裡的已完賽比分直接用（零額外請求）；兩本帳都結
+    model_ledger = mlb._derive_model_ledger(ledger_path)
     try:
         results = {int(g["game_pk"]): (int(g["home_goals"]), int(g["away_goals"]))
                    for g in sched
                    if g.get("game_pk") and g.get("home_goals") is not None}
-        if results and Path(ledger_path).exists():
-            tracker.settle(ledger_path, results)
+        for lp in (ledger_path, model_ledger):
+            if results and Path(lp).exists():
+                tracker.settle(lp, results)
     except Exception:  # noqa: BLE001
         pass
     games = [g for g in sched if g["date"] == date
@@ -503,12 +505,14 @@ def build_site_page(model_path: str = "models/nba.pkl",
                          run_line=run_line)
         sig = mlb.bet_signals(m, quotes)
         picks = mlb.picks_for_game(m, quotes)
+        cpick = mlb.confidence_pick(m, picks)
         for p in picks:
             s = sig.get(p["market"])
             if s and s.get("edge") is not None:
                 p["edge"] = s["edge"]
         try:
             mlb.log_picks(ledger_path, date, g, picks)
+            mlb.log_picks(model_ledger, date, g, cpick)
         except Exception:  # noqa: BLE001
             pass
         rows.append({"game": g, "m": m, "pf": 1.0, "wx": None, "wf": 1.0,
@@ -522,6 +526,8 @@ def build_site_page(model_path: str = "models/nba.pkl",
     except Exception:  # noqa: BLE001
         power = None
     track = mlb.summary_text(ledger_path, label="NBA")
+    mtrack = mlb.summary_text(model_ledger, label="📊 純模型信心")
+    track = "\n\n".join(t for t in (track, mtrack) if t) or None
     n_buy = sum(1 for r in rows if r.get("best_edge") is not None)
     print(f"[nba-site] 賽程 {len(games)} 場｜盤口 {len(odds_index)} 場｜"
           f"買推薦 {n_buy} 場｜戰績卡 {'有' if track else '無'}", flush=True)
