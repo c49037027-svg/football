@@ -1349,11 +1349,11 @@ def _mlb_conf_top(rows, zh_t, n: int = 5) -> str:
     return (
         "<div class='card'><div class='sec'>📊 模型信心榜"
         "<span class='small' style='color:var(--muted);font-weight:400'>"
-        "（純模型把握度排序 · 不比盤口）</span></div>"
+        "（純模型 · 線用市場盤口 · 賠率不參與判斷）</span></div>"
         "<table style='margin-top:6px'><thead><tr><th>#</th><th>對戰</th><th>時間</th>"
         f"<th>模型方向</th><th>機率</th><th>公平賠率</th></tr></thead><tbody>{trs}</tbody></table>"
         "<div class='small' style='color:var(--muted);margin-top:6px'>"
-        "此榜只反映模型把握度，<b>未經盤口驗證、不代表 +EV</b>——莊家賠率高於"
+        "此榜只反映模型把握度，<b>賠率未參與、不代表 +EV</b>——莊家賠率高於"
         "「公平賠率」欄才有價值；正式推薦（含去水錢與風控）看上方 TOP 5。</div></div>")
 
 

@@ -505,7 +505,7 @@ def build_site_page(model_path: str = "models/nba.pkl",
                          run_line=run_line)
         sig = mlb.bet_signals(m, quotes, sport="NBA")
         picks = mlb.picks_for_game(m, quotes)
-        cpick = mlb.confidence_pick(m, picks)
+        cpick = mlb.pure_picks(picks)
         for p in picks:
             s = sig.get(p["market"])
             if s and s.get("edge") is not None:
@@ -526,7 +526,7 @@ def build_site_page(model_path: str = "models/nba.pkl",
     except Exception:  # noqa: BLE001
         power = None
     track = mlb.summary_text(ledger_path, label="NBA")
-    mtrack = mlb.summary_text(model_ledger, label="📊 純模型信心")
+    mtrack = mlb.summary_text(model_ledger, label="📊 純模型（照盤口不看賠率）")
     track = "\n\n".join(t for t in (track, mtrack) if t) or None
     n_buy = sum(1 for r in rows if r.get("best_edge") is not None)
     print(f"[nba-site] 賽程 {len(games)} 場｜盤口 {len(odds_index)} 場｜"

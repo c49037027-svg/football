@@ -606,27 +606,24 @@ def test_load_with_history(tmp_path):
     assert len(df2) == 1
 
 
-def test_confidence_pick_and_dual_ledger(tmp_path):
-    """雙帳本：confidence_pick 取信心最高一注、不帶 edge、路徑推導正確。"""
+def test_pure_picks_and_dual_ledger(tmp_path):
+    """雙帳本：pure_picks 照盤口(市場線)全盤口、不帶 edge、路徑推導正確。"""
     from footy import mlb
     assert mlb._derive_model_ledger("data/mlb_bets.csv") == "data/mlb_model_bets.csv"
     assert mlb._derive_model_ledger("x/nba_bets.csv") == "x/nba_model_bets.csv"
 
-    class M:
-        p_home, p_away = 0.55, 0.45
-        p_over, p_under = 0.40, 0.60
-        p_cover_home = 0.68           # 讓分信心最高
-        total_line, run_line = 8.5, -1.5
     picks = [{"market": "1X2", "selection": "home", "line": "", "odds": 1.9, "edge": 0.02},
              {"market": "OU", "selection": "小", "line": 8.5, "odds": None},
-             {"market": "AH", "selection": "主", "line": -1.5, "odds": 1.85}]
-    cp = mlb.confidence_pick(M(), picks)
-    assert len(cp) == 1 and cp[0]["market"] == "AH" and "edge" not in cp[0]
-    # 記帳與統計正常
+             {"market": "AH", "selection": "主", "line": -1.5, "odds": 1.85, "edge": -0.01}]
+    cp = mlb.pure_picks(picks)
+    assert len(cp) == 3                              # 全盤口都記
+    assert all("edge" not in p for p in cp)          # 賠率/edge 不參與
+    assert cp[1]["line"] == 8.5 and cp[2]["line"] == -1.5   # 線照盤口
+    assert cp[0]["odds"] == 1.9                      # 賠率保留供結算 ROI
     lp = tmp_path / "m_model_bets.csv"
     n = mlb.log_picks(str(lp), "2026-07-18",
                       {"game_pk": 1, "home": "A", "away": "B"}, cp)
-    assert n == 1 and lp.exists()
+    assert n == 3 and lp.exists()
 
 
 def test_ou_recommend_disabled_by_default(monkeypatch):
