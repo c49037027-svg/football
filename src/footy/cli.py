@@ -327,6 +327,33 @@ def agent_check(live):
         click.echo(f"[ai-check] FAIL：{str(e)[:300]}")
 
 
+@agent.command("review")
+@click.option("--out", "outdir", default="docs/reports", help="報告輸出目錄")
+def agent_review(outdir):
+    """每週模型審查：帳本法醫（自動關閘）＋校準哨兵＋權重調參 → Markdown 報告。
+
+    數字判斷是確定性 Python；設 ANTHROPIC_API_KEY 時 LLM 加寫人話結論。
+    """
+    import datetime as _dt
+    from pathlib import Path as _P
+
+    from .agents import review as rv
+    today = _dt.date.today().isoformat()
+    res = rv.run_review(today=today)
+    rep = rv.compose_report(res, today)
+    p = _P(outdir) / f"model-review-{today}.md"
+    p.parent.mkdir(parents=True, exist_ok=True)
+    p.write_text(rep, encoding="utf-8")
+    click.echo(f"[review] 報告已存 {p}（帳本 {len(res['forensics']['stats'])} 個盤口切面）")
+    for a in res["gates_applied"]:
+        click.echo(f"[review] {a}")
+    for a in res["forensics"]["gate_actions"]:
+        if a["action"] == "suggest_enable":
+            click.echo(f"[review] 💡 建議重開 {a['key']}（{a['evidence']}）")
+    if res["calibration"].get("drift_alert"):
+        click.echo("[review] ⚠️ 足球校準漂移警報（近 30 天 Brier 惡化 >15%）")
+
+
 @agent.command("preview")
 @click.option("--model", "model_path", default="models/intl.pkl")
 @click.option("--schedule", default="data/wc2026.json")

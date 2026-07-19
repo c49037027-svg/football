@@ -1,0 +1,38 @@
+# 每週模型審查：AI agents 讀帳本做 edge 診斷（自動關閘）、校準哨兵、權重調參。
+# 這是把「MLB 大小盤 edge 反向」那次人工診斷（docs/FINDINGS.md 2026-07-18）
+# 制度化：同樣的錯誤之後由排程自動抓、自動止血、寫報告。
+name: 每週模型審查（AI agents）
+
+on:
+  schedule:
+    - cron: "0 7 * * 1"        # 週一 07:00 UTC（台灣 15:00）
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+      - name: 安裝套件
+        run: pip install -e .
+      - name: 跑審查 agents
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          LLM_MODEL: claude-haiku-4-5
+        run: footy agent review --out docs/reports
+      - name: 提交報告與閘門
+        run: |
+          git config user.name "github-actions"
+          git config user.email "actions@github.com"
+          git add docs/reports/ data/market_gates.json || true
+          git pull --rebase origin "${GITHUB_REF_NAME}" || true
+          git commit -m "docs: 每週模型審查報告 [skip ci]" || echo "無變更"
+          git push || (git pull --rebase origin "${GITHUB_REF_NAME}" && git push)

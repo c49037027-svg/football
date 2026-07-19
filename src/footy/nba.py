@@ -503,7 +503,7 @@ def build_site_page(model_path: str = "models/nba.pkl",
         m = analyze_game(model, g["home"], g["away"],
                          total_line=float(total_line) if total_line is not None else None,
                          run_line=run_line)
-        sig = mlb.bet_signals(m, quotes)
+        sig = mlb.bet_signals(m, quotes, sport="NBA")
         picks = mlb.picks_for_game(m, quotes)
         cpick = mlb.confidence_pick(m, picks)
         for p in picks:

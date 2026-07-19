@@ -643,8 +643,8 @@ def test_ou_recommend_disabled_by_default(monkeypatch):
               MarketQuote("OU", "under", 1.90, line=8.5)]
     sig = mlb.bet_signals(M(), quotes)
     assert sig["OU"]["edge"] is not None and sig["OU"]["edge"] > 0
-    assert sig["OU"]["verdict"] == "觀望"       # 有正 edge 也不買
-    # 研究用開關可重開
-    monkeypatch.setattr(mlb, "OU_RECOMMEND", True)
+    assert sig["OU"]["verdict"] == "觀望"       # 有正 edge 也不買（閘門）
+    # 研究用環境變數可強開
+    monkeypatch.setenv("FOOTY_OU_RECOMMEND", "1")
     sig2 = mlb.bet_signals(M(), quotes)
     assert sig2["OU"]["verdict"] == "買"

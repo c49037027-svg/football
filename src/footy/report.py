@@ -1245,7 +1245,7 @@ def _mlb_card(r, zh_t) -> str:
         + (f"<div class='mtop'>可能比分 {tops}</div>" if tops else "") + "</div>")
 
 
-def _mlb_top5(rows, zh_t, mkt_conf=None) -> str:
+def _mlb_top5(rows, zh_t, mkt_conf=None, sport: str = "MLB") -> str:
     """最推薦 TOP 5：跨場依「edge × 歷史勝率信心」排序，各列出該場最強一注。
 
     mkt_conf = mlb.market_confidence 產物 {"mult":{盤口:乘數}, "winrate":{盤口:勝率}}。
@@ -1263,7 +1263,7 @@ def _mlb_top5(rows, zh_t, mkt_conf=None) -> str:
             e = s.get("edge")
             if e is None:                               # 無賠率的盤口跳過
                 continue
-            if k == "OU" and not _mlb.OU_RECOMMEND:     # OU edge 實證反向，不入榜
+            if not _mlb.market_allowed(k, sport):       # 閘門關閉的市場不入榜
                 continue
             adj = e * mult.get(k, 1.0)                  # 依歷史勝率加權
             if best is None or adj > best_adj:
@@ -1371,7 +1371,7 @@ def render_mlb_page(rows, date: str, power=None, track_text=None,
     perf_href = f"{sport.lower()}_perf.html"
     sub_desc = ("攻防評分（加權嶺回歸）+ 常態分布盤口機率" if sport == "NBA" else
                 "負二項得分模型 + 先發投手(RA/9+FIP) + 球場因子 + 天氣")
-    top5 = _mlb_top5(rows, zh_t, mkt_conf)
+    top5 = _mlb_top5(rows, zh_t, mkt_conf, sport=sport)
     conf_top = _mlb_conf_top(rows, zh_t)
     cards = [_mlb_card(r, zh_t) for r in rows]
     body = ("<div class='mgrid'>" + "".join(cards) + "</div>") if cards else (
