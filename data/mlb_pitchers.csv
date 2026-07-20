@@ -190,7 +190,6 @@ id,name,team,ip,runs,gs,so,bb,hr
 663567,Peter Lambert,Houston Astros,92.0,31,16,91,36,11
 682120,Tim Herrin,Cleveland Guardians,32.333333333333336,12,0,27,19,4
 676775,Keaton Winn,San Francisco Giants,32.333333333333336,12,0,26,10,2
-663556,Shane McClanahan,Tampa Bay Rays,91.0,39,18,85,31,7
 647336,Michael Soroka,Arizona Diamondbacks,82.0,28,15,79,17,6
 801139,Payton Tolle,Boston Red Sox,84.0,33,15,87,25,8
 663947,Tyler Holton,Detroit Tigers,43.333333333333336,19,2,37,10,5
@@ -198,6 +197,7 @@ id,name,team,ip,runs,gs,so,bb,hr
 687312,Gabriel Hughes,Colorado Rockies,14.333333333333334,5,2,14,5,0
 680744,Ty Madden,Detroit Tigers,20.0,7,1,23,5,2
 624133,Ranger Suarez,Boston Red Sox,91.33333333333333,34,17,97,26,5
+663556,Shane McClanahan,Tampa Bay Rays,91.0,39,18,85,31,7
 700669,Gordon Graceffo,St. Louis Cardinals,48.333333333333336,19,0,26,22,5
 676106,Emerson Hancock,Seattle Mariners,99.33333333333333,35,18,94,25,12
 691945,Carter Baumler,Texas Rangers,5.666666666666667,2,0,6,6,1
