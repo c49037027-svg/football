@@ -96,8 +96,8 @@ date,match_num,home,away,market,selection,line,odds,edge,source,close_odds,resul
 2026-07-20,824328,Colorado Rockies,Washington Nationals,OU,大,9.5,1.61,,market,1.61,win,0.61
 2026-07-20,825058,Arizona Diamondbacks,Athletics,AH,主,2.5,1.67,,market,1.67,pending,
 2026-07-20,823112,Seattle Mariners,Cincinnati Reds,OU,大,3.5,1.83,,market,1.83,pending,
-2026-07-20,824736,Boston Red Sox,Baltimore Orioles,OU,小,8.0,1.96,,market,1.96,pending,
-2026-07-20,824328,Colorado Rockies,Washington Nationals,OU,小,12.5,2.1,,market,2.1,pending,
-2026-07-20,824328,Colorado Rockies,Washington Nationals,AH,客,-1.5,1.55,,market,1.55,pending,
+2026-07-20,824736,Boston Red Sox,Baltimore Orioles,OU,小,8.0,1.96,,market,1.96,loss,-1.0
+2026-07-20,824328,Colorado Rockies,Washington Nationals,OU,小,12.5,2.1,,market,2.1,win,1.1
+2026-07-20,824328,Colorado Rockies,Washington Nationals,AH,客,-1.5,1.55,,market,1.55,win,0.55
 2026-07-20,823112,Seattle Mariners,Cincinnati Reds,OU,小,8.5,1.57,,market,1.57,pending,
 2026-07-20,824006,Los Angeles Angels,St. Louis Cardinals,OU,大,5.5,1.95,,market,1.95,pending,
