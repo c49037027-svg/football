@@ -579,6 +579,20 @@ MLB 錢線/讓分幾乎不受影響（edge>10% 僅 7 筆非 OU，無證據是好
   要開放 OU 需累積中午場（先發已公佈）帳本，由法醫 agent 依 z 檢定判定。
 - 兩軌帳本（純模型 vs edge）從此把先發層的實戰表現納入每週法醫覆核。
 
+## 走地機會推播 agent（2026-07-20）
+
+`footy agent live-alert`（workflow：每 30 分鐘）掃即時比分×即時盤口，
+**只在對即時盤口的真 +EV 時推播**——沿用 tracker 去 vig＋融合＋MAX_EDGE(10%)
+＋MIN_PROB，走地門檻更嚴（LIVE_MIN_EDGE=5%，因 vig 高＋比分源 30~90 秒延遲）；
+尊重 market_gates。範圍：MLB 錢線（唯一經回測且未關閘）＋足球 1X2（best-effort）；
+OU 關閘、AH 待 line 對齊。去重：同 賽事×盤口×方向 45 分鐘內不重複（data/live_alert_state.json）。
+通知：Telegram（TELEGRAM_BOT_TOKEN+TELEGRAM_CHAT_ID）或 webhook（NOTIFY_WEBHOOK_URL，
+Discord/Slack）；都沒設 → 只印不推。**額度**：每掃 1 次 the-odds-api，30 分鐘/次
+＝MLB 賽時月約 300，撐得住免費 500。
+
+設計紀律：這個 agent 是整套 edge 討論的收斂——推播條件與 TOP5「買」同一套風控，
+絕不因「模型信心高」就通知（避免 OU 慘案式的假 value）。
+
 **延後項（backlog，效益/成本排序）**：
 1. 走地大小盤四分之一線與亞洲讓分（markets.py 已有 push/半注機制，
    接到走地矩陣即可）

@@ -1,0 +1,43 @@
+# 走地機會掃描：即時比分×即時盤口 → 過風控的真 +EV → 推播（Telegram/webhook）。
+# 只在「對即時盤口的真 +EV」時通知（去 vig＋融合＋MAX_EDGE＋閘門，走地門檻更嚴），
+# 不是模型信心高。去重狀態存 data/live_alert_state.json（同機會 45 分鐘內不重複）。
+#
+# ⚠️ 每次掃描用 1 次 the-odds-api（免費 500/月）。每 30 分鐘＝MLB 賽時約 10/天、
+#    月約 300，額度撐得住。要更頻繁需付費層或縮短開啟時段。
+name: 走地機會掃描
+
+on:
+  schedule:
+    - cron: "*/30 * * * *"     # 每 30 分鐘（可調；注意 the-odds-api 額度）
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+      - name: 安裝套件
+        run: pip install -e .
+      - name: 掃描並推播
+        env:
+          ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          NOTIFY_WEBHOOK_URL: ${{ secrets.NOTIFY_WEBHOOK_URL }}
+        run: footy agent live-alert
+      - name: 保存去重狀態
+        run: |
+          git config user.name "github-actions"
+          git config user.email "actions@github.com"
+          git add -f data/live_alert_state.json 2>/dev/null || true
+          git pull --rebase origin "${GITHUB_REF_NAME}" || true
+          git commit -m "chore: 走地推播去重狀態 [skip ci]" || echo "無變更"
+          git push || (git pull --rebase origin "${GITHUB_REF_NAME}" && git push)

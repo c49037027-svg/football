@@ -354,6 +354,25 @@ def agent_review(outdir):
         click.echo("[review] ⚠️ 足球校準漂移警報（近 30 天 Brier 惡化 >15%）")
 
 
+@agent.command("live-alert")
+@click.option("--dry-run", is_flag=True, help="只印不推播（測試/看有無機會）")
+def agent_live_alert(dry_run):
+    """走地機會掃描：即時比分×即時盤口 → 過風控的真 +EV → 推播通知。
+
+    通知管道（環境變數）：Telegram（TELEGRAM_BOT_TOKEN+TELEGRAM_CHAT_ID）
+    或 webhook（NOTIFY_WEBHOOK_URL，Discord/Slack）。都沒設 → 只印不推。
+    """
+    from .agents import live_alert
+    res = live_alert.run(dry_run=dry_run)
+    click.echo(f"[live-alert] 掃到 {res['found']} 個 +EV，其中 {res['fresh']} 個新（去重後）"
+               f"｜通知管道：{'、'.join(res['channels']) or '無（只印）'}")
+    for o in res["opps"]:
+        click.echo("  " + live_alert.format_alert(o).replace("\n", " ｜ "))
+    if res["fresh"] and not res["channels"] and not dry_run:
+        click.echo("[live-alert] ⚠️ 有機會但未設通知管道——設 TELEGRAM_* 或 "
+                   "NOTIFY_WEBHOOK_URL 才會推播到手機。")
+
+
 @agent.command("team")
 @click.option("--out", "outdir", default="docs/reports", help="週報輸出目錄")
 def agent_team(outdir):
