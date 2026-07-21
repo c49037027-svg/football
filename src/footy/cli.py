@@ -45,6 +45,17 @@ def fetch_github(league, out):
     loader.fetch_github(league, out_path=out)
 
 
+@cli.command("leagues-train")
+@click.option("--data-dir", default="data")
+@click.option("--out-dir", default="models")
+@click.option("--half-life", default=180.0, type=float)
+def leagues_train(data_dir, out_dir, half_life):
+    """訓練五大聯賽俱樂部模型（需先 fetch-github 下載 data/club_<code>.csv）。"""
+    from . import leagues
+    done = leagues.train_club_models(data_dir, out_dir, half_life)
+    click.echo(f"[leagues] 已訓練 {len(done)} 個聯賽模型：{'、'.join(done) or '（無資料，略過）'}")
+
+
 @cli.command("fetch-xg")
 @click.option("--league", required=True, help="聯賽代碼 E0/SP1/I1/D1/F1")
 @click.option("--seasons", multiple=True, type=int, required=True,
@@ -1310,6 +1321,15 @@ def wc_site(ctx, model_path, schedule, history_path, outdir, n_sims, match_sims,
     except Exception as e:  # noqa: BLE001
         click.echo(f"[wc-site] NBA 分頁略過：{e}")
 
+    # 五大聯賽分頁（有 models/club_*.pkl 才有內容；空窗/失敗→空狀態頁）
+    leagues_html = None
+    try:
+        from . import leagues as leaguesmod
+        leagues_html = leaguesmod.build_site_page()
+        click.echo("[wc-site] 五大聯賽分頁已產生")
+    except Exception as e:  # noqa: BLE001
+        click.echo(f"[wc-site] 五大聯賽分頁略過：{e}")
+
     click.echo("[wc] 產生首頁與各場分析頁…")
     import os as _os
     wc_over = _os.environ.get("FOOTY_WC_OVER") == "1"
@@ -1318,7 +1338,7 @@ def wc_site(ctx, model_path, schedule, history_path, outdir, n_sims, match_sims,
                                         injury_counts=injury_counts, track_text=track_text,
                                         ledger_path=ledger, odds_index=odds_index,
                                         mlb_html=mlb_html, nba_html=nba_html,
-                                        wc_over=wc_over)
+                                        leagues_html=leagues_html, wc_over=wc_over)
     champ = sorted(result.champion.items(), key=lambda x: x[1], reverse=True)[:5]
     click.echo("奪冠機率前五：" + "  ".join(f"{zh(t)} {p:.1%}" for t, p in champ))
     click.echo(f"[ok] 網站已輸出到 {out}/（首頁 index.html，{n} 場分析頁）")

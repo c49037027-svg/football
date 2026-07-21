@@ -61,6 +61,13 @@ jobs:
           footy nba fetch --out data/nba.csv || true
           (test -f data/nba.csv || test -f data/nba_hist.csv) && footy nba train || echo "無 NBA 資料，略過訓練"
 
+      - name: 五大聯賽俱樂部模型（失敗不中斷；空窗期賽程為空、仍靠歷史資料訓練）
+        run: |
+          for lg in E0 SP1 I1 D1 F1; do
+            footy fetch-github --league "$lg" --out "data/club_$lg.csv" || true
+          done
+          footy leagues-train || echo "無俱樂部資料，略過"
+
       - name: AI 連線自我檢查（非必須，失敗不中斷）
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
@@ -114,6 +121,7 @@ jobs:
           git add -f data/bets.csv data/odds_log.csv || true
           git add -f data/mlb.csv data/mlb_pitchers.csv data/mlb_bets.csv data/mlb_model_bets.csv models/mlb.pkl 2>/dev/null || true
           git add -f data/nba.csv data/nba_bets.csv data/nba_model_bets.csv models/nba.pkl 2>/dev/null || true
+          git add -f models/club_*.pkl 2>/dev/null || true
           git commit -m "chore: 更新戰績帳本/賠率快照/MLB 資料與模型 [skip ci]" || echo "無變更"
           git push || echo "推送略過"
 
