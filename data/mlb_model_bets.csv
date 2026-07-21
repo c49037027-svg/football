@@ -65,9 +65,9 @@ date,match_num,home,away,market,selection,line,odds,edge,source,close_odds,resul
 2026-07-20,824087,Kansas City Royals,San Francisco Giants,AH,主,1.5,1.53,,market,1.53,win,0.53
 2026-07-20,823762,Milwaukee Brewers,New York Mets,1X2,home,,1.47,,market,1.47,win,0.47
 2026-07-20,823762,Milwaukee Brewers,New York Mets,AH,客,-1.5,1.8,,market,1.8,loss,-1.0
-2026-07-20,824654,Chicago Cubs,Detroit Tigers,1X2,home,,1.86,,market,1.86,pending,
-2026-07-20,824654,Chicago Cubs,Detroit Tigers,OU,小,11.5,1.87,,market,1.87,pending,
-2026-07-20,824654,Chicago Cubs,Detroit Tigers,AH,客,-1.5,1.54,,market,1.54,pending,
+2026-07-20,824654,Chicago Cubs,Detroit Tigers,1X2,home,,1.86,,market,1.86,loss,-1.0
+2026-07-20,824654,Chicago Cubs,Detroit Tigers,OU,小,11.5,1.87,,market,1.87,loss,-1.0
+2026-07-20,824654,Chicago Cubs,Detroit Tigers,AH,客,-1.5,1.54,,market,1.54,win,0.54
 2026-07-20,822874,Texas Rangers,Chicago White Sox,1X2,home,,1.57,,market,1.57,loss,-1.0
 2026-07-20,822874,Texas Rangers,Chicago White Sox,AH,客,-1.5,1.62,,market,1.62,win,0.62
 2026-07-20,824167,Houston Astros,Miami Marlins,1X2,home,,1.73,,market,1.73,win,0.73
@@ -89,7 +89,7 @@ date,match_num,home,away,market,selection,line,odds,edge,source,close_odds,resul
 2026-07-20,822788,Toronto Blue Jays,Tampa Bay Rays,AH,主,1.5,1.58,,market,1.58,loss,-1.0
 2026-07-20,823762,Milwaukee Brewers,New York Mets,OU,小,9.0,1.88,,market,1.88,loss,-1.0
 2026-07-20,823762,Milwaukee Brewers,New York Mets,AH,主,-1.5,2.4,,market,2.4,win,1.4
-2026-07-20,824654,Chicago Cubs,Detroit Tigers,AH,主,1.5,2.54,,market,2.54,pending,
+2026-07-20,824654,Chicago Cubs,Detroit Tigers,AH,主,1.5,2.54,,market,2.54,loss,-1.0
 2026-07-20,822874,Texas Rangers,Chicago White Sox,OU,小,8.5,1.73,,market,1.73,loss,-1.0
 2026-07-20,822874,Texas Rangers,Chicago White Sox,AH,主,2.5,1.36,,market,1.36,loss,-1.0
 2026-07-20,824167,Houston Astros,Miami Marlins,OU,小,13.5,1.4,,market,1.4,win,0.4
