@@ -493,10 +493,9 @@ def build_site_page(model_path: str = "models/nba.pkl",
         quotes = odds_index.get(i + 1)
         total_line = run_line = None
         if quotes:
-            mu_h, mu_a = model.expected_points(g["home"], g["away"])
-            ous = tracker._group_quotes(quotes, "OU")
-            if ous:
-                total_line = sorted(ous, key=lambda ln: abs(float(ln) - (mu_h + mu_a)))[0]
+            mkt_ou = tracker.main_ou_line(quotes)   # 大小賠率最均衡的主大小線
+            if mkt_ou is not None:
+                total_line = float(mkt_ou)
             mkt_rl = tracker.main_ah_line(quotes)
             if mkt_rl is not None:
                 run_line = float(mkt_rl)

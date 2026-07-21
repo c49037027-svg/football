@@ -1086,9 +1086,9 @@ def build_site_page(model_path: str = "models/mlb.pkl",
         run_line = -1.5
         if quotes:
             from . import tracker
-            ous = tracker._group_quotes(quotes, "OU")
-            if ous:
-                total_line = sorted(ous, key=lambda ln: abs(float(ln) - 8.5))[0]
+            mkt_ou = tracker.main_ou_line(quotes)   # 大小賠率最均衡的主大小線
+            if mkt_ou is not None:
+                total_line = float(mkt_ou)
             mkt_rl = tracker.main_ah_line(quotes)   # 主客賠率最均衡的讓分線
             if mkt_rl is not None:
                 run_line = float(mkt_rl)
