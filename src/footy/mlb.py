@@ -629,6 +629,16 @@ class PitcherBook:
         note = f"評分 {rating:.2f}（RA/9+FIP，隊平均 {base:.2f}，係數 {blended:.2f}）"
         return blended, note
 
+    def raw_factor(self, pitcher: "int | str | None") -> tuple[float, str]:
+        """未混權的原始壓制係數（走地逐局層用）。factor() 是整場混權
+        （0.6*raw+0.4，假設先發吃 60% 比賽）；走地已知在第幾局，要把原始係數
+        只套在先發的剩餘局數，故需解出 raw = (blended−0.4)/0.6。查無 → (1.0, 說明)。"""
+        blended, note = self.factor(pitcher)
+        if blended == 1.0:
+            return 1.0, note
+        raw = (blended - (1.0 - self.STARTER_SHARE)) / self.STARTER_SHARE
+        return raw, note
+
     @staticmethod
     def load_csv(path: str | Path) -> "PitcherBook":
         rows = []

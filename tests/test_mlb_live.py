@@ -183,3 +183,70 @@ def test_simulate_extra_inning_top_plays_bottom_half():
                              home_score=5, away_score=6)
     r2 = mlb_live.simulate(st2, 4.5, 4.5, seed=1)
     assert 0.15 < r2["p_home"] < 0.40         # 落後 1 分仍有幽靈跑者反攻，不趨近 0
+
+
+def test_simulate_starter_backward_compat():
+    """先發係數預設 1.0 → 與舊行為位元級一致（同 seed）。"""
+    st = mlb_live.LiveState(3, "bottom", 1, "010", 2, 1)
+    a = mlb_live.simulate(st, 4.5, 4.2, seed=7, n_sims=20000)
+    b = mlb_live.simulate(st, 4.5, 4.2, seed=7, n_sims=20000,
+                          home_sp_factor=1.0, away_sp_factor=1.0)
+    assert a["p_home"] == b["p_home"] and a["exp_total"] == b["exp_total"]
+
+
+def test_simulate_starter_factor_and_decay():
+    """王牌先發壓制對手且效果隨局數衰減、過 exit 局歸零。"""
+    kw = dict(k=3.0, n_sims=40000)
+    st1 = mlb_live.LiveState(1, "top", 0, "000", 0, 0)
+    plain = mlb_live.simulate(st1, 4.5, 4.5, seed=3, **kw)
+    ace = mlb_live.simulate(st1, 4.5, 4.5, seed=3, home_sp_factor=0.70, **kw)
+    assert ace["exp_away"] < plain["exp_away"] - 0.3     # 客隊得分明顯降
+    assert ace["exp_total"] < plain["exp_total"] - 0.2
+    assert ace["p_home"] > plain["p_home"]               # 主隊王牌 → 主勝率升
+    d1 = plain["exp_away"] - ace["exp_away"]
+    # 第 5 局：先發剩 2 局，效果 < 第 1 局（剩 6 局）
+    st5 = mlb_live.LiveState(5, "top", 0, "000", 0, 0)
+    p5 = mlb_live.simulate(st5, 4.5, 4.5, seed=3, **kw)
+    a5 = mlb_live.simulate(st5, 4.5, 4.5, seed=3, home_sp_factor=0.70, **kw)
+    assert (p5["exp_away"] - a5["exp_away"]) < d1
+    # 第 8 局（> exit 6）：係數 no-op，同 seed 完全相同
+    st8 = mlb_live.LiveState(8, "top", 0, "000", 0, 0)
+    p8 = mlb_live.simulate(st8, 4.5, 4.5, seed=3, **kw)
+    a8 = mlb_live.simulate(st8, 4.5, 4.5, seed=3, home_sp_factor=0.70, **kw)
+    assert p8["exp_away"] == a8["exp_away"]
+
+
+def test_raw_factor_unblends():
+    from footy import mlb
+    rows = [
+        {"id": 1, "name": "Ace", "team": "AAA", "ip": 120, "runs": 30,
+         "gs": 20, "so": 150, "bb": 25, "hr": 8},          # 王牌（低失分）
+        {"id": 2, "name": "Mid", "team": "AAA", "ip": 120, "runs": 60,
+         "gs": 20, "so": 100, "bb": 40, "hr": 18},
+        {"id": 3, "name": "Bad", "team": "AAA", "ip": 120, "runs": 80,
+         "gs": 20, "so": 80, "bb": 50, "hr": 25},
+    ]
+    book = mlb.PitcherBook(rows)
+    blended, _ = book.factor(1)
+    raw, _ = book.raw_factor(1)
+    assert raw < 1.0 and blended < 1.0
+    assert abs(blended - (0.6 * raw + 0.4)) < 1e-9        # 解權關係
+    assert book.raw_factor(999)[0] == 1.0                 # 查無 → 1.0
+
+
+def test_parse_schedule_probable_pitcher():
+    payload = {"dates": [{"date": "2026-07-20", "games": [{
+        "gamePk": 5, "gameType": "R", "officialDate": "2026-07-20",
+        "status": {"abstractGameState": "Live", "detailedState": "In Progress"},
+        "teams": {"home": {"team": {"name": "Boston Red Sox"}, "score": 2,
+                           "probablePitcher": {"id": 101, "fullName": "H Starter"}},
+                  "away": {"team": {"name": "New York Yankees"}, "score": 1,
+                           "probablePitcher": {"id": 202, "fullName": "A Starter"}}},
+        "linescore": {"currentInning": 2, "inningState": "Top",
+                      "defense": {"pitcher": {"id": 101}},
+                      "teams": {"home": {"runs": 2}, "away": {"runs": 1}}},
+    }]}]}
+    rows = mlb_live.parse_schedule_linescores(payload, finals_only=False)
+    assert rows[0]["home_sp"] == (101, "H Starter")
+    assert rows[0]["away_sp"] == (202, "A Starter")
+    assert rows[0]["cur_pitcher_id"] == 101

@@ -37,6 +37,7 @@ RE24 = {
 RE24_ENV = 4.5          # RE24 表對應的每 9 局得分環境
 GHOST_BONUS = 0.55      # 延長賽幽靈跑者：每半局期望得分加成（≈RE(010,0)−RE(000,0) 縮放後）
 MAX_EXTRA = 15          # 模擬延長上限（之後判半，機率 <1e-6）
+SP_EXIT_INNING = 6      # 先發投手預估投到第幾局（之後視為牛棚＝隊平均，係數 1.0）
 
 
 def _half(x: float) -> float:
@@ -67,10 +68,15 @@ def _nb_half_innings(rng, mean: float, k9: float, shape) -> np.ndarray:
 
 
 def simulate(state: LiveState, lam_home: float, lam_away: float,
-             k: float | None = 3.0, n_sims: int = 20000,
-             seed: int = 0) -> dict:
-    """從當前狀態模擬到終場。lam_home/lam_away = 兩隊「每場」預期得分
-    （賽前模型輸出，含投手/球場/天氣層），k = 每場 NB 離散度。
+             k: float | None = 3.0, n_sims: int = 20000, seed: int = 0,
+             home_sp_factor: float = 1.0, away_sp_factor: float = 1.0,
+             sp_exit_inning: int = SP_EXIT_INNING) -> dict:
+    """從當前狀態模擬到終場。lam_home/lam_away = 兩隊「每場」預期得分，k = 每場 NB 離散度。
+
+    先發投手層（逐局衰減）：home_sp_factor 為主隊先發的原始壓制係數（好投手 <1），
+    只作用於「客隊得分」且僅到 sp_exit_inning 局（之後視為牛棚＝隊平均，係數 1）；
+    away_sp_factor 對稱作用於主隊得分。**兩者預設 1.0（無效果）故向後相容**——
+    走地路徑傳隊平均 lam + 原始先發係數；賽前/回測路徑不傳、行為不變。
 
     回 {"p_home", "exp_total", "exp_home", "exp_away", "total_dist"(np.ndarray)}。
     """
@@ -79,6 +85,13 @@ def simulate(state: LiveState, lam_home: float, lam_away: float,
     k9 = k / 9.0
     m_h, m_a = lam_home / 9.0, lam_away / 9.0
     env_h, env_a = lam_home / RE24_ENV, lam_away / RE24_ENV
+
+    def sp_a(inn: int) -> float:    # 客隊得分乘數（主隊先發壓制），過 exit 局＝牛棚
+        return home_sp_factor if inn <= sp_exit_inning else 1.0
+
+    def sp_h(inn: int) -> float:    # 主隊得分乘數（客隊先發壓制）
+        return away_sp_factor if inn <= sp_exit_inning else 1.0
+
     rng = np.random.default_rng(seed)
     hs = np.full(n_sims, state.home_score, dtype=np.int64)
     as_ = np.full(n_sims, state.away_score, dtype=np.int64)
@@ -86,11 +99,11 @@ def simulate(state: LiveState, lam_home: float, lam_away: float,
     # 1) 當前半局剩餘：RE24（壘包/出局）縮放為該打擊隊環境，當 NB 均值
     cur_re = RE24.get((state.bases, min(state.outs, 2)), 0.0)
     if state.half == "top":
-        as_ = as_ + _nb_half_innings(rng, cur_re * env_a, k9, n_sims)
+        as_ = as_ + _nb_half_innings(rng, cur_re * env_a * sp_a(state.inning), k9, n_sims)
         next_half, next_inning = "bottom", state.inning
     else:
         # 9 局(含延長)下半進行中且主隊已領先 → 理論上已結束；防呆直接算
-        hs = hs + _nb_half_innings(rng, cur_re * env_h, k9, n_sims)
+        hs = hs + _nb_half_innings(rng, cur_re * env_h * sp_h(state.inning), k9, n_sims)
         next_half, next_inning = "top", state.inning + 1
 
     # 2) 之後的完整半局（1-9 局）
@@ -98,16 +111,16 @@ def simulate(state: LiveState, lam_home: float, lam_away: float,
     half = next_half
     while inn <= 9:
         if half == "top":
-            as_ = as_ + _nb_half_innings(rng, m_a, k9, n_sims)
+            as_ = as_ + _nb_half_innings(rng, m_a * sp_a(inn), k9, n_sims)
             half = "bottom"
         else:
             if inn == 9:
                 need = hs <= as_          # 9 下只有落後/平手才打
-                add = _nb_half_innings(rng, m_h, k9, int(need.sum()))
+                add = _nb_half_innings(rng, m_h * sp_h(inn), k9, int(need.sum()))
                 hs = hs.copy()
                 hs[need] += add
             else:
-                hs = hs + _nb_half_innings(rng, m_h, k9, n_sims)
+                hs = hs + _nb_half_innings(rng, m_h * sp_h(inn), k9, n_sims)
             half = "top"
             inn += 1
 
@@ -262,6 +275,13 @@ def parse_schedule_linescores(payload: dict, finals_only: bool = True) -> list[d
             if finals_only and status != "Final":
                 continue
             ls = g.get("linescore") or {}
+
+            def _sp(side: dict) -> tuple:
+                pp = side.get("probablePitcher") or {}
+                pid = pp.get("id")
+                return (int(pid) if pid else None, pp.get("fullName") or "")
+            # 當前防守方投手（若 hydrate 帶了 linescore.defense）：用來判斷先發是否已下場
+            cur_pid = (((ls.get("defense") or {}).get("pitcher") or {}).get("id"))
             rows.append({
                 "game_pk": g.get("gamePk"),
                 "detail": detail,
@@ -271,6 +291,8 @@ def parse_schedule_linescores(payload: dict, finals_only: bool = True) -> list[d
                 "home_goals": home.get("score"),
                 "away_goals": away.get("score"),
                 "status": status,
+                "home_sp": _sp(home), "away_sp": _sp(away),
+                "cur_pitcher_id": int(cur_pid) if cur_pid else None,
                 "innings": ls.get("innings") or [],
                 "linescore": ls,
                 "game_date_iso": g.get("gameDate"),
@@ -284,7 +306,7 @@ def fetch_schedule_linescores(start: str, end: str,
     import requests
     r = requests.get("https://statsapi.mlb.com/api/v1/schedule",
                      params={"sportId": 1, "startDate": start, "endDate": end,
-                             "hydrate": "linescore"},
+                             "hydrate": "linescore,probablePitcher"},
                      headers={"User-Agent": "Mozilla/5.0"}, timeout=timeout)
     r.raise_for_status()
     return r.json()
@@ -299,11 +321,21 @@ def live_snapshot(model_path: str = "models/mlb.pkl",
     回 {"date", "rows": [{game, state, p_home, exp_total, fair}], "others": [...]}；
     fair = {"home_odds", "away_odds", "over_lines": [(line, p_over)...]}。
     """
+    from pathlib import Path as _P
+
     from . import mlb
     from .models.dixon_coles import DixonColesModel
     model = DixonColesModel.load(model_path)
     pf_map = mlb.park_factors_from_csv(data_path)
     disp = mlb.dispersion_from_csv(data_path)
+    # 先發投手層（走地逐局衰減用）；缺檔則整段停用、退回隊平均（安全降級）
+    book = None
+    pitchers_path = str(_P(data_path).with_name("mlb_pitchers.csv"))
+    if _P(pitchers_path).exists():
+        try:
+            book = mlb.PitcherBook.load_csv(pitchers_path)
+        except Exception:  # noqa: BLE001
+            book = None
     date = date or mlb.us_today()
     payload = schedule_payload or fetch_schedule_linescores(date, date, timeout=10.0)
     games = parse_schedule_linescores(payload, finals_only=False)
@@ -324,18 +356,39 @@ def live_snapshot(model_path: str = "models/mlb.pkl",
             continue
         lam, mu = model.expected_goals(g["home"], g["away"])
         pf = pf_map.get(g["home"], 1.0)
+
+        def _sp_factor(sp, fielding_now: bool) -> float:
+            """先發原始壓制係數；查無/無 book → 1.0。fielding_now=這隊正在防守，
+            可用當前投手判斷是否已換投（已下場 → 1.0，剩餘交牛棚）。"""
+            if book is None or not sp or not sp[0]:
+                return 1.0
+            cur = g.get("cur_pitcher_id")
+            if fielding_now and cur is not None and cur != sp[0]:
+                return 1.0
+            raw, _ = book.raw_factor(sp[0])
+            return raw
+        # 主隊防守＝上半局；客隊防守＝下半局（先發壓制對手打線）
+        h_sp = _sp_factor(g.get("home_sp"), st.half == "top")
+        a_sp = _sp_factor(g.get("away_sp"), st.half == "bottom")
         # seed 混入時間：讓 MC 誤差（~0.3pp）隨每次刷新獨立抽樣、被平均掉，
         # 而不是同一狀態永遠帶同一個固定方向的偏差
         import time as _time
         seed = (int(g.get("game_pk") or 0) * 1_000_003
                 + _time.time_ns()) % (2 ** 32)
-        r = simulate(st, lam * pf, mu * pf, k=disp, n_sims=n_sims, seed=seed)
+        r = simulate(st, lam * pf, mu * pf, k=disp, n_sims=n_sims, seed=seed,
+                     home_sp_factor=h_sp, away_sp_factor=a_sp)
         p = min(max(r["p_home"], 0.005), 0.995)
         base = _half(r["exp_total"])
         over_lines = [(ln, p_over(r, ln)) for ln in (base - 1, base, base + 1)]
         run_lines = [(sl, p_cover_home(r, sl)) for sl in (-1.5, 1.5)]
+        sp_note = ""
+        if book and (g.get("home_sp", (None,))[0] or g.get("away_sp", (None,))[0]):
+            an = (g.get("away_sp") or (None, ""))[1] or "未定"
+            hn = (g.get("home_sp") or (None, ""))[1] or "未定"
+            tag = "" if st.inning <= SP_EXIT_INNING else "（先發多已退場）"
+            sp_note = f"先發 {an} vs {hn}{tag}"
         rows.append({"game": g, "state": st, "p_home": r["p_home"],
-                     "exp_total": r["exp_total"],
+                     "exp_total": r["exp_total"], "sp_note": sp_note,
                      "fair": {"home_odds": 1.0 / p, "away_odds": 1.0 / (1.0 - p),
                               "over_lines": over_lines, "run_lines": run_lines}})
     return {"date": date, "rows": rows, "others": others}
@@ -375,6 +428,7 @@ def render_live_section(snap: dict) -> str:
     <div class='mhd'><b>{_h.escape(az)}</b> <span class='at'>{st.away_score}</span>
       <span class='at'>–</span> <span class='at'>{st.home_score}</span> <b>{_h.escape(hz)}</b>
       <span class='xr'>{st.inning}局{half}・{st.outs}出局・壘上{_h.escape(bases)}</span></div>
+    {f"<div class='small' style='color:var(--muted)'>⚾ {_h.escape(r['sp_note'])}</div>" if r.get('sp_note') else ""}
     <div class='lbar'><div class='lfill' style='width:{bar}%'></div></div>
     <div class='lrow'><span>主勝 <b>{p:.1%}</b>（公平賠率 主 {fair['home_odds']:.2f}／客 {fair['away_odds']:.2f}）</span>
       <span>預期總分 <b>{r['exp_total']:.1f}</b></span></div>
@@ -424,7 +478,8 @@ def render_live_page(snap: dict, refresh_sec: int = 45,
   <a href="/manual" style="color:var(--accent)">✍️ 比分源慢半拍？手動輸入比分即時算</a> ·
   <a href="/index.html" style="color:var(--accent)">← 回首頁</a></div>
   <div class="disc">⚠️ 公平賠率=無水錢的理論價；莊家走地賠率高於公平價才有正期望值。走地盤 vig 較高，門檻請比賽前盤嚴。<b>比分源有 30~90 秒延遲：進球/得分後的 1-2 分鐘內本頁價格是舊狀態，此時與莊家的價差是延遲假象、不是 edge，切勿在劇烈變化剛發生時下注。</b>
-  另注意：MLB 走地為隊級模型、<b>未含當日先發投手</b>——王牌/替補先發比賽的前段局數價差多為模型誤差而非 edge；
+  另注意：MLB 走地已含<b>逐局衰減先發投手層</b>（先發原始係數只作用到約第 6 局、之後交牛棚；偵測到換投即停）——
+  但此層是<b>模型延伸、未在半局邊界回測</b>（527 場回測為無投手版），前段局數的量級尚待兩軌帳本驗證，大小盤仍停買；
   足球三層走地修正由英超資料擬合，套用於世界盃等其他賽事屬外推、未經該域驗證。</div>
   {body}
   <div class="foot">Generated by footy · 研究與教育用途</div>
