@@ -9,6 +9,7 @@ http.server 起一個本機網站：表單送出 → 跑 analysis.analyze → �
 from __future__ import annotations
 
 import html as _html
+import os
 import threading
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import parse_qs, urlparse
@@ -294,11 +295,25 @@ def _build_site(model, history, schedule_path, n_sims=12000, match_sims=8000):
             print("[serve] MLB 分頁已產生", flush=True)
         except Exception as e:  # noqa: BLE001
             print(f"[serve] MLB 分頁略過：{e}", flush=True)
+        nba_html = leagues_html = None
+        try:
+            from . import nba as nbamod
+            nba_html = nbamod.build_site_page()
+        except Exception:  # noqa: BLE001
+            pass
+        try:
+            from . import leagues as leaguesmod
+            leagues_html = leaguesmod.build_site_page()
+        except Exception:  # noqa: BLE001
+            pass
+        wc_over = os.environ.get("FOOTY_WC_OVER") == "1"
         outdir = tempfile.mkdtemp(prefix="footy_wc_")
         report.write_worldcup_site(result, model, matches, outdir, history=history,
                                    n_sims=match_sims, interactive=True,
                                    track_text=track_text, ledger_path="data/bets.csv",
-                                   odds_index=odds_index, mlb_html=mlb_html)
+                                   odds_index=odds_index, mlb_html=mlb_html,
+                                   nba_html=nba_html, leagues_html=leagues_html,
+                                   wc_over=wc_over)
         return outdir
     except Exception as e:  # noqa: BLE001
         print(f"[serve] 產生世界盃首頁失敗（改用自訂表單為首頁）：{e}")
