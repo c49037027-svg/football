@@ -38,6 +38,10 @@ def test_predict_fixtures_direction():
     assert preds[0]["p_home"] > preds[0]["p_away"]       # 強主 → 主勝高
     assert preds[1]["p_home"] < preds[1]["p_away"]       # 弱主對強客 → 客勝高
     assert abs(sum(preds[0][k] for k in ("p_home", "p_draw", "p_away")) - 1) < 1e-9
+    # 大小盤：line 2.5、over+under=1
+    assert preds[0]["ou_line"] == 2.5
+    assert abs(preds[0]["p_over"] + preds[0]["p_under"] - 1) < 1e-9
+    assert 0 < preds[0]["p_over"] < 1
 
 
 def test_render_leagues_page_empty_and_filled():
@@ -46,8 +50,10 @@ def test_render_leagues_page_empty_and_filled():
     assert "英超" in empty and "西甲" in empty          # 五個聯賽都列
     filled = leagues.render_leagues_page({"英超": [
         {"home": "Strong", "away": "Weak", "time": "",
-         "p_home": 0.6, "p_draw": 0.25, "p_away": 0.15}]})
+         "p_home": 0.6, "p_draw": 0.25, "p_away": 0.15,
+         "ou_line": 2.5, "p_over": 0.55, "p_under": 0.45}]})
     assert "60%" in filled and "主勝" in filled
+    assert "大小盤" in filled and "大2.5" in filled and "55%" in filled
 
 
 def test_parse_fixtures_pre_only():
