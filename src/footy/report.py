@@ -90,42 +90,63 @@ def render_markdown(preds: list[MatchPrediction], title: str = "足球預測") -
 
 # ---------------- HTML（預測站風格） ----------------
 _CSS = """
-:root{--bg:#0f1419;--card:#1a2129;--accent:#21c07a;--muted:#8a97a6;--line:#2a333d;--warn:#e0b341}
-*{box-sizing:border-box}body{margin:0;font-family:system-ui,-apple-system,"Noto Sans TC",sans-serif;
-background:var(--bg);color:#e6edf3}
-.wrap{max-width:980px;margin:0 auto;padding:24px}
-h1{font-size:24px;margin:0 0 4px}.sub{color:var(--muted);font-size:13px;margin-bottom:18px}
-.disc{background:#2a2410;border:1px solid var(--warn);color:#f0d98c;padding:10px 14px;border-radius:8px;
-font-size:13px;margin-bottom:20px}
-.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px 18px;margin-bottom:16px}
+:root{--bg:#0a0e13;--card:#141a21;--card2:#1a212a;--elev:#10151b;--accent:#22c07a;
+--accent-soft:rgba(34,192,122,.13);--muted:#828f9d;--line:#232c36;--warn:#e0b341;--fg:#e7edf3}
+*{box-sizing:border-box}
+body{margin:0;font-family:system-ui,-apple-system,"Noto Sans TC",sans-serif;background:var(--bg);
+color:var(--fg);line-height:1.55;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;
+background-image:radial-gradient(900px 480px at 50% -240px,rgba(34,192,122,.07),transparent 70%)}
+.wrap{max-width:1000px;margin:0 auto;padding:20px 20px 44px}
+h1{font-size:25px;font-weight:800;letter-spacing:-.02em;margin:18px 0 4px}
+h2{font-size:18px;font-weight:700;letter-spacing:-.01em;margin:16px 0 8px}
+.sub{color:var(--muted);font-size:13px;margin-bottom:18px}
+.small{font-size:12.5px;line-height:1.5}
+.sec{font-size:15px;font-weight:700;letter-spacing:-.01em;margin-bottom:8px}
+a{color:var(--accent)}
+.disc{background:linear-gradient(180deg,rgba(224,179,65,.08),rgba(224,179,65,.04));
+border:1px solid rgba(224,179,65,.35);color:#f0d98c;padding:11px 14px;border-radius:10px;
+font-size:12.5px;line-height:1.5;margin-bottom:18px}
+.card{background:linear-gradient(180deg,var(--card2),var(--card));border:1px solid var(--line);
+border-radius:14px;padding:16px 18px;margin-bottom:14px;
+box-shadow:0 1px 0 rgba(255,255,255,.03) inset,0 4px 16px -8px rgba(0,0,0,.5)}
 .head{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
-.teams{font-size:18px;font-weight:700}.tip{background:var(--accent);color:#04130c;font-weight:700;
-padding:4px 10px;border-radius:20px;font-size:12px}
-.bar{display:flex;height:26px;border-radius:6px;overflow:hidden;margin:8px 0;font-size:12px;font-weight:600}
+.teams{font-size:18px;font-weight:700}
+.tip{background:var(--accent);color:#04130c;font-weight:700;padding:4px 11px;border-radius:20px;font-size:12px}
+.bar{display:flex;height:26px;border-radius:8px;overflow:hidden;margin:9px 0;font-size:12px;font-weight:700}
 .bar>div{display:flex;align-items:center;justify-content:center;color:#04130c}
-.h{background:#21c07a}.d{background:#5b6a7a}.a{background:#e07a5f}
+.h{background:var(--accent)}.d{background:#57657a}.a{background:#e07a5f}
 .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-top:10px}
-.box{background:#11161c;border:1px solid var(--line);border-radius:8px;padding:10px}
-.box .k{color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.04em}
+.box{background:var(--elev);border:1px solid var(--line);border-radius:10px;padding:11px 12px}
+.box .k{color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.05em}
 .box .v{font-size:15px;font-weight:700;margin-top:3px}
-.cs span{display:inline-block;background:#11161c;border:1px solid var(--line);border-radius:6px;
-padding:3px 8px;margin:2px 4px 2px 0;font-size:12px}
-.form{font-family:ui-monospace,monospace;letter-spacing:2px}.W{color:#21c07a}.D{color:#c9b458}.L{color:#e07a5f}
-.foot{color:var(--muted);font-size:12px;text-align:center;margin-top:24px}
-.nav{position:sticky;top:0;z-index:9;background:rgba(15,20,25,.92);backdrop-filter:blur(8px);
-border-bottom:1px solid var(--line);display:flex;gap:6px;padding:10px 14px;margin:-24px -24px 16px}
-.nav a{color:var(--muted);text-decoration:none;font-size:14px;font-weight:700;padding:6px 12px;border-radius:8px}
-.nav a.on{background:var(--accent);color:#04130c}.nav a:not(.on):active{background:#1c242d}
+.cs span{display:inline-block;background:var(--elev);border:1px solid var(--line);border-radius:7px;
+padding:3px 9px;margin:2px 4px 2px 0;font-size:12px}
+.form{font-family:ui-monospace,monospace;letter-spacing:2px}.W{color:var(--accent)}.D{color:#c9b458}.L{color:#e07a5f}
+.foot{color:var(--muted);font-size:12px;text-align:center;margin-top:28px;padding-top:16px;
+border-top:1px solid var(--line)}
+table{width:100%;border-collapse:collapse;font-size:13px;margin-top:6px}
+th{color:var(--muted);font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.04em;
+text-align:left;padding:9px 11px;border-bottom:1px solid var(--line)}
+td{padding:9px 11px;border-bottom:1px solid rgba(35,44,54,.55)}
+tbody tr:last-child td{border-bottom:none}tbody tr:hover{background:rgba(255,255,255,.018)}
+td.tm{font-weight:600}
+.nav{position:sticky;top:0;z-index:9;background:rgba(10,14,19,.82);backdrop-filter:saturate(1.4) blur(12px);
+border-bottom:1px solid var(--line);display:flex;flex-wrap:wrap;gap:4px;padding:10px 14px;margin:-20px -20px 18px}
+.nav a{color:var(--muted);text-decoration:none;font-size:13.5px;font-weight:600;padding:7px 13px;
+border-radius:9px;transition:color .12s,background .12s}
+.nav a:hover{color:var(--fg);background:rgba(255,255,255,.04)}
+.nav a.on{background:var(--accent-soft);color:var(--accent)}
 /* 淘汰賽對陣圖 */
 .bracket{display:flex;gap:14px;overflow-x:auto;padding:6px 2px 14px}
 .bcol{flex:0 0 auto;min-width:150px;display:flex;flex-direction:column;justify-content:space-around;gap:8px}
 .bcol h4{font-size:12px;color:var(--muted);text-align:center;margin:0 0 2px}
-.bm{background:#11161c;border:1px solid var(--line);border-radius:8px;padding:7px 9px;font-size:12px}
+.bm{background:var(--elev);border:1px solid var(--line);border-radius:9px;padding:7px 9px;font-size:12px}
 .bm .t{display:flex;justify-content:space-between;gap:6px;padding:1px 0}
 .bm .t.win{color:#7be0b0;font-weight:700}.bm .res{color:var(--warn);font-weight:700}
 .fctrl{display:flex;gap:8px;margin:8px 0;font-size:13px}
-.fctrl button{background:#11161c;color:#cdd9e5;border:1px solid var(--line);border-radius:8px;
-padding:6px 12px;font-weight:700;cursor:pointer}.fctrl button.on{background:var(--accent);color:#04130c}
+.fctrl button{background:var(--elev);color:#cdd9e5;border:1px solid var(--line);border-radius:9px;
+padding:6px 13px;font-weight:600;cursor:pointer;transition:background .12s}
+.fctrl button:hover{background:#1a222b}.fctrl button.on{background:var(--accent);color:#04130c}
 """
 
 
@@ -750,11 +771,15 @@ def render_leagues_placeholder(title: str = "足球五大聯賽") -> str:
 
 def render_hub_html(title: str = "體育預測 · 首頁", month: int = 7) -> str:
     """賽會結束後的入口首頁：headline 當前在季運動，連往各區。純靜態、不耦合資料。"""
-    _CARD_CSS = (".hub{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));"
-                 "gap:14px;margin-top:14px}.hub a{text-decoration:none}"
-                 ".hub .card{transition:border-color .15s}.hub .card:hover{border-color:var(--accent)}"
-                 ".hub .ic{font-size:26px}.hub .ti{font-size:17px;font-weight:700;margin:6px 0 2px}"
-                 ".hub .st{font-size:12px;color:var(--muted)}")
+    _CARD_CSS = (".hub{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));"
+                 "gap:14px;margin-top:16px}.hub a{text-decoration:none;color:inherit}"
+                 ".hub .card{margin:0;transition:border-color .15s,transform .15s,box-shadow .15s}"
+                 ".hub .card:hover{border-color:rgba(34,192,122,.5);transform:translateY(-2px);"
+                 "box-shadow:0 10px 28px -12px rgba(0,0,0,.65)}"
+                 ".hub .ic{font-size:24px;width:44px;height:44px;display:flex;align-items:center;"
+                 "justify-content:center;border-radius:11px;background:var(--accent-soft);margin-bottom:10px}"
+                 ".hub .ti{font-size:16px;font-weight:700;letter-spacing:-.01em;margin:0 0 3px}"
+                 ".hub .st{font-size:12px;color:var(--muted);line-height:1.45}")
     sea = _season_status(month)
     live_url = __import__("os").environ.get("FOOTY_LIVE_URL", "/live")
 
