@@ -656,3 +656,7 @@ date,match_num,home,away,market,selection,line,odds,edge,source,close_odds,resul
 2026-07-21,825056,Arizona Diamondbacks,Athletics,AH,客,-1.5,1.53,-0.1125,market,1.53,pending,
 2026-07-21,823114,Seattle Mariners,Cincinnati Reds,1X2,away,,1.99,0.0337,market,1.99,pending,
 2026-07-21,823114,Seattle Mariners,Cincinnati Reds,AH,客,-1.5,1.47,-0.0001,market,1.47,pending,
+2026-07-21,824652,Chicago Cubs,Detroit Tigers,OU,大,7.5,1.75,-0.0282,market,1.75,pending,
+2026-07-21,824165,Houston Astros,Miami Marlins,OU,小,9.0,2.0,0.0412,market,2.0,pending,
+2026-07-21,824329,Colorado Rockies,Washington Nationals,OU,小,13.0,1.88,-0.0,market,1.88,pending,
+2026-07-21,824329,Colorado Rockies,Washington Nationals,AH,主,1.5,1.65,-0.083,market,1.65,pending,
