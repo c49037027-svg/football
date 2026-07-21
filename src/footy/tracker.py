@@ -44,6 +44,20 @@ def _ev_no_push(p: float, odds: float) -> float:
     return p * odds - 1.0
 
 
+def main_ou_line(quotes):
+    """從報價挑「主盤」大小線：大/小賠率最接近(最均衡)的那條。回傳 line 或 None。"""
+    lines = _group_quotes(quotes, "OU")
+    best, best_gap = None, 1e9
+    for line, sides in lines.items():
+        if "over" in sides and "under" in sides:
+            gap = abs(sides["over"] - sides["under"])
+            if gap < best_gap:
+                best, best_gap = line, gap
+        elif best is None:
+            best = line
+    return _to_float(best) if best is not None else None
+
+
 def main_ah_line(quotes):
     """從報價挑「主盤」亞盤讓球線：主客賠率最接近(最均衡)的那條。回傳 line 或 None。"""
     lines = _group_quotes(quotes, "AH")

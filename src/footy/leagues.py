@@ -9,10 +9,13 @@
 """
 from __future__ import annotations
 
-# football-data 代碼 → (ESPN 聯賽 code, 中文名)
+# football-data 代碼 → (ESPN 聯賽 code, 中文名, the-odds-api sport code)
 LEAGUES = {
-    "E0": ("eng.1", "英超"), "SP1": ("esp.1", "西甲"),
-    "I1": ("ita.1", "義甲"), "D1": ("ger.1", "德甲"), "F1": ("fra.1", "法甲"),
+    "E0": ("eng.1", "英超", "soccer_epl"),
+    "SP1": ("esp.1", "西甲", "soccer_spain_la_liga"),
+    "I1": ("ita.1", "義甲", "soccer_italy_serie_a"),
+    "D1": ("ger.1", "德甲", "soccer_germany_bundesliga"),
+    "F1": ("fra.1", "法甲", "soccer_france_ligue_one"),
 }
 
 
@@ -44,10 +47,11 @@ def train_club_models(data_dir: str = "data", out_dir: str = "models",
 
 
 def predict_fixtures(model, fixtures: list[dict], ou_line: float = 2.5) -> list[dict]:
-    """對賽程算 1X2 + 大小盤（含主場優勢）。fixtures=[{home, away, time?}]。
+    """對賽程算 1X2 + 大小盤（含主場優勢）。fixtures=[{home, away, time?, ou_line?}]。
 
-    回 [{home, away, time, p_home, p_draw, p_away, ou_line, p_over, p_under}]；
-    ou_line 預設 2.5（足球標準總進球線）；不在模型的球隊跳過。
+    每場的大小線**優先用該場 fixture 的 ou_line（莊家主大小線）**，缺則退回
+    參數 ou_line（預設 2.5）。回 [{...p_home/draw/away, ou_line, p_over, p_under}]；
+    不在模型的球隊跳過。
     """
     from .models import markets
     out = []
@@ -55,12 +59,13 @@ def predict_fixtures(model, fixtures: list[dict], ou_line: float = 2.5) -> list[
         h, a = f.get("home"), f.get("away")
         if not h or not a or h not in model.attack or a not in model.attack:
             continue
-        mat = model.score_matrix(h, a)                      # neutral=False→主場優勢
+        line = f.get("ou_line") or ou_line              # 有莊家線就用莊家線
+        mat = model.score_matrix(h, a)                  # neutral=False→主場優勢
         p = markets.outcome_1x2(mat)
-        ou = markets.over_under(mat, ou_line)
+        ou = markets.over_under(mat, float(line))
         out.append({"home": h, "away": a, "time": f.get("time", ""),
                     "p_home": p["home"], "p_draw": p["draw"], "p_away": p["away"],
-                    "ou_line": ou_line,
+                    "ou_line": float(line),
                     "p_over": ou["over_win"], "p_under": ou["under_win"]})
     return out
 
@@ -118,7 +123,7 @@ def render_leagues_page(preds_by_league: dict, title: str = "足球五大聯賽"
     from .i18n import zh
     from .report import _CSS, _navbar
     sections = []
-    for code, (_, zh_name) in LEAGUES.items():
+    for code, (_, zh_name, _sport) in LEAGUES.items():
         preds = preds_by_league.get(zh_name) or []
         if not preds:
             body = ("<div class='small' style='color:var(--muted)'>"
@@ -155,17 +160,41 @@ def render_leagues_page(preds_by_league: dict, title: str = "足球五大聯賽"
 </div></body></html>"""
 
 
+def _attach_market_ou(fixtures: list[dict], sport: str) -> None:
+    """就地把莊家主大小線寫進每場 fixture 的 ou_line（抓不到盤口則不動，退回預設 2.5）。"""
+    if not fixtures:
+        return
+    try:
+        from . import tracker
+        from .live.providers import fetch_wc_odds
+
+        class _G:
+            def __init__(self, num, t1, t2):
+                self.num, self.team1, self.team2, self.played = num, t1, t2, False
+        games = [_G(i + 1, f["home"], f["away"]) for i, f in enumerate(fixtures)]
+        idx = fetch_wc_odds(games, sport=sport)
+        for i, f in enumerate(fixtures):
+            q = idx.get(i + 1)
+            if q:
+                ln = tracker.main_ou_line(q)
+                if ln:
+                    f["ou_line"] = ln
+    except Exception:  # noqa: BLE001（盤口抓取失敗 → 全退回預設線，頁面照常）
+        pass
+
+
 def build_site_page(models_dir: str = "models", date_range: str | None = None,
-                    fixtures_by_code: dict | None = None) -> str:
+                    fixtures_by_code: dict | None = None, with_odds: bool = True) -> str:
     """建五大聯賽頁（wc-site 呼叫）。載各聯賽 club_{code}.pkl + 抓賽程 → 預測頁。
 
-    fixtures_by_code 供測試注入（{football代碼: [{home,away,time}]}）。全空→空狀態頁。
+    大小盤機率**依莊家主大小線**計算（抓不到盤口則退回標準 2.5 線）。
+    fixtures_by_code 供測試注入（{football代碼: [{home,away,time,ou_line?}]}）。
     """
     from pathlib import Path
 
     from .models.dixon_coles import DixonColesModel
     preds_by_league: dict = {}
-    for code, (espn_code, zh_name) in LEAGUES.items():
+    for code, (espn_code, zh_name, sport) in LEAGUES.items():
         mp = Path(models_dir) / f"club_{code}.pkl"
         if not mp.exists():
             continue
@@ -176,5 +205,7 @@ def build_site_page(models_dir: str = "models", date_range: str | None = None,
         fixtures = (fixtures_by_code or {}).get(code)
         if fixtures is None:
             fixtures = fetch_upcoming(espn_code, date_range)
+        if with_odds and fixtures_by_code is None:
+            _attach_market_ou(fixtures, sport)      # 用莊家主大小線
         preds_by_league[zh_name] = predict_fixtures(model, fixtures)
     return render_leagues_page(preds_by_league)

@@ -38,10 +38,23 @@ def test_predict_fixtures_direction():
     assert preds[0]["p_home"] > preds[0]["p_away"]       # 強主 → 主勝高
     assert preds[1]["p_home"] < preds[1]["p_away"]       # 弱主對強客 → 客勝高
     assert abs(sum(preds[0][k] for k in ("p_home", "p_draw", "p_away")) - 1) < 1e-9
-    # 大小盤：line 2.5、over+under=1
+    # 大小盤：預設 2.5、over+under=1
     assert preds[0]["ou_line"] == 2.5
     assert abs(preds[0]["p_over"] + preds[0]["p_under"] - 1) < 1e-9
     assert 0 < preds[0]["p_over"] < 1
+    # 依莊家線：fixture 帶 ou_line=3.5 → 用該線（線越高、大球機率越低）
+    hi = leagues.predict_fixtures(model, [{"home": "Strong", "away": "Weak", "ou_line": 3.5}])
+    assert hi[0]["ou_line"] == 3.5 and hi[0]["p_over"] < preds[0]["p_over"]
+
+
+def test_main_ou_line():
+    from footy import tracker
+    from footy.prematch import MarketQuote
+    # 2.5 線大小最均衡（1.9/1.9）、3.5 線不均衡 → 主線取 2.5
+    q = [MarketQuote("OU", "over", 1.90, line=2.5), MarketQuote("OU", "under", 1.90, line=2.5),
+         MarketQuote("OU", "over", 2.80, line=3.5), MarketQuote("OU", "under", 1.42, line=3.5)]
+    assert tracker.main_ou_line(q) == 2.5
+    assert tracker.main_ou_line([]) is None
 
 
 def test_render_leagues_page_empty_and_filled():
