@@ -74,8 +74,10 @@ jobs:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           OPENWEATHER_KEY: ${{ secrets.OPENWEATHER_KEY }}
           LLM_MODEL: claude-haiku-4-5
-          # 靜態站導覽的 🔴走地/🔧自訂 需指向 Render 動態站（Repo Variables 設定）
+          # 靜態站導覽的 🔴走地 需指向 Render 動態站（Repo Variables 設定）
           FOOTY_LIVE_URL: ${{ vars.FOOTY_LIVE_URL || '/live' }}
+          # 世界盃結束（2026-07）→ 首頁改 hub、世界盃收 wc.html、導覽換季外版
+          FOOTY_WC_OVER: "1"
         run: |
           footy wc-site \
             --model models/intl.pkl \

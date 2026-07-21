@@ -1311,11 +1311,14 @@ def wc_site(ctx, model_path, schedule, history_path, outdir, n_sims, match_sims,
         click.echo(f"[wc-site] NBA 分頁略過：{e}")
 
     click.echo("[wc] 產生首頁與各場分析頁…")
+    import os as _os
+    wc_over = _os.environ.get("FOOTY_WC_OVER") == "1"
     out, n = report.write_worldcup_site(result, model, matches, outdir,
                                         history=hist, title=title, n_sims=match_sims,
                                         injury_counts=injury_counts, track_text=track_text,
                                         ledger_path=ledger, odds_index=odds_index,
-                                        mlb_html=mlb_html, nba_html=nba_html)
+                                        mlb_html=mlb_html, nba_html=nba_html,
+                                        wc_over=wc_over)
     champ = sorted(result.champion.items(), key=lambda x: x[1], reverse=True)[:5]
     click.echo("奪冠機率前五：" + "  ".join(f"{zh(t)} {p:.1%}" for t, p in champ))
     click.echo(f"[ok] 網站已輸出到 {out}/（首頁 index.html，{n} 場分析頁）")
