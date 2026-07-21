@@ -56,6 +56,11 @@ def test_write_site_wc_over(tmp_path):
         idx = (Path(outdir) / "index.html").read_text(encoding="utf-8")
         assert "體育預測" in idx and "MLB 今日預測" in idx      # hub
         assert "奪冠機率" not in idx                            # 世界盃內容不在首頁
+        # hub 卡片只剩 4 個活躍區塊：世界盃存檔/推薦績效卡片已移除
+        assert "2026 世界盃存檔" not in idx and "推薦績效" not in idx
+        # 導覽：nav 在 h1 之前（不擠壓）、績效併入世界盃存檔（無獨立績效項）
+        assert idx.index("class='nav'") < idx.index("<h1")
+        assert "📈 績效" not in idx
         wc = (Path(outdir) / "wc.html").read_text(encoding="utf-8")
         assert "奪冠機率" in wc                                 # 世界盃收存檔
         lg = (Path(outdir) / "leagues.html").read_text(encoding="utf-8")

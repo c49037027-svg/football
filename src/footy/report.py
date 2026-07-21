@@ -711,13 +711,13 @@ def _navbar(active: str) -> str:
     # 測試：模組旗標 _WC_OVER 直接覆寫。任一為真即換季外版。
     wc_over = _WC_OVER or os.environ.get("FOOTY_WC_OVER") == "1"
     if wc_over:
-        # 賽會結束：首頁＝hub、足球聯賽 8 月開季、世界盃收存檔；移除晉級對陣/自訂分析
+        # 賽會結束：首頁＝hub、足球聯賽 8 月開季；世界盃＋績效併成一個「存檔」入口
+        # （wc.html 內含績效頁連結）；移除晉級對陣/自訂分析
         return (f"<div class='nav'><a href='index.html'{cls('home')}>🏠 首頁</a>"
                 f"<a href='mlb.html'{cls('mlb')}>⚾ MLB</a>"
                 f"<a href='{live_url}'{cls('live')}>🔴 走地</a>"
                 f"<a href='nba.html'{cls('nba')}>🏀 NBA</a>"
                 f"<a href='leagues.html'{cls('leagues')}>⚽ 足球聯賽</a>"
-                f"<a href='performance.html'{cls('perf')}>📈 績效</a>"
                 f"<a href='wc.html'{cls('wc')}>🏆 世界盃存檔</a></div>")
     return (f"<div class='nav'><a href='index.html'{cls('home')}>🏆 首頁</a>"
             f"<a href='knockout.html'{cls('knockout')}>🏟️ 晉級&對陣</a>"
@@ -739,8 +739,8 @@ def render_leagues_placeholder(title: str = "足球五大聯賽") -> str:
     return f"""<!doctype html><html lang="zh-Hant"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>{html.escape(title)}</title><style>{_CSS}</style></head><body><div class="wrap">
-  <h1>⚽ 足球五大聯賽</h1>
   {_navbar('leagues')}
+  <h1>⚽ 足球五大聯賽</h1>
   <div class="card"><div class="sec">球季尚未開打</div>
   <div class="small" style="color:var(--muted)">英超/西甲/義甲/德甲/法甲新球季 8 月中開打——
   賽程開始後本頁自動顯示各聯賽的預測、盤口與走地。目前空窗期只有熱身賽，不列預測。</div></div>
@@ -769,15 +769,13 @@ def render_hub_html(title: str = "體育預測 · 首頁", month: int = 7) -> st
              "球季進行中" if sea["nba"] else "10 月下旬開季，屆時自動顯示"),
         card("leagues.html", "⚽", "足球五大聯賽",
              "球季進行中" if sea["soccer"] else "8 月中開季，屆時自動顯示預測"),
-        card("performance.html", "📈", "推薦績效", "兩軌帳本 ROI/CLV 與勝率"),
-        card("wc.html", "🏆", "2026 世界盃存檔", "賽會奪冠模擬與各場分析（已結束）"),
     ]
     return f"""<!doctype html><html lang="zh-Hant"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>{html.escape(title)}</title><style>{_CSS}{_CARD_CSS}</style></head>
 <body><div class="wrap">
-  <h1>⚽⚾🏀 體育預測</h1>
   {_navbar('home')}
+  <h1>⚽⚾🏀 體育預測</h1>
   <div class="small" style="color:var(--muted);margin:8px 0">
     模型驅動的機率與公平賠率——非投注建議。當前在季：{'⚾MLB ' if sea['mlb'] else ''}
     {'🏀NBA ' if sea['nba'] else ''}{'⚽足球 ' if sea['soccer'] else ''}。</div>

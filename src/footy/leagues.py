@@ -133,8 +133,8 @@ def render_leagues_page(preds_by_league: dict, title: str = "足球五大聯賽"
     return f"""<!doctype html><html lang="zh-Hant"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>{_h.escape(title)}</title><style>{_CSS}</style></head><body><div class="wrap">
-  <h1>⚽ 足球五大聯賽</h1>
   {_navbar('leagues')}
+  <h1>⚽ 足球五大聯賽</h1>
   <div class="small" style="color:var(--muted);margin:8px 0">
     每格：主/和/客機率·公平賠率。純模型（含主場優勢），非投注建議。</div>
   {''.join(sections)}
