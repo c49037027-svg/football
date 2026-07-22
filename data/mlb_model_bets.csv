@@ -195,3 +195,4 @@ date,match_num,home,away,market,selection,line,odds,edge,source,close_odds,resul
 2026-07-22,823519,New York Yankees,Pittsburgh Pirates,AH,主,1.5,2.0,,market,2.0,pending,
 2026-07-22,824083,Kansas City Royals,San Francisco Giants,OU,大,6.5,1.85,,market,1.85,pending,
 2026-07-22,823761,Milwaukee Brewers,New York Mets,OU,大,6.5,1.8,,market,1.8,pending,
+2026-07-22,823761,Milwaukee Brewers,New York Mets,AH,主,1.5,1.5,,market,1.5,pending,
