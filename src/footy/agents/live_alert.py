@@ -62,7 +62,8 @@ def scan_mlb(snapshot=None, odds_index=None) -> list[dict]:
         games = [mlb._Game(i + 1, r["game"]["home"], r["game"]["away"])
                  for i, r in enumerate(rows)]
         try:
-            odds_index = mlb.fetch_mlb_odds(games)
+            # 走地掃描只做錢線 → 只抓 h2h（省 the-odds-api 額度：1 credit 而非 3）
+            odds_index = mlb.fetch_mlb_odds(games, markets="h2h")
         except Exception:  # noqa: BLE001
             return []
     out = []

@@ -1279,7 +1279,9 @@ def wc_site(ctx, model_path, schedule, history_path, outdir, n_sims, match_sims,
 
     track_text = None
     odds_index = None
-    if ledger:
+    import os as _os0
+    # 世界盃結束後不再抓世界盃盤口（無比賽、白花 the-odds-api 額度）
+    if ledger and _os0.environ.get("FOOTY_WC_OVER") != "1":
         from . import tracker
         try:  # 有 ODDS_API_KEY 才抓真實盤口 → 盤口讓球線 + +EV 推薦 + ROI/CLV
             from .live.providers import fetch_wc_odds
