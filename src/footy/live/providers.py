@@ -122,56 +122,74 @@ def estimate_minute(commence_iso: str | None, now: datetime | None = None) -> in
     return int(max(0, min(95, elapsed_min)))
 
 
-def find_ah_line(parsed: dict, home: str, away: str) -> "dict | None":
-    """從 parse_odds 的結果裡，找指定對戰的亞盤讓球線（主隊視角）。
+# 隊名配對用：只去純法人後綴（保留 city/united/town 等辨識詞，靠前綴匹配處理
+# Man↔Manchester；若去掉 city/united 會害曼城↔曼聯互相誤配）
+_DROP_TOKENS = {"fc", "cf", "afc", "sc", "ac", "cd", "ss", "as", "calcio", "club"}
+_MATCH_THRESHOLD = 1.35   # 雙隊合計相似度門檻（每隊 0~1，真配對通常近 2.0）
 
-    用別名 + 模糊比對配對隊名。回傳 {"line", "home_odds", "away_odds"} 或 None。
-    """
-    import difflib
+
+def _norm_tokens(name: str) -> tuple[str, set]:
+    """隊名正規化：套別名→去重音→小寫→去標點→去冗詞。回 (正規字串, token 集)。"""
+    import re
+    import unicodedata
 
     from ..worldcup import TEAM_ALIASES
+    n = TEAM_ALIASES.get(name, name)
+    n = unicodedata.normalize("NFKD", n).encode("ascii", "ignore").decode()
+    n = re.sub(r"[^a-z0-9 ]", " ", n.lower())
+    toks = [t for t in n.split() if t]
+    core = [t for t in toks if t not in _DROP_TOKENS] or toks   # 全被去光則保留原 token
+    return " ".join(core), set(core)
 
-    def norm(n):
-        return TEAM_ALIASES.get(n, n)
 
-    th, ta = norm(home), norm(away)
-    best_score, best = 1.4, None  # 需雙隊合計相似度 > 1.4 才算配對
+def _name_sim(a: str, b: str) -> float:
+    """兩隊名相似度 0~1：序列比對與 token 重疊（含前綴，如 man↔manchester）取大者。"""
+    import difflib
+    sa, ta = _norm_tokens(a)
+    sb, tb = _norm_tokens(b)
+    if not ta or not tb:
+        return 0.0
+    matched = 0
+    for x in ta:
+        if x in tb or any(len(x) >= 3 and (y.startswith(x) or x.startswith(y))
+                          for y in tb):
+            matched += 1
+    tok = matched / max(len(ta), len(tb))          # token 覆蓋率（含前綴匹配）
+    seq = difflib.SequenceMatcher(None, sa, sb).ratio()
+    return max(tok, seq)
+
+
+def _best_event(parsed: dict, home: str, away: str, need=None):
+    """在 parsed 事件中找與 (home, away) 最匹配者。need(info)→bool 額外條件。"""
+    best_score, best = _MATCH_THRESHOLD, None
     for info in parsed.values():
-        eh, ea = norm(info.get("home") or ""), norm(info.get("away") or "")
-        ah = [q for q in info.get("quotes", []) if q.market == "AH"]
-        if not ah:
+        if need and not need(info):
             continue
-        score = (difflib.SequenceMatcher(None, eh, th).ratio()
-                 + difflib.SequenceMatcher(None, ea, ta).ratio())
-        if score <= best_score:
-            continue
-        home_q = next((q for q in ah if q.selection == "home"), None)
-        away_q = next((q for q in ah if q.selection == "away"), None)
-        if home_q is not None:
-            best_score = score
-            best = {"line": home_q.line, "home_odds": home_q.odds,
-                    "away_odds": away_q.odds if away_q else None}
+        score = _name_sim(info.get("home") or "", home) + _name_sim(info.get("away") or "", away)
+        if score > best_score:
+            best_score, best = score, info
     return best
+
+
+def find_ah_line(parsed: dict, home: str, away: str) -> "dict | None":
+    """從 parse_odds 的結果裡，找指定對戰的亞盤讓球線（主隊視角）。"""
+    info = _best_event(parsed, home, away,
+                       need=lambda i: any(q.market == "AH" for q in i.get("quotes", [])))
+    if not info:
+        return None
+    ah = [q for q in info["quotes"] if q.market == "AH"]
+    home_q = next((q for q in ah if q.selection == "home"), None)
+    away_q = next((q for q in ah if q.selection == "away"), None)
+    if home_q is None:
+        return None
+    return {"line": home_q.line, "home_odds": home_q.odds,
+            "away_odds": away_q.odds if away_q else None}
 
 
 def find_quotes(parsed: dict, home: str, away: str) -> "list | None":
-    """從 parse_odds 結果裡，找指定對戰的全部盤口報價（模糊比對隊名）。"""
-    import difflib
-
-    from ..worldcup import TEAM_ALIASES
-
-    def norm(n):
-        return TEAM_ALIASES.get(n, n)
-
-    th, ta = norm(home), norm(away)
-    best_score, best = 1.4, None
-    for info in parsed.values():
-        eh, ea = norm(info.get("home") or ""), norm(info.get("away") or "")
-        score = (difflib.SequenceMatcher(None, eh, th).ratio()
-                 + difflib.SequenceMatcher(None, ea, ta).ratio())
-        if score > best_score and info.get("quotes"):
-            best_score, best = score, info["quotes"]
-    return best
+    """從 parse_odds 結果裡，找指定對戰的全部盤口報價（穩健隊名配對）。"""
+    info = _best_event(parsed, home, away, need=lambda i: bool(i.get("quotes")))
+    return info["quotes"] if info else None
 
 
 def fetch_wc_odds(matches, sport: str = "soccer_fifa_world_cup",
@@ -192,12 +210,22 @@ def fetch_wc_odds(matches, sport: str = "soccer_fifa_world_cup",
     r.raise_for_status()
     parsed = parse_odds(r.json(), bookmaker=bookmaker)
     index: dict = {}
-    for m in matches:
-        if getattr(m, "played", False):
-            continue
+    unmatched = []
+    todo = [m for m in matches if not getattr(m, "played", False)]
+    for m in todo:
         q = find_quotes(parsed, m.team1, m.team2)
         if q:
             index[m.num] = q
+        else:
+            unmatched.append(f"{m.team1} vs {m.team2}")
+    # 診斷：the-odds-api 回了幾場、我方配對到幾場、哪些沒配對到（隊名對不上時看得見）
+    if parsed:
+        msg = f"[odds:{sport}] 來源 {len(parsed)} 場，配對 {len(index)}/{len(todo)}"
+        if unmatched:
+            msg += "；未配對：" + "、".join(unmatched[:6])
+            if len(unmatched) > 6:
+                msg += f" 等 {len(unmatched)} 場"
+        print(msg, flush=True)
     return index
 
 
