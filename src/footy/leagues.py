@@ -172,7 +172,8 @@ def _attach_market_ou(fixtures: list[dict], sport: str) -> None:
             def __init__(self, num, t1, t2):
                 self.num, self.team1, self.team2, self.played = num, t1, t2, False
         games = [_G(i + 1, f["home"], f["away"]) for i, f in enumerate(fixtures)]
-        idx = fetch_wc_odds(games, sport=sport)
+        # 聯賽頁只用 1X2＋大小 → 只抓 h2h,totals（省 the-odds-api 額度：不抓讓分 spreads）
+        idx = fetch_wc_odds(games, sport=sport, markets="h2h,totals")
         for i, f in enumerate(fixtures):
             q = idx.get(i + 1)
             if q:
@@ -205,7 +206,12 @@ def build_site_page(models_dir: str = "models", date_range: str | None = None,
         fixtures = (fixtures_by_code or {}).get(code)
         if fixtures is None:
             fixtures = fetch_upcoming(espn_code, date_range)
-        if with_odds and fixtures_by_code is None:
+        # 季外（6-7 月）只有熱身賽 → 不抓盤口（省額度），大小盤退回 2.5 預設線；
+        # 8 月開季後自動改用莊家主大小線。可用 FOOTY_LEAGUES_ODDS=1 強制開。
+        import datetime as _d
+        in_season = _d.date.today().month not in (6, 7)
+        force = __import__("os").environ.get("FOOTY_LEAGUES_ODDS") == "1"
+        if with_odds and fixtures_by_code is None and (in_season or force):
             _attach_market_ou(fixtures, sport)      # 用莊家主大小線
         preds_by_league[zh_name] = predict_fixtures(model, fixtures)
     return render_leagues_page(preds_by_league)
