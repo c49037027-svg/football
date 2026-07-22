@@ -125,16 +125,22 @@ jobs:
           git commit -m "chore: 更新戰績帳本/賠率快照/MLB 資料與模型 [skip ci]" || echo "無變更"
           git push || echo "推送略過"
 
+      # 只在「非美東凌晨」時部署：UTC 06:00（美東 2am）盤口未開，若部署會用
+      # 無盤口版蓋掉前一天中午抓到盤口的站、空窗 ~10 小時。故凌晨只更新資料/
+      # 結算帳本（上面步驟照跑），不部署——保留中午盤口版直到今天 16:00 更新。
       - name: 設定 Pages
+        if: ${{ github.event.schedule != '0 6 * * *' }}
         uses: actions/configure-pages@v5
 
       - name: 上傳網站
+        if: ${{ github.event.schedule != '0 6 * * *' }}
         uses: actions/upload-pages-artifact@v3
         with:
           path: out/wc
 
   deploy:
     needs: build
+    if: ${{ github.event.schedule != '0 6 * * *' }}
     runs-on: ubuntu-latest
     environment:
       name: github-pages
