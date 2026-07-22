@@ -425,6 +425,7 @@ id,name,team,ip,runs,gs,so,bb,hr
 682445,Domingo Gonzalez,Seattle Mariners,7.666666666666667,4,0,5,5,1
 687473,Ryan Gusto,Miami Marlins,30.666666666666668,17,6,27,10,3
 592773,Ryne Stanek,St. Louis Cardinals,38.333333333333336,22,0,41,23,6
+623149,Paul Sewald,Arizona Diamondbacks,36.333333333333336,21,0,42,9,9
 702474,Mike Paredes,Minnesota Twins,34.333333333333336,19,5,19,13,6
 678020,Seth Halvorsen,Colorado Rockies,19.0,10,0,17,15,3
 607067,Colin Rea,Chicago Cubs,100.66666666666667,55,16,76,37,15
@@ -451,7 +452,6 @@ id,name,team,ip,runs,gs,so,bb,hr
 806188,Cade Gibson,Miami Marlins,25.666666666666668,15,0,24,10,1
 664129,Geoff Hartlieb,Athletics,11.0,6,0,4,6,1
 621366,Ryan Borucki,San Francisco Giants,23.666666666666668,14,0,15,9,3
-623149,Paul Sewald,Arizona Diamondbacks,36.333333333333336,21,0,42,9,9
 669194,Ryne Nelson,Arizona Diamondbacks,83.33333333333333,53,15,62,22,18
 808963,Roki Sasaki,Los Angeles Dodgers,86.66666666666667,50,17,85,34,19
 687570,Connor Prielipp,Minnesota Twins,66.66666666666667,45,13,71,25,8
