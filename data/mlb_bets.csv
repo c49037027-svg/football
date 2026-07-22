@@ -701,3 +701,6 @@ date,match_num,home,away,market,selection,line,odds,edge,source,close_odds,resul
 2026-07-22,824166,Houston Astros,Miami Marlins,1X2,home,,1.8,-0.0225,market,1.8,pending,
 2026-07-22,824166,Houston Astros,Miami Marlins,OU,小,8.5,1.8,-0.0091,market,1.8,pending,
 2026-07-22,824166,Houston Astros,Miami Marlins,AH,主,1.5,1.47,-0.0063,market,1.47,pending,
+2026-07-22,823110,Seattle Mariners,Cincinnati Reds,OU,小,8.0,1.91,-0.0042,market,1.91,pending,
+2026-07-22,822784,Toronto Blue Jays,Tampa Bay Rays,OU,大,7.5,1.75,-0.0259,market,1.75,pending,
+2026-07-22,824896,Atlanta Braves,San Diego Padres,AH,主,1.5,1.5,-0.036,market,1.5,pending,
