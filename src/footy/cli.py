@@ -377,6 +377,8 @@ def agent_live_alert(dry_run):
     res = live_alert.run(dry_run=dry_run)
     click.echo(f"[live-alert] 掃到 {res['found']} 個 +EV，其中 {res['fresh']} 個新（去重後）"
                f"｜通知管道：{'、'.join(res['channels']) or '無（只印）'}")
+    if res.get("track"):
+        click.echo("[live-alert] " + res["track"].replace("\n", " ｜ "))
     for o in res["opps"]:
         click.echo("  " + live_alert.format_alert(o).replace("\n", " ｜ "))
     if res["fresh"] and not res["channels"] and not dry_run:

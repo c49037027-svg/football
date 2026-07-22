@@ -76,3 +76,23 @@ def test_notify_configured(monkeypatch):
     monkeypatch.setenv("TELEGRAM_BOT_TOKEN", "x")
     monkeypatch.setenv("TELEGRAM_CHAT_ID", "y")
     assert set(notify.configured()) == {"telegram", "webhook"}
+
+
+def test_live_ledger_logs_and_settles(tmp_path):
+    """走地推薦記帳 → 結算 → 勝率摘要（不打網路，直接驗記帳＋tracker 結算）。"""
+    from footy import mlb, tracker
+    from footy.agents import live_alert
+    lp = str(tmp_path / "live_bets.csv")
+    # 一筆走地推薦（洋基主勝 @1.95）
+    opps = [{"ledger": "MLB", "game_pk": 777, "raw_home": "New York Yankees",
+             "raw_away": "Boston Red Sox", "side": "home", "odds": 1.95, "edge": 0.08}]
+    assert live_alert._log_alerts(opps, lp, "2026-07-22") == 1
+    df = tracker.load_ledger(lp)
+    r = df[df["market"] == "1X2"].iloc[0]
+    assert int(r["match_num"]) == 777 and r["selection"] == "home" and r["result"] == "pending"
+    # 結算：洋基贏 5-3 → 該注 win
+    tracker.settle(lp, {777: (5, 3)})
+    s = mlb.summary_text(lp, label="🔴 走地推薦")
+    assert s and "走地推薦" in s and "1 勝" in s
+    # 不重複記帳
+    assert live_alert._log_alerts(opps, lp, "2026-07-22") == 0

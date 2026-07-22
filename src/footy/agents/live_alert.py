@@ -20,6 +20,7 @@ from pathlib import Path
 LIVE_MIN_EDGE = 0.05        # 走地 +EV 門檻（比賽前盤嚴：vig 高＋延遲風險）
 DEDUP_MINUTES = 45
 STATE_PATH = "data/live_alert_state.json"
+LIVE_LEDGER = "data/live_bets.csv"   # 走地推薦帳本（可結算勝率/ROI，回答「走地勝率多少」）
 
 
 # ---------------- 邊際計算（重用 tracker 去 vig＋融合） ----------------
@@ -83,6 +84,9 @@ def scan_mlb(snapshot=None, odds_index=None) -> list[dict]:
                     "home": mlb.zh_mlb(g["home"]),
                     "state": f"{st.inning}局{half} {st.away_score}-{st.home_score}",
                     "market": "錢線", "pick": pick, **best,
+                    # 記帳/結算用（原始英文隊名 + game_pk）
+                    "ledger": "MLB", "game_pk": g.get("game_pk"),
+                    "raw_home": g["home"], "raw_away": g["away"],
                     "key": f"MLB|{g['away']}@{g['home']}|1X2|{best['side']}"})
     return out
 
@@ -144,6 +148,33 @@ def _dedup(opps: list[dict], state: dict, now: datetime) -> list[dict]:
     return fresh
 
 
+def _log_alerts(opps: list[dict], ledger_path: str, date: str) -> int:
+    """把發出的走地推薦記進帳本（MLB 錢線；重用 tracker 帳本格式，可結算）。"""
+    from .. import mlb
+    n = 0
+    for o in opps:
+        if o.get("ledger") != "MLB" or not o.get("game_pk"):
+            continue
+        game = {"game_pk": o["game_pk"], "home": o["raw_home"], "away": o["raw_away"]}
+        pick = [{"market": "1X2", "selection": o["side"], "line": "",
+                 "odds": o["odds"], "edge": o["edge"]}]
+        try:
+            n += mlb.log_picks(ledger_path, date, game, pick)
+        except Exception:  # noqa: BLE001
+            pass
+    return n
+
+
+def settle_and_summary(ledger_path: str = LIVE_LEDGER) -> str | None:
+    """結算走地帳本（抓終場比分）+ 回勝率/ROI 摘要文字。無紀錄回 None。"""
+    from .. import mlb
+    try:
+        mlb.settle_ledger(ledger_path)
+    except Exception:  # noqa: BLE001
+        pass
+    return mlb.summary_text(ledger_path, label="🔴 走地推薦")
+
+
 def format_alert(o: dict) -> str:
     fair = 1.0 / max(o["p"], 0.005)
     return (f"🔔 走地 +EV\n{o['sport']}｜{o['away']} vs {o['home']}（{o['state']}）\n"
@@ -153,11 +184,19 @@ def format_alert(o: dict) -> str:
 
 
 def run(dry_run: bool = False, state_path: str = STATE_PATH,
-        now_iso: str | None = None, scans: list | None = None) -> dict:
-    """跑一輪走地掃描：找 +EV → 去重 → 推播（或 dry_run 只回結果）。"""
+        now_iso: str | None = None, scans: list | None = None,
+        ledger_path: str = LIVE_LEDGER) -> dict:
+    """跑一輪走地掃描：結算舊推薦 → 找 +EV → 去重 → 推播 + 記帳。"""
     from . import notify
     now = (datetime.fromisoformat(now_iso) if now_iso
            else datetime.now(timezone.utc))
+    # 先結算過去的走地推薦（抓終場比分）→ 累積勝率/ROI
+    track = None
+    if not dry_run:
+        try:
+            track = settle_and_summary(ledger_path)
+        except Exception:  # noqa: BLE001
+            track = None
     opps = []
     for fn in (scans if scans is not None else [scan_mlb, scan_football]):
         try:
@@ -173,8 +212,10 @@ def run(dry_run: bool = False, state_path: str = STATE_PATH,
         if not dry_run:
             state[o["key"]] = now.isoformat()
     if fresh and not dry_run:
+        _log_alerts(fresh, ledger_path, now.date().isoformat())   # 記帳（可結算勝率）
         Path(state_path).parent.mkdir(parents=True, exist_ok=True)
         Path(state_path).write_text(json.dumps(state, ensure_ascii=False, indent=2),
                                     encoding="utf-8")
     return {"found": len(opps), "fresh": len(fresh), "channels": channels,
+            "track": track,
             "opps": fresh}

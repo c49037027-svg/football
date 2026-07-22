@@ -176,6 +176,7 @@ def run_review(ledger_paths: dict[str, str] | None = None,
     ledger_paths = ledger_paths or {
         "足球": "data/bets.csv", "MLB": "data/mlb_bets.csv", "NBA": "data/nba_bets.csv",
         "MLB純模型": "data/mlb_model_bets.csv", "NBA純模型": "data/nba_model_bets.csv",
+        "走地": "data/live_bets.csv",     # 走地推薦帳本（法醫每週覆核走地 edge）
     }
     fx = ledger_forensics(ledger_paths)
     applied = apply_gate_actions(fx["gate_actions"], gates_path, today=today)

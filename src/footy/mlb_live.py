@@ -464,7 +464,20 @@ def render_live_page(snap: dict, refresh_sec: int = 45,
     from datetime import datetime, timedelta, timezone
 
     from . import report
-    body = "".join(extra_sections or []) + render_live_section(snap)
+    # 走地推薦戰績卡（live-alert 帳本已結算的勝率/ROI；無紀錄則不顯示）
+    track_card = ""
+    try:
+        from . import mlb as _mlb
+        txt = _mlb.summary_text("data/live_bets.csv", label="🔴 走地推薦")
+        if txt:
+            track_card = ("<div class='card'><div class='sec'>📒 走地推薦戰績</div>"
+                          "<div class='small' style='white-space:pre-line;color:#cdd9e5'>"
+                          f"{_h.escape(txt)}</div>"
+                          "<div class='small' style='color:var(--muted)'>只計走地機會 agent "
+                          "推播過、且有真實盤口的錢線推薦；賽後用終場比分結算。</div></div>")
+    except Exception:  # noqa: BLE001
+        track_card = ""
+    body = "".join(extra_sections or []) + track_card + render_live_section(snap)
     ts = datetime.now(timezone(timedelta(hours=8))).strftime("%H:%M:%S")
     return f"""<!doctype html><html lang="zh-Hant"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
