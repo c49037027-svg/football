@@ -22,6 +22,40 @@ import requests
 from .feed import MarketQuote, MatchState, OddsFeed
 
 ODDS_API_BASE = "https://api.the-odds-api.com/v4"
+QUOTA_PATH = "data/odds_quota.json"
+
+
+def record_quota(resp, path: str = QUOTA_PATH) -> None:
+    """把 the-odds-api 回應的額度 header 存進 JSON（介面顯示用）。best-effort。"""
+    import json
+    from pathlib import Path
+    rem = resp.headers.get("x-requests-remaining")
+    used = resp.headers.get("x-requests-used")
+    if rem is None and used is None:
+        return
+    try:
+        rem_i = int(float(rem)) if rem is not None else None
+        used_i = int(float(used)) if used is not None else None
+        data = {"remaining": rem_i, "used": used_i,
+                "total": (rem_i + used_i) if (rem_i is not None and used_i is not None) else None,
+                "at": datetime.now(timezone.utc).isoformat(timespec="seconds")}
+        Path(path).parent.mkdir(parents=True, exist_ok=True)
+        Path(path).write_text(json.dumps(data), encoding="utf-8")
+    except Exception:  # noqa: BLE001
+        pass
+
+
+def read_quota(path: str = QUOTA_PATH) -> dict | None:
+    """讀最近一次記錄的 the-odds-api 額度。無檔/壞檔 → None。"""
+    import json
+    from pathlib import Path
+    p = Path(path)
+    if not p.exists():
+        return None
+    try:
+        return json.loads(p.read_text(encoding="utf-8"))
+    except Exception:  # noqa: BLE001
+        return None
 
 
 # ---------------- 純解析函式（可測試） ----------------
@@ -207,6 +241,7 @@ def fetch_wc_odds(matches, sport: str = "soccer_fifa_world_cup",
                      params={"regions": regions, "markets": markets,
                              "oddsFormat": "decimal", "apiKey": key},
                      timeout=timeout)
+    record_quota(r)          # 記錄剩餘額度（介面顯示用）
     r.raise_for_status()
     parsed = parse_odds(r.json(), bookmaker=bookmaker)
     index: dict = {}

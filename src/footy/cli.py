@@ -1174,6 +1174,8 @@ def odds_check():
         return
     rem = r.headers.get("x-requests-remaining")
     used = r.headers.get("x-requests-used")
+    from .live.providers import record_quota
+    record_quota(r)          # 存額度供介面顯示
     verdict = ("金鑰有效" if r.status_code == 200 else
                "金鑰無效/貼錯" if r.status_code == 401 else f"HTTP {r.status_code}")
     click.echo(f"[odds-check] HTTP {r.status_code}（{verdict}）｜剩餘 {rem}｜已用 {used}"

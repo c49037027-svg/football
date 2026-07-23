@@ -96,3 +96,27 @@ def test_live_ledger_logs_and_settles(tmp_path):
     assert s and "走地推薦" in s and "1 勝" in s
     # 不重複記帳
     assert live_alert._log_alerts(opps, lp, "2026-07-22") == 0
+
+
+def test_odds_quota_badge(tmp_path, monkeypatch):
+    """額度 header → 存檔 → 徽章顯示;低額標紅。"""
+    import json
+    from footy.live import providers
+    from footy import report
+    qp = str(tmp_path / "q.json")
+
+    class _R:  # 假回應
+        def __init__(self, rem, used):
+            self.headers = {"x-requests-remaining": str(rem), "x-requests-used": str(used)}
+    providers.record_quota(_R(43, 457), qp)
+    q = providers.read_quota(qp)
+    assert q["remaining"] == 43 and q["total"] == 500
+    monkeypatch.setattr(providers, "read_quota", lambda *a, **k: q)
+    badge = report.odds_quota_badge()
+    assert "盤口額度 43" in badge and "500" in badge and "快用完" in badge  # 43<75→紅
+    # 充足時不標紅
+    monkeypatch.setattr(providers, "read_quota", lambda *a, **k: {"remaining": 400, "total": 500})
+    assert "快用完" not in report.odds_quota_badge()
+    # 無紀錄 → 空字串
+    monkeypatch.setattr(providers, "read_quota", lambda *a, **k: None)
+    assert report.odds_quota_badge() == ""

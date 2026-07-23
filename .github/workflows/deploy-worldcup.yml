@@ -118,7 +118,7 @@ jobs:
         run: |
           git config user.name "github-actions"
           git config user.email "actions@github.com"
-          git add -f data/bets.csv data/odds_log.csv || true
+          git add -f data/bets.csv data/odds_log.csv data/odds_quota.json || true
           git add -f data/mlb.csv data/mlb_pitchers.csv data/mlb_bets.csv data/mlb_model_bets.csv models/mlb.pkl 2>/dev/null || true
           git add -f data/nba.csv data/nba_bets.csv data/nba_model_bets.csv models/nba.pkl 2>/dev/null || true
           git add -f models/club_*.pkl 2>/dev/null || true
