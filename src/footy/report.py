@@ -1429,9 +1429,9 @@ def _mlb_top5(rows, zh_t, mkt_conf=None, sport: str = "MLB") -> str:
                 f"<td style='color:{ec};font-weight:700'>{p['edge']:+.1%}</td></tr>")
     n_buy = sum(1 for p in picks[:5] if p["verdict"] == "買")
     return (
-        "<div class='card top5'><div class='sec'>🔥 有 edge 推薦 TOP 5"
+        "<div class='card top5'><div class='sec'>💰 下注參考：有 edge 的 TOP 5"
         "<span class='small' style='color:var(--muted);font-weight:400'>"
-        f"（市場融合＋風控 · edge×歷史勝率排序 · 其中 {n_buy} 場 +EV）</span></div>"
+        f"（上方預測中，市場融合＋風控後仍有價值的；{n_buy} 場 +EV）</span></div>"
         "<table style='margin-top:6px'><thead><tr><th>#</th><th>對戰</th><th>時間</th>"
         f"<th>推薦</th><th>賠率</th><th>edge</th></tr></thead><tbody>{trs}</tbody></table>"
         "<div class='small' style='color:var(--muted);margin-top:6px'>"
@@ -1441,64 +1441,87 @@ def _mlb_top5(rows, zh_t, mkt_conf=None, sport: str = "MLB") -> str:
         "<a href='mlb_perf.html' style='color:var(--accent)'>MLB 績效頁</a> 的 CLV。</div></div>")
 
 
-def _mlb_pure_board(rows, zh_t) -> str:
-    """純模型推薦板：每場三盤口在市場線上的模型判斷——與純模型帳本一致。
+def _pure_winrates(ledger_path) -> dict:
+    """純模型帳本的各盤口累計勝率 {market: (勝, 敗, 勝率)}。無帳本回 {}。"""
+    from pathlib import Path as _P
+    if not ledger_path or not _P(ledger_path).exists():
+        return {}
+    try:
+        from . import tracker
+        s = tracker.summary(ledger_path)
+        out = {}
+        for mk, (w, l, _p) in (s.by_market or {}).items():
+            d = w + l
+            if d:
+                out[mk] = (w, l, w / d)
+        return out
+    except Exception:  # noqa: BLE001
+        return {}
 
-    與 TOP5（有 edge·市場融合）並排的「沒 edge」推薦：線照盤口、賠率
-    完全不參與判斷。大小盤模型沒有明顯方向（|p-0.5|<3%）時顯示「—」
-    （與帳本的 min_lean 一致）。依模型最強一注的把握度排序。
+
+def _cover_list(rows, zh_t, ledger_path=None, sport: str = "MLB") -> str:
+    """**今日過盤預測清單（本站主產品）**：莊家開什麼線，模型就逐條判斷哪邊過。
+
+    全部比賽、全部盤口（錢線/大小/讓分），每場都答、不迴避、不篩選。
+    成績以「勝率」檢驗（純模型帳本累計，標在標題列）。
+    edge/+EV 降為參考標記 ✓（該項同時通過市場融合＋風控），不影響預測本身。
     """
-    def cell(pick: str, p: float) -> str:
-        return f"<b>{html.escape(pick)}</b> {p:.0%}·{1 / max(p, 0.005):.2f}"
+    _MK = {"1X2": "錢線", "OU": "大小", "AH": "讓分"}
+    wr = _pure_winrates(ledger_path)
 
-    pool = []       # (機率, 對戰, 時間, 盤口名, 方向格)——三盤口同池競逐
-    any_default = False
-    for r in rows:
+    def cell(pick: str, p: float, plus: bool) -> str:
+        """一格預測：方向＋把握度；≥60% 醒目、<53% 灰（接近五五波）。"""
+        col = ("var(--accent)" if p >= 0.60 else
+               "var(--muted)" if p < 0.53 else "var(--fg)")
+        tick = " <span title='此項同時通過 +EV 風控（參考）' "\
+               "style='color:var(--accent)'>✓</span>" if plus else ""
+        return (f"<span style='color:{col}'><b>{html.escape(pick)}</b> "
+                f"{p:.0%}</span>{tick}")
+
+    trs, any_default, n_games = "", False, 0
+    for r in sorted(rows, key=lambda x: x.get("time") or ""):
         g, m = r["game"], r["m"]
+        sig = r.get("signals") or {}
+
+        def buy(mk):
+            return (sig.get(mk) or {}).get("verdict") == "買"
         hz, az = zh_t(g["home"]), zh_t(g["away"])
-        vs, tm = f"{az} @ {hz}", r.get("time") or ""
-        # 盤口未開時線是預設標準線（大小 8.5/讓分 ±1.5），加 ＊ 標示——
-        # 使用者必須能分辨「市場線」和「暫用線」
+        # 盤口未開時是暫用標準線，加 ＊ 讓使用者分辨
         star = "" if r.get("has_quotes") else "＊"
         any_default = any_default or not r.get("has_quotes")
-        p = max(m.p_home, m.p_away)
-        pool.append((p, vs, tm, "錢線",
-                     cell(hz if m.p_home >= m.p_away else az, p)))
-        if abs(m.p_over - 0.5) >= 0.03:      # 模型無明顯方向的不入池
-            p = max(m.p_over, m.p_under)
-            pool.append((p, vs, tm, "大小",
-                         cell(f"{'大' if m.p_over >= 0.5 else '小'} "
-                              f"{m.total_line:g}{star}", p)))
-        p = max(m.p_cover_home, 1 - m.p_cover_home)
-        pool.append((p, vs, tm, "讓分",
-                     cell(f"{hz} {m.run_line:+g}{star}", p) if m.p_cover_home >= 0.5
-                     else cell(f"{az} {-m.run_line:+g}{star}", p)))
-    if not pool:
+        n_games += 1
+        p_ml = max(m.p_home, m.p_away)
+        ml = cell(hz if m.p_home >= m.p_away else az, p_ml, buy("1X2"))
+        p_ou = max(m.p_over, m.p_under)
+        ou = cell(f"{'大' if m.p_over >= 0.5 else '小'} {m.total_line:g}{star}",
+                  p_ou, buy("OU"))
+        p_ah = max(m.p_cover_home, 1 - m.p_cover_home)
+        ah = cell(f"{hz} {m.run_line:+g}{star}" if m.p_cover_home >= 0.5
+                  else f"{az} {-m.run_line:+g}{star}", p_ah, buy("AH"))
+        trs += (f"<tr><td class='tm'>{html.escape(az)} @ {html.escape(hz)}</td>"
+                f"<td class='small' style='color:var(--muted)'>"
+                f"{html.escape(r.get('time') or '')}</td>"
+                f"<td>{ml}</td><td>{ou}</td><td>{ah}</td></tr>")
+    if not trs:
         return ""
-    # 三盤口一起比，取機率最高 5 注；顯示到同一百分比者視為同機率、並列全收
-    pool.sort(key=lambda e: -e[0])
-    if len(pool) > 5:
-        cutoff = round(pool[4][0] * 100)
-        pool = [e for e in pool if round(e[0] * 100) >= cutoff]
-    trs = "".join(
-        f"<tr><td class='rk'>{i}</td><td class='tm'>{html.escape(t)}</td>"
-        f"<td class='small' style='color:var(--muted)'>{html.escape(tmv)}</td>"
-        f"<td>{mk}</td><td>{pk}</td></tr>"
-        for i, (_, t, tmv, mk, pk) in enumerate(pool, 1))
+    wr_txt = "　".join(
+        f"{_MK[mk]} <b>{rate:.0%}</b>（{w}–{l}）"
+        for mk, (w, l, rate) in sorted(wr.items()) if mk in _MK) or "尚無已結算紀錄"
     return (
-        "<div class='card'><div class='sec'>📊 純模型推薦 TOP 5"
+        f"<div class='card'><div class='sec'>📋 今日過盤預測（{n_games} 場）"
         "<span class='small' style='color:var(--muted);font-weight:400'>"
-        "（照盤口不看賠率 · 錢線＋大小＋讓分同池取機率最高 5 注，同機率並列）</span></div>"
-        "<table style='margin-top:6px'><thead><tr><th>#</th><th>對戰</th>"
-        "<th>時間</th><th>盤口</th><th>方向 機率·公平賠率</th></tr></thead>"
+        "　莊家開什麼線，模型就判斷哪邊過——全部比賽逐項預測</span></div>"
+        f"<div class='small' style='margin:2px 0 8px'>累計勝率：{wr_txt}</div>"
+        "<table><thead><tr><th>對戰</th><th>時間</th><th>錢線</th>"
+        "<th>大小</th><th>讓分</th></tr></thead>"
         f"<tbody>{trs}</tbody></table>"
-        + "<div class='small' style='color:var(--muted);margin-top:6px'>"
-        "格式：方向 機率·公平賠率。線用莊家盤口，判斷純由模型、賠率不參與"
-        "——莊家賠率高於公平賠率才有價值。此處僅顯示把握度前五（同機率並列）；"
-        "「純模型帳本」仍記**全部場次**的判斷，與有 edge 軌分開結算，戰績卡兩軌對照。"
-        + ("<br>＊＝本次建站盤口未開，暫用標準線（大小 8.5／讓分 ±1.5）；"
-           "台北 00:00 建站（美東中午）盤口已開，自動改用市場線。"
-           if any_default else "")
+        "<div class='small' style='color:var(--muted);margin-top:8px'>"
+        "線＝莊家實際開的盤口，判斷純由模型（賠率不參與）。百分比＝模型認為該邊過的機率；"
+        "<span style='color:var(--accent)'>綠字</span>＝把握度 ≥60%，灰字＝接近五五波（&lt;53%）。"
+        "<span style='color:var(--accent)'>✓</span>＝該項同時通過 +EV 風控（下注參考，不影響預測）。"
+        "每筆預測都進「純模型帳本」逐日結算，上方勝率即為累計成績。"
+        + ("<br>＊＝本次建站盤口未開，暫用標準線；台北 00:00 建站（美東中午）"
+           "盤口已開後自動改用市場線。" if any_default else "")
         + "</div></div>")
 
 
@@ -1516,13 +1539,15 @@ def render_mlb_page(rows, date: str, power=None, track_text=None,
     perf_href = f"{sport.lower()}_perf.html"
     sub_desc = ("攻防評分（加權嶺回歸）+ 常態分布盤口機率" if sport == "NBA" else
                 "負二項得分模型 + 先發投手(RA/9+FIP) + 球場因子 + 天氣")
+    # 主產品＝今日過盤預測清單（全部比賽逐項）；edge TOP5 降為下方參考區塊
+    pure_ledger = f"data/{sport.lower()}_model_bets.csv"
+    cover = _cover_list(rows, zh_t, ledger_path=pure_ledger, sport=sport)
     top5 = _mlb_top5(rows, zh_t, mkt_conf, sport=sport)
-    conf_top = _mlb_pure_board(rows, zh_t)
     cards = [_mlb_card(r, zh_t) for r in rows]
     body = ("<div class='mgrid'>" + "".join(cards) + "</div>") if cards else (
         f"<div class='card'><div class='sec'>今日無可預測比賽</div>"
         f"<div class='small' style='color:var(--muted)'>{html.escape(note) or '賽程空檔，或模型未涵蓋參賽隊。'}</div></div>")
-    body = top5 + conf_top + body
+    body = cover + top5 + body
     track_html = ""
     if track_text:
         track_html = (f"<div class='card'><div class='sec'>📒 {sport} 推薦戰績</div>"
@@ -1578,7 +1603,7 @@ font-size:13px;padding:5px 0;border-bottom:1px solid #171e26}}
   {_navbar(nav_key)}
   <h1>{icon} {html.escape(title)}</h1>
   <div class="sub">{html.escape(date)}（美東賽程日）· {sub_desc} · <a href="{perf_href}" style="color:var(--accent)">📈 {sport} 績效</a></div>
-  <div class="disc">⚠️ 純機率預測，非投注建議。只列模型較看好的一側；<b class="bs buy" style="font-size:10px">買</b>=融合市場後 +EV 且過風控、<b class="bs wait" style="font-size:10px">觀望</b>=無正期望值；時間為台北時區。</div>
+  <div class="disc">⚠️ 純機率預測，非投注建議。主要輸出＝<b>今日過盤預測清單</b>（對莊家開的線逐項判斷，全部比賽都預測），成績以累計勝率檢驗；下方 edge/<b class="bs buy" style="font-size:10px">買</b> 為下注參考（融合市場後 +EV 且過風控）。時間為台北時區。</div>
   {('<div class="small" style="color:var(--warn);margin-bottom:8px">' + html.escape(note) + '</div>') if note else ''}
   {track_html}
   {body}

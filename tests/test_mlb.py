@@ -498,8 +498,11 @@ def test_market_confidence_and_top5_weighting(tmp_path):
                 "signals": sig, "best_edge": edge, "time": "19:00", "status": ""}
     rows2 = [mkrow("1X2", 0.06), mkrow("AH", 0.05)]
     import re
-    p_plain = report.render_mlb_page(rows2, date="d", mkt_conf=None)
-    p_adj = report.render_mlb_page(rows2, date="d", mkt_conf=mc)
+    def _top5_sec(page):
+        """只取 edge TOP5 區塊（頁面上方另有「今日過盤預測」清單，其表頭也含盤口名）。"""
+        return page.split("有 edge 的 TOP 5")[1].split("</table>")[0]
+    p_plain = _top5_sec(report.render_mlb_page(rows2, date="d", mkt_conf=None))
+    p_adj = _top5_sec(report.render_mlb_page(rows2, date="d", mkt_conf=mc))
     assert re.findall(r"錢線|讓分", p_plain)[0] == "錢線"   # 純 edge → 錢線先
     assert re.findall(r"錢線|讓分", p_adj)[0] == "讓分"     # 勝率加權 → 讓分先
 
