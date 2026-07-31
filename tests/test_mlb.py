@@ -648,3 +648,25 @@ def test_ou_recommend_disabled_by_default(monkeypatch):
     monkeypatch.setenv("FOOTY_OU_RECOMMEND", "1")
     sig2 = mlb.bet_signals(M(), quotes)
     assert sig2["OU"]["verdict"] == "買"
+
+
+def test_fallback_lines_vary_and_run_line_direction():
+    """無盤口時的自取線：大小依模型預期(每場不同)、讓分方向依熱門方。
+
+    回歸：舊版固定 8.5/-1.5,主隊為弱隊時會出現「熱門隊受讓 +1.5」的荒謬預測。
+    """
+    from footy import mlb
+    assert mlb._half_line(8.9) == 8.5 and mlb._half_line(11.2) == 11.5
+    model = _mlb_model()
+    strong, weak = "Team0", "Team5"
+    # 主隊強 → 主隊讓分(-1.5)；主隊弱 → 主隊受讓(+1.5)
+    for home, away in ((strong, weak), (weak, strong)):
+        prov = mlb.analyze_game(model, home, away, total_line=8.5, run_line=-1.5)
+        rl = -1.5 if prov.exp_home >= prov.exp_away else 1.5
+        assert rl == (-1.5 if home == strong else 1.5)
+        m = mlb.analyze_game(model, home, away,
+                             total_line=mlb._half_line(prov.exp_home + prov.exp_away),
+                             run_line=rl)
+        # 讓分側：熱門方永遠是「讓」，不會出現熱門受讓
+        fav_is_home = m.exp_home >= m.exp_away
+        assert (m.run_line < 0) == fav_is_home

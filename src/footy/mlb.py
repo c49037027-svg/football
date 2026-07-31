@@ -681,6 +681,12 @@ def moneyline(mat: np.ndarray) -> tuple[float, float]:
     return p_h / s, p_a / s
 
 
+def _half_line(x: float) -> float:
+    """取最近的 .5 盤口線（無和局／走盤）。"""
+    import math
+    return math.floor(x) + 0.5
+
+
 def analyze_game(model, home: str, away: str, total_line: float = 8.5,
                  run_line: float = -1.5, top_n: int = 4,
                  home_pitcher_factor: float = 1.0,
@@ -1081,18 +1087,24 @@ def build_site_page(model_path: str = "models/mlb.pkl",
             wx = mlb_sim.weather_from_gamedata(g.get("weather"))
         wf = mlb_sim.weather_total_factor(wx)
         pf_eff = pf * wf
-        # 大小分線/讓分線：有市場主線用市場，否則 8.5 / -1.5
-        total_line = 8.5
-        run_line = -1.5
-        if quotes:
-            from . import tracker
-            mkt_ou = tracker.main_ou_line(quotes)   # 大小賠率最均衡的主大小線
-            if mkt_ou is not None:
-                total_line = float(mkt_ou)
-            mkt_rl = tracker.main_ah_line(quotes)   # 主客賠率最均衡的讓分線
-            if mkt_rl is not None:
-                run_line = float(mkt_rl)
-        m = analyze_game(model, g["home"], g["away"], total_line=float(total_line),
+        # 大小分線/讓分線：優先用市場主線；抓不到盤口才用「模型自取線」——
+        # 不可用固定 8.5/-1.5：那會讓全部比賽同一條大小線，且讓分永遠假設
+        # 主隊是熱門（主隊為弱隊時方向錯，會出現「熱門隊受讓 +1.5」的荒謬預測）。
+        from . import tracker
+        mkt_ou = tracker.main_ou_line(quotes) if quotes else None
+        mkt_rl = tracker.main_ah_line(quotes) if quotes else None
+        if mkt_ou is None or mkt_rl is None:
+            # 先用暫定線算一次，取得模型的預期得分 → 據此自取線（每場不同）
+            prov = analyze_game(model, g["home"], g["away"], total_line=8.5,
+                                run_line=-1.5, home_pitcher_factor=hf,
+                                away_pitcher_factor=af, park_factor=pf_eff,
+                                dispersion=disp)
+            if mkt_ou is None:
+                mkt_ou = _half_line(prov.exp_home + prov.exp_away)
+            if mkt_rl is None:      # 熱門方讓 1.5、弱方受讓 1.5（依模型預期分差）
+                mkt_rl = -1.5 if prov.exp_home >= prov.exp_away else 1.5
+        total_line, run_line = float(mkt_ou), float(mkt_rl)
+        m = analyze_game(model, g["home"], g["away"], total_line=total_line,
                          run_line=run_line,
                          home_pitcher_factor=hf, away_pitcher_factor=af,
                          park_factor=pf_eff, dispersion=disp)
