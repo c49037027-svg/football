@@ -1066,3 +1066,5 @@ date,match_num,home,away,market,selection,line,odds,edge,source,close_odds,resul
 2026-07-31,824325,Colorado Rockies,Kansas City Royals,AH,主,1.5,,,model,,pending,
 2026-07-31,823999,Los Angeles Angels,Milwaukee Brewers,OU,小,10.5,,,model,,pending,
 2026-07-31,824975,Athletics,Detroit Tigers,OU,小,10.5,,,model,,pending,
+2026-07-31,824486,Cincinnati Reds,Pittsburgh Pirates,OU,大,7.5,1.83,-0.0107,market,1.83,pending,
+2026-07-31,823111,Seattle Mariners,Minnesota Twins,OU,大,7.5,1.81,-0.0185,market,1.81,pending,
