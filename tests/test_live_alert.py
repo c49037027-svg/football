@@ -117,6 +117,10 @@ def test_odds_quota_badge(tmp_path, monkeypatch):
     # 充足時不標紅
     monkeypatch.setattr(providers, "read_quota", lambda *a, **k: {"remaining": 400, "total": 500})
     assert "快用完" not in report.odds_quota_badge()
+    # 歸零 → 醒目紅字 + 說明(抓不到盤口的真正原因)
+    monkeypatch.setattr(providers, "read_quota", lambda *a, **k: {"remaining": 0, "total": 500})
+    z = report.odds_quota_badge()
+    assert "已用完" in z and "模型自取線" in z and "e07a5f" in z
     # 無紀錄 → 空字串
     monkeypatch.setattr(providers, "read_quota", lambda *a, **k: None)
     assert report.odds_quota_badge() == ""
