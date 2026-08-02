@@ -1150,3 +1150,6 @@ date,match_num,home,away,market,selection,line,odds,edge,source,close_odds,resul
 2026-08-02,823919,Los Angeles Dodgers,Boston Red Sox,1X2,home,,1.65,-0.088,market,1.65,pending,
 2026-08-02,823919,Los Angeles Dodgers,Boston Red Sox,OU,小,9.0,1.87,-0.0305,market,1.87,pending,
 2026-08-02,823919,Los Angeles Dodgers,Boston Red Sox,AH,客,-1.5,1.69,0.0135,market,1.69,pending,
+2026-08-02,824807,Baltimore Orioles,Philadelphia Phillies,OU,小,8.0,1.91,-0.0339,market,1.91,pending,
+2026-08-02,822783,Toronto Blue Jays,St. Louis Cardinals,OU,大,8.5,1.85,-0.0012,market,1.85,pending,
+2026-08-02,822943,Tampa Bay Rays,Chicago White Sox,OU,大,7.5,1.95,0.0145,market,1.95,pending,
