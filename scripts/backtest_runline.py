@@ -61,7 +61,8 @@ def discrimination(p: pd.Series, y: pd.Series, name: str, bins) -> dict:
     return {"name": name, "n": len(d), "auc": auc, "p": pv, "gap": gap}
 
 
-def run(days: int, refit_days: int, half_life: float) -> None:
+def run(days: int, refit_days: int, half_life: float,
+        sp_csv: str | None = None, pitchers: str = 'data/mlb_pitchers.csv') -> None:
     df = pd.read_csv("data/mlb.csv")
     df["date"] = pd.to_datetime(df["date"])
     df = df.dropna(subset=["home_goals", "away_goals"]).sort_values("date")
@@ -73,7 +74,20 @@ def run(days: int, refit_days: int, half_life: float) -> None:
 
     pf = mlb.park_factors_from_csv("data/mlb.csv")
     disp = mlb.dispersion_from_csv("data/mlb.csv")
+    # 先發投手層（可選）：逐場先發對照表 + 投手評分
+    sp_map, book = {}, None
+    if sp_csv and Path(sp_csv).exists() and Path(pitchers).exists():
+        sp = pd.read_csv(sp_csv)
+        sp["date"] = pd.to_datetime(sp["date"]).dt.date
+        for _, x in sp.iterrows():
+            sp_map[(x["date"], x["home"], x["away"])] = (
+                x.get("home_pitcher_id"), x.get("away_pitcher_id"))
+        book = mlb.PitcherBook.load_csv(pitchers)
+        print(f"啟用先發投手層：{len(sp_map)} 場對照、投手檔 {pitchers}")
+    else:
+        print("未啟用先發投手層（隊級模型）")
     recs, model, fitted_until = [], None, None
+    n_sp_used = [0]
     for d, day_games in test.groupby(test["date"].dt.date):
         d = pd.Timestamp(d)
         if model is None or (d - fitted_until).days >= refit_days:
@@ -86,10 +100,22 @@ def run(days: int, refit_days: int, half_life: float) -> None:
             if h not in model.attack or a not in model.attack:
                 continue
             # 與生產一致：熱門方讓 1.5（先用暫定線取得預期分）
+            hf = af = 1.0
+            if book is not None:
+                sp_ids = sp_map.get((d.date(), h, a))
+                if sp_ids:
+                    hid, aid = sp_ids
+                    if pd.notna(hid):
+                        hf, _ = book.factor(int(hid))
+                    if pd.notna(aid):
+                        af, _ = book.factor(int(aid))
+                    n_sp_used[0] += 1
             prov = mlb.analyze_game(model, h, a, total_line=8.5, run_line=-1.5,
+                                    home_pitcher_factor=hf, away_pitcher_factor=af,
                                     park_factor=pf.get(h, 1.0), dispersion=disp)
             rl = -1.5 if prov.exp_home >= prov.exp_away else 1.5
             m = mlb.analyze_game(model, h, a, total_line=8.5, run_line=rl,
+                                 home_pitcher_factor=hf, away_pitcher_factor=af,
                                  park_factor=pf.get(h, 1.0), dispersion=disp)
             # p_plus = 「受讓 +1.5 那一側」過盤機率
             p_plus = m.p_cover_home if rl > 0 else 1.0 - m.p_cover_home
@@ -102,6 +128,7 @@ def run(days: int, refit_days: int, half_life: float) -> None:
             # 大小：用模型自取線（floor+0.5），看模型看好側是否命中
             tl = mlb._half_line(m.exp_home + m.exp_away)
             m2 = mlb.analyze_game(model, h, a, total_line=tl, run_line=rl,
+                                  home_pitcher_factor=hf, away_pitcher_factor=af,
                                   park_factor=pf.get(h, 1.0), dispersion=disp)
             p_ou = max(m2.p_over, m2.p_under)
             ou_win = (total > tl) if m2.p_over >= 0.5 else (total < tl)
@@ -112,6 +139,8 @@ def run(days: int, refit_days: int, half_life: float) -> None:
     if r.empty:
         print("無可回測樣本")
         return
+    if book is not None:
+        print(f"實際套用先發係數：{n_sp_used[0]} 場")
     print(f"可評估 {len(r)} 場　p(+1.5) 分布："
           f"中位 {r.p_plus.median():.1%}　"
           f"範圍 {r.p_plus.min():.1%}~{r.p_plus.max():.1%}　"
@@ -154,5 +183,10 @@ if __name__ == "__main__":
     ap.add_argument("--days", type=int, default=120, help="測試期天數")
     ap.add_argument("--refit", type=int, default=7, help="每幾天重訓一次")
     ap.add_argument("--half-life", type=float, default=365.0)
+    ap.add_argument("--sp-csv", default=None,
+                    help="含逐場先發的歷史檔（footy mlb fetch-history-sp 產生）;"
+                         "給了就啟用投手層,可比較有無投手的鑑別力差異")
+    ap.add_argument("--pitchers", default="data/mlb_pitchers.csv",
+                    help="投手評分檔(PitcherBook)")
     a = ap.parse_args()
-    run(a.days, a.refit, a.half_life)
+    run(a.days, a.refit, a.half_life, a.sp_csv, a.pitchers)

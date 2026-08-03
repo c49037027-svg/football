@@ -1,0 +1,82 @@
+# 決定性實驗：模型加了「先發投手層」之後，鑑別力(AUC)有沒有提升？
+# 沙箱連不到 statsapi，故在 Actions 上抓歷史逐場先發並跑兩次回測對比。
+# 結果寫進 docs/reports/backtest-pitcher-<date>.md 並提交。
+name: 回測：先發投手層是否提升鑑別力
+
+on:
+  workflow_dispatch:
+    inputs:
+      days:
+        description: 測試期天數
+        default: "120"
+      refit:
+        description: 每幾天重訓
+        default: "7"
+
+permissions:
+  contents: write
+
+jobs:
+  backtest:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+      - name: 安裝套件
+        run: pip install -e . && pip install scipy
+
+      - name: 抓歷史逐場先發（statsapi，免金鑰）
+        run: |
+          END=$(date -u +%Y-%m-%d)
+          START=$(date -u -d "-${{ inputs.days }} days" +%Y-%m-%d)
+          footy mlb fetch-history-sp --start "$START" --end "$END" --out data/mlb_hist_sp.csv
+          # 投手評分檔（本季）；已存在則沿用
+          test -s data/mlb_pitchers.csv || footy mlb fetch-pitchers --season 2026 --out data/mlb_pitchers.csv
+
+      - name: 回測 A—隊級模型（無先發）
+        run: |
+          mkdir -p docs/reports
+          python scripts/backtest_runline.py --days ${{ inputs.days }} --refit ${{ inputs.refit }} \
+            2>&1 | tee /tmp/no_sp.txt
+
+      - name: 回測 B—加先發投手層
+        run: |
+          python scripts/backtest_runline.py --days ${{ inputs.days }} --refit ${{ inputs.refit }} \
+            --sp-csv data/mlb_hist_sp.csv --pitchers data/mlb_pitchers.csv \
+            2>&1 | tee /tmp/with_sp.txt
+
+      - name: 彙整報告
+        run: |
+          OUT="docs/reports/backtest-pitcher-$(date -u +%Y-%m-%d).md"
+          {
+            echo "# 先發投手層是否提升鑑別力（$(date -u +%Y-%m-%d)）"
+            echo
+            echo "決定性實驗：同一套 walk-forward 回測，唯一差別是有沒有套用先發投手係數。"
+            echo "AUC≈0.5 代表模型只在複述基礎比率；>0.56 才算對個別比賽有洞見。"
+            echo
+            echo "## A. 隊級模型（無先發投手）"
+            echo '```'
+            cat /tmp/no_sp.txt
+            echo '```'
+            echo
+            echo "## B. 加先發投手層"
+            echo '```'
+            cat /tmp/with_sp.txt
+            echo '```'
+          } > "$OUT"
+          echo "=== 三盤口 AUC 對比 ==="
+          echo "--- 無先發 ---"; grep -A4 "三盤口對比" /tmp/no_sp.txt || true
+          echo "--- 有先發 ---"; grep -A4 "三盤口對比" /tmp/with_sp.txt || true
+
+      - name: 提交報告
+        run: |
+          git config user.name "github-actions"
+          git config user.email "actions@github.com"
+          git add -f docs/reports/ data/mlb_hist_sp.csv || true
+          git pull --rebase origin "${GITHUB_REF_NAME}" || true
+          git commit -m "docs: 先發投手層鑑別力回測報告 [skip ci]" || echo "無變更"
+          git push || (git pull --rebase origin "${GITHUB_REF_NAME}" && git push)

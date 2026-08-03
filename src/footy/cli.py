@@ -695,6 +695,16 @@ def mlb_train(data_path, hist_path, out, half_life, reg):
     click.echo(f"[ok] 模型已存：{out}（{len(model.teams)} 隊，主場優勢={model.home_adv:.3f}）")
 
 
+@mlb_group.command("fetch-history-sp")
+@click.option("--start", required=True, help="起日 YYYY-MM-DD")
+@click.option("--end", required=True, help="迄日 YYYY-MM-DD")
+@click.option("--out", default="data/mlb_hist_sp.csv")
+def mlb_fetch_history_sp(start, end, out):
+    """抓歷史賽果＋每場先發投手（回測投手層用）。需在 Actions/Render 跑。"""
+    from . import mlb
+    mlb.fetch_history_with_pitchers(start, end, out)
+
+
 @mlb_group.command("fetch-pitchers")
 @click.option("--season", default=2026, type=int)
 @click.option("--out", default="data/mlb_pitchers.csv")

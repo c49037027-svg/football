@@ -112,14 +112,51 @@ def parse_schedule(payload: dict, finals_only: bool = True) -> list[dict]:
     return rows
 
 
-def fetch_games(start: str, end: str, timeout: float = 30.0) -> list[dict]:
-    """抓一段日期的已完賽賽果（例行賽+季後賽）。需要可連 statsapi.mlb.com。"""
+def fetch_games(start: str, end: str, timeout: float = 30.0,
+                with_pitchers: bool = False) -> list[dict]:
+    """抓一段日期的已完賽賽果（例行賽+季後賽）。需要可連 statsapi.mlb.com。
+
+    with_pitchers=True 時 hydrate 先發投手（回測評估投手層用；欄位
+    home_pitcher/home_pitcher_id 等由 parse_schedule 解析）。
+    """
     import requests
-    r = requests.get(f"{STATSAPI}/schedule",
-                     params={"sportId": 1, "startDate": start, "endDate": end},
+    params = {"sportId": 1, "startDate": start, "endDate": end}
+    if with_pitchers:
+        params["hydrate"] = "probablePitcher"
+    r = requests.get(f"{STATSAPI}/schedule", params=params,
                      headers={"User-Agent": "Mozilla/5.0"}, timeout=timeout)
     r.raise_for_status()
     return parse_schedule(r.json(), finals_only=True)
+
+
+def fetch_history_with_pitchers(start: str, end: str, out_path: str | Path,
+                                chunk_days: int = 30) -> int:
+    """抓一段日期的賽果＋每場先發投手，寫成 CSV（回測投手層用）。回筆數。"""
+    import csv as _csv
+    import datetime as _dt
+    rows: list[dict] = []
+    d0 = _dt.date.fromisoformat(start)
+    d1 = _dt.date.fromisoformat(end)
+    cur = d0
+    while cur <= d1:
+        nxt = min(cur + _dt.timedelta(days=chunk_days - 1), d1)
+        try:
+            rows.extend(fetch_games(cur.isoformat(), nxt.isoformat(),
+                                    with_pitchers=True))
+        except Exception as e:  # noqa: BLE001
+            print(f"[warn] {cur}~{nxt} 抓取失敗：{e}", flush=True)
+        cur = nxt + _dt.timedelta(days=1)
+    cols = ["date", "home", "away", "home_goals", "away_goals", "game_pk",
+            "home_pitcher", "away_pitcher", "home_pitcher_id", "away_pitcher_id"]
+    p = Path(out_path)
+    p.parent.mkdir(parents=True, exist_ok=True)
+    with p.open("w", newline="", encoding="utf-8") as f:
+        w = _csv.DictWriter(f, fieldnames=cols, extrasaction="ignore")
+        w.writeheader()
+        w.writerows(rows)
+    n_sp = sum(1 for r in rows if r.get("home_pitcher_id") and r.get("away_pitcher_id"))
+    print(f"[ok] 已存 {len(rows)} 場到 {p}（其中 {n_sp} 場雙方先發齊全）", flush=True)
+    return len(rows)
 
 
 def fetch_seasons(years: list[int], out_path: str | Path) -> int:
