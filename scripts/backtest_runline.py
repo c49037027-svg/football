@@ -1,4 +1,7 @@
-"""讓分盤決策門檻回測：現行「選機率過半」vs「門檻 T 才推 +1.5」。
+"""三盤口鑑別力回測：模型的機率到底有沒有預測個別比賽的能力？
+
+除了讓分門檻比較，另對 錢線/大小/讓分 各算 AUC（機率排序能力）與分桶校準。
+AUC≈0.5 代表模型只是在複述基礎比率、對個別比賽沒有洞見。
 
 問題：MLB 讓分固定 ±1.5，而「+1.5 過盤」機率結構性地 55~65%（弱隊贏 或
 只輸 1 分），所以「選機率過半那邊」幾乎永遠答 +1.5（帳本 97:3）——
@@ -32,24 +35,30 @@ from footy.models import dixon_coles as dc  # noqa: E402
 PRICE_PLUS, PRICE_MINUS = 1.58, 2.35
 
 
-def calibration(r: pd.DataFrame) -> None:
-    """分桶校準：模型說機率越高，實際過盤率是否真的越高（有無鑑別力）。"""
-    r = r.copy()
-    r["bucket"] = pd.cut(r.p_plus, [0, .55, .58, .60, .62, .65, 1.0])
-    print("\n=== 鑑別力檢查：模型 p(+1.5) 分桶 vs 實際過盤率 ===")
-    for b, g in r.groupby("bucket", observed=True):
-        if len(g) < 20:
-            continue
-        print(f"  模型 {str(b):<14} n={len(g):4d}　模型均值 {g.p_plus.mean():.1%}"
-              f"　實際過盤 {g.plus_cover.mean():.1%}")
-    lo, hi = r[r.p_plus < r.p_plus.median()], r[r.p_plus >= r.p_plus.median()]
-    print(f"  低半 vs 高半：{lo.plus_cover.mean():.1%} vs {hi.plus_cover.mean():.1%}"
-          f"（差 {hi.plus_cover.mean() - lo.plus_cover.mean():+.1%}）")
+def discrimination(p: pd.Series, y: pd.Series, name: str, bins) -> dict:
+    """鑑別力：分桶（模型機率 vs 實際發生率）＋ AUC。回摘要 dict。"""
     from scipy import stats
-    auc = stats.mannwhitneyu(r[r.plus_cover].p_plus, r[~r.plus_cover].p_plus,
-                             alternative="greater")
-    n1, n0 = r.plus_cover.sum(), (~r.plus_cover).sum()
-    print(f"  AUC={auc.statistic / (n1 * n0):.3f}（0.5=無鑑別力）　p={auc.pvalue:.3f}")
+    d = pd.DataFrame({"p": p.values, "y": y.values}).dropna()
+    d["bucket"] = pd.cut(d.p, bins)
+    print(f"\n=== {name}：模型機率 vs 實際 ===")
+    for b, g in d.groupby("bucket", observed=True):
+        if len(g) < 25:
+            continue
+        print(f"  {str(b):<14} n={len(g):4d}　模型 {g.p.mean():.1%}　實際 {g.y.mean():.1%}")
+    lo, hi = d[d.p < d.p.median()], d[d.p >= d.p.median()]
+    gap = hi.y.mean() - lo.y.mean()
+    pos, neg = d[d.y].p, d[~d.y].p
+    if len(pos) and len(neg):
+        u = stats.mannwhitneyu(pos, neg, alternative="greater")
+        auc = u.statistic / (len(pos) * len(neg))
+        pv = u.pvalue
+    else:
+        auc, pv = float("nan"), float("nan")
+    verdict = ("✅ 有鑑別力" if auc >= 0.56 else
+               "🟡 微弱" if auc >= 0.53 else "❌ 幾乎沒有")
+    print(f"  低半 {lo.y.mean():.1%} vs 高半 {hi.y.mean():.1%}（差 {gap:+.1%}）"
+          f"　AUC={auc:.3f}　p={pv:.4f}　{verdict}")
+    return {"name": name, "n": len(d), "auc": auc, "p": pv, "gap": gap}
 
 
 def run(days: int, refit_days: int, half_life: float) -> None:
@@ -84,10 +93,21 @@ def run(days: int, refit_days: int, half_life: float) -> None:
                                  park_factor=pf.get(h, 1.0), dispersion=disp)
             # p_plus = 「受讓 +1.5 那一側」過盤機率
             p_plus = m.p_cover_home if rl > 0 else 1.0 - m.p_cover_home
-            margin = int(g["home_goals"]) - int(g["away_goals"])
-            # +1.5 側是否過盤：主隊受讓→ margin+1.5>0；客隊受讓→ -margin+1.5>0
+            hg, ag = int(g["home_goals"]), int(g["away_goals"])
+            margin, total = hg - ag, hg + ag
             plus_cover = (margin + 1.5 > 0) if rl > 0 else (-margin + 1.5 > 0)
-            recs.append({"p_plus": p_plus, "plus_cover": plus_cover})
+            # 錢線：模型看好側是否獲勝（去掉延長平手不可能，MLB 無和局）
+            p_ml = max(m.p_home, m.p_away)
+            ml_win = (margin > 0) if m.p_home >= m.p_away else (margin < 0)
+            # 大小：用模型自取線（floor+0.5），看模型看好側是否命中
+            tl = mlb._half_line(m.exp_home + m.exp_away)
+            m2 = mlb.analyze_game(model, h, a, total_line=tl, run_line=rl,
+                                  park_factor=pf.get(h, 1.0), dispersion=disp)
+            p_ou = max(m2.p_over, m2.p_under)
+            ou_win = (total > tl) if m2.p_over >= 0.5 else (total < tl)
+            recs.append({"p_plus": p_plus, "plus_cover": plus_cover,
+                         "p_ml": p_ml, "ml_win": ml_win,
+                         "p_ou": p_ou, "ou_win": ou_win})
     r = pd.DataFrame(recs)
     if r.empty:
         print("無可回測樣本")
@@ -111,7 +131,20 @@ def run(days: int, refit_days: int, half_life: float) -> None:
     for t in (0.55, 0.58, 0.60, 0.62, 0.65, 0.70):
         evaluate(r.p_plus >= t, f"B 門檻 {t:.0%}")
     evaluate(pd.Series(False, index=r.index), "全押 -1.5（對照）")
-    calibration(r)
+    print("\n" + "=" * 60)
+    print("鑑別力總表（AUC：模型能否把「會發生」的場次排在前面）")
+    summ = [
+        discrimination(r.p_plus, r.plus_cover, "讓分（+1.5 側過盤）",
+                       [0, .55, .58, .60, .62, .65, 1.0]),
+        discrimination(r.p_ml, r.ml_win, "錢線（模型看好側獲勝）",
+                       [0, .52, .55, .58, .62, .70, 1.0]),
+        discrimination(r.p_ou, r.ou_win, "大小（模型看好側命中）",
+                       [0, .52, .54, .56, .58, .62, 1.0]),
+    ]
+    print("\n=== 三盤口對比 ===")
+    for x in summ:
+        print(f"  {x['name']:<22} n={x['n']:4d}　AUC={x['auc']:.3f}　"
+              f"高低半差 {x['gap']:+.1%}　p={x['p']:.4f}")
     print("\n註：損益用固定價假設 +1.5@%.2f／-1.5@%.2f（帳本中位數與無 vig 反推）；"
           "勝率不受價格假設影響。" % (PRICE_PLUS, PRICE_MINUS))
 
