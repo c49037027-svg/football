@@ -1,0 +1,1561 @@
+date,home,away,home_goals,away_goals,game_pk,home_pitcher,away_pitcher,home_pitcher_id,away_pitcher_id
+2026-04-05,Cleveland Guardians,Chicago Cubs,0,1,824459,Slade Cecconi,Edward Cabrera,677944,665795
+2026-04-05,Cleveland Guardians,Chicago Cubs,6,5,824460,Parker Messick,Shota Imanaga,800048,684007
+2026-04-05,Washington Nationals,Los Angeles Dodgers,6,8,822756,Foster Griffin,Roki Sasaki,656492,808963
+2026-04-05,Pittsburgh Pirates,Baltimore Orioles,8,2,823405,Braxton Ashcraft,Chris Bassitt,677952,605135
+2026-04-05,Boston Red Sox,San Diego Padres,6,8,824781,Ranger Suarez,Walker Buehler,624133,621111
+2026-04-05,New York Yankees,Miami Marlins,6,7,823566,Max Fried,Pete Fairbanks,608331,664126
+2026-04-05,Minnesota Twins,Tampa Bay Rays,1,4,823729,Simeon Woods Richardson,Nick Martinez,680573,607259
+2026-04-05,Chicago White Sox,Toronto Blue Jays,3,0,824620,Davis Martin,Eric Lauer,663436,641778
+2026-04-05,Kansas City Royals,Milwaukee Brewers,5,8,824131,Kris Bubic,Kyle Harrison,663460,690986
+2026-04-05,Texas Rangers,Cincinnati Reds,1,2,822917,Jack Leiter,Chase Burns,683004,695505
+2026-04-05,Colorado Rockies,Philadelphia Phillies,4,1,824379,Tomoyuki Sugano,Taijuan Walker,608372,592836
+2026-04-05,Athletics,Houston Astros,12,10,825025,Jacob Lopez,Lance McCullers Jr.,682052,621121
+2026-04-05,San Francisco Giants,New York Mets,2,5,823238,Logan Webb,Kodai Senga,657277,673540
+2026-04-05,Los Angeles Angels,Seattle Mariners,8,7,824053,George Klassen,Luis Castillo,691946,622491
+2026-04-05,Arizona Diamondbacks,Atlanta Braves,6,5,825102,Brandon Pfaadt,Martín Pérez,694297,527048
+2026-04-05,Detroit Tigers,St. Louis Cardinals,3,5,824296,Keider Montero,Kyle Leahy,672456,681517
+2026-04-06,Tampa Bay Rays,Chicago Cubs,6,4,823002,Shane McClanahan,Jameson Taillon,663556,592791
+2026-04-06,Cleveland Guardians,Kansas City Royals,2,4,824456,Tanner Bibee,Michael Wacha,676440,608379
+2026-04-06,Pittsburgh Pirates,San Diego Padres,0,5,823401,Bubba Chandler,Germán Márquez,696149,608566
+2026-04-06,Miami Marlins,Cincinnati Reds,0,2,823886,Janson Junk,Brandon Williamson,676083,682227
+2026-04-06,Washington Nationals,St. Louis Cardinals,9,6,822755,Zack Littell,Andre Pallante,641793,669467
+2026-04-06,Boston Red Sox,Milwaukee Brewers,6,8,824783,Brayan Bello,Brandon Woodruff,678394,605540
+2026-04-06,Toronto Blue Jays,Los Angeles Dodgers,2,14,822832,Max Scherzer,Justin Wrobleski,453286,680736
+2026-04-06,Minnesota Twins,Detroit Tigers,7,3,823728,Joe Ryan,Casey Mize,657746,663554
+2026-04-06,Chicago White Sox,Baltimore Orioles,1,2,824619,Grant Taylor,Brandon Young,691799,687064
+2026-04-06,Texas Rangers,Seattle Mariners,2,1,822918,Jacob deGrom,Logan Gilbert,594798,669302
+2026-04-06,Colorado Rockies,Houston Astros,9,7,824376,Ryan Feltner,Cody Bolton,663372,675989
+2026-04-06,Los Angeles Angels,Atlanta Braves,6,2,824052,José Soriano,Chris Sale,667755,519242
+2026-04-06,San Francisco Giants,Philadelphia Phillies,4,6,823237,Adrian Houser,Andrew Painter,605288,691725
+2026-04-07,Cleveland Guardians,Kansas City Royals,2,1,824457,Gavin Williams,Noah Cameron,668909,702070
+2026-04-07,Chicago White Sox,Baltimore Orioles,2,4,824618,Shane Smith,Trevor Rogers,681343,669432
+2026-04-07,New York Mets,Arizona Diamondbacks,4,3,823648,Freddy Peralta,Zac Gallen,642547,668678
+2026-04-07,Pittsburgh Pirates,San Diego Padres,7,1,823402,Paul Skenes,Nick Pivetta,694973,601713
+2026-04-07,Tampa Bay Rays,Chicago Cubs,2,9,822999,Mason Englert,Javier Assad,669438,665871
+2026-04-07,Miami Marlins,Cincinnati Reds,3,6,823887,Sandy Alcantara,Andrew Abbott,645261,671096
+2026-04-07,Washington Nationals,St. Louis Cardinals,6,7,822754,Cade Cavalli,Matthew Liberatore,676917,669461
+2026-04-07,Boston Red Sox,Milwaukee Brewers,3,2,824780,Garrett Crochet,Jacob Misiorowski,676979,694819
+2026-04-07,New York Yankees,Athletics,5,3,823567,Cam Schlittler,Aaron Civale,693645,650644
+2026-04-07,Toronto Blue Jays,Los Angeles Dodgers,1,4,822831,Kevin Gausman,Yoshinobu Yamamoto,592332,808967
+2026-04-07,Minnesota Twins,Detroit Tigers,4,2,823727,Taj Bradley,Tarik Skubal,671737,669373
+2026-04-07,Texas Rangers,Seattle Mariners,3,2,822916,Nathan Eovaldi,George Kirby,543135,669923
+2026-04-07,Colorado Rockies,Houston Astros,5,1,824375,Kyle Freeland,Mike Burrows,607536,681347
+2026-04-07,Los Angeles Angels,Atlanta Braves,2,7,824051,Yusei Kikuchi,Reynaldo López,579328,625643
+2026-04-07,San Francisco Giants,Philadelphia Phillies,6,0,823235,Robbie Ray,Cristopher Sánchez,592662,650911
+2026-04-08,Pittsburgh Pirates,San Diego Padres,2,8,823403,Mitch Keller,Michael King,656605,650633
+2026-04-08,Cleveland Guardians,Kansas City Royals,10,2,824455,Joey Cantillo,Cole Ragans,676282,666142
+2026-04-08,Boston Red Sox,Milwaukee Brewers,5,0,824779,Sonny Gray,Shane Drohan,543243,675660
+2026-04-08,Chicago White Sox,Baltimore Orioles,3,5,824617,Sean Burke,Kyle Bradish,680732,680694
+2026-04-08,Texas Rangers,Seattle Mariners,3,0,822915,MacKenzie Gore,Bryan Woo,669022,693433
+2026-04-08,Toronto Blue Jays,Los Angeles Dodgers,4,3,822833,Dylan Cease,Shohei Ohtani,656302,660271
+2026-04-08,Colorado Rockies,Houston Astros,9,1,824374,Michael Lorenzen,Cristian Javier,547179,664299
+2026-04-08,San Francisco Giants,Philadelphia Phillies,5,0,823234,Tyler Mahle,Aaron Nola,641816,605400
+2026-04-08,Washington Nationals,St. Louis Cardinals,1,6,822753,Miles Mikolas,Michael McGreevy,571945,700241
+2026-04-08,Los Angeles Angels,Atlanta Braves,2,8,824050,Reid Detmers,Grant Holmes,672282,656550
+2026-04-08,New York Mets,Arizona Diamondbacks,2,7,823646,David Peterson,Ryne Nelson,656849,669194
+2026-04-08,Tampa Bay Rays,Chicago Cubs,2,6,823000,Joe Boyle,Colin Rea,671212,607067
+2026-04-08,Miami Marlins,Cincinnati Reds,7,4,823885,Eury Pérez,Brady Singer,691587,663903
+2026-04-08,New York Yankees,Athletics,2,3,823564,Will Warren,Luis Severino,701542,622663
+2026-04-08,Minnesota Twins,Detroit Tigers,8,6,823726,Bailey Ober,Framber Valdez,641927,664285
+2026-04-09,Miami Marlins,Cincinnati Reds,8,1,823884,Max Meyer,Rhett Lowder,676974,695076
+2026-04-09,New York Yankees,Athletics,0,1,823565,Ryan Weathers,Jeffrey Springs,677960,605488
+2026-04-09,Minnesota Twins,Detroit Tigers,3,1,823724,Mick Abel,Jack Flaherty,690953,656427
+2026-04-09,New York Mets,Arizona Diamondbacks,1,7,823645,Nolan McLean,Eduardo Rodriguez,690997,593958
+2026-04-09,Kansas City Royals,Chicago White Sox,0,2,824130,Seth Lugo,Anthony Kay,607625,641743
+2026-04-09,San Diego Padres,Colorado Rockies,7,3,823319,Randy Vásquez,Jimmy Herget,681190,623474
+2026-04-10,Chicago Cubs,Pittsburgh Pirates,0,2,824695,Shota Imanaga,Carmen Mlodzinski,684007,669387
+2026-04-10,Philadelphia Phillies,Arizona Diamondbacks,4,5,823482,Jesús Luzardo,Michael Soroka,666200,647336
+2026-04-10,Detroit Tigers,Miami Marlins,2,0,824297,Keider Montero,Chris Paddack,672456,663978
+2026-04-10,Cincinnati Reds,Los Angeles Angels,2,10,824534,Chase Burns,Jack Kochanowicz,695505,686799
+2026-04-10,Toronto Blue Jays,Minnesota Twins,10,4,822829,Patrick Corbin,Simeon Woods Richardson,571578,680573
+2026-04-10,New York Mets,Athletics,0,4,823643,Clay Holmes,J.T. Ginn,605280,669372
+2026-04-10,Tampa Bay Rays,New York Yankees,5,3,822997,Steven Matz,Luis Gil,571927,661563
+2026-04-10,Baltimore Orioles,San Francisco Giants,3,6,824858,Shane Baz,Landen Roupp,669358,694738
+2026-04-10,Atlanta Braves,Cleveland Guardians,11,5,824941,Bryce Elder,Slade Cecconi,693821,677944
+2026-04-10,Kansas City Royals,Chicago White Sox,2,0,824128,Kris Bubic,Davis Martin,663460,663436
+2026-04-10,Milwaukee Brewers,Washington Nationals,3,7,823808,Aaron Ashby,Jake Irvin,676879,663623
+2026-04-10,St. Louis Cardinals,Boston Red Sox,3,2,823076,Dustin May,Connelly Early,669160,813349
+2026-04-10,San Diego Padres,Colorado Rockies,5,2,823318,Walker Buehler,Tomoyuki Sugano,621111,608372
+2026-04-10,Seattle Mariners,Houston Astros,9,6,823156,Emerson Hancock,Tatsuya Imai,676106,837227
+2026-04-10,Los Angeles Dodgers,Texas Rangers,8,7,823968,Tyler Glasnow,Kumar Rocker,607192,677958
+2026-04-11,Philadelphia Phillies,Arizona Diamondbacks,4,3,823480,Taijuan Walker,Brandon Pfaadt,592836,694297
+2026-04-11,Detroit Tigers,Miami Marlins,6,1,824294,Casey Mize,Janson Junk,663554,676083
+2026-04-11,Chicago Cubs,Pittsburgh Pirates,3,4,824697,Edward Cabrera,Braxton Ashcraft,665795,677952
+2026-04-11,Toronto Blue Jays,Minnesota Twins,4,7,822830,Eric Lauer,Joe Ryan,641778,657746
+2026-04-11,Cincinnati Reds,Los Angeles Angels,7,3,824535,Brandon Williamson,George Klassen,682227,691946
+2026-04-11,New York Mets,Athletics,6,11,823644,Kodai Senga,Jacob Lopez,673540,682052
+2026-04-11,Kansas City Royals,Chicago White Sox,2,0,824129,Michael Wacha,Erick Fedde,608379,607200
+2026-04-11,Tampa Bay Rays,New York Yankees,5,4,822996,Nick Martinez,Max Fried,607259,608331
+2026-04-11,Milwaukee Brewers,Washington Nationals,1,3,823805,Kyle Harrison,Foster Griffin,690986,656492
+2026-04-11,Baltimore Orioles,San Francisco Giants,6,2,824857,Chris Bassitt,Logan Webb,605135,657277
+2026-04-11,St. Louis Cardinals,Boston Red Sox,1,7,823074,Kyle Leahy,Ranger Suarez,681517,624133
+2026-04-11,Atlanta Braves,Cleveland Guardians,0,6,824939,Martín Pérez,Parker Messick,527048,800048
+2026-04-11,San Diego Padres,Colorado Rockies,9,5,823316,Germán Márquez,Ryan Feltner,608566,663372
+2026-04-11,Los Angeles Dodgers,Texas Rangers,6,3,823967,Emmet Sheehan,Jack Leiter,686218,683004
+2026-04-11,Seattle Mariners,Houston Astros,8,7,823155,Luis Castillo,Lance McCullers Jr.,622491,621121
+2026-04-12,Baltimore Orioles,San Francisco Giants,6,2,824859,Cade Povich,Adrian Houser,700249,605288
+2026-04-12,Philadelphia Phillies,Arizona Diamondbacks,3,4,823479,Zach Pop,Zac Gallen,647315,668678
+2026-04-12,Toronto Blue Jays,Minnesota Twins,2,8,822828,Max Scherzer,Taj Bradley,453286,671737
+2026-04-12,Cincinnati Reds,Los Angeles Angels,6,9,824533,Andrew Abbott,José Soriano,671096,667755
+2026-04-12,New York Mets,Athletics,0,1,823642,Freddy Peralta,Aaron Civale,642547,650644
+2026-04-12,Detroit Tigers,Miami Marlins,8,2,824293,Tarik Skubal,Sandy Alcantara,669373,645261
+2026-04-12,Tampa Bay Rays,New York Yankees,5,4,822998,Drew Rasmussen,Cam Schlittler,656876,693645
+2026-04-12,Kansas City Royals,Chicago White Sox,5,6,824126,Noah Cameron,Grant Taylor,702070,691799
+2026-04-12,Milwaukee Brewers,Washington Nationals,6,8,823804,Brandon Woodruff,Zack Littell,605540,641793
+2026-04-12,St. Louis Cardinals,Boston Red Sox,3,9,823075,Andre Pallante,Brayan Bello,669467,678394
+2026-04-12,Chicago Cubs,Pittsburgh Pirates,7,6,824696,Jameson Taillon,Bubba Chandler,592791,696149
+2026-04-12,San Diego Padres,Colorado Rockies,7,2,823317,Nick Pivetta,Kyle Freeland,601713,607536
+2026-04-12,Seattle Mariners,Houston Astros,6,1,823154,Logan Gilbert,Cody Bolton,669302,675989
+2026-04-12,Los Angeles Dodgers,Texas Rangers,2,5,823966,Roki Sasaki,Jacob deGrom,808963,594798
+2026-04-12,Atlanta Braves,Cleveland Guardians,13,1,824938,Chris Sale,Tanner Bibee,519242,676440
+2026-04-13,Seattle Mariners,Houston Astros,6,2,823153,George Kirby,Mike Burrows,669923,681347
+2026-04-13,Baltimore Orioles,Arizona Diamondbacks,9,7,824856,Dean Kremer,Ryne Nelson,665152,669194
+2026-04-13,Pittsburgh Pirates,Washington Nationals,16,5,823400,Paul Skenes,PJ Poulin,694973,676571
+2026-04-13,Philadelphia Phillies,Chicago Cubs,13,7,823481,Cristopher Sánchez,Javier Assad,650911,665871
+2026-04-13,New York Yankees,Los Angeles Angels,11,10,823563,Will Warren,Yusei Kikuchi,701542,579328
+2026-04-13,Atlanta Braves,Miami Marlins,4,10,824937,Grant Holmes,Eury Pérez,656550,691587
+2026-04-13,Minnesota Twins,Boston Red Sox,13,6,823725,Bailey Ober,Garrett Crochet,641927,676979
+2026-04-13,St. Louis Cardinals,Cleveland Guardians,3,9,823073,Matthew Liberatore,Gavin Williams,669461,668909
+2026-04-13,Athletics,Texas Rangers,1,8,825024,Luis Severino,Nathan Eovaldi,622663,543135
+2026-04-13,Los Angeles Dodgers,New York Mets,4,0,823964,Justin Wrobleski,David Peterson,680736,656849
+2026-04-14,Baltimore Orioles,Arizona Diamondbacks,3,4,824853,Trevor Rogers,Merrill Kelly,669432,518876
+2026-04-14,Detroit Tigers,Kansas City Royals,2,1,824292,Framber Valdez,Cole Ragans,664285,666142
+2026-04-14,Pittsburgh Pirates,Washington Nationals,4,5,823398,Mitch Keller,PJ Poulin,656605,676571
+2026-04-14,Cincinnati Reds,San Francisco Giants,2,1,824531,Brady Singer,Robbie Ray,663903,592662
+2026-04-14,Philadelphia Phillies,Chicago Cubs,4,10,823478,Aaron Nola,Riley Martin,605400,702303
+2026-04-14,New York Yankees,Los Angeles Angels,1,7,823562,Ryan Weathers,Reid Detmers,677960,672282
+2026-04-14,Atlanta Braves,Miami Marlins,6,5,824935,Reynaldo López,Max Meyer,625643,676974
+2026-04-14,Minnesota Twins,Boston Red Sox,6,0,823723,Mick Abel,Sonny Gray,690953,543243
+2026-04-14,Chicago White Sox,Tampa Bay Rays,5,8,824616,Noah Schultz,Shane McClanahan,702273,663556
+2026-04-14,Milwaukee Brewers,Toronto Blue Jays,7,9,823802,Jacob Misiorowski,Kevin Gausman,694819,592332
+2026-04-14,St. Louis Cardinals,Cleveland Guardians,6,5,823072,Michael McGreevy,Joey Cantillo,700241,676282
+2026-04-14,Houston Astros,Colorado Rockies,7,6,824210,Spencer Arrighetti,Michael Lorenzen,681293,547179
+2026-04-14,San Diego Padres,Seattle Mariners,4,1,823315,Michael King,Bryan Woo,650633,693433
+2026-04-14,Athletics,Texas Rangers,2,1,825022,Jeffrey Springs,MacKenzie Gore,605488,669022
+2026-04-14,Los Angeles Dodgers,New York Mets,2,1,823965,Yoshinobu Yamamoto,Nolan McLean,808967,690997
+2026-04-15,Baltimore Orioles,Arizona Diamondbacks,5,8,824855,Kyle Bradish,Eduardo Rodriguez,680694,593958
+2026-04-15,St. Louis Cardinals,Cleveland Guardians,5,3,823071,Dustin May,Slade Cecconi,669160,677944
+2026-04-15,Minnesota Twins,Boston Red Sox,5,9,823722,Simeon Woods Richardson,Connelly Early,680573,813349
+2026-04-15,Detroit Tigers,Kansas City Royals,2,1,824291,Jack Flaherty,Seth Lugo,656427,607625
+2026-04-15,Pittsburgh Pirates,Washington Nationals,2,0,823399,Mason Montgomery,Jake Irvin,682254,663623
+2026-04-15,Cincinnati Reds,San Francisco Giants,8,3,824532,Rhett Lowder,Tyler Mahle,695076,641816
+2026-04-15,Philadelphia Phillies,Chicago Cubs,2,11,823477,Jesús Luzardo,Shota Imanaga,666200,684007
+2026-04-15,New York Yankees,Los Angeles Angels,5,4,823561,Luis Gil,Jack Kochanowicz,661563,686799
+2026-04-15,Atlanta Braves,Miami Marlins,6,3,824936,Bryce Elder,Chris Paddack,693821,663978
+2026-04-15,Chicago White Sox,Tampa Bay Rays,3,8,824615,Sean Burke,Jesse Scholtens,680732,669947
+2026-04-15,Milwaukee Brewers,Toronto Blue Jays,2,1,823803,Chad Patrick,Dylan Cease,694477,656302
+2026-04-15,Houston Astros,Colorado Rockies,3,1,824209,Spencer Arrighetti,Jose Quintana,681293,500779
+2026-04-15,San Diego Padres,Seattle Mariners,7,6,823314,Randy Vásquez,Emerson Hancock,681190,676106
+2026-04-15,Athletics,Texas Rangers,6,5,825021,J.T. Ginn,Kumar Rocker,669372,677958
+2026-04-15,Los Angeles Dodgers,New York Mets,8,2,823963,Shohei Ohtani,Clay Holmes,660271,605280
+2026-04-16,Pittsburgh Pirates,Washington Nationals,7,8,823396,Braxton Ashcraft,Foster Griffin,677952,656492
+2026-04-16,Cincinnati Reds,San Francisco Giants,0,3,824530,Chase Burns,Landen Roupp,695505,694738
+2026-04-16,Detroit Tigers,Kansas City Royals,10,9,824289,Keider Montero,Kris Bubic,672456,663460
+2026-04-16,New York Yankees,Los Angeles Angels,4,11,823560,Max Fried,Brent Suter,608331,608718
+2026-04-16,Milwaukee Brewers,Toronto Blue Jays,2,1,823801,Brandon Sproat,Patrick Corbin,687075,571578
+2026-04-16,Chicago White Sox,Tampa Bay Rays,3,5,824614,Jordan Leasure,Steven Matz,673929,571927
+2026-04-16,Athletics,Texas Rangers,6,9,825023,Jacob Lopez,Jack Leiter,682052,683004
+2026-04-16,Cleveland Guardians,Baltimore Orioles,4,2,824453,Parker Messick,Shane Baz,800048,669358
+2026-04-16,Houston Astros,Colorado Rockies,2,3,824208,Ryan Weiss,Juan Mejia,680802,675848
+2026-04-16,San Diego Padres,Seattle Mariners,5,2,823313,Walker Buehler,Luis Castillo,621111,622491
+2026-04-17,Chicago Cubs,New York Mets,12,4,824693,Edward Cabrera,Kodai Senga,665795,673540
+2026-04-17,Cleveland Guardians,Baltimore Orioles,4,6,824454,Tanner Bibee,Chris Bassitt,676440,605135
+2026-04-17,Philadelphia Phillies,Atlanta Braves,0,9,823476,Taijuan Walker,Martín Pérez,592836,527048
+2026-04-17,Washington Nationals,San Francisco Giants,5,10,822752,Zack Littell,Logan Webb,641793,657277
+2026-04-17,Pittsburgh Pirates,Tampa Bay Rays,5,1,823397,Bubba Chandler,Nick Martinez,696149,607259
+2026-04-17,New York Yankees,Kansas City Royals,4,2,823559,Cam Schlittler,Michael Wacha,693645,608379
+2026-04-17,Miami Marlins,Milwaukee Brewers,5,7,823883,Janson Junk,Coleman Crow,676083,689441
+2026-04-17,Boston Red Sox,Detroit Tigers,1,0,824778,Ranger Suarez,Casey Mize,624133,663554
+2026-04-17,Houston Astros,St. Louis Cardinals,4,9,824207,Peter Lambert,Kyle Leahy,663567,681517
+2026-04-17,Minnesota Twins,Cincinnati Reds,1,2,823720,Joe Ryan,Brandon Williamson,657746,682227
+2026-04-17,Colorado Rockies,Los Angeles Dodgers,1,7,824373,Tomoyuki Sugano,Tyler Glasnow,608372,607192
+2026-04-17,Los Angeles Angels,San Diego Padres,8,0,824048,José Soriano,Matt Waldron,667755,663362
+2026-04-17,Seattle Mariners,Texas Rangers,0,5,823152,Logan Gilbert,Jacob deGrom,669302,594798
+2026-04-17,Arizona Diamondbacks,Toronto Blue Jays,6,3,825101,Michael Soroka,Braydon Fisher,647336,680755
+2026-04-17,Athletics,Chicago White Sox,2,9,825019,Aaron Civale,Davis Martin,650644,663436
+2026-04-18,New York Yankees,Kansas City Royals,13,4,823558,Will Warren,Noah Cameron,701542,702070
+2026-04-18,Minnesota Twins,Cincinnati Reds,4,5,823721,Taj Bradley,Andrew Abbott,671737,671096
+2026-04-18,Chicago Cubs,New York Mets,4,2,824694,Jameson Taillon,Freddy Peralta,592791,642547
+2026-04-18,Pittsburgh Pirates,Tampa Bay Rays,7,8,823394,Paul Skenes,Drew Rasmussen,694973,656876
+2026-04-18,Washington Nationals,San Francisco Giants,6,7,822751,Cade Cavalli,Adrian Houser,676917,605288
+2026-04-18,Athletics,Chicago White Sox,7,6,825020,Luis Severino,Erick Fedde,622663,607200
+2026-04-18,Boston Red Sox,Detroit Tigers,1,4,824775,Brayan Bello,Tarik Skubal,678394,669373
+2026-04-18,Miami Marlins,Milwaukee Brewers,2,5,823882,Sandy Alcantara,Brandon Woodruff,645261,605540
+2026-04-18,Cleveland Guardians,Baltimore Orioles,4,2,824451,Gavin Williams,Dean Kremer,668909,665152
+2026-04-18,Houston Astros,St. Louis Cardinals,5,7,824206,Lance McCullers Jr.,Andre Pallante,621121,669467
+2026-04-18,Seattle Mariners,Texas Rangers,7,3,823151,George Kirby,Nathan Eovaldi,669923,543135
+2026-04-18,Philadelphia Phillies,Atlanta Braves,1,3,823474,Cristopher Sánchez,Chris Sale,650911,519242
+2026-04-18,Colorado Rockies,Los Angeles Dodgers,4,3,824372,Ryan Feltner,Emmet Sheehan,663372,686218
+2026-04-18,Arizona Diamondbacks,Toronto Blue Jays,6,2,825098,Zac Gallen,Max Scherzer,668678,453286
+2026-04-18,Los Angeles Angels,San Diego Padres,1,4,824049,Yusei Kikuchi,Germán Márquez,579328,608566
+2026-04-19,Washington Nationals,San Francisco Giants,3,0,822750,PJ Poulin,Robbie Ray,676571,592662
+2026-04-19,Pittsburgh Pirates,Tampa Bay Rays,6,3,823393,Mitch Keller,Shane McClanahan,656605,663556
+2026-04-19,New York Yankees,Kansas City Royals,7,0,823556,Ryan Weathers,Cole Ragans,677960,666142
+2026-04-19,Cleveland Guardians,Baltimore Orioles,8,4,824452,Joey Cantillo,Trevor Rogers,676282,669432
+2026-04-19,Miami Marlins,Milwaukee Brewers,5,3,823881,Eury Pérez,Jacob Misiorowski,691587,694819
+2026-04-19,Houston Astros,St. Louis Cardinals,5,7,824205,Mike Burrows,Matthew Liberatore,681347,669461
+2026-04-19,Minnesota Twins,Cincinnati Reds,4,7,823718,Bailey Ober,Brady Singer,641927,663903
+2026-04-19,Chicago Cubs,New York Mets,2,1,824691,Javier Assad,Tobias Myers,665871,668964
+2026-04-19,Colorado Rockies,Los Angeles Dodgers,9,6,824371,Michael Lorenzen,Roki Sasaki,547179,808963
+2026-04-19,Athletics,Chicago White Sox,4,7,825018,Jeffrey Springs,Noah Schultz,605488,702273
+2026-04-19,Los Angeles Angels,San Diego Padres,1,2,824047,Walbert Ureña,Michael King,700712,650633
+2026-04-19,Seattle Mariners,Texas Rangers,5,2,823150,Bryan Woo,MacKenzie Gore,693433,669022
+2026-04-19,Arizona Diamondbacks,Toronto Blue Jays,4,10,825100,Ryne Nelson,Kevin Gausman,669194,592332
+2026-04-19,Boston Red Sox,Detroit Tigers,2,6,824777,Garrett Crochet,Framber Valdez,676979,664285
+2026-04-19,Philadelphia Phillies,Atlanta Braves,2,4,823475,Andrew Painter,Grant Holmes,691725,656550
+2026-04-20,Boston Red Sox,Detroit Tigers,8,6,824776,Sonny Gray,Jack Flaherty,543243,656427
+2026-04-20,Cleveland Guardians,Houston Astros,2,9,824450,Slade Cecconi,Spencer Arrighetti,677944,681293
+2026-04-20,Tampa Bay Rays,Cincinnati Reds,1,6,822994,Jesse Scholtens,Rhett Lowder,669947,695076
+2026-04-20,Miami Marlins,St. Louis Cardinals,5,3,823879,Max Meyer,Michael McGreevy,676974,700241
+2026-04-20,Washington Nationals,Atlanta Braves,4,9,822749,Jake Irvin,Bryce Elder,663623,693821
+2026-04-20,Kansas City Royals,Baltimore Orioles,5,7,824125,Seth Lugo,Kyle Bradish,607625,680694
+2026-04-20,Chicago Cubs,Philadelphia Phillies,5,1,824692,Colin Rea,Aaron Nola,607067,605400
+2026-04-20,Colorado Rockies,Los Angeles Dodgers,3,12,824370,Jose Quintana,Justin Wrobleski,500779,680736
+2026-04-20,Los Angeles Angels,Toronto Blue Jays,2,5,824046,Reid Detmers,Dylan Cease,672282,656302
+2026-04-20,Seattle Mariners,Athletics,4,6,823149,Emerson Hancock,J.T. Ginn,676106,669372
+2026-04-21,Cleveland Guardians,Houston Astros,8,5,824448,Parker Messick,Ryan Weiss,800048,680802
+2026-04-21,Tampa Bay Rays,Cincinnati Reds,6,12,822995,Steven Matz,Chase Burns,571927,695505
+2026-04-21,Miami Marlins,St. Louis Cardinals,3,5,823880,Chris Paddack,Dustin May,663978,669160
+2026-04-21,Detroit Tigers,Milwaukee Brewers,4,12,824290,Keider Montero,Kyle Harrison,672456,690986
+2026-04-21,Washington Nationals,Atlanta Braves,11,4,822747,Foster Griffin,Reynaldo López,656492,625643
+2026-04-21,Boston Red Sox,New York Yankees,0,4,824773,Connelly Early,Luis Gil,813349,661563
+2026-04-21,New York Mets,Minnesota Twins,3,5,823640,Nolan McLean,Simeon Woods Richardson,690997,680573
+2026-04-21,Kansas City Royals,Baltimore Orioles,6,5,824127,Kris Bubic,Shane Baz,663460,669358
+2026-04-21,Chicago Cubs,Philadelphia Phillies,7,4,824690,Shota Imanaga,Jesús Luzardo,684007,666200
+2026-04-21,Texas Rangers,Pittsburgh Pirates,5,1,822914,Kumar Rocker,Carmen Mlodzinski,677958,669387
+2026-04-21,Colorado Rockies,San Diego Padres,0,1,824369,Jimmy Herget,Randy Vásquez,623474,681190
+2026-04-21,Los Angeles Angels,Toronto Blue Jays,2,4,824045,Jack Kochanowicz,Patrick Corbin,686799,571578
+2026-04-21,Seattle Mariners,Athletics,2,5,823148,Luis Castillo,Jacob Lopez,622491,682052
+2026-04-21,Arizona Diamondbacks,Chicago White Sox,5,11,825099,Merrill Kelly,Sean Burke,518876,680732
+2026-04-21,San Francisco Giants,Los Angeles Dodgers,3,1,823236,Landen Roupp,Yoshinobu Yamamoto,694738,808967
+2026-04-22,Miami Marlins,St. Louis Cardinals,4,1,823878,Janson Junk,Kyle Leahy,676083,681517
+2026-04-22,Cleveland Guardians,Houston Astros,0,2,824449,Tanner Bibee,Peter Lambert,676440,663567
+2026-04-22,Tampa Bay Rays,Cincinnati Reds,6,1,822993,Nick Martinez,Brandon Williamson,607259,682227
+2026-04-22,Kansas City Royals,Baltimore Orioles,6,8,824123,Michael Wacha,Chris Bassitt,608379,605135
+2026-04-22,Los Angeles Angels,Toronto Blue Jays,7,3,824044,José Soriano,Eric Lauer,667755,641778
+2026-04-22,Seattle Mariners,Athletics,5,4,823147,Logan Gilbert,Aaron Civale,669302,650644
+2026-04-22,Detroit Tigers,Milwaukee Brewers,5,2,824286,Casey Mize,DL Hall,663554,669084
+2026-04-22,Washington Nationals,Atlanta Braves,6,8,822748,Zack Littell,Didier Fuentes,641793,800311
+2026-04-22,Boston Red Sox,New York Yankees,1,4,824774,Ranger Suarez,Max Fried,624133,608331
+2026-04-22,New York Mets,Minnesota Twins,3,2,823641,Clay Holmes,Connor Prielipp,605280,687570
+2026-04-22,Chicago Cubs,Philadelphia Phillies,7,2,824688,Matthew Boyd,Kyle Backhus,571510,679775
+2026-04-22,Texas Rangers,Pittsburgh Pirates,4,8,822913,Jack Leiter,Braxton Ashcraft,683004,677952
+2026-04-22,Colorado Rockies,San Diego Padres,8,3,824367,Tomoyuki Sugano,Walker Buehler,608372,621111
+2026-04-22,Arizona Diamondbacks,Chicago White Sox,11,7,825097,Eduardo Rodriguez,Anthony Kay,593958,641743
+2026-04-22,San Francisco Giants,Los Angeles Dodgers,3,0,823231,Tyler Mahle,Shohei Ohtani,641816,660271
+2026-04-23,Washington Nationals,Atlanta Braves,2,7,822745,Cade Cavalli,JR Ritchie,676917,702275
+2026-04-23,Detroit Tigers,Milwaukee Brewers,5,4,824288,Tarik Skubal,Brandon Sproat,669373,687075
+2026-04-23,Chicago Cubs,Philadelphia Phillies,8,7,824689,Edward Cabrera,Cristopher Sánchez,665795,650911
+2026-04-23,Colorado Rockies,San Diego Padres,8,10,824368,Ryan Feltner,Matt Waldron,663372,663362
+2026-04-23,Arizona Diamondbacks,Chicago White Sox,1,4,825096,Michael Soroka,Davis Martin,647336,663436
+2026-04-23,San Francisco Giants,Los Angeles Dodgers,0,3,823233,Logan Webb,Tyler Glasnow,657277,607192
+2026-04-23,Boston Red Sox,New York Yankees,2,4,824770,Payton Tolle,Cam Schlittler,801139,693645
+2026-04-23,New York Mets,Minnesota Twins,10,8,823639,Christian Scott,Joe Ryan,681035,657746
+2026-04-23,Texas Rangers,Pittsburgh Pirates,6,1,822912,Jacob deGrom,Bubba Chandler,594798,696149
+2026-04-24,Cincinnati Reds,Detroit Tigers,9,8,824529,Andrew Abbott,Framber Valdez,671096,664285
+2026-04-24,Baltimore Orioles,Boston Red Sox,10,3,824854,Brandon Young,Brayan Bello,687064,678394
+2026-04-24,Toronto Blue Jays,Cleveland Guardians,6,8,822827,Max Scherzer,Gavin Williams,453286,668909
+2026-04-24,New York Mets,Colorado Rockies,3,4,823638,Freddy Peralta,Michael Lorenzen,642547,547179
+2026-04-24,Tampa Bay Rays,Minnesota Twins,6,2,822992,Drew Rasmussen,Taj Bradley,656876,671737
+2026-04-24,Atlanta Braves,Philadelphia Phillies,5,3,824932,Grant Holmes,Andrew Painter,656550,691725
+2026-04-24,Kansas City Royals,Los Angeles Angels,6,3,824124,Noah Cameron,Yusei Kikuchi,702070,579328
+2026-04-24,Chicago White Sox,Washington Nationals,5,4,824611,Bryan Hudson,PJ Poulin,663542,676571
+2026-04-24,Milwaukee Brewers,Pittsburgh Pirates,0,6,823800,Brandon Woodruff,Paul Skenes,605540,694973
+2026-04-24,Texas Rangers,Athletics,1,8,822909,Nathan Eovaldi,Luis Severino,543135,622663
+2026-04-24,Houston Astros,New York Yankees,4,12,824204,Lance McCullers Jr.,Will Warren,621121,701542
+2026-04-24,St. Louis Cardinals,Seattle Mariners,2,3,823069,Andre Pallante,George Kirby,669467,669923
+2026-04-24,Los Angeles Dodgers,Chicago Cubs,4,6,823962,Emmet Sheehan,Jameson Taillon,686218,592791
+2026-04-24,San Francisco Giants,Miami Marlins,4,9,823232,Adrian Houser,Sandy Alcantara,605288,645261
+2026-04-25,Baltimore Orioles,Boston Red Sox,1,17,824851,Trevor Rogers,Garrett Crochet,669432,676979
+2026-04-25,St. Louis Cardinals,Seattle Mariners,9,11,823070,Matthew Liberatore,Bryan Woo,669461,693433
+2026-04-25,Toronto Blue Jays,Cleveland Guardians,5,3,822826,Kevin Gausman,Joey Cantillo,592332,676282
+2026-04-25,San Francisco Giants,Miami Marlins,6,2,823229,Robbie Ray,Eury Pérez,592662,691587
+2026-04-25,Tampa Bay Rays,Minnesota Twins,6,1,822989,Shane McClanahan,Bailey Ober,663556,641927
+2026-04-25,Chicago White Sox,Washington Nationals,3,6,824613,Noah Schultz,Jake Irvin,702273,663623
+2026-04-25,Arizona Diamondbacks,San Diego Padres,4,6,825093,Zac Gallen,Germán Márquez,668678,608566
+2026-04-25,Texas Rangers,Athletics,4,3,822910,MacKenzie Gore,Jeffrey Springs,669022,605488
+2026-04-25,Kansas City Royals,Los Angeles Angels,12,1,824121,Cole Ragans,Walbert Ureña,666142,700712
+2026-04-25,Houston Astros,New York Yankees,3,8,824203,Mike Burrows,Ryan Weathers,681347,677960
+2026-04-25,Milwaukee Brewers,Pittsburgh Pirates,3,6,823799,Jacob Misiorowski,Mitch Keller,694819,656605
+2026-04-25,Cincinnati Reds,Detroit Tigers,9,2,824527,Brady Singer,Jack Flaherty,663903,656427
+2026-04-25,Los Angeles Dodgers,Chicago Cubs,12,4,823960,Roki Sasaki,Colin Rea,808963,607067
+2026-04-25,Atlanta Braves,Philadelphia Phillies,5,8,824933,Bryce Elder,Zack Wheeler,693821,554430
+2026-04-26,Baltimore Orioles,Boston Red Sox,3,5,824852,Kyle Bradish,Connelly Early,680694,813349
+2026-04-26,Atlanta Braves,Philadelphia Phillies,6,2,824934,Chris Sale,Aaron Nola,519242,605400
+2026-04-26,Toronto Blue Jays,Cleveland Guardians,4,2,822824,Patrick Corbin,Slade Cecconi,571578,677944
+2026-04-26,Cincinnati Reds,Detroit Tigers,3,8,824528,Rhett Lowder,Keider Montero,695076,672456
+2026-04-26,New York Mets,Colorado Rockies,1,3,823635,Nolan McLean,Jose Quintana,690997,500779
+2026-04-26,New York Mets,Colorado Rockies,0,3,823637,Kodai Senga,Chase Dollander,673540,801403
+2026-04-26,Tampa Bay Rays,Minnesota Twins,4,2,822991,Griffin Jax,Simeon Woods Richardson,643377,680573
+2026-04-26,Chicago White Sox,Washington Nationals,1,2,824612,Bryan Hudson,Foster Griffin,663542,656492
+2026-04-26,Houston Astros,New York Yankees,7,4,824202,Spencer Arrighetti,Luis Gil,681293,661563
+2026-04-26,Milwaukee Brewers,Pittsburgh Pirates,5,0,823797,Kyle Harrison,Carmen Mlodzinski,690986,669387
+2026-04-26,St. Louis Cardinals,Seattle Mariners,2,3,823068,Michael McGreevy,Emerson Hancock,700241,676106
+2026-04-26,Texas Rangers,Athletics,1,2,822911,Kumar Rocker,J.T. Ginn,677958,669372
+2026-04-26,Arizona Diamondbacks,San Diego Padres,12,7,825094,Ryne Nelson,Michael King,669194,650633
+2026-04-26,San Francisco Giants,Miami Marlins,6,3,823230,Landen Roupp,Max Meyer,694738,676974
+2026-04-26,Kansas City Royals,Los Angeles Angels,11,9,824122,Seth Lugo,Reid Detmers,607625,672282
+2026-04-26,Los Angeles Dodgers,Chicago Cubs,6,0,823959,Justin Wrobleski,Shota Imanaga,680736,684007
+2026-04-27,Cleveland Guardians,Tampa Bay Rays,2,3,824446,Parker Messick,Steven Matz,800048,571927
+2026-04-27,Pittsburgh Pirates,St. Louis Cardinals,2,4,823395,Mason Montgomery,Dustin May,682254,669160
+2026-04-27,Toronto Blue Jays,Boston Red Sox,0,5,822825,Dylan Cease,Ranger Suarez,656302,624133
+2026-04-27,Minnesota Twins,Seattle Mariners,11,4,823719,Connor Prielipp,Luis Castillo,687570,622491
+2026-04-27,Chicago White Sox,Los Angeles Angels,8,7,824609,Anthony Kay,Jack Kochanowicz,641743,686799
+2026-04-27,Texas Rangers,New York Yankees,2,4,822906,Jack Leiter,Max Fried,683004,608331
+2026-04-27,San Diego Padres,Chicago Cubs,9,7,823311,Randy Vásquez,Matthew Boyd,681190,571510
+2026-04-27,Los Angeles Dodgers,Miami Marlins,5,4,823961,Yoshinobu Yamamoto,Chris Paddack,808967,663978
+2026-04-28,Cleveland Guardians,Tampa Bay Rays,0,1,824447,Tanner Bibee,Nick Martinez,676440,607259
+2026-04-28,Baltimore Orioles,Houston Astros,5,3,824849,Shane Baz,Kai-Wei Teng,669358,678906
+2026-04-28,Cincinnati Reds,Colorado Rockies,7,2,824526,Chase Burns,Kyle Freeland,695505,607536
+2026-04-28,Pittsburgh Pirates,St. Louis Cardinals,7,11,823390,Braxton Ashcraft,Kyle Leahy,677952,681517
+2026-04-28,Philadelphia Phillies,San Francisco Giants,7,0,823473,Jesús Luzardo,Tyler Mahle,666200,641816
+2026-04-28,Toronto Blue Jays,Boston Red Sox,3,0,822823,Trey Yesavage,Payton Tolle,702056,801139
+2026-04-28,New York Mets,Washington Nationals,8,0,823636,Clay Holmes,Zack Littell,605280,641793
+2026-04-28,Atlanta Braves,Detroit Tigers,5,2,824931,Martín Pérez,Casey Mize,527048,663554
+2026-04-28,Minnesota Twins,Seattle Mariners,1,7,823716,Joe Ryan,Logan Gilbert,657746,669302
+2026-04-28,Chicago White Sox,Los Angeles Angels,5,2,824610,Davis Martin,José Soriano,663436,667755
+2026-04-28,Milwaukee Brewers,Arizona Diamondbacks,13,2,823798,Chad Patrick,Merrill Kelly,694477,518876
+2026-04-28,Texas Rangers,New York Yankees,2,3,822908,Jacob deGrom,Cam Schlittler,594798,693645
+2026-04-28,Athletics,Kansas City Royals,1,4,825017,Aaron Civale,Kris Bubic,650644,663460
+2026-04-28,San Diego Padres,Chicago Cubs,3,8,823310,Walker Buehler,Edward Cabrera,621111,665795
+2026-04-28,Los Angeles Dodgers,Miami Marlins,1,2,823956,Shohei Ohtani,Janson Junk,660271,676083
+2026-04-29,Cleveland Guardians,Tampa Bay Rays,3,1,824445,Gavin Williams,Drew Rasmussen,668909,656876
+2026-04-29,Chicago White Sox,Los Angeles Angels,3,2,824608,Erick Fedde,Yusei Kikuchi,607200,579328
+2026-04-29,Minnesota Twins,Seattle Mariners,3,5,823717,Taj Bradley,George Kirby,671737,669923
+2026-04-29,Texas Rangers,New York Yankees,3,0,822907,Nathan Eovaldi,Elmer Rodríguez,543135,695684
+2026-04-29,Toronto Blue Jays,Boston Red Sox,8,1,822821,Eric Lauer,Brayan Bello,641778,678394
+2026-04-29,Los Angeles Dodgers,Miami Marlins,2,3,823958,Tyler Glasnow,Sandy Alcantara,607192,645261
+2026-04-29,San Diego Padres,Chicago Cubs,4,5,823312,Matt Waldron,Jameson Taillon,663362,592791
+2026-04-29,Cincinnati Reds,Colorado Rockies,2,13,824525,Brandon Williamson,Tomoyuki Sugano,682227,608372
+2026-04-29,Pittsburgh Pirates,St. Louis Cardinals,4,5,823392,Bubba Chandler,Andre Pallante,696149,669467
+2026-04-29,New York Mets,Washington Nationals,2,14,823633,David Peterson,Cade Cavalli,656849,676917
+2026-04-29,Atlanta Braves,Detroit Tigers,4,3,824930,JR Ritchie,Tarik Skubal,702275,669373
+2026-04-29,Milwaukee Brewers,Arizona Diamondbacks,2,6,823796,Brandon Sproat,Eduardo Rodriguez,687075,593958
+2026-04-29,Athletics,Kansas City Royals,5,2,825015,Luis Severino,Michael Wacha,622663,608379
+2026-04-30,Atlanta Braves,Detroit Tigers,2,5,824929,Bryce Elder,Framber Valdez,693821,664285
+2026-04-30,Baltimore Orioles,Houston Astros,10,3,824848,Chris Bassitt,Peter Lambert,605135,663567
+2026-04-30,Baltimore Orioles,Houston Astros,5,11,824850,Brandon Young,Lance McCullers Jr.,687064,621121
+2026-04-30,Pittsburgh Pirates,St. Louis Cardinals,5,10,823391,Paul Skenes,Hunter Dobbins,694973,690928
+2026-04-30,Philadelphia Phillies,San Francisco Giants,3,2,823472,Cristopher Sánchez,Logan Webb,650911,657277
+2026-04-30,Philadelphia Phillies,San Francisco Giants,6,5,823471,Tim Mayza,Adrian Houser,641835,605288
+2026-04-30,Cincinnati Reds,Colorado Rockies,6,4,824524,Andrew Abbott,Michael Lorenzen,671096,547179
+2026-04-30,New York Mets,Washington Nationals,4,5,823634,Freddy Peralta,Miles Mikolas,642547,571945
+2026-04-30,Milwaukee Brewers,Arizona Diamondbacks,13,1,823795,Brandon Woodruff,Michael Soroka,605540,647336
+2026-04-30,Athletics,Kansas City Royals,6,3,825016,Jeffrey Springs,Noah Cameron,605488,702070
+2026-04-30,Minnesota Twins,Toronto Blue Jays,7,1,823714,Bailey Ober,Kevin Gausman,641927,592332
+2026-05-01,Chicago Cubs,Arizona Diamondbacks,6,5,824686,Colin Rea,Zac Gallen,607067,668678
+2026-05-01,Detroit Tigers,Texas Rangers,4,5,824287,Jack Flaherty,MacKenzie Gore,656427,669022
+2026-05-01,Pittsburgh Pirates,Cincinnati Reds,9,1,823389,Mitch Keller,Brady Singer,656605,663903
+2026-05-01,Washington Nationals,Milwaukee Brewers,1,6,822744,Jake Irvin,Jacob Misiorowski,663623,694819
+2026-05-01,New York Yankees,Baltimore Orioles,7,2,823557,Will Warren,Cade Povich,701542,700249
+2026-05-01,Boston Red Sox,Houston Astros,3,1,824772,Jake Bennett,Mike Burrows,687562,681347
+2026-05-01,Tampa Bay Rays,San Francisco Giants,3,0,822990,Shane McClanahan,Robbie Ray,663556,592662
+2026-05-01,Miami Marlins,Philadelphia Phillies,5,6,823877,Eury Pérez,Zack Wheeler,691587,554430
+2026-05-01,Minnesota Twins,Toronto Blue Jays,3,7,823713,Simeon Woods Richardson,Patrick Corbin,680573,571578
+2026-05-01,St. Louis Cardinals,Los Angeles Dodgers,7,2,823066,Matthew Liberatore,Emmet Sheehan,669461,686218
+2026-05-01,Colorado Rockies,Atlanta Braves,6,8,824366,Jose Quintana,Grant Holmes,500779,656550
+2026-05-01,Los Angeles Angels,New York Mets,3,4,824041,Walbert Ureña,Christian Scott,700712,681035
+2026-05-01,Athletics,Cleveland Guardians,5,8,825012,J.T. Ginn,Joey Cantillo,669372,676282
+2026-05-01,San Diego Padres,Chicago White Sox,2,8,823309,Germán Márquez,Noah Schultz,608566,702273
+2026-05-01,Seattle Mariners,Kansas City Royals,6,7,823146,Bryan Woo,Cole Ragans,693433,666142
+2026-05-02,New York Yankees,Baltimore Orioles,9,4,823554,Ryan Weathers,Kyle Bradish,677960,680694
+2026-05-02,Minnesota Twins,Toronto Blue Jays,4,11,823715,Connor Prielipp,Dylan Cease,687570,656302
+2026-05-02,Chicago Cubs,Arizona Diamondbacks,2,0,824685,Shota Imanaga,Ryne Nelson,684007,669194
+2026-05-02,Athletics,Cleveland Guardians,6,14,825014,Jacob Lopez,Slade Cecconi,682052,677944
+2026-05-02,Pittsburgh Pirates,Cincinnati Reds,17,7,823388,Carmen Mlodzinski,Rhett Lowder,669387,695076
+2026-05-02,Washington Nationals,Milwaukee Brewers,1,4,822746,Foster Griffin,Kyle Harrison,656492,690986
+2026-05-02,Boston Red Sox,Houston Astros,3,6,824771,Connelly Early,Spencer Arrighetti,813349,681293
+2026-05-02,Miami Marlins,Philadelphia Phillies,4,0,823876,Max Meyer,Andrew Painter,676974,691725
+2026-05-02,Tampa Bay Rays,San Francisco Giants,5,1,822988,Griffin Jax,Landen Roupp,643377,694738
+2026-05-02,St. Louis Cardinals,Los Angeles Dodgers,3,2,823067,Michael McGreevy,Roki Sasaki,700241,808963
+2026-05-02,Detroit Tigers,Texas Rangers,5,1,824284,Keider Montero,Kumar Rocker,672456,677958
+2026-05-02,Colorado Rockies,Atlanta Braves,1,9,824365,Brennan Bernardino,Chris Sale,657514,519242
+2026-05-02,San Diego Padres,Chicago White Sox,0,4,823308,Michael King,Sean Burke,650633,680732
+2026-05-02,Los Angeles Angels,New York Mets,4,3,824042,Reid Detmers,Nolan McLean,672282,690997
+2026-05-02,Seattle Mariners,Kansas City Royals,2,3,823144,Emerson Hancock,Seth Lugo,676106,607625
+2026-05-03,Minnesota Twins,Toronto Blue Jays,4,3,823711,Joe Ryan,Trey Yesavage,657746,702056
+2026-05-03,Boston Red Sox,Houston Astros,1,3,824769,Ranger Suarez,Cody Bolton,624133,675989
+2026-05-03,Pittsburgh Pirates,Cincinnati Reds,1,0,823387,Braxton Ashcraft,Chase Burns,677952,695505
+2026-05-03,New York Yankees,Baltimore Orioles,11,3,823555,Max Fried,Trey Gibson,608331,694346
+2026-05-03,Washington Nationals,Milwaukee Brewers,3,2,822742,PJ Poulin,Logan Henderson,676571,701656
+2026-05-03,Tampa Bay Rays,San Francisco Giants,2,1,822987,Steven Matz,Tyler Mahle,571927,641816
+2026-05-03,Miami Marlins,Philadelphia Phillies,2,7,823875,Chris Paddack,Jesús Luzardo,663978,666200
+2026-05-03,St. Louis Cardinals,Los Angeles Dodgers,1,4,823065,Dustin May,Justin Wrobleski,669160,680736
+2026-05-03,Chicago Cubs,Arizona Diamondbacks,8,4,824687,Matthew Boyd,Merrill Kelly,571510,518876
+2026-05-03,Colorado Rockies,Atlanta Braves,6,11,824364,Kyle Freeland,Spencer Strider,607536,675911
+2026-05-03,Athletics,Cleveland Guardians,7,1,825013,Aaron Civale,Parker Messick,650644,800048
+2026-05-03,Los Angeles Angels,New York Mets,1,5,824043,Jack Kochanowicz,Clay Holmes,686799,605280
+2026-05-03,Seattle Mariners,Kansas City Royals,1,4,823145,Luis Castillo,Kris Bubic,622491,663460
+2026-05-03,San Diego Padres,Chicago White Sox,4,3,823307,Griffin Canning,Anthony Kay,656288,641743
+2026-05-03,Detroit Tigers,Texas Rangers,7,1,824285,Tyler Holton,Jack Leiter,663947,683004
+2026-05-04,Colorado Rockies,New York Mets,2,4,824363,Tomoyuki Sugano,Huascar Brazobán,608372,623211
+2026-05-04,Detroit Tigers,Boston Red Sox,4,5,824283,Tyler Holton,Payton Tolle,663947,801139
+2026-05-04,Tampa Bay Rays,Toronto Blue Jays,5,1,822984,Nick Martinez,Eric Lauer,607259,641778
+2026-05-04,Miami Marlins,Philadelphia Phillies,0,1,823874,Janson Junk,Aaron Nola,676083,605400
+2026-05-04,New York Yankees,Baltimore Orioles,12,1,823552,Cam Schlittler,Shane Baz,693645,669358
+2026-05-04,Chicago Cubs,Cincinnati Reds,5,4,824684,Edward Cabrera,Chase Petty,665795,695534
+2026-05-04,Kansas City Royals,Cleveland Guardians,6,2,824120,Michael Wacha,Tanner Bibee,608379,676440
+2026-05-04,St. Louis Cardinals,Milwaukee Brewers,6,3,823064,Kyle Leahy,Chad Patrick,681517,694477
+2026-05-04,Houston Astros,Los Angeles Dodgers,3,8,824201,Steven Okert,Yoshinobu Yamamoto,595345,808967
+2026-05-04,Los Angeles Angels,Chicago White Sox,0,6,824039,José Soriano,Davis Martin,667755,663436
+2026-05-04,Seattle Mariners,Atlanta Braves,5,4,823143,Logan Gilbert,JR Ritchie,669302,702275
+2026-05-04,San Francisco Giants,San Diego Padres,3,2,823228,Trevor McDonald,Randy Vásquez,686790,681190
+2026-05-05,Detroit Tigers,Boston Red Sox,3,10,824281,Framber Valdez,Jovani Morán,664285,663558
+2026-05-05,Tampa Bay Rays,Toronto Blue Jays,4,3,822986,Drew Rasmussen,Kevin Gausman,656876,592332
+2026-05-05,Philadelphia Phillies,Athletics,9,1,823469,Cristopher Sánchez,Luis Severino,650911,622663
+2026-05-05,Miami Marlins,Baltimore Orioles,7,9,823873,Sandy Alcantara,Chris Bassitt,645261,605135
+2026-05-05,Washington Nationals,Minnesota Twins,3,11,822743,Cade Cavalli,Taj Bradley,676917,671737
+2026-05-05,New York Yankees,Texas Rangers,7,4,823553,Elmer Rodríguez,Jacob deGrom,695684,594798
+2026-05-05,Chicago Cubs,Cincinnati Reds,3,2,824682,Jameson Taillon,Andrew Abbott,592791,671096
+2026-05-05,Kansas City Royals,Cleveland Guardians,5,3,824119,Stephen Kolek,Gavin Williams,663568,668909
+2026-05-05,Houston Astros,Los Angeles Dodgers,2,1,824200,Peter Lambert,Shohei Ohtani,663567,660271
+2026-05-05,Los Angeles Angels,Chicago White Sox,4,3,824040,Sam Aldegheri,Erick Fedde,691951,607200
+2026-05-05,Arizona Diamondbacks,Pittsburgh Pirates,9,0,825092,Eduardo Rodriguez,Bubba Chandler,593958,696149
+2026-05-05,Seattle Mariners,Atlanta Braves,2,3,823142,George Kirby,Bryce Elder,669923,693821
+2026-05-05,San Francisco Giants,San Diego Padres,5,10,823227,Logan Webb,Walker Buehler,657277,621111
+2026-05-06,Tampa Bay Rays,Toronto Blue Jays,3,0,822985,Shane McClanahan,Patrick Corbin,663556,571578
+2026-05-06,St. Louis Cardinals,Milwaukee Brewers,2,6,823063,Andre Pallante,Brandon Sproat,669467,687075
+2026-05-06,Houston Astros,Los Angeles Dodgers,2,12,824198,Lance McCullers Jr.,Tyler Glasnow,621121,607192
+2026-05-06,San Francisco Giants,San Diego Padres,1,5,823226,Adrian Houser,Bradgley Rodriguez,605288,699134
+2026-05-06,Los Angeles Angels,Chicago White Sox,8,2,824036,Walbert Ureña,Noah Schultz,700712,702273
+2026-05-06,Seattle Mariners,Atlanta Braves,3,1,823141,Bryan Woo,Martín Pérez,693433,527048
+2026-05-06,Detroit Tigers,Boston Red Sox,0,4,824282,Jack Flaherty,Sonny Gray,656427,543243
+2026-05-06,Philadelphia Phillies,Athletics,6,3,823470,Zack Wheeler,Jeffrey Springs,554430,605488
+2026-05-06,Miami Marlins,Baltimore Orioles,4,7,823872,Eury Pérez,Brandon Young,691587,687064
+2026-05-06,Washington Nationals,Minnesota Twins,15,2,822740,Miles Mikolas,Bailey Ober,571945,641927
+2026-05-06,New York Yankees,Texas Rangers,1,6,823550,Will Warren,Nathan Eovaldi,701542,543135
+2026-05-06,Chicago Cubs,Cincinnati Reds,7,6,824683,Colin Rea,Brady Singer,607067,663903
+2026-05-06,Kansas City Royals,Cleveland Guardians,1,3,824118,Cole Ragans,Joey Cantillo,666142,676282
+2026-05-06,Colorado Rockies,New York Mets,5,10,824361,Michael Lorenzen,Freddy Peralta,547179,642547
+2026-05-06,Arizona Diamondbacks,Pittsburgh Pirates,0,1,825091,Michael Soroka,Paul Skenes,647336,694973
+2026-05-07,New York Yankees,Texas Rangers,9,2,823551,Paul Blackburn,MacKenzie Gore,621112,669022
+2026-05-07,Washington Nationals,Minnesota Twins,7,5,822741,Jake Irvin,Simeon Woods Richardson,663623,680573
+2026-05-07,Kansas City Royals,Cleveland Guardians,5,8,824117,Seth Lugo,Slade Cecconi,607625,677944
+2026-05-07,Chicago Cubs,Cincinnati Reds,8,3,824681,Shota Imanaga,Rhett Lowder,684007,695076
+2026-05-07,Colorado Rockies,New York Mets,6,2,824362,Jose Quintana,Christian Scott,500779,681035
+2026-05-07,Arizona Diamondbacks,Pittsburgh Pirates,2,4,825090,Zac Gallen,Mitch Keller,668678,656605
+2026-05-07,Philadelphia Phillies,Athletics,1,12,823467,Andrew Painter,J.T. Ginn,691725,669372
+2026-05-07,Miami Marlins,Baltimore Orioles,4,3,823870,Max Meyer,Cade Povich,676974,700249
+2026-05-07,Boston Red Sox,Tampa Bay Rays,4,8,824767,Jake Bennett,Griffin Jax,687562,643377
+2026-05-07,San Diego Padres,St. Louis Cardinals,1,2,823306,Michael King,Matthew Liberatore,650633,669461
+2026-05-08,Cincinnati Reds,Houston Astros,0,10,824522,Nick Lodolo,Mike Burrows,666157,681347
+2026-05-08,Philadelphia Phillies,Colorado Rockies,7,9,823466,Jesús Luzardo,Chase Dollander,666200,801403
+2026-05-08,Baltimore Orioles,Athletics,3,4,824846,Kyle Bradish,Jacob Lopez,680694,682052
+2026-05-08,Toronto Blue Jays,Los Angeles Angels,2,0,822822,Dylan Cease,Reid Detmers,656302,672282
+2026-05-08,Boston Red Sox,Tampa Bay Rays,2,0,824768,Connelly Early,Jesse Scholtens,813349,669947
+2026-05-08,Miami Marlins,Washington Nationals,2,3,823871,Robby Snelling,Foster Griffin,702281,656492
+2026-05-08,Cleveland Guardians,Minnesota Twins,6,4,824443,Parker Messick,Connor Prielipp,800048,687570
+2026-05-08,Kansas City Royals,Detroit Tigers,4,3,824116,Kris Bubic,Keider Montero,663460,672456
+2026-05-08,Chicago White Sox,Seattle Mariners,8,12,824607,Sean Burke,Emerson Hancock,680732,676106
+2026-05-08,Milwaukee Brewers,New York Yankees,6,0,823794,Jacob Misiorowski,Max Fried,694819,608331
+2026-05-08,Texas Rangers,Chicago Cubs,1,7,822904,Kumar Rocker,Ben Brown,677958,676962
+2026-05-08,Arizona Diamondbacks,New York Mets,1,3,825088,Ryne Nelson,Nolan McLean,669194,690997
+2026-05-08,San Diego Padres,St. Louis Cardinals,0,6,823303,Griffin Canning,Michael McGreevy,656288,700241
+2026-05-08,Los Angeles Dodgers,Atlanta Braves,3,1,823957,Emmet Sheehan,Chris Sale,686218,519242
+2026-05-08,San Francisco Giants,Pittsburgh Pirates,5,2,823225,Robbie Ray,Carmen Mlodzinski,592662,669387
+2026-05-09,Toronto Blue Jays,Los Angeles Angels,14,1,822820,Trey Yesavage,Jack Kochanowicz,702056,686799
+2026-05-09,Baltimore Orioles,Athletics,2,6,824847,Shane Baz,Aaron Civale,669358,650644
+2026-05-09,Cincinnati Reds,Houston Astros,3,1,824523,Chase Burns,Spencer Arrighetti,695505,681293
+2026-05-09,Miami Marlins,Washington Nationals,8,7,823869,Janson Junk,Richard Lovelady,676083,663992
+2026-05-09,Philadelphia Phillies,Colorado Rockies,9,3,823468,Aaron Nola,Kyle Freeland,605400,607536
+2026-05-09,Cleveland Guardians,Minnesota Twins,1,2,824444,Tanner Bibee,Joe Ryan,676440,657746
+2026-05-09,Texas Rangers,Chicago Cubs,6,0,822905,Jack Leiter,Edward Cabrera,683004,665795
+2026-05-09,Kansas City Royals,Detroit Tigers,5,1,824115,Michael Wacha,Burch Smith,608379,572143
+2026-05-09,Chicago White Sox,Seattle Mariners,6,1,824606,Anthony Kay,Luis Castillo,641743,622491
+2026-05-09,Milwaukee Brewers,New York Yankees,4,3,823792,Kyle Harrison,Cam Schlittler,690986,693645
+2026-05-09,Arizona Diamondbacks,New York Mets,2,1,825089,Merrill Kelly,Clay Holmes,518876,605280
+2026-05-09,San Diego Padres,St. Louis Cardinals,4,2,823304,Randy Vásquez,Dustin May,681190,669160
+2026-05-09,San Francisco Giants,Pittsburgh Pirates,3,13,823224,Landen Roupp,Braxton Ashcraft,694738,677952
+2026-05-09,Los Angeles Dodgers,Atlanta Braves,2,7,823955,Blake Snell,Spencer Strider,605483,675911
+2026-05-10,Miami Marlins,Washington Nationals,5,2,823868,Sandy Alcantara,Cade Cavalli,645261,676917
+2026-05-10,Baltimore Orioles,Athletics,2,1,824845,Keegan Akin,Luis Severino,669211,622663
+2026-05-10,Boston Red Sox,Tampa Bay Rays,1,4,824765,Payton Tolle,Nick Martinez,801139,607259
+2026-05-10,Philadelphia Phillies,Colorado Rockies,6,0,823463,Cristopher Sánchez,Tomoyuki Sugano,650911,608372
+2026-05-10,Toronto Blue Jays,Los Angeles Angels,1,6,822819,Spencer Miles,José Soriano,693686,667755
+2026-05-10,Cincinnati Reds,Houston Astros,5,0,824520,Andrew Abbott,Kai-Wei Teng,671096,678906
+2026-05-10,Cleveland Guardians,Minnesota Twins,4,5,824440,Gavin Williams,Andrew Morris,668909,702193
+2026-05-10,Chicago White Sox,Seattle Mariners,2,1,824605,Davis Martin,Logan Gilbert,663436,669302
+2026-05-10,Milwaukee Brewers,New York Yankees,4,3,823793,Logan Henderson,Carlos Rodón,701656,607074
+2026-05-10,Texas Rangers,Chicago Cubs,3,0,822902,Jacob deGrom,Jameson Taillon,594798,592791
+2026-05-10,San Francisco Giants,Pittsburgh Pirates,7,6,823221,Tyler Mahle,Bubba Chandler,641816,696149
+2026-05-10,Arizona Diamondbacks,New York Mets,5,1,825085,Eduardo Rodriguez,Huascar Brazobán,593958,623211
+2026-05-10,San Diego Padres,St. Louis Cardinals,3,2,823305,Walker Buehler,Kyle Leahy,621111,681517
+2026-05-10,Los Angeles Dodgers,Atlanta Braves,2,7,823954,Justin Wrobleski,Bryce Elder,680736,693821
+2026-05-10,Kansas City Royals,Detroit Tigers,3,6,824113,Noah Cameron,Brenan Hanifee,702070,669724
+2026-05-11,Cleveland Guardians,Los Angeles Angels,7,2,824441,Joey Cantillo,Brent Suter,676282,608718
+2026-05-11,Baltimore Orioles,New York Yankees,3,2,824844,Brandon Young,Ryan Weathers,687064,677960
+2026-05-11,Toronto Blue Jays,Tampa Bay Rays,5,8,822818,Kevin Gausman,Drew Rasmussen,592332,656876
+2026-05-11,Texas Rangers,Arizona Diamondbacks,0,1,822901,Jakob Junis,Michael Soroka,596001,647336
+2026-05-11,Houston Astros,Seattle Mariners,1,3,824199,Peter Lambert,George Kirby,663567,669923
+2026-05-11,Los Angeles Dodgers,San Francisco Giants,3,9,823953,Roki Sasaki,Trevor McDonald,808963,686790
+2026-05-12,Cleveland Guardians,Los Angeles Angels,3,2,824442,Slade Cecconi,Walbert Ureña,677944,700712
+2026-05-12,Baltimore Orioles,New York Yankees,2,6,824843,Trevor Rogers,Will Warren,669432,701542
+2026-05-12,Cincinnati Reds,Washington Nationals,4,10,824521,Brady Singer,Miles Mikolas,663903,571945
+2026-05-12,Pittsburgh Pirates,Colorado Rockies,3,1,823385,Paul Skenes,Michael Lorenzen,694973,547179
+2026-05-12,Boston Red Sox,Philadelphia Phillies,1,2,824764,Jovani Morán,Zack Wheeler,663558,554430
+2026-05-12,Toronto Blue Jays,Tampa Bay Rays,6,7,822817,Patrick Corbin,Shane McClanahan,571578,663556
+2026-05-12,New York Mets,Detroit Tigers,10,2,823632,Freddy Peralta,Jack Flaherty,642547,656427
+2026-05-12,Atlanta Braves,Chicago Cubs,5,2,824927,Grant Holmes,Colin Rea,656550,607067
+2026-05-12,Chicago White Sox,Kansas City Royals,6,5,824604,Erick Fedde,Stephen Kolek,607200,663568
+2026-05-12,Minnesota Twins,Miami Marlins,3,0,823712,Bailey Ober,Eury Pérez,641927,691587
+2026-05-12,Milwaukee Brewers,San Diego Padres,6,4,823790,Brandon Sproat,Bradgley Rodriguez,687075,699134
+2026-05-12,Texas Rangers,Arizona Diamondbacks,7,4,822903,MacKenzie Gore,Zac Gallen,669022,668678
+2026-05-12,Houston Astros,Seattle Mariners,2,10,824197,Tatsuya Imai,Bryan Woo,837227,693433
+2026-05-12,Athletics,St. Louis Cardinals,4,6,825011,Jeffrey Springs,Andre Pallante,605488,669467
+2026-05-12,Los Angeles Dodgers,San Francisco Giants,2,6,823951,Yoshinobu Yamamoto,Adrian Houser,808967,605288
+2026-05-13,Baltimore Orioles,New York Yankees,7,0,824841,Kyle Bradish,Max Fried,680694,608331
+2026-05-13,Cleveland Guardians,Los Angeles Angels,4,2,824438,Parker Messick,Reid Detmers,800048,672282
+2026-05-13,Cincinnati Reds,Washington Nationals,7,8,824519,Nick Lodolo,Jake Irvin,666157,663623
+2026-05-13,Pittsburgh Pirates,Colorado Rockies,4,10,823386,Mitch Keller,Jose Quintana,656605,500779
+2026-05-13,Boston Red Sox,Philadelphia Phillies,3,1,824763,Sonny Gray,Andrew Painter,543243,691725
+2026-05-13,Toronto Blue Jays,Tampa Bay Rays,5,3,822815,Dylan Cease,Griffin Jax,656302,643377
+2026-05-13,New York Mets,Detroit Tigers,3,2,823631,Christian Scott,Framber Valdez,681035,664285
+2026-05-13,Atlanta Braves,Chicago Cubs,4,1,824928,JR Ritchie,Shota Imanaga,702275,684007
+2026-05-13,Chicago White Sox,Kansas City Royals,6,5,824603,Noah Schultz,Seth Lugo,702273,607625
+2026-05-13,Minnesota Twins,Miami Marlins,5,9,823710,Simeon Woods Richardson,Max Meyer,680573,676974
+2026-05-13,Milwaukee Brewers,San Diego Padres,1,3,823791,Jacob Misiorowski,Michael King,694819,650633
+2026-05-13,Texas Rangers,Arizona Diamondbacks,6,5,822900,Kumar Rocker,Ryne Nelson,677958,669194
+2026-05-13,Houston Astros,Seattle Mariners,4,3,824195,Lance McCullers Jr.,Bryce Miller,621121,682243
+2026-05-13,Athletics,St. Louis Cardinals,6,2,825010,J.T. Ginn,Matthew Liberatore,669372,669461
+2026-05-13,Los Angeles Dodgers,San Francisco Giants,4,0,823952,Shohei Ohtani,Robbie Ray,660271,592662
+2026-05-14,Pittsburgh Pirates,Colorado Rockies,7,2,823383,Mason Montgomery,Chase Dollander,682254,801403
+2026-05-14,Cincinnati Reds,Washington Nationals,15,1,824517,Chase Burns,Foster Griffin,695505,656492
+2026-05-14,New York Mets,Detroit Tigers,9,4,823630,Nolan McLean,Keider Montero,690997,672456
+2026-05-14,Minnesota Twins,Miami Marlins,9,1,823709,Zebby Matthews,Braxton Garrett,805673,666129
+2026-05-14,Milwaukee Brewers,San Diego Padres,7,1,823789,Kyle Harrison,Griffin Canning,690986,656288
+2026-05-14,Houston Astros,Seattle Mariners,3,8,824196,Mike Burrows,Luis Castillo,681347,622491
+2026-05-14,Athletics,St. Louis Cardinals,4,5,825008,Jacob Lopez,Michael McGreevy,682052,700241
+2026-05-14,Boston Red Sox,Philadelphia Phillies,1,3,824762,Ranger Suarez,Jesús Luzardo,624133,666200
+2026-05-14,Atlanta Braves,Chicago Cubs,0,2,824926,Chris Sale,Ben Brown,519242,676962
+2026-05-14,Chicago White Sox,Kansas City Royals,6,2,824602,Anthony Kay,Kris Bubic,641743,663460
+2026-05-14,Los Angeles Dodgers,San Francisco Giants,5,2,823950,Emmet Sheehan,Landen Roupp,686218,694738
+2026-05-15,Pittsburgh Pirates,Philadelphia Phillies,9,11,823384,Braxton Ashcraft,Aaron Nola,677952,605400
+2026-05-15,Washington Nationals,Baltimore Orioles,3,2,822739,Zack Littell,Shane Baz,641793,669358
+2026-05-15,Detroit Tigers,Toronto Blue Jays,3,2,824280,Brenan Hanifee,Trey Yesavage,669724,702056
+2026-05-15,Cleveland Guardians,Cincinnati Reds,6,7,824439,Tanner Bibee,Andrew Abbott,676440,671096
+2026-05-15,Tampa Bay Rays,Miami Marlins,7,2,822983,Ian Seymour,Janson Junk,693855,676083
+2026-05-15,Minnesota Twins,Milwaukee Brewers,2,3,823707,Joe Ryan,Coleman Crow,657746,689441
+2026-05-15,Atlanta Braves,Boston Red Sox,3,2,824925,Spencer Strider,Connelly Early,675911,813349
+2026-05-15,New York Mets,New York Yankees,2,5,823629,Clay Holmes,Cam Schlittler,605280,693645
+2026-05-15,Chicago White Sox,Chicago Cubs,5,10,824601,Sean Burke,Edward Cabrera,680732,665795
+2026-05-15,Houston Astros,Texas Rangers,2,0,824194,Spencer Arrighetti,Jack Leiter,681293,683004
+2026-05-15,St. Louis Cardinals,Kansas City Royals,5,4,823061,Dustin May,Michael Wacha,669160,608379
+2026-05-15,Colorado Rockies,Arizona Diamondbacks,1,9,824360,Kyle Freeland,Merrill Kelly,607536,518876
+2026-05-15,Los Angeles Angels,Los Angeles Dodgers,0,6,824037,Jack Kochanowicz,Will Klein,686799,694361
+2026-05-15,Seattle Mariners,San Diego Padres,0,2,823140,Emerson Hancock,Randy Vásquez,676106,681190
+2026-05-15,Athletics,San Francisco Giants,5,2,825009,Aaron Civale,Tyler Mahle,650644,641816
+2026-05-16,Detroit Tigers,Toronto Blue Jays,1,2,824278,Casey Mize,Mason Fluharty,663554,689254
+2026-05-16,St. Louis Cardinals,Kansas City Royals,4,2,823060,Kyle Leahy,Noah Cameron,681517,702070
+2026-05-16,Colorado Rockies,Arizona Diamondbacks,4,2,824359,Tomoyuki Sugano,Eduardo Rodriguez,608372,593958
+2026-05-16,Washington Nationals,Baltimore Orioles,13,3,822737,Cade Cavalli,Chris Bassitt,676917,605135
+2026-05-16,Pittsburgh Pirates,Philadelphia Phillies,0,6,823382,Bubba Chandler,Cristopher Sánchez,696149,650911
+2026-05-16,Tampa Bay Rays,Miami Marlins,5,10,822981,Nick Martinez,Sandy Alcantara,607259,645261
+2026-05-16,Cleveland Guardians,Cincinnati Reds,7,4,824435,Joey Cantillo,Chris Paddack,676282,663978
+2026-05-16,Houston Astros,Texas Rangers,4,1,824193,Kai-Wei Teng,Jacob deGrom,678906,594798
+2026-05-16,Chicago White Sox,Chicago Cubs,8,3,824600,Davis Martin,Jameson Taillon,663436,592791
+2026-05-16,Minnesota Twins,Milwaukee Brewers,1,2,823706,Connor Prielipp,Logan Henderson,687570,701656
+2026-05-16,Seattle Mariners,San Diego Padres,4,7,823139,Logan Gilbert,Walker Buehler,669302,621111
+2026-05-16,Atlanta Braves,Boston Red Sox,2,3,824924,Bryce Elder,Payton Tolle,693821,801139
+2026-05-16,New York Mets,New York Yankees,6,3,823627,Huascar Brazobán,Carlos Rodón,623211,607074
+2026-05-16,Los Angeles Angels,Los Angeles Dodgers,2,15,824038,José Soriano,Justin Wrobleski,667755,680736
+2026-05-16,Athletics,San Francisco Giants,4,6,825007,Luis Severino,Trevor McDonald,622663,686790
+2026-05-17,Tampa Bay Rays,Miami Marlins,6,3,822982,Drew Rasmussen,Eury Pérez,656876,691587
+2026-05-17,Washington Nationals,Baltimore Orioles,3,7,822738,Richard Lovelady,Brandon Young,663992,687064
+2026-05-17,Pittsburgh Pirates,Philadelphia Phillies,0,6,823381,Paul Skenes,Zack Wheeler,694973,554430
+2026-05-17,Atlanta Braves,Boston Red Sox,8,1,824923,Grant Holmes,Brayan Bello,656550,678394
+2026-05-17,Cleveland Guardians,Cincinnati Reds,10,3,824436,Gavin Williams,Brady Singer,668909,663903
+2026-05-17,Detroit Tigers,Toronto Blue Jays,1,4,824279,Jack Flaherty,Kevin Gausman,656427,592332
+2026-05-17,New York Mets,New York Yankees,7,6,823628,Freddy Peralta,Elmer Rodríguez,642547,695684
+2026-05-17,Houston Astros,Texas Rangers,0,8,824192,Peter Lambert,Nathan Eovaldi,663567,543135
+2026-05-17,Chicago White Sox,Chicago Cubs,9,8,824599,Erick Fedde,Colin Rea,607200,607067
+2026-05-17,Minnesota Twins,Milwaukee Brewers,5,4,823708,Bailey Ober,Robert Gasser,641927,688107
+2026-05-17,St. Louis Cardinals,Kansas City Royals,0,2,823058,Andre Pallante,Stephen Kolek,669467,663568
+2026-05-17,Colorado Rockies,Arizona Diamondbacks,6,8,824358,Michael Lorenzen,Michael Soroka,547179,647336
+2026-05-17,Athletics,San Francisco Giants,1,10,825006,Jeffrey Springs,Adrian Houser,605488,605288
+2026-05-17,Los Angeles Angels,Los Angeles Dodgers,1,10,824034,Grayson Rodriguez,Roki Sasaki,680570,808963
+2026-05-17,Seattle Mariners,San Diego Padres,3,8,823138,George Kirby,Lucas Giolito,669923,608337
+2026-05-18,Detroit Tigers,Cleveland Guardians,2,8,824277,Framber Valdez,Slade Cecconi,664285,677944
+2026-05-18,Tampa Bay Rays,Baltimore Orioles,16,6,822980,Shane McClanahan,Trevor Rogers,663556,669432
+2026-05-18,Philadelphia Phillies,Cincinnati Reds,5,4,823465,Andrew Painter,Nick Lodolo,691725,666157
+2026-05-18,Miami Marlins,Atlanta Braves,12,0,823867,Max Meyer,JR Ritchie,676974,702275
+2026-05-18,Washington Nationals,New York Mets,7,16,822734,Jake Irvin,Christian Scott,663623,681035
+2026-05-18,New York Yankees,Toronto Blue Jays,7,6,823549,Ryan Weathers,Patrick Corbin,677960,571578
+2026-05-18,Kansas City Royals,Boston Red Sox,1,3,824114,Seth Lugo,Sonny Gray,607625,543243
+2026-05-18,Minnesota Twins,Houston Astros,6,3,823705,Kendry Rojas,Tatsuya Imai,696070,837227
+2026-05-18,Chicago Cubs,Milwaukee Brewers,3,9,824680,Shota Imanaga,Brandon Sproat,684007,687075
+2026-05-18,Colorado Rockies,Texas Rangers,7,6,824357,Jose Quintana,MacKenzie Gore,500779,669022
+2026-05-18,Los Angeles Angels,Athletics,2,1,824035,Walbert Ureña,J.T. Ginn,700712,669372
+2026-05-18,San Diego Padres,Los Angeles Dodgers,1,0,823301,Michael King,Yoshinobu Yamamoto,650633,808967
+2026-05-18,Arizona Diamondbacks,San Francisco Giants,12,2,825087,Zac Gallen,Robbie Ray,668678,592662
+2026-05-18,Seattle Mariners,Chicago White Sox,6,1,823137,Bryan Woo,Noah Schultz,693433,702273
+2026-05-19,Miami Marlins,Atlanta Braves,4,8,823865,Braxton Garrett,Martín Pérez,666129,527048
+2026-05-19,Detroit Tigers,Cleveland Guardians,3,4,824276,Keider Montero,Parker Messick,672456,800048
+2026-05-19,Tampa Bay Rays,Baltimore Orioles,4,1,822979,Griffin Jax,Kyle Bradish,643377,680694
+2026-05-19,Philadelphia Phillies,Cincinnati Reds,1,4,823464,Jesús Luzardo,Chase Burns,666200,695505
+2026-05-19,Washington Nationals,New York Mets,9,6,822736,Foster Griffin,Nolan McLean,656492,690997
+2026-05-19,New York Yankees,Toronto Blue Jays,5,4,823548,Will Warren,Dylan Cease,701542,656302
+2026-05-19,Kansas City Royals,Boston Red Sox,1,7,824112,Bailey Falter,Ranger Suarez,663559,624133
+2026-05-19,Minnesota Twins,Houston Astros,1,2,823704,Zebby Matthews,Jason Alexander,805673,669920
+2026-05-19,Chicago Cubs,Milwaukee Brewers,2,5,824677,Ben Brown,Jacob Misiorowski,676962,694819
+2026-05-19,St. Louis Cardinals,Pittsburgh Pirates,9,6,823059,Matthew Liberatore,Mitch Keller,669461,656605
+2026-05-19,Colorado Rockies,Texas Rangers,0,10,824356,Sammy Peralta,Tyler Alexander,671111,641302
+2026-05-19,Los Angeles Angels,Athletics,6,14,824033,Reid Detmers,Jacob Lopez,672282,682052
+2026-05-19,San Diego Padres,Los Angeles Dodgers,4,5,823302,Griffin Canning,Emmet Sheehan,656288,686218
+2026-05-19,Arizona Diamondbacks,San Francisco Giants,5,3,825086,Ryne Nelson,Landen Roupp,669194,694738
+2026-05-19,Seattle Mariners,Chicago White Sox,1,2,823136,Bryce Miller,Anthony Kay,682243,641743
+2026-05-20,Philadelphia Phillies,Cincinnati Reds,4,9,823462,Aaron Nola,Andrew Abbott,605400,671096
+2026-05-20,Tampa Bay Rays,Baltimore Orioles,5,3,822977,Steven Matz,Shane Baz,571927,669358
+2026-05-20,Minnesota Twins,Houston Astros,4,1,823703,Joe Ryan,Mike Burrows,657746,681347
+2026-05-20,Colorado Rockies,Texas Rangers,4,5,824355,Kyle Freeland,Jack Leiter,607536,683004
+2026-05-20,Arizona Diamondbacks,San Francisco Giants,6,3,825084,Merrill Kelly,Tyler Mahle,518876,641816
+2026-05-20,Seattle Mariners,Chicago White Sox,5,4,823134,Emerson Hancock,Sean Burke,676106,680732
+2026-05-20,Detroit Tigers,Cleveland Guardians,2,3,824273,,Tanner Bibee,,676440
+2026-05-20,Miami Marlins,Atlanta Braves,1,9,823866,Janson Junk,Chris Sale,676083,519242
+2026-05-20,Washington Nationals,New York Mets,8,4,822735,Zack Littell,Zac Thornton,641793,804267
+2026-05-20,New York Yankees,Toronto Blue Jays,1,2,823547,Cam Schlittler,Trey Yesavage,693645,702056
+2026-05-20,Kansas City Royals,Boston Red Sox,3,4,824111,Michael Wacha,Connelly Early,608379,813349
+2026-05-20,Chicago Cubs,Milwaukee Brewers,0,5,824678,Edward Cabrera,Kyle Harrison,665795,690986
+2026-05-20,St. Louis Cardinals,Pittsburgh Pirates,0,7,823057,Michael McGreevy,Carmen Mlodzinski,700241,669387
+2026-05-20,San Diego Padres,Los Angeles Dodgers,0,4,823299,Randy Vásquez,Shohei Ohtani,681190,660271
+2026-05-20,Los Angeles Angels,Athletics,5,6,824032,Jack Kochanowicz,Aaron Civale,686799,650644
+2026-05-21,Detroit Tigers,Cleveland Guardians,1,3,824274,Casey Mize,Joey Cantillo,663554,676282
+2026-05-21,St. Louis Cardinals,Pittsburgh Pirates,2,6,823056,Dustin May,Braxton Ashcraft,669160,677952
+2026-05-21,Washington Nationals,New York Mets,1,2,822733,Cade Cavalli,David Peterson,676917,656849
+2026-05-21,Miami Marlins,Atlanta Braves,3,9,823864,Sandy Alcantara,Spencer Strider,645261,675911
+2026-05-21,New York Yankees,Toronto Blue Jays,0,2,823545,Carlos Rodón,Braydon Fisher,607074,680755
+2026-05-21,Los Angeles Angels,Athletics,2,3,824031,José Soriano,Luis Severino,667755,622663
+2026-05-21,Arizona Diamondbacks,Colorado Rockies,2,1,825083,Eduardo Rodriguez,Zach Agnos,593958,688642
+2026-05-22,Chicago Cubs,Houston Astros,2,4,824679,Jameson Taillon,Spencer Arrighetti,592791,681293
+2026-05-22,Philadelphia Phillies,Cleveland Guardians,0,1,823461,Cristopher Sánchez,Gavin Williams,650911,668909
+2026-05-22,New York Yankees,Tampa Bay Rays,2,4,823546,Gerrit Cole,Nick Martinez,543037,607259
+2026-05-22,Toronto Blue Jays,Pittsburgh Pirates,6,2,822816,Kevin Gausman,Bubba Chandler,592332,696149
+2026-05-22,Boston Red Sox,Minnesota Twins,6,8,824761,Payton Tolle,Connor Prielipp,801139,687570
+2026-05-22,Miami Marlins,New York Mets,2,1,823863,Eury Pérez,Tobias Myers,691587,668964
+2026-05-22,Baltimore Orioles,Detroit Tigers,7,4,824842,Keegan Akin,Jack Flaherty,669211,656427
+2026-05-22,Atlanta Braves,Washington Nationals,5,4,824922,Bryce Elder,Richard Lovelady,693821,663992
+2026-05-22,Kansas City Royals,Seattle Mariners,0,2,824110,Noah Cameron,Logan Gilbert,702070,669302
+2026-05-22,Milwaukee Brewers,Los Angeles Dodgers,5,1,823788,Logan Henderson,Justin Wrobleski,701656,680736
+2026-05-22,Los Angeles Angels,Texas Rangers,9,6,824029,Grayson Rodriguez,Jacob deGrom,680570,594798
+2026-05-22,Arizona Diamondbacks,Colorado Rockies,2,3,825082,Michael Soroka,Tomoyuki Sugano,647336,608372
+2026-05-22,San Diego Padres,Athletics,7,3,823298,Walker Buehler,Jeffrey Springs,621111,605488
+2026-05-22,San Francisco Giants,Chicago White Sox,4,9,823223,Trevor McDonald,Davis Martin,686790,663436
+2026-05-23,Cincinnati Reds,St. Louis Cardinals,1,8,824518,Chris Paddack,Andre Pallante,663978,669467
+2026-05-23,Cincinnati Reds,St. Louis Cardinals,7,6,824516,Chase Petty,Kyle Leahy,695534,681517
+2026-05-23,Chicago Cubs,Houston Astros,0,3,824674,Colin Rea,Kai-Wei Teng,607067,678906
+2026-05-23,Toronto Blue Jays,Pittsburgh Pirates,5,2,822814,Patrick Corbin,Paul Skenes,571578,694973
+2026-05-23,Philadelphia Phillies,Cleveland Guardians,3,0,823458,Zack Wheeler,Slade Cecconi,554430,677944
+2026-05-23,San Francisco Giants,Chicago White Sox,10,3,823222,Adrian Houser,Bryan Hudson,605288,663542
+2026-05-23,Kansas City Royals,Seattle Mariners,5,0,824109,Stephen Kolek,George Kirby,663568,669923
+2026-05-23,Boston Red Sox,Minnesota Twins,2,4,824760,Jovani Morán,Taj Bradley,663558,671737
+2026-05-23,Atlanta Braves,Washington Nationals,0,2,824920,Grant Holmes,Jake Irvin,656550,663623
+2026-05-23,Miami Marlins,New York Mets,4,1,823862,Max Meyer,Freddy Peralta,676974,642547
+2026-05-23,Milwaukee Brewers,Los Angeles Dodgers,3,11,823787,Robert Gasser,Roki Sasaki,688107,808963
+2026-05-23,San Diego Padres,Athletics,2,0,823300,Lucas Giolito,J.T. Ginn,608337,669372
+2026-05-23,Los Angeles Angels,Texas Rangers,5,2,824030,Walbert Ureña,Nathan Eovaldi,700712,543135
+2026-05-23,Arizona Diamondbacks,Colorado Rockies,5,4,825080,Zac Gallen,Michael Lorenzen,668678,547179
+2026-05-24,Toronto Blue Jays,Pittsburgh Pirates,1,4,822813,Dylan Cease,Mitch Keller,656302,656605
+2026-05-24,Baltimore Orioles,Detroit Tigers,5,3,824839,Brandon Young,Framber Valdez,687064,664285
+2026-05-24,Baltimore Orioles,Detroit Tigers,1,4,824840,Trevor Rogers,Troy Melton,669432,675512
+2026-05-24,Boston Red Sox,Minnesota Twins,5,6,824759,Sonny Gray,Bailey Ober,543243,641927
+2026-05-24,Philadelphia Phillies,Cleveland Guardians,1,3,823459,Andrew Painter,Parker Messick,691725,800048
+2026-05-24,New York Yankees,Tampa Bay Rays,2,0,823544,Ryan Weathers,Drew Rasmussen,677960,656876
+2026-05-24,Miami Marlins,New York Mets,4,0,823861,Tyler Phillips,Christian Scott,663969,681035
+2026-05-24,Kansas City Royals,Seattle Mariners,8,6,824108,Seth Lugo,Bryan Woo,607625,693433
+2026-05-24,Milwaukee Brewers,Los Angeles Dodgers,1,5,823786,Brandon Sproat,Yoshinobu Yamamoto,687075,808967
+2026-05-24,Chicago Cubs,Houston Astros,5,8,824676,Shota Imanaga,Peter Lambert,684007,663567
+2026-05-24,San Francisco Giants,Chicago White Sox,8,5,823220,Robbie Ray,Noah Schultz,592662,702273
+2026-05-24,Arizona Diamondbacks,Colorado Rockies,9,1,825081,Ryne Nelson,Jose Quintana,669194,500779
+2026-05-24,San Diego Padres,Athletics,2,5,823297,Michael King,Luis Medina,650633,665622
+2026-05-24,Atlanta Braves,Washington Nationals,1,2,824921,Martín Pérez,Foster Griffin,527048,656492
+2026-05-24,Los Angeles Angels,Texas Rangers,2,1,824028,Reid Detmers,MacKenzie Gore,672282,669022
+2026-05-25,Pittsburgh Pirates,Chicago Cubs,2,1,823380,Carmen Mlodzinski,Ben Brown,669387,676962
+2026-05-25,Baltimore Orioles,Tampa Bay Rays,9,7,824838,Kyle Bradish,Shane McClanahan,680694,663556
+2026-05-25,Chicago White Sox,Minnesota Twins,3,1,824598,Anthony Kay,Zebby Matthews,641743,805673
+2026-05-25,Milwaukee Brewers,St. Louis Cardinals,5,1,823784,Jacob Misiorowski,Matthew Liberatore,694819,669461
+2026-05-25,Kansas City Royals,New York Yankees,3,4,824107,Michael Wacha,Will Warren,608379,701542
+2026-05-25,New York Mets,Cincinnati Reds,2,7,823625,Nolan McLean,Nick Lodolo,690997,666157
+2026-05-25,San Francisco Giants,Arizona Diamondbacks,2,6,823219,Landen Roupp,Merrill Kelly,694738,518876
+2026-05-25,Cleveland Guardians,Washington Nationals,2,10,824437,Tanner Bibee,PJ Poulin,676440,676571
+2026-05-25,San Diego Padres,Philadelphia Phillies,0,3,823296,Griffin Canning,Jesús Luzardo,656288,666200
+2026-05-25,Texas Rangers,Houston Astros,0,9,822899,Kumar Rocker,Tatsuya Imai,677958,837227
+2026-05-25,Toronto Blue Jays,Miami Marlins,2,8,822812,Trey Yesavage,Janson Junk,702056,676083
+2026-05-25,Los Angeles Dodgers,Colorado Rockies,5,3,823948,Emmet Sheehan,Tanner Gordon,686218,685299
+2026-05-25,Athletics,Seattle Mariners,2,9,825005,Aaron Civale,Luis Castillo,650644,622491
+2026-05-26,Cleveland Guardians,Washington Nationals,3,6,824434,Joey Cantillo,Cade Cavalli,676282,676917
+2026-05-26,Baltimore Orioles,Tampa Bay Rays,6,1,824837,Shane Baz,Griffin Jax,669358,643377
+2026-05-26,Detroit Tigers,Los Angeles Angels,6,10,824275,Keider Montero,Jack Kochanowicz,672456,686799
+2026-05-26,Pittsburgh Pirates,Chicago Cubs,12,1,823379,Mitch Keller,Jordan Wicks,656605,696136
+2026-05-26,Boston Red Sox,Atlanta Braves,6,7,824758,Ranger Suarez,Spencer Strider,624133,675911
+2026-05-26,Toronto Blue Jays,Miami Marlins,8,1,822811,Braydon Fisher,Sandy Alcantara,680755,645261
+2026-05-26,New York Mets,Cincinnati Reds,2,7,823624,David Peterson,Chase Burns,656849,695505
+2026-05-26,Chicago White Sox,Minnesota Twins,3,5,824597,Sean Burke,Joe Ryan,680732,657746
+2026-05-26,Kansas City Royals,New York Yankees,1,15,824106,Bailey Falter,Cam Schlittler,663559,693645
+2026-05-26,Milwaukee Brewers,St. Louis Cardinals,6,0,823785,Kyle Harrison,Michael McGreevy,690986,700241
+2026-05-26,Texas Rangers,Houston Astros,10,7,822898,Jack Leiter,Jason Alexander,683004,669920
+2026-05-26,Athletics,Seattle Mariners,1,4,825004,Gage Jump,Emerson Hancock,695611,676106
+2026-05-26,San Diego Padres,Philadelphia Phillies,3,4,823294,Randy Vásquez,Aaron Nola,681190,605400
+2026-05-26,San Francisco Giants,Arizona Diamondbacks,5,7,823216,Tyler Mahle,Eduardo Rodriguez,641816,593958
+2026-05-26,Los Angeles Dodgers,Colorado Rockies,15,6,823949,Eric Lauer,Kyle Freeland,641778,607536
+2026-05-27,Toronto Blue Jays,Miami Marlins,2,1,822809,Kevin Gausman,Eury Pérez,592332,691587
+2026-05-27,Cleveland Guardians,Washington Nationals,3,2,824432,Gavin Williams,PJ Poulin,668909,676571
+2026-05-27,Milwaukee Brewers,St. Louis Cardinals,2,1,823783,Chad Patrick,Dustin May,694477,669160
+2026-05-27,Athletics,Seattle Mariners,1,9,825003,Jeffrey Springs,Logan Gilbert,605488,669302
+2026-05-27,San Francisco Giants,Arizona Diamondbacks,2,3,823217,Trevor McDonald,Michael Soroka,686790,647336
+2026-05-27,San Diego Padres,Philadelphia Phillies,0,3,823295,Walker Buehler,Cristopher Sánchez,621111,650911
+2026-05-27,Baltimore Orioles,Tampa Bay Rays,11,2,824836,Trey Gibson,Steven Matz,694346,571927
+2026-05-27,Detroit Tigers,Los Angeles Angels,4,0,824270,Casey Mize,José Soriano,663554,667755
+2026-05-27,Pittsburgh Pirates,Chicago Cubs,4,10,823376,Braxton Ashcraft,Jameson Taillon,677952,592791
+2026-05-27,Boston Red Sox,Atlanta Braves,8,0,824756,Connelly Early,Bryce Elder,813349,693821
+2026-05-27,New York Mets,Cincinnati Reds,4,2,823626,Huascar Brazobán,Andrew Abbott,623211,671096
+2026-05-27,Chicago White Sox,Minnesota Twins,15,2,824596,David Sandlin,Connor Prielipp,689818,687570
+2026-05-27,Kansas City Royals,New York Yankees,0,7,824104,Noah Cameron,Gerrit Cole,702070,543037
+2026-05-27,Texas Rangers,Houston Astros,3,4,822897,Jacob deGrom,Mike Burrows,594798,681347
+2026-05-27,Los Angeles Dodgers,Colorado Rockies,4,1,823947,Shohei Ohtani,Tomoyuki Sugano,660271,608372
+2026-05-28,Detroit Tigers,Los Angeles Angels,1,7,824272,Jack Flaherty,Grayson Rodriguez,656427,680570
+2026-05-28,Chicago White Sox,Minnesota Twins,6,2,824595,Davis Martin,Simeon Woods Richardson,663436,680573
+2026-05-28,Boston Red Sox,Atlanta Braves,2,10,824757,Payton Tolle,Chris Sale,801139,519242
+2026-05-28,Baltimore Orioles,Toronto Blue Jays,1,2,824834,Chris Bassitt,Patrick Corbin,605135,571578
+2026-05-28,Pittsburgh Pirates,Chicago Cubs,2,7,823378,Paul Skenes,Colin Rea,694973,607067
+2026-05-28,Texas Rangers,Houston Astros,1,5,822896,Nathan Eovaldi,Spencer Arrighetti,543135,681293
+2026-05-29,Cincinnati Reds,Atlanta Braves,3,8,824515,Chris Paddack,Grant Holmes,663978,656550
+2026-05-29,Washington Nationals,San Diego Padres,5,7,822732,Paxton Schultz,Lucas Giolito,687606,608337
+2026-05-29,Pittsburgh Pirates,Minnesota Twins,6,5,823377,Jared Jones,Taj Bradley,683003,671737
+2026-05-29,Baltimore Orioles,Toronto Blue Jays,5,6,824835,Trevor Rogers,Adam Macko,669432,671936
+2026-05-29,Cleveland Guardians,Boston Red Sox,4,3,824433,Slade Cecconi,Tyler Samaniego,677944,701719
+2026-05-29,Tampa Bay Rays,Los Angeles Angels,8,5,822978,Nick Martinez,Walbert Ureña,607259,700712
+2026-05-29,New York Mets,Miami Marlins,9,7,823623,Freddy Peralta,Max Meyer,642547,676974
+2026-05-29,St. Louis Cardinals,Chicago Cubs,6,5,823055,Andre Pallante,Shota Imanaga,669467,684007
+2026-05-29,Chicago White Sox,Detroit Tigers,4,3,824594,Erick Fedde,Troy Melton,607200,675512
+2026-05-29,Texas Rangers,Kansas City Royals,9,1,822894,MacKenzie Gore,Stephen Kolek,669022,663568
+2026-05-29,Houston Astros,Milwaukee Brewers,4,5,824191,Kai-Wei Teng,Coleman Crow,678906,689441
+2026-05-29,Colorado Rockies,San Francisco Giants,8,6,824353,Michael Lorenzen,Logan Webb,547179,657277
+2026-05-29,Athletics,New York Yankees,2,8,825002,Luis Severino,Carlos Rodón,622663,607074
+2026-05-29,Seattle Mariners,Arizona Diamondbacks,7,6,823135,George Kirby,Zac Gallen,669923,668678
+2026-05-29,Los Angeles Dodgers,Philadelphia Phillies,4,2,823946,Justin Wrobleski,Zack Wheeler,680736,554430
+2026-05-30,Chicago White Sox,Detroit Tigers,7,1,824593,Anthony Kay,Framber Valdez,641743,664285
+2026-05-30,Washington Nationals,San Diego Padres,9,4,822731,Foster Griffin,Michael King,656492,650633
+2026-05-30,Texas Rangers,Kansas City Royals,7,6,822893,Kumar Rocker,Seth Lugo,677958,607625
+2026-05-30,Baltimore Orioles,Toronto Blue Jays,6,5,824833,Brandon Young,Trey Yesavage,687064,702056
+2026-05-30,Pittsburgh Pirates,Minnesota Twins,10,9,823375,Mitch Keller,Bailey Ober,656605,641927
+2026-05-30,Cleveland Guardians,Boston Red Sox,1,9,824431,Parker Messick,Sonny Gray,800048,543243
+2026-05-30,Tampa Bay Rays,Los Angeles Angels,3,14,822975,Drew Rasmussen,Reid Detmers,656876,672282
+2026-05-30,New York Mets,Miami Marlins,6,1,823622,Christian Scott,Tyler Phillips,681035,663969
+2026-05-30,Houston Astros,Milwaukee Brewers,9,2,824190,Peter Lambert,Brandon Sproat,663567,687075
+2026-05-30,St. Louis Cardinals,Chicago Cubs,1,6,823054,Kyle Leahy,Ben Brown,681517,676962
+2026-05-30,Cincinnati Reds,Atlanta Braves,2,5,824513,Brady Singer,Martín Pérez,663903,527048
+2026-05-30,Colorado Rockies,San Francisco Giants,8,3,824352,Ryan Feltner,Adrian Houser,663372,605288
+2026-05-30,Athletics,New York Yankees,6,4,825000,J.T. Ginn,Ryan Weathers,669372,677960
+2026-05-30,Seattle Mariners,Arizona Diamondbacks,5,1,823132,Bryan Woo,Ryne Nelson,693433,669194
+2026-05-30,Los Angeles Dodgers,Philadelphia Phillies,3,4,823945,Roki Sasaki,Jesús Luzardo,808963,666200
+2026-05-31,Baltimore Orioles,Toronto Blue Jays,9,5,824832,Kyle Bradish,Spencer Miles,680694,693686
+2026-05-31,Washington Nationals,San Diego Padres,4,2,822729,Zack Littell,Griffin Canning,641793,656288
+2026-05-31,Pittsburgh Pirates,Minnesota Twins,9,3,823373,Braxton Ashcraft,Zebby Matthews,677952,805673
+2026-05-31,Cleveland Guardians,Boston Red Sox,4,9,824430,Tanner Bibee,Ranger Suarez,676440,624133
+2026-05-31,Tampa Bay Rays,Los Angeles Angels,5,2,822976,Shane McClanahan,Jack Kochanowicz,663556,686799
+2026-05-31,Cincinnati Reds,Atlanta Braves,6,4,824512,Nick Lodolo,Spencer Strider,666157,675911
+2026-05-31,New York Mets,Miami Marlins,10,1,823621,Nolan McLean,John King,690997,667463
+2026-05-31,Chicago White Sox,Detroit Tigers,2,1,824592,Sean Burke,Keider Montero,680732,672456
+2026-05-31,Houston Astros,Milwaukee Brewers,0,2,824187,Tatsuya Imai,Jacob Misiorowski,837227,694819
+2026-05-31,Texas Rangers,Kansas City Royals,6,3,822895,Jack Leiter,Michael Wacha,683004,608379
+2026-05-31,Colorado Rockies,San Francisco Giants,6,19,824354,Tanner Gordon,Robbie Ray,685299,592662
+2026-05-31,Athletics,New York Yankees,8,13,825001,Jacob Lopez,Will Warren,682052,701542
+2026-05-31,Seattle Mariners,Arizona Diamondbacks,3,2,823133,Bryce Miller,Merrill Kelly,682243,518876
+2026-05-31,Los Angeles Dodgers,Philadelphia Phillies,9,1,823944,Yoshinobu Yamamoto,Andrew Painter,808967,691725
+2026-05-31,St. Louis Cardinals,Chicago Cubs,5,1,823053,Matthew Liberatore,Jordan Wicks,669461,696136
+2026-06-01,Tampa Bay Rays,Detroit Tigers,9,10,822974,Griffin Jax,Ty Madden,643377,680744
+2026-06-01,Washington Nationals,Miami Marlins,3,7,822730,Cade Cavalli,Sandy Alcantara,676917,645261
+2026-06-01,Cincinnati Reds,Kansas City Royals,2,9,824510,Lyon Richardson,Luinder Avila,680689,679883
+2026-06-01,Minnesota Twins,Chicago White Sox,9,6,823702,Joe Ryan,David Sandlin,657746,689818
+2026-06-01,Milwaukee Brewers,San Francisco Giants,16,2,823781,Shane Drohan,Landen Roupp,675660,694738
+2026-06-01,St. Louis Cardinals,Texas Rangers,1,2,823050,Michael McGreevy,Jacob deGrom,700241,594798
+2026-06-01,Los Angeles Angels,Colorado Rockies,8,9,824027,José Soriano,Kyle Freeland,667755,607536
+2026-06-01,Arizona Diamondbacks,Los Angeles Dodgers,4,1,825078,Eduardo Rodriguez,Emmet Sheehan,593958,686218
+2026-06-01,Seattle Mariners,New York Mets,3,2,823131,Emerson Hancock,Austin Warren,676106,681810
+2026-06-02,Tampa Bay Rays,Detroit Tigers,0,8,822971,Steven Matz,Jack Flaherty,571927,656427
+2026-06-02,Philadelphia Phillies,San Diego Padres,3,2,823460,Aaron Nola,Randy Vásquez,605400,681190
+2026-06-02,Boston Red Sox,Baltimore Orioles,2,4,824754,Connelly Early,Shane Baz,813349,669358
+2026-06-02,Washington Nationals,Miami Marlins,3,7,822728,Richard Lovelady,Lake Bachar,663992,669199
+2026-06-02,New York Yankees,Cleveland Guardians,4,9,823541,Cam Schlittler,Joey Cantillo,693645,676282
+2026-06-02,Cincinnati Reds,Kansas City Royals,4,3,824511,Andrew Abbott,Noah Cameron,671096,702070
+2026-06-02,Atlanta Braves,Toronto Blue Jays,4,3,824918,Bryce Elder,Kevin Gausman,693821,592332
+2026-06-02,Minnesota Twins,Chicago White Sox,6,4,823700,Connor Prielipp,Davis Martin,687570,663436
+2026-06-02,Milwaukee Brewers,San Francisco Giants,8,3,823782,Kyle Harrison,Trevor McDonald,690986,686790
+2026-06-02,St. Louis Cardinals,Texas Rangers,4,7,823052,Dustin May,Nathan Eovaldi,669160,543135
+2026-06-02,Chicago Cubs,Athletics,1,2,824675,Jameson Taillon,Gage Jump,592791,695611
+2026-06-02,Houston Astros,Pittsburgh Pirates,6,10,824189,Mike Burrows,Bubba Chandler,681347,696149
+2026-06-02,Los Angeles Angels,Colorado Rockies,2,8,824026,Grayson Rodriguez,Tomoyuki Sugano,680570,608372
+2026-06-02,Arizona Diamondbacks,Los Angeles Dodgers,5,6,825079,Michael Soroka,Eric Lauer,647336,641778
+2026-06-02,Seattle Mariners,New York Mets,8,3,823129,Logan Gilbert,Huascar Brazobán,669302,623211
+2026-06-03,Washington Nationals,Miami Marlins,1,4,822727,Andrew Alvarez,Max Meyer,674841,676974
+2026-06-03,Tampa Bay Rays,Detroit Tigers,2,7,822973,Nick Martinez,Troy Melton,607259,675512
+2026-06-03,Minnesota Twins,Chicago White Sox,0,8,823701,Taj Bradley,Erick Fedde,671737,607200
+2026-06-03,Seattle Mariners,New York Mets,1,7,823130,George Kirby,Freddy Peralta,669923,642547
+2026-06-03,Philadelphia Phillies,San Diego Padres,3,2,823456,Cristopher Sánchez,Walker Buehler,650911,621111
+2026-06-03,Boston Red Sox,Baltimore Orioles,8,1,824755,Payton Tolle,Chris Bassitt,801139,605135
+2026-06-03,New York Yankees,Cleveland Guardians,4,5,823540,Gerrit Cole,Gavin Williams,543037,668909
+2026-06-03,Cincinnati Reds,Kansas City Royals,2,5,824509,Chase Burns,Stephen Kolek,695505,663568
+2026-06-03,Atlanta Braves,Toronto Blue Jays,7,3,824917,Grant Holmes,Patrick Corbin,656550,571578
+2026-06-03,Milwaukee Brewers,San Francisco Giants,0,1,823780,Robert Gasser,Logan Webb,688107,657277
+2026-06-03,St. Louis Cardinals,Texas Rangers,5,3,823051,Andre Pallante,MacKenzie Gore,669467,669022
+2026-06-03,Chicago Cubs,Athletics,4,5,824671,Colin Rea,Jeffrey Springs,607067,605488
+2026-06-03,Houston Astros,Pittsburgh Pirates,11,9,824188,Spencer Arrighetti,Paul Skenes,681293,694973
+2026-06-03,Los Angeles Angels,Colorado Rockies,11,4,824024,Walbert Ureña,Michael Lorenzen,700712,547179
+2026-06-03,Arizona Diamondbacks,Los Angeles Dodgers,0,7,825077,Zac Gallen,Shohei Ohtani,668678,660271
+2026-06-04,Philadelphia Phillies,San Diego Padres,6,4,823457,Zack Wheeler,Lucas Giolito,554430,608337
+2026-06-04,Boston Red Sox,Baltimore Orioles,2,8,824753,Brayan Bello,Trevor Rogers,678394,669432
+2026-06-04,New York Yankees,Cleveland Guardians,2,1,823542,Carlos Rodón,Slade Cecconi,607074,677944
+2026-06-04,Milwaukee Brewers,San Francisco Giants,9,12,823779,Coleman Crow,Adrian Houser,689441,605288
+2026-06-04,Atlanta Braves,Toronto Blue Jays,2,7,824919,Chris Sale,Mason Fluharty,519242,689254
+2026-06-04,Minnesota Twins,Kansas City Royals,6,8,823698,Andrew Morris,Seth Lugo,702193,607625
+2026-06-04,Chicago Cubs,Athletics,7,6,824672,Shota Imanaga,J.T. Ginn,684007,669372
+2026-06-04,Houston Astros,Pittsburgh Pirates,1,5,824185,Kai-Wei Teng,Jared Jones,678906,683003
+2026-06-04,Arizona Diamondbacks,Los Angeles Dodgers,3,2,825076,Ryne Nelson,Justin Wrobleski,669194,680736
+2026-06-05,Chicago Cubs,San Francisco Giants,3,18,824673,Edward Cabrera,Robbie Ray,665795,592662
+2026-06-05,Detroit Tigers,Seattle Mariners,7,3,824271,Framber Valdez,Bryan Woo,664285,693433
+2026-06-05,Philadelphia Phillies,Chicago White Sox,8,6,823455,Jesús Luzardo,Anthony Kay,666200,641743
+2026-06-05,New York Yankees,Boston Red Sox,3,5,823538,Ryan Weathers,Sonny Gray,677960,543243
+2026-06-05,Toronto Blue Jays,Baltimore Orioles,3,13,822810,Trey Yesavage,Brandon Young,702056,687064
+2026-06-05,Miami Marlins,Tampa Bay Rays,0,6,823860,Ryan Gusto,Drew Rasmussen,687473,656876
+2026-06-05,Atlanta Braves,Pittsburgh Pirates,6,3,824914,Martín Pérez,Mitch Keller,527048,656605
+2026-06-05,Houston Astros,Athletics,5,1,824186,Peter Lambert,Jack Perkins,663567,678022
+2026-06-05,St. Louis Cardinals,Cincinnati Reds,10,3,823049,Kyle Leahy,Brady Singer,681517,663903
+2026-06-05,Texas Rangers,Cleveland Guardians,3,2,822892,Kumar Rocker,Parker Messick,677958,800048
+2026-06-05,Minnesota Twins,Kansas City Royals,5,3,823699,Zebby Matthews,Michael Wacha,805673,608379
+2026-06-05,Colorado Rockies,Milwaukee Brewers,7,9,824350,Ryan Feltner,Brandon Sproat,663372,687075
+2026-06-05,Arizona Diamondbacks,Washington Nationals,1,14,825073,Merrill Kelly,Foster Griffin,518876,656492
+2026-06-05,San Diego Padres,New York Mets,0,5,823293,Michael King,Christian Scott,650633,681035
+2026-06-05,Los Angeles Dodgers,Los Angeles Angels,1,0,823943,Roki Sasaki,Reid Detmers,808963,672282
+2026-06-06,Detroit Tigers,Seattle Mariners,0,4,824269,Keider Montero,Bryce Miller,672456,682243
+2026-06-06,Minnesota Twins,Kansas City Royals,2,3,823697,Joe Ryan,Luinder Avila,657746,679883
+2026-06-06,St. Louis Cardinals,Cincinnati Reds,6,5,823048,Matthew Liberatore,Nick Lodolo,669461,666157
+2026-06-06,Chicago Cubs,San Francisco Giants,3,2,824669,Ben Brown,Landen Roupp,676962,694738
+2026-06-06,Toronto Blue Jays,Baltimore Orioles,6,4,822808,Braydon Fisher,Kyle Bradish,680755,680694
+2026-06-06,Philadelphia Phillies,Chicago White Sox,3,6,823454,Andrew Painter,Brandon Eisert,691725,685126
+2026-06-06,Arizona Diamondbacks,Washington Nationals,1,6,825075,Eduardo Rodriguez,Zack Littell,593958,641793
+2026-06-06,Houston Astros,Athletics,13,2,824184,Tatsuya Imai,Kade Morris,837227,695034
+2026-06-06,Atlanta Braves,Pittsburgh Pirates,6,3,824915,Spencer Strider,Braxton Ashcraft,675911,677952
+2026-06-06,Miami Marlins,Tampa Bay Rays,4,3,823859,Lake Bachar,Shane McClanahan,669199,663556
+2026-06-06,Texas Rangers,Cleveland Guardians,0,6,822891,Jack Leiter,Tanner Bibee,683004,676440
+2026-06-06,Colorado Rockies,Milwaukee Brewers,1,7,824351,Zach Agnos,Jacob Misiorowski,688642,694819
+2026-06-06,Los Angeles Dodgers,Los Angeles Angels,9,2,823942,Yoshinobu Yamamoto,Jack Kochanowicz,808967,686799
+2026-06-06,San Diego Padres,New York Mets,3,2,823292,Griffin Canning,Nolan McLean,656288,690997
+2026-06-07,Atlanta Braves,Pittsburgh Pirates,3,2,824916,Bryce Elder,Mason Montgomery,693821,682254
+2026-06-07,Philadelphia Phillies,Chicago White Sox,9,5,823453,Aaron Nola,Tyler Gilbert,605400,656457
+2026-06-07,New York Yankees,Boston Red Sox,6,1,823537,Cam Schlittler,Ranger Suarez,693645,624133
+2026-06-07,Toronto Blue Jays,Baltimore Orioles,6,4,822807,Kevin Gausman,Shane Baz,592332,669358
+2026-06-07,Detroit Tigers,Seattle Mariners,5,4,824268,Jack Flaherty,Luis Castillo,656427,622491
+2026-06-07,Miami Marlins,Tampa Bay Rays,4,1,823857,Sandy Alcantara,Griffin Jax,645261,643377
+2026-06-07,Houston Astros,Athletics,0,5,824183,Mike Burrows,Gage Jump,681347,695611
+2026-06-07,Minnesota Twins,Kansas City Royals,5,6,823696,Connor Prielipp,Noah Cameron,687570,702070
+2026-06-07,St. Louis Cardinals,Cincinnati Reds,5,3,823047,Michael McGreevy,Rhett Lowder,700241,695076
+2026-06-07,Texas Rangers,Cleveland Guardians,10,0,822890,Jacob deGrom,Joey Cantillo,594798,676282
+2026-06-07,Colorado Rockies,Milwaukee Brewers,4,12,824349,Kyle Freeland,Shane Drohan,607536,675660
+2026-06-07,Arizona Diamondbacks,Washington Nationals,5,1,825074,Michael Soroka,Cade Cavalli,647336,676917
+2026-06-07,Los Angeles Dodgers,Los Angeles Angels,5,13,823941,Emmet Sheehan,José Soriano,686218,667755
+2026-06-07,San Diego Padres,New York Mets,3,7,823291,Randy Vásquez,Huascar Brazobán,681190,623211
+2026-06-07,Chicago Cubs,San Francisco Giants,1,2,824670,Jameson Taillon,Trevor McDonald,592791,686790
+2026-06-08,Baltimore Orioles,Seattle Mariners,3,6,824829,Trey Gibson,Emerson Hancock,694346,676106
+2026-06-08,Tampa Bay Rays,Boston Red Sox,3,1,822972,Ian Seymour,Connelly Early,693855,813349
+2026-06-08,Cleveland Guardians,New York Yankees,5,7,824427,Gavin Williams,Will Warren,668909,701542
+2026-06-08,Toronto Blue Jays,Philadelphia Phillies,2,5,822806,Patrick Corbin,Cristopher Sánchez,571578,650911
+2026-06-08,Los Angeles Angels,Houston Astros,4,5,824025,Grayson Rodriguez,Spencer Arrighetti,680570,681293
+2026-06-08,San Diego Padres,Cincinnati Reds,6,2,823289,Walker Buehler,Andrew Abbott,621111,671096
+2026-06-08,San Francisco Giants,Washington Nationals,3,4,823218,Logan Webb,Richard Lovelady,657277,663992
+2026-06-08,Athletics,Milwaukee Brewers,14,15,824998,Jeffrey Springs,Kyle Harrison,605488,690986
+2026-06-09,Baltimore Orioles,Seattle Mariners,5,6,824830,Trevor Rogers,Logan Gilbert,669432,669302
+2026-06-09,Pittsburgh Pirates,Los Angeles Dodgers,3,12,823374,Paul Skenes,Eric Lauer,694973,641778
+2026-06-09,Tampa Bay Rays,Boston Red Sox,4,3,822969,Nick Martinez,Payton Tolle,607259,801139
+2026-06-09,Detroit Tigers,Minnesota Twins,10,4,824267,Troy Melton,Taj Bradley,675512,671737
+2026-06-09,Miami Marlins,Arizona Diamondbacks,10,6,823858,Max Meyer,Zac Gallen,676974,668678
+2026-06-09,Cleveland Guardians,New York Yankees,2,3,824429,Slade Cecconi,Gerrit Cole,677944,543037
+2026-06-09,Toronto Blue Jays,Philadelphia Phillies,3,2,822805,Dylan Cease,Zack Wheeler,656302,554430
+2026-06-09,New York Mets,St. Louis Cardinals,0,7,823620,Freddy Peralta,Dustin May,642547,669160
+2026-06-09,Kansas City Royals,Texas Rangers,5,3,824105,Stephen Kolek,Nathan Eovaldi,663568,543135
+2026-06-09,Chicago White Sox,Atlanta Braves,6,5,824591,Brandon Eisert,Grant Holmes,685126,656550
+2026-06-09,Colorado Rockies,Chicago Cubs,7,3,824347,Tomoyuki Sugano,Colin Rea,608372,607067
+2026-06-09,Los Angeles Angels,Houston Astros,10,1,824023,Walbert Ureña,Kai-Wei Teng,700712,678906
+2026-06-09,San Diego Padres,Cincinnati Reds,3,5,823290,Lucas Giolito,Chase Burns,608337,695505
+2026-06-09,San Francisco Giants,Washington Nationals,3,6,823214,Adrian Houser,Andrew Alvarez,605288,674841
+2026-06-09,Athletics,Milwaukee Brewers,7,5,824999,J.T. Ginn,Robert Gasser,669372,688107
+2026-06-10,Tampa Bay Rays,Boston Red Sox,7,5,822970,Drew Rasmussen,Jake Bennett,656876,687562
+2026-06-10,Cleveland Guardians,New York Yankees,4,8,824428,Parker Messick,Carlos Rodón,800048,607074
+2026-06-10,San Francisco Giants,Washington Nationals,11,10,823215,Robbie Ray,Foster Griffin,592662,656492
+2026-06-10,San Diego Padres,Cincinnati Reds,5,4,823287,Michael King,Brady Singer,650633,663903
+2026-06-10,Baltimore Orioles,Seattle Mariners,7,2,824831,Brandon Young,George Kirby,687064,669923
+2026-06-10,Pittsburgh Pirates,Los Angeles Dodgers,9,8,823372,Jared Jones,Shohei Ohtani,683003,660271
+2026-06-10,Detroit Tigers,Minnesota Twins,4,6,824266,Framber Valdez,Mike Paredes,664285,702474
+2026-06-10,Miami Marlins,Arizona Diamondbacks,8,0,823856,Ryan Gusto,Ryne Nelson,687473,669194
+2026-06-10,Toronto Blue Jays,Philadelphia Phillies,4,7,822804,Max Scherzer,Jesús Luzardo,453286,666200
+2026-06-10,New York Mets,St. Louis Cardinals,2,9,823618,Austin Warren,Andre Pallante,681810,669467
+2026-06-10,Kansas City Royals,Texas Rangers,4,6,824103,Seth Lugo,MacKenzie Gore,607625,669022
+2026-06-10,Chicago White Sox,Atlanta Braves,2,1,824590,Davis Martin,Chris Sale,663436,519242
+2026-06-10,Colorado Rockies,Chicago Cubs,3,2,824348,Michael Lorenzen,Shota Imanaga,547179,684007
+2026-06-10,Athletics,Milwaukee Brewers,4,3,824996,Jack Perkins,Brandon Sproat,678022,687075
+2026-06-10,Los Angeles Angels,Houston Astros,3,2,824022,Reid Detmers,Peter Lambert,672282,663567
+2026-06-11,New York Mets,St. Louis Cardinals,5,4,823619,Christian Scott,Hunter Dobbins,681035,690928
+2026-06-11,Detroit Tigers,Minnesota Twins,11,0,824265,Keider Montero,Zebby Matthews,672456,805673
+2026-06-11,Miami Marlins,Arizona Diamondbacks,2,0,823855,Tyler Phillips,Merrill Kelly,663969,518876
+2026-06-11,Kansas City Royals,Texas Rangers,2,4,824101,Michael Wacha,Kumar Rocker,608379,677958
+2026-06-11,Colorado Rockies,Chicago Cubs,3,9,824346,Ryan Feltner,Edward Cabrera,663372,665795
+2026-06-11,Pittsburgh Pirates,Los Angeles Dodgers,6,8,823371,Mitch Keller,Justin Wrobleski,656605,680736
+2026-06-11,Baltimore Orioles,Seattle Mariners,7,5,824827,Kyle Bradish,Bryan Woo,680694,693433
+2026-06-12,Pittsburgh Pirates,Miami Marlins,3,8,823370,Braxton Ashcraft,Sandy Alcantara,677952,645261
+2026-06-12,Washington Nationals,Seattle Mariners,2,10,822726,Zack Littell,Bryce Miller,641793,682243
+2026-06-12,Baltimore Orioles,San Diego Padres,7,3,824826,Shane Baz,Griffin Canning,669358,656288
+2026-06-12,Cleveland Guardians,Detroit Tigers,3,2,824425,Tanner Bibee,Jack Flaherty,676440,656427
+2026-06-12,Boston Red Sox,Texas Rangers,10,1,824752,Sonny Gray,Jack Leiter,543243,683004
+2026-06-12,Cincinnati Reds,Arizona Diamondbacks,2,5,824507,Nick Lodolo,Eduardo Rodriguez,666157,593958
+2026-06-12,New York Mets,Atlanta Braves,7,5,823617,Nolan McLean,Spencer Strider,690997,675911
+2026-06-12,Toronto Blue Jays,New York Yankees,8,5,822803,Trey Yesavage,Ryan Weathers,702056,677960
+2026-06-12,Chicago White Sox,Los Angeles Dodgers,8,2,824588,Anthony Kay,Roki Sasaki,641743,808963
+2026-06-12,Milwaukee Brewers,Philadelphia Phillies,6,0,823778,Jacob Misiorowski,Tanner Banks,694819,621383
+2026-06-12,Kansas City Royals,Houston Astros,8,10,824102,Luinder Avila,Tatsuya Imai,679883,837227
+2026-06-12,Minnesota Twins,St. Louis Cardinals,9,8,823695,Joe Ryan,Kyle Leahy,657746,681517
+2026-06-12,Los Angeles Angels,Tampa Bay Rays,4,3,824020,Sam Aldegheri,Shane McClanahan,691951,663556
+2026-06-12,Athletics,Colorado Rockies,6,4,824997,Gage Jump,Sean Sullivan,695611,807743
+2026-06-12,San Francisco Giants,Chicago Cubs,1,5,823211,Landen Roupp,Javier Assad,694738,665871
+2026-06-13,Minnesota Twins,St. Louis Cardinals,6,9,823694,Connor Prielipp,Matthew Liberatore,687570,669461
+2026-06-13,Toronto Blue Jays,New York Yankees,1,3,822802,Kevin Gausman,Cam Schlittler,592332,693645
+2026-06-13,Baltimore Orioles,San Diego Padres,3,9,824828,Trey Gibson,Randy Vásquez,694346,681190
+2026-06-13,Washington Nationals,Seattle Mariners,8,3,822725,Cade Cavalli,Luis Castillo,676917,622491
+2026-06-13,Pittsburgh Pirates,Miami Marlins,3,2,823369,Bubba Chandler,Lake Bachar,696149,669199
+2026-06-13,Cincinnati Reds,Arizona Diamondbacks,2,1,824508,Rhett Lowder,Michael Soroka,695076,647336
+2026-06-13,Cleveland Guardians,Detroit Tigers,3,1,824426,Joey Cantillo,Tarik Skubal,676282,669373
+2026-06-13,Boston Red Sox,Texas Rangers,6,3,824749,Ranger Suarez,Jacob deGrom,624133,594798
+2026-06-13,New York Mets,Atlanta Braves,1,3,823616,Sean Manaea,Martín Pérez,640455,527048
+2026-06-13,Chicago White Sox,Los Angeles Dodgers,1,7,824587,Sean Burke,Yoshinobu Yamamoto,680732,808967
+2026-06-13,Kansas City Royals,Houston Astros,7,8,824100,Noah Cameron,Mike Burrows,702070,681347
+2026-06-13,Milwaukee Brewers,Philadelphia Phillies,8,9,823776,Shane Drohan,Aaron Nola,675660,605400
+2026-06-13,Athletics,Colorado Rockies,7,5,824995,Joey Estes,Kyle Freeland,683155,607536
+2026-06-13,San Francisco Giants,Chicago Cubs,1,6,823213,Trevor McDonald,Ben Brown,686790,676962
+2026-06-13,Los Angeles Angels,Tampa Bay Rays,8,0,824019,José Soriano,Griffin Jax,667755,643377
+2026-06-14,Pittsburgh Pirates,Miami Marlins,2,4,823368,Paul Skenes,Max Meyer,694973,676974
+2026-06-14,Baltimore Orioles,San Diego Padres,2,5,824823,Trevor Rogers,Walker Buehler,669432,621111
+2026-06-14,Washington Nationals,Seattle Mariners,10,1,822722,PJ Poulin,Emerson Hancock,676571,676106
+2026-06-14,Toronto Blue Jays,New York Yankees,3,8,822801,Patrick Corbin,Will Warren,571578,701542
+2026-06-14,Cincinnati Reds,Arizona Diamondbacks,3,5,824506,Andrew Abbott,Zac Gallen,671096,668678
+2026-06-14,New York Mets,Atlanta Braves,8,1,823615,Freddy Peralta,Bryce Elder,642547,693821
+2026-06-14,Kansas City Royals,Houston Astros,4,0,824099,Stephen Kolek,Spencer Arrighetti,663568,681293
+2026-06-14,Minnesota Twins,St. Louis Cardinals,5,4,823693,Taj Bradley,Michael McGreevy,671737,700241
+2026-06-14,Chicago White Sox,Los Angeles Dodgers,6,4,824586,Bryan Hudson,Emmet Sheehan,663542,686218
+2026-06-14,Milwaukee Brewers,Philadelphia Phillies,4,0,823777,Kyle Harrison,Cristopher Sánchez,690986,650911
+2026-06-14,Athletics,Colorado Rockies,9,23,824994,Jeffrey Springs,Tomoyuki Sugano,605488,608372
+2026-06-14,San Francisco Giants,Chicago Cubs,5,1,823212,Logan Webb,Ryan Rolison,657277,669020
+2026-06-14,Los Angeles Angels,Tampa Bay Rays,3,8,824021,Grayson Rodriguez,Casey Legumina,680570,668984
+2026-06-14,Boston Red Sox,Texas Rangers,4,6,824751,Connelly Early,Nathan Eovaldi,813349,543135
+2026-06-15,Philadelphia Phillies,Miami Marlins,7,0,823452,Zack Wheeler,Ryan Gusto,554430,687473
+2026-06-15,Washington Nationals,Kansas City Royals,7,3,822724,Andrew Alvarez,Mitch Spence,674841,687765
+2026-06-15,Cincinnati Reds,New York Mets,12,0,824505,Chase Burns,Tobias Myers,695505,668964
+2026-06-15,St. Louis Cardinals,San Diego Padres,3,0,823046,Dustin May,Wandy Peralta,669160,593974
+2026-06-15,Chicago Cubs,Colorado Rockies,5,4,824666,Shota Imanaga,Michael Lorenzen,684007,547179
+2026-06-15,Texas Rangers,Minnesota Twins,2,4,822887,MacKenzie Gore,Mike Paredes,669022,702474
+2026-06-15,Houston Astros,Detroit Tigers,3,9,824181,Kai-Wei Teng,Drew Anderson,678906,623454
+2026-06-15,Arizona Diamondbacks,Los Angeles Angels,4,3,825071,Ryne Nelson,Walbert Ureña,669194,700712
+2026-06-15,Athletics,Pittsburgh Pirates,11,2,824993,J.T. Ginn,Jared Jones,669372,683003
+2026-06-15,Los Angeles Dodgers,Tampa Bay Rays,4,3,823938,Eric Lauer,Nick Martinez,641778,607259
+2026-06-16,Philadelphia Phillies,Miami Marlins,8,2,823451,Jesús Luzardo,Tyler Phillips,666200,663969
+2026-06-16,Washington Nationals,Kansas City Royals,6,4,822723,Foster Griffin,Michael Wacha,656492,608379
+2026-06-16,Boston Red Sox,Toronto Blue Jays,1,6,824750,Payton Tolle,Dylan Cease,801139,656302
+2026-06-16,New York Yankees,Chicago White Sox,12,2,823535,Gerrit Cole,Davis Martin,543037,663436
+2026-06-16,Cincinnati Reds,New York Mets,5,3,824504,Brady Singer,Kodai Senga,663903,673540
+2026-06-16,Atlanta Braves,San Francisco Giants,2,7,824912,Grant Holmes,Adrian Houser,656550,605288
+2026-06-16,Milwaukee Brewers,Cleveland Guardians,2,1,823775,Robert Gasser,Slade Cecconi,688107,677944
+2026-06-16,St. Louis Cardinals,San Diego Padres,3,2,823045,Andre Pallante,Michael King,669467,650633
+2026-06-16,Chicago Cubs,Colorado Rockies,2,5,824667,Edward Cabrera,Ryan Feltner,665795,663372
+2026-06-16,Texas Rangers,Minnesota Twins,2,12,822888,Kumar Rocker,Zebby Matthews,677958,805673
+2026-06-16,Houston Astros,Detroit Tigers,4,2,824182,Hunter Brown,Framber Valdez,686613,664285
+2026-06-16,Arizona Diamondbacks,Los Angeles Angels,0,7,825070,Merrill Kelly,Reid Detmers,518876,672282
+2026-06-16,Athletics,Pittsburgh Pirates,5,6,824991,Jack Perkins,Mitch Keller,678022,656605
+2026-06-16,Seattle Mariners,Baltimore Orioles,3,1,823128,Logan Gilbert,Brandon Young,669302,687064
+2026-06-16,Los Angeles Dodgers,Tampa Bay Rays,1,0,823939,Justin Wrobleski,Drew Rasmussen,680736,656876
+2026-06-17,Cincinnati Reds,New York Mets,1,9,824503,Nick Lodolo,Nolan McLean,666157,690997
+2026-06-17,Washington Nationals,Kansas City Royals,2,6,822721,Zack Littell,Luinder Avila,641793,679883
+2026-06-17,Philadelphia Phillies,Miami Marlins,4,12,823450,Andrew Painter,Sandy Alcantara,691725,645261
+2026-06-16,Atlanta Braves,San Francisco Giants,2,7,824912,Grant Holmes,Adrian Houser,656550,605288
+2026-06-17,Houston Astros,Detroit Tigers,4,2,824178,Peter Lambert,Casey Mize,663567,663554
+2026-06-17,St. Louis Cardinals,San Diego Padres,1,6,823044,Kyle Leahy,Bradgley Rodriguez,681517,699134
+2026-06-17,Los Angeles Dodgers,Tampa Bay Rays,5,4,823940,Shohei Ohtani,Shane McClanahan,660271,663556
+2026-06-17,Arizona Diamondbacks,Los Angeles Angels,8,1,825072,Eduardo Rodriguez,Sam Aldegheri,593958,691951
+2026-06-17,Boston Red Sox,Toronto Blue Jays,0,3,824746,Jake Bennett,Braydon Fisher,687562,680755
+2026-06-17,New York Yankees,Chicago White Sox,10,5,823536,Carlos Rodón,Anthony Kay,607074,641743
+2026-06-17,Atlanta Braves,San Francisco Giants,5,7,824913,JR Ritchie,Carson Whisenhunt,702275,687931
+2026-06-17,Milwaukee Brewers,Cleveland Guardians,9,4,823774,Brandon Sproat,Gavin Williams,687075,668909
+2026-06-17,Chicago Cubs,Colorado Rockies,8,6,824668,Javier Assad,Sean Sullivan,665871,807743
+2026-06-17,Athletics,Pittsburgh Pirates,4,12,824992,Aaron Civale,Braxton Ashcraft,650644,677952
+2026-06-17,Seattle Mariners,Baltimore Orioles,3,5,823127,George Kirby,Kyle Bradish,669923,680694
+2026-06-18,Boston Red Sox,Toronto Blue Jays,3,4,824748,Sonny Gray,Trey Yesavage,543243,702056
+2026-06-18,Milwaukee Brewers,Cleveland Guardians,2,4,823772,Shane Drohan,Parker Messick,675660,800048
+2026-06-18,Texas Rangers,Minnesota Twins,3,9,822889,Jack Leiter,Joe Ryan,683004,657746
+2026-06-18,Seattle Mariners,Baltimore Orioles,3,0,823125,Bryan Woo,Shane Baz,693433,669358
+2026-06-18,Philadelphia Phillies,New York Mets,4,6,823448,Aaron Nola,Sean Manaea,605400,640455
+2026-06-18,New York Yankees,Chicago White Sox,1,5,823533,Ryan Weathers,Bryan Hudson,677960,663542
+2026-06-18,Kansas City Royals,St. Louis Cardinals,14,6,824098,Noah Cameron,Matthew Liberatore,702070,669461
+2026-06-18,Athletics,Los Angeles Angels,5,0,824989,Gage Jump,Ryan Johnson,695611,696270
+2026-06-19,Chicago Cubs,Toronto Blue Jays,16,2,824663,Ben Brown,Kevin Gausman,676962,592332
+2026-06-19,Detroit Tigers,Chicago White Sox,4,3,824264,Tarik Skubal,Brandon Eisert,669373,685126
+2026-06-19,New York Yankees,Cincinnati Reds,5,0,823534,Cam Schlittler,Rhett Lowder,693645,695076
+2026-06-19,Tampa Bay Rays,Washington Nationals,5,2,822966,Griffin Jax,PJ Poulin,643377,676571
+2026-06-19,Miami Marlins,San Francisco Giants,4,3,823853,Lake Bachar,Landen Roupp,669199,694738
+2026-06-19,Atlanta Braves,Milwaukee Brewers,3,2,824910,Martín Pérez,Jacob Misiorowski,527048,694819
+2026-06-19,Texas Rangers,San Diego Padres,9,7,822886,Jacob deGrom,Randy Vásquez,594798,681190
+2026-06-19,Houston Astros,Cleveland Guardians,9,3,824179,Tatsuya Imai,Tanner Bibee,837227,676440
+2026-06-19,Kansas City Royals,St. Louis Cardinals,6,5,824097,Seth Lugo,Michael McGreevy,607625,700241
+2026-06-19,Colorado Rockies,Pittsburgh Pirates,4,3,824345,Kyle Freeland,Bubba Chandler,607536,696149
+2026-06-19,Athletics,Los Angeles Angels,12,11,824990,Jeffrey Springs,José Soriano,605488,667755
+2026-06-19,Arizona Diamondbacks,Minnesota Twins,9,5,825069,Michael Soroka,Connor Prielipp,647336,687570
+2026-06-19,Los Angeles Dodgers,Baltimore Orioles,6,5,823936,Roki Sasaki,Trey Gibson,808963,694346
+2026-06-19,Seattle Mariners,Boston Red Sox,2,6,823124,Bryce Miller,Ranger Suarez,682243,624133
+2026-06-20,Detroit Tigers,Chicago White Sox,4,1,824263,Troy Melton,Sean Newcomb,675512,656794
+2026-06-20,New York Yankees,Cincinnati Reds,2,10,823532,Will Warren,Andrew Abbott,701542,671096
+2026-06-20,Chicago Cubs,Toronto Blue Jays,6,8,824665,Colin Rea,Patrick Corbin,607067,571578
+2026-06-20,Texas Rangers,San Diego Padres,4,6,822885,MacKenzie Gore,Walker Buehler,669022,621111
+2026-06-20,Tampa Bay Rays,Washington Nationals,3,4,822967,Ian Seymour,Cade Cavalli,693855,676917
+2026-06-20,Miami Marlins,San Francisco Giants,6,3,823854,Max Meyer,Trevor McDonald,676974,686790
+2026-06-20,Atlanta Braves,Milwaukee Brewers,4,3,824909,Chris Sale,Kyle Harrison,519242,690986
+2026-06-20,Houston Astros,Cleveland Guardians,1,8,824180,Spencer Arrighetti,Joey Cantillo,681293,676282
+2026-06-20,Philadelphia Phillies,New York Mets,15,3,823447,Cristopher Sánchez,Freddy Peralta,650911,642547
+2026-06-20,Colorado Rockies,Pittsburgh Pirates,2,1,824342,Tomoyuki Sugano,Paul Skenes,608372,694973
+2026-06-20,Athletics,Los Angeles Angels,0,7,824988,J.T. Ginn,Walbert Ureña,669372,700712
+2026-06-20,Los Angeles Dodgers,Baltimore Orioles,2,3,823937,Yoshinobu Yamamoto,Trevor Rogers,808967,669432
+2026-06-20,Seattle Mariners,Boston Red Sox,1,5,823126,Emerson Hancock,Connelly Early,676106,813349
+2026-06-20,Arizona Diamondbacks,Minnesota Twins,8,16,825068,Zac Gallen,Taj Bradley,668678,671737
+2026-06-21,New York Yankees,Cincinnati Reds,1,4,823531,Elmer Rodríguez,Chase Burns,695684,695505
+2026-06-21,Atlanta Braves,Milwaukee Brewers,4,9,824908,Bryce Elder,Robert Gasser,693821,688107
+2026-06-21,Tampa Bay Rays,Washington Nationals,4,3,822968,Nick Martinez,Andrew Alvarez,607259,674841
+2026-06-21,Detroit Tigers,Chicago White Sox,5,4,824260,Keider Montero,Davis Martin,672456,663436
+2026-06-21,Miami Marlins,San Francisco Giants,2,1,823852,Ryan Gusto,Logan Webb,687473,657277
+2026-06-21,Houston Astros,Cleveland Guardians,2,1,824177,Kai-Wei Teng,Slade Cecconi,678906,677944
+2026-06-21,Kansas City Royals,St. Louis Cardinals,10,12,824095,Stephen Kolek,Dustin May,663568,669160
+2026-06-21,Texas Rangers,San Diego Padres,4,3,822883,Nathan Eovaldi,Wandy Peralta,543135,593974
+2026-06-21,Colorado Rockies,Pittsburgh Pirates,6,8,824343,Michael Lorenzen,Jared Jones,547179,683003
+2026-06-21,Arizona Diamondbacks,Minnesota Twins,2,4,825067,Jose Cabrera,Mike Paredes,703615,702474
+2026-06-21,Athletics,Los Angeles Angels,7,9,824987,Jack Perkins,Reid Detmers,678022,672282
+2026-06-21,Los Angeles Dodgers,Baltimore Orioles,1,12,823934,Emmet Sheehan,Brandon Young,686218,687064
+2026-06-21,Seattle Mariners,Boston Red Sox,3,1,823123,Logan Gilbert,Payton Tolle,669302,801139
+2026-06-21,Philadelphia Phillies,New York Mets,6,2,823449,Zack Wheeler,David Peterson,554430,656849
+2026-06-22,Detroit Tigers,New York Yankees,5,3,824261,Framber Valdez,Gerrit Cole,664285,543037
+2026-06-22,Tampa Bay Rays,Kansas City Royals,1,2,822964,Drew Rasmussen,Michael Wacha,656876,608379
+2026-06-22,Miami Marlins,Texas Rangers,3,4,823851,Tyler Phillips,Tyler Alexander,663969,641302
+2026-06-22,Washington Nationals,Philadelphia Phillies,4,1,822720,Foster Griffin,Tim Mayza,656492,641835
+2026-06-22,Toronto Blue Jays,Houston Astros,4,2,822800,Dylan Cease,Hunter Brown,656302,686613
+2026-06-22,Cincinnati Reds,Milwaukee Brewers,1,2,824502,Brady Singer,Brandon Woodruff,663903,605540
+2026-06-22,Minnesota Twins,Los Angeles Dodgers,1,2,823692,Zebby Matthews,Will Klein,805673,694361
+2026-06-22,Chicago White Sox,Cleveland Guardians,6,5,824585,Anthony Kay,Gavin Williams,641743,668909
+2026-06-22,St. Louis Cardinals,Arizona Diamondbacks,3,2,823040,Andre Pallante,Merrill Kelly,669467,518876
+2026-06-22,Colorado Rockies,Boston Red Sox,3,2,824344,Ryan Feltner,Jake Bennett,663372,687562
+2026-06-22,Los Angeles Angels,Baltimore Orioles,1,6,824016,Sam Aldegheri,Kyle Bradish,691951,680694
+2026-06-22,San Diego Padres,Atlanta Braves,1,0,823288,Michael King,Grant Holmes,650633,656550
+2026-06-23,Toronto Blue Jays,Houston Astros,7,9,822799,Shane Bieber,Peter Lambert,669456,663567
+2026-06-23,Pittsburgh Pirates,Seattle Mariners,2,3,823365,Mitch Keller,George Kirby,656605,669923
+2026-06-23,Tampa Bay Rays,Kansas City Royals,5,12,822963,Shane McClanahan,Luinder Avila,663556,679883
+2026-06-23,Miami Marlins,Texas Rangers,6,4,823849,Sandy Alcantara,Cal Quantrill,645261,615698
+2026-06-23,Detroit Tigers,New York Yankees,3,4,824262,Casey Mize,Carlos Rodón,663554,607074
+2026-06-23,Washington Nationals,Philadelphia Phillies,9,14,822718,PJ Poulin,Jesús Luzardo,676571,666200
+2026-06-23,New York Mets,Chicago Cubs,6,9,823614,Kodai Senga,Edward Cabrera,673540,665795
+2026-06-23,Cincinnati Reds,Milwaukee Brewers,0,2,824501,Nick Lodolo,Brandon Sproat,666157,687075
+2026-06-23,Minnesota Twins,Los Angeles Dodgers,3,12,823690,Kendry Rojas,Justin Wrobleski,696070,680736
+2026-06-23,Chicago White Sox,Cleveland Guardians,2,1,824584,Sean Burke,Parker Messick,680732,800048
+2026-06-23,St. Louis Cardinals,Arizona Diamondbacks,3,4,823043,Kyle Leahy,Eduardo Rodriguez,681517,593958
+2026-06-23,Colorado Rockies,Boston Red Sox,2,5,824340,Sean Sullivan,Sonny Gray,807743,543243
+2026-06-23,Los Angeles Angels,Baltimore Orioles,5,1,824017,Ryan Johnson,Shane Baz,696270,669358
+2026-06-23,San Diego Padres,Atlanta Braves,7,6,823286,Wandy Peralta,JR Ritchie,593974,702275
+2026-06-23,San Francisco Giants,Athletics,3,1,823210,Robbie Ray,Aaron Civale,592662,650644
+2026-06-24,Miami Marlins,Texas Rangers,4,2,823850,Eury Pérez,Jacob deGrom,691587,594798
+2026-06-24,New York Mets,Chicago Cubs,3,10,823613,Nolan McLean,Javier Assad,690997,665871
+2026-06-24,New York Mets,Chicago Cubs,5,10,823611,Sean Manaea,Shota Imanaga,640455,684007
+2026-06-24,Chicago White Sox,Cleveland Guardians,3,4,824583,Erick Fedde,Tanner Bibee,607200,676440
+2026-06-24,Colorado Rockies,Boston Red Sox,8,6,824341,Kyle Freeland,Ranger Suarez,607536,624133
+2026-06-24,Los Angeles Angels,Baltimore Orioles,7,6,824018,José Soriano,Trey Gibson,667755,694346
+2026-06-24,Pittsburgh Pirates,Seattle Mariners,11,1,823367,Braxton Ashcraft,Bryan Woo,677952,693433
+2026-06-24,Tampa Bay Rays,Kansas City Royals,5,3,822965,Griffin Jax,Noah Cameron,643377,702070
+2026-06-24,Detroit Tigers,New York Yankees,2,4,824259,Tarik Skubal,Ryan Weathers,669373,677960
+2026-06-24,Washington Nationals,Philadelphia Phillies,4,5,822719,Carson Palmquist,Aaron Nola,687223,605400
+2026-06-24,Toronto Blue Jays,Houston Astros,1,3,822798,Trey Yesavage,Mike Burrows,702056,681347
+2026-06-24,Cincinnati Reds,Milwaukee Brewers,5,6,824500,Rhett Lowder,Shane Drohan,695076,675660
+2026-06-24,Minnesota Twins,Los Angeles Dodgers,3,4,823691,Joe Ryan,Shohei Ohtani,657746,660271
+2026-06-24,St. Louis Cardinals,Arizona Diamondbacks,4,9,823041,Matthew Liberatore,Mitch Bratt,669461,683352
+2026-06-24,San Diego Padres,Atlanta Braves,5,2,823284,JP Sears,Martín Pérez,676664,527048
+2026-06-24,San Francisco Giants,Athletics,2,1,823208,Tyler Mahle,Gage Jump,641816,695611
+2026-06-25,Tampa Bay Rays,Kansas City Royals,13,2,822961,Casey Legumina,Seth Lugo,668984,607625
+2026-06-25,Pittsburgh Pirates,Seattle Mariners,5,1,823366,Bubba Chandler,Bryce Miller,696149,682243
+2026-06-25,San Francisco Giants,Athletics,6,9,823209,Landen Roupp,Jeffrey Springs,694738,605488
+2026-06-25,Detroit Tigers,Houston Astros,1,2,824258,Troy Melton,Tatsuya Imai,675512,837227
+2026-06-25,Washington Nationals,Philadelphia Phillies,5,10,822717,Cade Cavalli,Cristopher Sánchez,676917,650911
+2026-06-25,Toronto Blue Jays,Texas Rangers,5,6,822797,Kevin Gausman,MacKenzie Gore,592332,669022
+2026-06-25,New York Mets,Chicago Cubs,3,4,823612,Freddy Peralta,Matthew Boyd,642547,571510
+2026-06-25,Boston Red Sox,New York Yankees,6,3,824747,Connelly Early,Cam Schlittler,813349,693645
+2026-06-26,Detroit Tigers,Houston Astros,8,0,824255,Keider Montero,Spencer Arrighetti,672456,681293
+2026-06-26,Pittsburgh Pirates,Cincinnati Reds,4,6,823363,Paul Skenes,Andrew Abbott,694973,671096
+2026-06-26,Baltimore Orioles,Washington Nationals,3,1,824824,Trevor Rogers,Andrew Alvarez,669432,674841
+2026-06-26,Toronto Blue Jays,Texas Rangers,4,5,822796,Patrick Corbin,Nathan Eovaldi,571578,543135
+2026-06-26,Cleveland Guardians,Seattle Mariners,1,3,824423,Joey Cantillo,Luis Castillo,676282,622491
+2026-06-26,Tampa Bay Rays,Arizona Diamondbacks,6,1,822962,Nick Martinez,Zac Gallen,607259,668678
+2026-06-26,New York Mets,Philadelphia Phillies,1,2,823610,Zac Thornton,Zack Wheeler,804267,554430
+2026-06-26,Boston Red Sox,New York Yankees,6,1,824743,Payton Tolle,Will Warren,801139,701542
+2026-06-26,Chicago White Sox,Kansas City Royals,22,1,824582,David Sandlin,Steven Cruz,689818,674444
+2026-06-26,Milwaukee Brewers,Chicago Cubs,6,2,823773,Jacob Misiorowski,Colin Rea,694819,607067
+2026-06-26,Minnesota Twins,Colorado Rockies,9,8,823688,Taj Bradley,Tomoyuki Sugano,671737,608372
+2026-06-26,St. Louis Cardinals,Miami Marlins,0,4,823039,Michael McGreevy,Max Meyer,700241,676974
+2026-06-26,Los Angeles Angels,Athletics,3,9,824014,Walbert Ureña,J.T. Ginn,700712,669372
+2026-06-26,San Diego Padres,Los Angeles Dodgers,7,1,823285,Walker Buehler,Roki Sasaki,621111,808963
+2026-06-26,San Francisco Giants,Atlanta Braves,1,3,823206,Trevor McDonald,Reynaldo López,686790,625643
+2026-06-27,Detroit Tigers,Houston Astros,6,8,824257,Framber Valdez,Kai-Wei Teng,664285,678906
+2026-06-27,Boston Red Sox,New York Yankees,4,1,824745,Jake Bennett,Gerrit Cole,687562,543037
+2026-06-27,Toronto Blue Jays,Texas Rangers,4,7,822794,Dylan Cease,Cal Quantrill,656302,615698
+2026-06-27,Pittsburgh Pirates,Cincinnati Reds,7,9,823364,Jared Jones,Chase Burns,683003,695505
+2026-06-27,New York Mets,Philadelphia Phillies,6,2,823609,Christian Scott,Tim Mayza,681035,641835
+2026-06-27,Chicago White Sox,Kansas City Royals,2,1,824581,Davis Martin,Michael Wacha,663436,608379
+2026-06-27,Tampa Bay Rays,Arizona Diamondbacks,4,2,822960,Cole Sulser,Jose Cabrera,642121,703615
+2026-06-27,Baltimore Orioles,Washington Nationals,3,4,824825,Brandon Young,Foster Griffin,687064,656492
+2026-06-27,Cleveland Guardians,Seattle Mariners,4,3,824421,Slade Cecconi,Logan Gilbert,677944,669302
+2026-06-27,Minnesota Twins,Colorado Rockies,5,8,823689,Mike Paredes,Michael Lorenzen,702474,547179
+2026-06-27,Milwaukee Brewers,Chicago Cubs,2,8,823770,Kyle Harrison,David Peterson,690986,656849
+2026-06-27,St. Louis Cardinals,Miami Marlins,1,5,823038,Andre Pallante,Ryan Gusto,669467,687473
+2026-06-27,San Diego Padres,Los Angeles Dodgers,3,15,823283,Kyle Hart,Yoshinobu Yamamoto,606996,808967
+2026-06-27,San Francisco Giants,Atlanta Braves,5,0,823207,Logan Webb,Bryce Elder,657277,693821
+2026-06-27,Los Angeles Angels,Athletics,5,2,824015,Reid Detmers,Jack Perkins,672282,678022
+2026-06-28,Baltimore Orioles,Washington Nationals,4,6,824821,Kyle Bradish,Zack Littell,680694,641793
+2026-06-28,Pittsburgh Pirates,Cincinnati Reds,9,4,823362,Mitch Keller,Brady Singer,656605,663903
+2026-06-28,Toronto Blue Jays,Texas Rangers,2,3,822795,Shane Bieber,Kumar Rocker,669456,677958
+2026-06-28,Detroit Tigers,Houston Astros,5,7,824256,Jack Flaherty,Hunter Brown,656427,686613
+2026-06-28,Cleveland Guardians,Seattle Mariners,6,5,824422,Gavin Williams,Emerson Hancock,668909,676106
+2026-06-28,Tampa Bay Rays,Arizona Diamondbacks,5,1,822959,Drew Rasmussen,Merrill Kelly,656876,518876
+2026-06-28,New York Mets,Philadelphia Phillies,4,5,823608,Cionel Pérez,Jesús Luzardo,672335,666200
+2026-06-28,Minnesota Twins,Colorado Rockies,3,2,823686,Connor Prielipp,Ryan Feltner,687570,663372
+2026-06-28,Chicago White Sox,Kansas City Royals,4,5,824580,Anthony Kay,Luinder Avila,641743,679883
+2026-06-28,Milwaukee Brewers,Chicago Cubs,3,4,823769,Brandon Woodruff,Ryan Rolison,605540,669020
+2026-06-28,St. Louis Cardinals,Miami Marlins,2,1,823037,Kyle Leahy,Tyler Phillips,681517,663969
+2026-06-28,Los Angeles Angels,Athletics,4,1,824011,Sam Aldegheri,Aaron Civale,691951,650644
+2026-06-28,San Francisco Giants,Atlanta Braves,3,2,823204,Robbie Ray,Chris Sale,592662,519242
+2026-06-28,San Diego Padres,Los Angeles Dodgers,2,4,823281,Michael King,Emmet Sheehan,650633,686218
+2026-06-28,Boston Red Sox,New York Yankees,5,4,824744,Sonny Gray,Carlos Rodón,543243,607074
+2026-06-29,Baltimore Orioles,Chicago White Sox,2,8,824822,Shane Baz,Sean Burke,669358,680732
+2026-06-29,Philadelphia Phillies,Pittsburgh Pirates,7,11,823444,Aaron Nola,Braxton Ashcraft,605400,677952
+2026-06-29,New York Yankees,Detroit Tigers,3,7,823529,Ryan Weathers,Casey Mize,677960,663554
+2026-06-29,Toronto Blue Jays,New York Mets,2,1,822792,Trey Yesavage,Sean Manaea,702056,640455
+2026-06-29,Boston Red Sox,Washington Nationals,6,3,824741,Ranger Suarez,Miles Mikolas,624133,571945
+2026-06-29,Cleveland Guardians,Texas Rangers,3,6,824420,Parker Messick,Tyler Alexander,800048,641302
+2026-06-29,Milwaukee Brewers,Cincinnati Reds,5,3,823771,Robert Gasser,Nick Lodolo,688107,666157
+2026-06-29,Chicago Cubs,San Diego Padres,3,2,824662,Shota Imanaga,Griffin Canning,684007,656288
+2026-06-29,Houston Astros,Minnesota Twins,4,5,824176,Peter Lambert,Zebby Matthews,663567,805673
+2026-06-29,Colorado Rockies,Miami Marlins,7,10,824339,Sean Sullivan,Sandy Alcantara,807743,645261
+2026-06-29,Athletics,Los Angeles Dodgers,4,9,824986,Gage Jump,Eric Lauer,695611,641778
+2026-06-29,Seattle Mariners,Los Angeles Angels,6,2,823121,George Kirby,Ryan Johnson,669923,696270
+2026-06-29,Arizona Diamondbacks,San Francisco Giants,5,4,825065,Eduardo Rodriguez,Tyler Mahle,593958,641816
+2026-06-30,Baltimore Orioles,Chicago White Sox,3,9,824819,Trey Gibson,Erick Fedde,694346,607200
+2026-06-30,Cleveland Guardians,Texas Rangers,2,4,824418,Tanner Bibee,Jacob deGrom,676440,594798
+2026-06-30,Philadelphia Phillies,Pittsburgh Pirates,8,0,823445,Cristopher Sánchez,Bubba Chandler,650911,696149
+2026-06-30,New York Yankees,Detroit Tigers,3,9,823528,Cam Schlittler,Tarik Skubal,693645,669373
+2026-06-30,Toronto Blue Jays,New York Mets,0,3,822793,Kevin Gausman,Nolan McLean,592332,690997
+2026-06-30,Boston Red Sox,Washington Nationals,1,8,824742,Connelly Early,Cade Cavalli,813349,676917
+2026-06-30,Atlanta Braves,St. Louis Cardinals,3,5,824907,Martín Pérez,Matthew Liberatore,527048,669461
+2026-06-30,Kansas City Royals,Tampa Bay Rays,4,10,824096,Noah Cameron,Griffin Jax,702070,643377
+2026-06-30,Milwaukee Brewers,Cincinnati Reds,7,2,823768,Brandon Sproat,Rhett Lowder,687075,695076
+2026-06-30,Chicago Cubs,San Diego Padres,9,7,824661,Matthew Boyd,JP Sears,571510,676664
+2026-06-30,Houston Astros,Minnesota Twins,6,4,824175,Mike Burrows,Joe Ryan,681347,657746
+2026-06-30,Colorado Rockies,Miami Marlins,3,14,824338,Tanner Gordon,Eury Pérez,685299,691587
+2026-06-30,Athletics,Los Angeles Dodgers,3,9,824984,Jeffrey Springs,Justin Wrobleski,605488,680736
+2026-06-30,Seattle Mariners,Los Angeles Angels,8,3,823122,Bryan Woo,José Soriano,693433,667755
+2026-06-30,Arizona Diamondbacks,San Francisco Giants,8,2,825066,Brandon Pfaadt,Landen Roupp,694297,694738
+2026-07-01,Baltimore Orioles,Chicago White Sox,6,1,824818,Dean Kremer,Noah Schultz,665152,702273
+2026-07-01,Cleveland Guardians,Texas Rangers,9,4,824419,Joey Cantillo,MacKenzie Gore,676282,669022
+2026-07-01,Boston Red Sox,Washington Nationals,2,10,824740,Payton Tolle,Brad Lord,801139,695418
+2026-07-01,New York Yankees,Detroit Tigers,2,6,823530,Will Warren,Troy Melton,701542,675512
+2026-07-01,Chicago Cubs,San Diego Padres,23,3,824660,Colin Rea,Walker Buehler,607067,621111
+2026-07-01,Toronto Blue Jays,New York Mets,9,3,822791,Braydon Fisher,Freddy Peralta,680755,642547
+2026-07-01,Philadelphia Phillies,Pittsburgh Pirates,10,6,823446,Zack Wheeler,Paul Skenes,554430,694973
+2026-07-01,Atlanta Braves,St. Louis Cardinals,5,1,824905,Reynaldo López,Michael McGreevy,625643,700241
+2026-07-01,Kansas City Royals,Tampa Bay Rays,0,4,824094,Seth Lugo,Shane McClanahan,607625,663556
+2026-07-01,Houston Astros,Minnesota Twins,3,8,824174,Tatsuya Imai,Taj Bradley,837227,671737
+2026-07-01,Milwaukee Brewers,Cincinnati Reds,4,2,823767,Shane Drohan,Andrew Abbott,675660,671096
+2026-07-01,Colorado Rockies,Miami Marlins,6,3,824337,Kyle Freeland,Max Meyer,607536,676974
+2026-07-01,Athletics,Los Angeles Dodgers,7,1,824985,J.T. Ginn,,669372,
+2026-07-01,Arizona Diamondbacks,San Francisco Giants,4,6,825064,Zac Gallen,Trevor McDonald,668678,686790
+2026-07-02,Philadelphia Phillies,Pittsburgh Pirates,1,6,823442,Alan Rangel,Jared Jones,660604,683003
+2026-07-02,Milwaukee Brewers,Cincinnati Reds,2,7,823765,Jacob Misiorowski,Chase Burns,694819,695505
+2026-07-02,Colorado Rockies,Miami Marlins,14,4,824335,Michael Lorenzen,Ryan Gusto,547179,687473
+2026-07-02,Cleveland Guardians,Chicago White Sox,6,5,824416,Slade Cecconi,Davis Martin,677944,663436
+2026-07-02,Atlanta Braves,St. Louis Cardinals,5,11,824906,Hurston Waldrep,Dustin May,694462,669160
+2026-07-02,Kansas City Royals,Tampa Bay Rays,2,5,824093,Stephen Kolek,Ian Seymour,663568,693855
+2026-07-02,Texas Rangers,Detroit Tigers,10,4,822884,Nathan Eovaldi,Framber Valdez,543135,664285
+2026-07-02,Seattle Mariners,Los Angeles Angels,1,0,823119,Bryce Miller,Walbert Ureña,682243,700712
+2026-07-02,Los Angeles Dodgers,San Diego Padres,12,7,823935,Roki Sasaki,Randy Vásquez,808963,681190
+2026-07-03,Chicago Cubs,St. Louis Cardinals,1,17,824659,David Peterson,Andre Pallante,656849,669467
+2026-07-03,Washington Nationals,Pittsburgh Pirates,9,5,822714,Foster Griffin,Mitch Keller,656492,656605
+2026-07-03,New York Yankees,Minnesota Twins,5,2,823527,Gerrit Cole,Mike Paredes,543037,702474
+2026-07-03,Cincinnati Reds,Baltimore Orioles,0,3,824498,Brady Singer,Trevor Rogers,663903,669432
+2026-07-03,Cleveland Guardians,Chicago White Sox,4,3,824417,Gavin Williams,Anthony Kay,668909,641743
+2026-07-03,Atlanta Braves,New York Mets,5,3,824904,Grant Holmes,Christian Scott,656550,681035
+2026-07-03,Colorado Rockies,San Francisco Giants,15,3,824336,Ryan Feltner,Logan Webb,663372,657277
+2026-07-03,Houston Astros,Tampa Bay Rays,1,3,824173,Spencer Arrighetti,Nick Martinez,681293,607259
+2026-07-03,Los Angeles Angels,Boston Red Sox,2,5,824013,Reid Detmers,Jake Bennett,672282,687562
+2026-07-03,Athletics,Miami Marlins,5,12,824982,Jack Perkins,Tyler Phillips,678022,663969
+2026-07-03,Arizona Diamondbacks,Milwaukee Brewers,4,7,825062,Jose Cabrera,Kyle Harrison,703615,690986
+2026-07-03,Los Angeles Dodgers,San Diego Padres,4,3,823933,Shohei Ohtani,Michael King,660271,650633
+2026-07-03,Seattle Mariners,Toronto Blue Jays,0,2,823120,Luis Castillo,Dylan Cease,622491,656302
+2026-07-04,Washington Nationals,Pittsburgh Pirates,1,7,822716,Carson Palmquist,Braxton Ashcraft,687223,677952
+2026-07-04,New York Yankees,Minnesota Twins,4,11,823526,Brendan Beck,Zebby Matthews,694341,805673
+2026-07-04,Texas Rangers,Detroit Tigers,0,3,822882,Cal Quantrill,Jack Flaherty,615698,656427
+2026-07-04,Seattle Mariners,Toronto Blue Jays,11,0,823118,Logan Gilbert,Shane Bieber,669302,669456
+2026-07-04,Cincinnati Reds,Baltimore Orioles,5,8,824499,Hunter Greene,Brandon Young,668881,687064
+2026-07-04,Houston Astros,Tampa Bay Rays,10,8,824171,Hunter Brown,Drew Rasmussen,686613,656876
+2026-07-04,Cleveland Guardians,Chicago White Sox,1,3,824415,Parker Messick,Sean Burke,800048,680732
+2026-07-04,Chicago Cubs,St. Louis Cardinals,0,3,824658,Shota Imanaga,Kyle Leahy,684007,681517
+2026-07-04,Atlanta Braves,New York Mets,14,3,824903,Chris Sale,Sean Manaea,519242,640455
+2026-07-04,Colorado Rockies,San Francisco Giants,4,6,824334,Sean Sullivan,Robbie Ray,807743,592662
+2026-07-04,Kansas City Royals,Philadelphia Phillies,1,6,824092,Michael Wacha,Jesús Luzardo,608379,666200
+2026-07-04,Los Angeles Angels,Boston Red Sox,1,8,824012,Sam Aldegheri,Sonny Gray,691951,543243
+2026-07-04,Athletics,Miami Marlins,2,7,824983,Aaron Civale,Sandy Alcantara,650644,645261
+2026-07-04,Arizona Diamondbacks,Milwaukee Brewers,4,3,825063,Merrill Kelly,Brandon Woodruff,518876,605540
+2026-07-04,Los Angeles Dodgers,San Diego Padres,3,0,823932,Yoshinobu Yamamoto,Wandy Peralta,808967,593974
+2026-07-05,Atlanta Braves,New York Mets,9,10,824902,Martín Pérez,Nolan McLean,527048,690997
+2026-07-05,Washington Nationals,Pittsburgh Pirates,5,11,822715,Cade Cavalli,Bubba Chandler,676917,696149
+2026-07-05,Cincinnati Reds,Baltimore Orioles,3,2,824497,Nick Lodolo,Kyle Bradish,666157,680694
+2026-07-05,New York Yankees,Minnesota Twins,1,6,823525,Ryan Weathers,Joe Ryan,677960,657746
+2026-07-05,Cleveland Guardians,Chicago White Sox,6,7,824413,Tanner Bibee,Chris Murphy,676440,669684
+2026-07-05,Chicago Cubs,St. Louis Cardinals,6,4,824656,Javier Assad,Matthew Liberatore,665871,669461
+2026-07-05,Kansas City Royals,Philadelphia Phillies,5,2,824091,Luinder Avila,Aaron Nola,679883,605400
+2026-07-05,Houston Astros,Tampa Bay Rays,2,0,824172,Peter Lambert,Mason Englert,663567,669438
+2026-07-05,Texas Rangers,Detroit Tigers,3,6,822879,Kumar Rocker,Casey Mize,677958,663554
+2026-07-05,Colorado Rockies,San Francisco Giants,7,6,824333,Tanner Gordon,Tyler Mahle,685299,641816
+2026-07-05,Arizona Diamondbacks,Milwaukee Brewers,2,3,825061,Eduardo Rodriguez,Brandon Sproat,593958,687075
+2026-07-05,Athletics,Miami Marlins,8,9,824980,Gage Jump,Eury Pérez,695611,691587
+2026-07-05,Seattle Mariners,Toronto Blue Jays,4,0,823117,Emerson Hancock,Trey Yesavage,676106,702056
+2026-07-05,Los Angeles Dodgers,San Diego Padres,2,5,823931,Emmet Sheehan,JP Sears,686218,676664
+2026-07-05,Los Angeles Angels,Boston Red Sox,5,7,824010,Ryan Johnson,Ranger Suarez,696270,624133
+2026-07-06,Kansas City Royals,Philadelphia Phillies,15,1,824089,Noah Cameron,Cristopher Sánchez,702070,650911
+2026-07-06,Tampa Bay Rays,New York Yankees,1,5,822958,Griffin Jax,Cam Schlittler,643377,693645
+2026-07-06,Washington Nationals,Houston Astros,12,11,822712,Miles Mikolas,Mike Burrows,571945,681347
+2026-07-06,Atlanta Braves,New York Mets,6,7,824900,Reynaldo López,Freddy Peralta,625643,642547
+2026-07-06,St. Louis Cardinals,Milwaukee Brewers,3,4,823036,Dustin May,Shane Drohan,669160,675660
+2026-07-06,San Diego Padres,Arizona Diamondbacks,0,8,823282,Walker Buehler,Brandon Pfaadt,621111,694297
+2026-07-06,San Francisco Giants,Toronto Blue Jays,10,1,823205,Landen Roupp,Kevin Gausman,694738,592332
+2026-07-06,Los Angeles Dodgers,Colorado Rockies,8,7,823930,Eric Lauer,Kyle Freeland,641778,607536
+2026-07-07,St. Louis Cardinals,Milwaukee Brewers,3,4,823062,Matt Svanson,Jacob Misiorowski,694335,694819
+2026-07-07,St. Louis Cardinals,Milwaukee Brewers,2,10,823035,Hunter Dobbins,Robert Gasser,690928,688107
+2026-07-07,Baltimore Orioles,Chicago Cubs,2,5,824820,Shane Baz,Matthew Boyd,669358,571510
+2026-07-07,Detroit Tigers,Athletics,6,2,824254,Tarik Skubal,J.T. Ginn,669373,669372
+2026-07-07,Pittsburgh Pirates,Atlanta Braves,12,4,823361,Paul Skenes,Hurston Waldrep,694973,694462
+2026-07-07,Miami Marlins,Seattle Mariners,6,5,823847,Max Meyer,Bryan Woo,676974,693433
+2026-07-07,Tampa Bay Rays,New York Yankees,6,4,822956,Ian Seymour,Will Warren,693855,701542
+2026-07-07,Washington Nationals,Houston Astros,3,6,822713,Andrew Alvarez,Tatsuya Imai,674841,837227
+2026-07-07,New York Mets,Kansas City Royals,12,16,823607,Cionel Pérez,Seth Lugo,672335,607625
+2026-07-07,Cincinnati Reds,Philadelphia Phillies,1,4,824495,Andrew Abbott,Zack Wheeler,671096,554430
+2026-07-07,Minnesota Twins,Cleveland Guardians,3,1,823687,Taj Bradley,Joey Cantillo,671737,676282
+2026-07-07,Chicago White Sox,Boston Red Sox,1,8,824579,Noah Schultz,Payton Tolle,702273,801139
+2026-07-07,Texas Rangers,Los Angeles Angels,8,3,822881,Jacob deGrom,José Soriano,594798,667755
+2026-07-07,San Diego Padres,Arizona Diamondbacks,4,1,823280,Germán Márquez,Zac Gallen,608566,668678
+2026-07-07,San Francisco Giants,Toronto Blue Jays,3,9,823203,Trevor McDonald,Spencer Miles,686790,693686
+2026-07-07,Los Angeles Dodgers,Colorado Rockies,3,4,823929,Justin Wrobleski,Michael Lorenzen,680736,547179
+2026-07-08,San Francisco Giants,Toronto Blue Jays,0,10,823202,Logan Webb,Dylan Cease,657277,656302
+2026-07-08,Baltimore Orioles,Chicago Cubs,7,9,824815,Dean Kremer,Colin Rea,665152,607067
+2026-07-08,Detroit Tigers,Athletics,6,1,824253,Troy Melton,Jeffrey Springs,675512,605488
+2026-07-08,Pittsburgh Pirates,Atlanta Braves,0,3,823360,Jared Jones,Grant Holmes,683003,656550
+2026-07-08,Miami Marlins,Seattle Mariners,2,0,823848,Tyler Phillips,George Kirby,663969,669923
+2026-07-08,Tampa Bay Rays,New York Yankees,3,0,822957,Shane McClanahan,Gerrit Cole,663556,543037
+2026-07-08,Washington Nationals,Houston Astros,8,2,822710,Foster Griffin,Spencer Arrighetti,656492,681293
+2026-07-08,New York Mets,Kansas City Royals,6,2,823605,Christian Scott,Steven Cruz,681035,674444
+2026-07-08,Cincinnati Reds,Philadelphia Phillies,11,5,824496,Chase Burns,Alan Rangel,695505,660604
+2026-07-08,Minnesota Twins,Cleveland Guardians,6,5,823684,Connor Prielipp,Slade Cecconi,687570,677944
+2026-07-08,Chicago White Sox,Boston Red Sox,0,5,824578,Davis Martin,Jake Bennett,663436,687562
+2026-07-08,St. Louis Cardinals,Milwaukee Brewers,5,1,823032,Michael McGreevy,Kyle Harrison,700241,690986
+2026-07-08,Texas Rangers,Los Angeles Angels,1,13,822880,MacKenzie Gore,Walbert Ureña,669022,700712
+2026-07-08,Los Angeles Dodgers,Colorado Rockies,4,3,823928,Roki Sasaki,Gabriel Hughes,808963,687312
+2026-07-08,San Diego Padres,Arizona Diamondbacks,10,4,823279,Michael King,Jose Cabrera,650633,703615
+2026-07-09,Pittsburgh Pirates,Atlanta Braves,5,10,823359,Mitch Keller,Bryce Elder,656605,693821
+2026-07-09,New York Mets,Kansas City Royals,7,3,823606,Sean Manaea,Michael Wacha,640455,608379
+2026-07-09,Tampa Bay Rays,New York Yankees,4,12,822954,Drew Rasmussen,Paul Blackburn,656876,621112
+2026-07-09,Baltimore Orioles,Chicago Cubs,3,2,824816,Trevor Rogers,David Peterson,669432,656849
+2026-07-09,Minnesota Twins,Cleveland Guardians,2,5,823683,Bailey Ober,Gavin Williams,641927,668909
+2026-07-09,Chicago White Sox,Boston Red Sox,1,2,824577,Anthony Kay,Patrick Sandoval,641743,663776
+2026-07-09,Detroit Tigers,Athletics,4,1,824251,Framber Valdez,José Suarez,664285,660761
+2026-07-09,Miami Marlins,Seattle Mariners,8,4,823846,Janson Junk,Bryce Miller,676083,682243
+2026-07-09,Cincinnati Reds,Philadelphia Phillies,0,1,824494,Brady Singer,Jesús Luzardo,663903,666200
+2026-07-09,St. Louis Cardinals,Milwaukee Brewers,4,8,823034,Andre Pallante,Logan Henderson,669467,701656
+2026-07-09,Texas Rangers,Los Angeles Angels,7,6,822877,Nathan Eovaldi,Reid Detmers,543135,672282
+2026-07-09,San Diego Padres,Arizona Diamondbacks,1,3,823277,Griffin Canning,Merrill Kelly,656288,518876
+2026-07-09,San Francisco Giants,Colorado Rockies,8,2,823201,Carson Whisenhunt,Ryan Feltner,687931,663372
+2026-07-10,Detroit Tigers,Philadelphia Phillies,10,2,824252,Jack Flaherty,Aaron Nola,656427,605400
+2026-07-10,Washington Nationals,New York Yankees,3,5,822709,Carson Palmquist,Ryan Weathers,687223,677960
+2026-07-10,Baltimore Orioles,Kansas City Royals,5,3,824817,Brandon Young,Luinder Avila,687064,679883
+2026-07-10,Cincinnati Reds,Chicago Cubs,4,0,824493,Hunter Greene,Shota Imanaga,668881,684007
+2026-07-10,Tampa Bay Rays,Seattle Mariners,7,2,822955,Nick Martinez,Luis Castillo,607259,622491
+2026-07-10,Miami Marlins,Cleveland Guardians,2,3,823845,Sandy Alcantara,Parker Messick,645261,800048
+2026-07-10,New York Mets,Boston Red Sox,2,6,823604,Nolan McLean,Sonny Gray,690997,543243
+2026-07-10,Chicago White Sox,Athletics,14,1,824575,Sean Burke,Jacob Lopez,680732,682052
+2026-07-10,Texas Rangers,Houston Astros,7,3,822878,Cal Quantrill,Hunter Brown,615698,686613
+2026-07-10,Minnesota Twins,Los Angeles Angels,3,4,823685,Zebby Matthews,Grayson Rodriguez,805673,680570
+2026-07-10,St. Louis Cardinals,Atlanta Braves,2,1,823033,Kyle Leahy,Chris Sale,681517,519242
+2026-07-10,San Diego Padres,Toronto Blue Jays,3,5,823278,JP Sears,Shane Bieber,676664,669456
+2026-07-10,Los Angeles Dodgers,Arizona Diamondbacks,3,9,823927,Kyle Hurt,Eduardo Rodriguez,669165,593958
+2026-07-10,San Francisco Giants,Colorado Rockies,3,4,823200,Robbie Ray,Tanner Gordon,592662,685299
+2026-07-11,Pittsburgh Pirates,Milwaukee Brewers,7,6,823357,Braxton Ashcraft,Brandon Sproat,677952,687075
+2026-07-11,Pittsburgh Pirates,Milwaukee Brewers,3,2,823356,Bubba Chandler,Shane Drohan,696149,675660
+2026-07-11,Minnesota Twins,Los Angeles Angels,5,3,823682,Joe Ryan,Ryan Johnson,657746,696270
+2026-07-11,Chicago White Sox,Athletics,1,0,824576,Bryan Hudson,Gage Jump,663542,695611
+2026-07-11,San Francisco Giants,Colorado Rockies,4,2,823198,Tyler Mahle,Kyle Freeland,641816,607536
+2026-07-11,Washington Nationals,New York Yankees,2,4,822711,PJ Poulin,Cam Schlittler,676571,693645
+2026-07-11,New York Mets,Boston Red Sox,0,4,823603,Freddy Peralta,Eduardo Rivera,642547,700842
+2026-07-11,Tampa Bay Rays,Seattle Mariners,6,1,822953,Griffin Jax,Logan Gilbert,643377,669302
+2026-07-11,Miami Marlins,Cleveland Guardians,1,4,823844,Eury Pérez,Tanner Bibee,691587,676440
+2026-07-11,Detroit Tigers,Philadelphia Phillies,2,4,824249,Casey Mize,Cristopher Sánchez,663554,650911
+2026-07-11,Baltimore Orioles,Kansas City Royals,6,1,824813,Kyle Bradish,Noah Cameron,680694,702070
+2026-07-11,Texas Rangers,Houston Astros,3,9,822875,Kumar Rocker,Peter Lambert,677958,663567
+2026-07-11,Cincinnati Reds,Chicago Cubs,3,5,824492,Nick Lodolo,Javier Assad,666157,665871
+2026-07-11,St. Louis Cardinals,Atlanta Braves,4,1,823030,Matthew Liberatore,Reynaldo López,669461,625643
+2026-07-11,San Diego Padres,Toronto Blue Jays,8,7,823276,Walker Buehler,Trey Yesavage,621111,702056
+2026-07-11,Los Angeles Dodgers,Arizona Diamondbacks,2,9,823926,Yoshinobu Yamamoto,Brandon Pfaadt,808967,694297
+2026-07-12,Pittsburgh Pirates,Milwaukee Brewers,14,5,823358,Paul Skenes,Robert Gasser,694973,688107
+2026-07-12,Baltimore Orioles,Kansas City Royals,8,2,824814,Shane Baz,Seth Lugo,669358,607625
+2026-07-12,Washington Nationals,New York Yankees,3,5,822708,Cade Cavalli,Will Warren,676917,701542
+2026-07-12,Cincinnati Reds,Chicago Cubs,4,8,824491,Andrew Abbott,Matthew Boyd,671096,571510
+2026-07-12,New York Mets,Boston Red Sox,2,3,823602,Zac Thornton,Payton Tolle,804267,801139
+2026-07-12,Tampa Bay Rays,Seattle Mariners,2,8,822951,Ian Seymour,Emerson Hancock,693855,676106
+2026-07-12,Detroit Tigers,Philadelphia Phillies,0,5,824250,Tarik Skubal,Zack Wheeler,669373,554430
+2026-07-12,Miami Marlins,Cleveland Guardians,2,5,823842,Tyler Phillips,Joey Cantillo,663969,676282
+2026-07-12,Minnesota Twins,Los Angeles Angels,4,2,823681,Taj Bradley,José Soriano,671737,667755
+2026-07-12,Chicago White Sox,Athletics,9,1,824574,Noah Schultz,J.T. Ginn,702273,669372
+2026-07-12,St. Louis Cardinals,Atlanta Braves,3,4,823029,Dustin May,Danny Young,669160,664849
+2026-07-12,Texas Rangers,Houston Astros,6,5,822876,MacKenzie Gore,Cristian Javier,669022,664299
+2026-07-12,San Francisco Giants,Colorado Rockies,3,1,823199,Trevor McDonald,Michael Lorenzen,686790,547179
+2026-07-12,Los Angeles Dodgers,Arizona Diamondbacks,3,5,823925,Emmet Sheehan,Mitch Bratt,686218,683352
+2026-07-12,San Diego Padres,Toronto Blue Jays,5,4,823274,Germán Márquez,Kevin Gausman,608566,592332
+2026-07-16,Philadelphia Phillies,New York Mets,1,4,823440,Aaron Nola,Christian Scott,605400,681035
+2026-07-17,Boston Red Sox,Tampa Bay Rays,10,0,824766,Jake Bennett,Griffin Jax,687562,643377
+2026-07-17,Boston Red Sox,Tampa Bay Rays,5,3,824737,Eduardo Rivera,Mason Englert,700842,669438
+2026-07-17,New York Yankees,Los Angeles Dodgers,1,2,823524,Gerrit Cole,Roki Sasaki,543037,808963
+2026-07-17,Atlanta Braves,Texas Rangers,15,1,824901,Chris Sale,Cal Quantrill,519242,615698
+2026-07-17,Toronto Blue Jays,Chicago White Sox,4,12,822789,Spencer Miles,Anthony Kay,693686,641743
+2026-07-17,Milwaukee Brewers,Miami Marlins,2,1,823766,Logan Henderson,Sandy Alcantara,701656,645261
+2026-07-17,Chicago Cubs,Minnesota Twins,2,5,824655,Colin Rea,Bailey Ober,607067,641927
+2026-07-17,Houston Astros,Baltimore Orioles,2,3,824170,Peter Lambert,Dean Kremer,663567,665152
+2026-07-17,Kansas City Royals,San Diego Padres,7,6,824090,Seth Lugo,Michael King,607625,650633
+2026-07-17,Colorado Rockies,Cincinnati Reds,2,7,824332,Gabriel Hughes,Brady Singer,687312,663903
+2026-07-17,Los Angeles Angels,Detroit Tigers,1,2,824009,Reid Detmers,Troy Melton,672282,675512
+2026-07-17,Athletics,Washington Nationals,4,23,824981,Gage Jump,Cade Cavalli,695611,676917
+2026-07-17,Arizona Diamondbacks,St. Louis Cardinals,4,5,825060,Merrill Kelly,Michael McGreevy,518876,700241
+2026-07-17,Seattle Mariners,San Francisco Giants,0,7,823115,Bryce Miller,Landen Roupp,682243,694738
+2026-07-18,Cleveland Guardians,Pittsburgh Pirates,1,7,824414,Gavin Williams,Jared Jones,668909,683003
+2026-07-18,Cleveland Guardians,Pittsburgh Pirates,5,3,824412,Logan Allen,Mason Montgomery,671106,682254
+2026-07-18,Chicago Cubs,Minnesota Twins,6,2,824657,Matthew Boyd,Taj Bradley,571510,671737
+2026-07-18,Philadelphia Phillies,New York Mets,6,1,823441,Jesús Luzardo,Sean Manaea,666200,640455
+2026-07-18,Toronto Blue Jays,Chicago White Sox,1,0,822790,Shane Bieber,Davis Martin,669456,663436
+2026-07-18,Colorado Rockies,Cincinnati Reds,10,3,824331,Tomoyuki Sugano,Rhett Lowder,608372,695076
+2026-07-18,Houston Astros,Baltimore Orioles,2,4,824169,Spencer Arrighetti,Trevor Rogers,681293,669432
+2026-07-18,Kansas City Royals,San Diego Padres,6,1,824088,Randy Dobnak,Griffin Canning,677976,656288
+2026-07-18,Arizona Diamondbacks,St. Louis Cardinals,5,3,825059,Brandon Pfaadt,Dustin May,694297,669160
+2026-07-18,Boston Red Sox,Tampa Bay Rays,7,6,824738,Patrick Sandoval,Ian Seymour,663776,693855
+2026-07-18,Atlanta Braves,Texas Rangers,6,7,824899,Owen Murphy,MacKenzie Gore,702566,669022
+2026-07-18,Milwaukee Brewers,Miami Marlins,8,6,823763,Shane Drohan,Max Meyer,675660,676974
+2026-07-18,Seattle Mariners,San Francisco Giants,4,3,823116,Bryan Woo,Logan Webb,693433,657277
+2026-07-18,Athletics,Washington Nationals,15,1,824979,J.T. Ginn,Zack Littell,669372,641793
+2026-07-18,Los Angeles Angels,Detroit Tigers,0,7,824008,Grayson Rodriguez,Tarik Skubal,680570,669373
+2026-07-19,Toronto Blue Jays,Chicago White Sox,0,3,822786,Trey Yesavage,Sean Burke,702056,680732
+2026-07-19,New York Yankees,Los Angeles Dodgers,2,8,823523,Cam Schlittler,Yoshinobu Yamamoto,693645,808967
+2026-07-19,New York Yankees,Los Angeles Dodgers,2,1,823521,Ryan Yarbrough,Will Klein,642232,694361
+2026-07-19,Boston Red Sox,Tampa Bay Rays,6,1,824739,Sonny Gray,Shane McClanahan,543243,663556
+2026-07-19,Philadelphia Phillies,New York Mets,1,6,823439,Alan Rangel,Nolan McLean,660604,690997
+2026-07-19,Atlanta Braves,Texas Rangers,8,5,824897,Grant Holmes,Nathan Eovaldi,656550,543135
+2026-07-19,Cleveland Guardians,Pittsburgh Pirates,1,7,824411,Joey Cantillo,Paul Skenes,676282,694973
+2026-07-19,Houston Astros,Baltimore Orioles,2,5,824168,Hunter Brown,Brandon Young,686613,687064
+2026-07-19,Kansas City Royals,San Diego Padres,2,19,824086,Noah Cameron,Germán Márquez,702070,608566
+2026-07-19,Milwaukee Brewers,Miami Marlins,3,1,823764,Robert Gasser,Eury Pérez,688107,691587
+2026-07-19,Chicago Cubs,Minnesota Twins,10,1,824653,Shota Imanaga,Zebby Matthews,684007,805673
+2026-07-19,Colorado Rockies,Cincinnati Reds,6,9,824330,Ryan Feltner,Hunter Greene,663372,668881
+2026-07-19,Athletics,Washington Nationals,2,5,824978,Jacob Lopez,Foster Griffin,682052,656492
+2026-07-19,Los Angeles Angels,Detroit Tigers,3,2,824007,Ryan Johnson,Casey Mize,696270,663554
+2026-07-19,Seattle Mariners,San Francisco Giants,6,3,823113,Logan Gilbert,Robbie Ray,669302,592662
+2026-07-19,Arizona Diamondbacks,St. Louis Cardinals,8,7,825057,Eduardo Rodriguez,Andre Pallante,593958,669467
+2026-07-20,Cleveland Guardians,Minnesota Twins,13,4,824410,Tanner Bibee,Joe Ryan,676440,657746
+2026-07-20,New York Yankees,Pittsburgh Pirates,8,5,823522,Ryan Weathers,Braxton Ashcraft,677960,677952
+2026-07-20,Toronto Blue Jays,Tampa Bay Rays,1,7,822788,Dylan Cease,Nick Martinez,656302,607259
+2026-07-20,Boston Red Sox,Baltimore Orioles,6,5,824736,Payton Tolle,Shane Baz,801139,669358
+2026-07-20,Philadelphia Phillies,Los Angeles Dodgers,10,7,823436,Cristopher Sánchez,Emmet Sheehan,650911,686218
+2026-07-20,Atlanta Braves,San Diego Padres,3,2,824898,Bryce Elder,JP Sears,693821,676664
+2026-07-20,Kansas City Royals,San Francisco Giants,4,3,824087,Michael Wacha,Trevor McDonald,608379,686790
+2026-07-20,Milwaukee Brewers,New York Mets,8,3,823762,Jacob Misiorowski,Freddy Peralta,694819,642547
+2026-07-20,Chicago Cubs,Detroit Tigers,6,8,824654,Jameson Taillon,Jack Flaherty,592791,656427
+2026-07-20,Texas Rangers,Chicago White Sox,3,10,822874,Jacob deGrom,Erick Fedde,594798,607200
+2026-07-20,Houston Astros,Miami Marlins,8,5,824167,Ronel Blanco,Janson Junk,669854,676083
+2026-07-20,Colorado Rockies,Washington Nationals,3,7,824328,Kyle Freeland,Andrew Alvarez,607536,674841
+2026-07-20,Arizona Diamondbacks,Athletics,2,5,825058,Mitch Bratt,Jeffrey Springs,683352,605488
+2026-07-20,Seattle Mariners,Cincinnati Reds,8,0,823112,George Kirby,Andrew Abbott,669923,671096
+2026-07-20,Los Angeles Angels,St. Louis Cardinals,3,2,824006,José Soriano,Kyle Leahy,667755,681517
+2026-07-21,Cleveland Guardians,Minnesota Twins,5,2,824409,Parker Messick,Kendry Rojas,800048,696070
+2026-07-21,Philadelphia Phillies,Los Angeles Dodgers,1,2,823437,Zack Wheeler,Justin Wrobleski,554430,680736
+2026-07-21,Toronto Blue Jays,Tampa Bay Rays,2,12,822787,Kevin Gausman,Drew Rasmussen,592332,656876
+2026-07-21,Atlanta Braves,San Diego Padres,3,8,824895,Reynaldo López,Walker Buehler,625643,621111
+2026-07-21,Kansas City Royals,San Francisco Giants,3,2,824085,Luinder Avila,Tyler Mahle,679883,641816
+2026-07-21,Milwaukee Brewers,New York Mets,0,4,823760,Brandon Sproat,Zac Thornton,687075,804267
+2026-07-21,Chicago Cubs,Detroit Tigers,11,2,824652,David Peterson,Framber Valdez,656849,664285
+2026-07-21,Texas Rangers,Chicago White Sox,10,0,822871,Kumar Rocker,Noah Schultz,677958,702273
+2026-07-21,Houston Astros,Miami Marlins,5,3,824165,Tatsuya Imai,Tyler Phillips,837227,663969
+2026-07-21,Colorado Rockies,Washington Nationals,8,7,824329,Michael Lorenzen,Carson Palmquist,547179,687223
+2026-07-21,Los Angeles Angels,St. Louis Cardinals,5,1,824005,Walbert Ureña,Matthew Liberatore,700712,669461
+2026-07-21,Arizona Diamondbacks,Athletics,6,5,825056,Kohl Drake,Jack Perkins,684442,678022
+2026-07-21,Seattle Mariners,Cincinnati Reds,2,4,823114,Luis Castillo,Chase Burns,622491,695505
+2026-07-22,New York Yankees,Pittsburgh Pirates,3,5,823518,Gerrit Cole,Mitch Keller,543037,656605
+2026-07-22,New York Yankees,Pittsburgh Pirates,2,0,823519,Max Fried,Bubba Chandler,608331,696149
+2026-07-22,Boston Red Sox,Baltimore Orioles,6,3,824735,Jake Bennett,Dean Kremer,687562,665152
+2026-07-22,Boston Red Sox,Baltimore Orioles,1,5,824732,Eduardo Rivera,Kyle Bradish,700842,680694
+2026-07-22,Kansas City Royals,San Francisco Giants,5,4,824083,Seth Lugo,Landen Roupp,607625,694738
+2026-07-22,Milwaukee Brewers,New York Mets,4,3,823761,Logan Henderson,Christian Scott,701656,681035
+2026-07-22,Colorado Rockies,Washington Nationals,0,8,824327,Gabriel Hughes,Cade Cavalli,687312,676917
+2026-07-22,Arizona Diamondbacks,Athletics,15,5,825055,Merrill Kelly,Gage Jump,518876,695611
+2026-07-22,Seattle Mariners,Cincinnati Reds,3,5,823110,Emerson Hancock,Brady Singer,676106,663903
+2026-07-22,Los Angeles Angels,St. Louis Cardinals,0,1,824004,Reid Detmers,Hunter Dobbins,672282,690928
+2026-07-22,Cleveland Guardians,Minnesota Twins,6,10,824408,Slade Cecconi,Bailey Ober,677944,641927
+2026-07-22,Philadelphia Phillies,Los Angeles Dodgers,5,9,823438,Aaron Nola,Eric Lauer,605400,641778
+2026-07-22,Toronto Blue Jays,Tampa Bay Rays,2,4,822784,Braydon Fisher,Griffin Jax,680755,643377
+2026-07-22,Atlanta Braves,San Diego Padres,7,6,824896,Martín Pérez,Michael King,527048,650633
+2026-07-22,Texas Rangers,Chicago White Sox,2,4,822873,Tyler Alexander,Anthony Kay,641302,641743
+2026-07-22,Chicago Cubs,Detroit Tigers,1,5,824650,Colin Rea,Keider Montero,607067,672456
+2026-07-22,Houston Astros,Miami Marlins,5,2,824166,Peter Lambert,Sandy Alcantara,663567,645261
+2026-07-23,Atlanta Braves,San Diego Padres,6,5,824893,Chris Sale,Kyle Hart,519242,606996
+2026-07-23,Cleveland Guardians,Minnesota Twins,1,3,824406,Gavin Williams,Taj Bradley,668909,671737
+2026-07-23,Toronto Blue Jays,Tampa Bay Rays,3,1,822785,Shane Bieber,Casey Legumina,669456,668984
+2026-07-23,St. Louis Cardinals,Arizona Diamondbacks,6,10,823042,Michael McGreevy,Brandon Pfaadt,700241,694297
+2026-07-23,Detroit Tigers,Kansas City Royals,4,3,824247,Troy Melton,Randy Dobnak,675512,677976
+2026-07-24,Milwaukee Brewers,Colorado Rockies,2,5,823759,Shane Drohan,Tomoyuki Sugano,675660,608372
+2026-07-24,Detroit Tigers,Kansas City Royals,2,1,824248,Tarik Skubal,Beck Way,669373,694360
+2026-07-24,Pittsburgh Pirates,Chicago Cubs,2,3,823352,Jared Jones,Matthew Boyd,683003,571510
+2026-07-24,Washington Nationals,Arizona Diamondbacks,2,3,822707,Carson Palmquist,Eduardo Rodriguez,687223,593958
+2026-07-24,Philadelphia Phillies,New York Yankees,0,1,823434,Jesús Luzardo,Cam Schlittler,666200,693645
+2026-07-24,Baltimore Orioles,Atlanta Braves,6,7,824812,Trevor Rogers,Grant Holmes,669432,656550
+2026-07-24,New York Mets,Los Angeles Dodgers,2,4,823601,Sean Manaea,Roki Sasaki,640455,808963
+2026-07-24,Tampa Bay Rays,Cleveland Guardians,11,3,822952,Shane McClanahan,Joey Cantillo,663556,676282
+2026-07-24,Miami Marlins,San Diego Padres,2,4,823843,Ryan Gusto,Germán Márquez,687473,608566
+2026-07-24,Boston Red Sox,Toronto Blue Jays,6,4,824733,Patrick Sandoval,Trey Yesavage,663776,702056
+2026-07-24,Chicago White Sox,Houston Astros,5,9,824573,Davis Martin,Spencer Arrighetti,663436,681293
+2026-07-24,Texas Rangers,Seattle Mariners,5,4,822872,MacKenzie Gore,Bryce Miller,669022,682243
+2026-07-24,Minnesota Twins,Athletics,0,2,823680,Zebby Matthews,Jacob Lopez,805673,682052
+2026-07-24,St. Louis Cardinals,Cincinnati Reds,2,4,823031,Dustin May,Rhett Lowder,669160,695076
+2026-07-24,San Francisco Giants,Los Angeles Angels,7,6,823196,Logan Webb,Grayson Rodriguez,657277,680570
+2026-07-25,Detroit Tigers,Kansas City Royals,2,3,824244,Casey Mize,Michael Wacha,663554,608379
+2026-07-25,Washington Nationals,Arizona Diamondbacks,5,3,822704,Foster Griffin,Mitch Bratt,656492,683352
+2026-07-25,San Francisco Giants,Los Angeles Angels,9,2,823197,Robbie Ray,Ryan Johnson,592662,696270
+2026-07-25,Boston Red Sox,Toronto Blue Jays,0,6,824734,Sonny Gray,Dylan Cease,543243,656302
+2026-07-25,Miami Marlins,San Diego Padres,2,7,823841,Eury Pérez,Randy Vásquez,691587,681190
+2026-07-25,Philadelphia Phillies,New York Yankees,1,3,823435,Tim Mayza,Ryan Weathers,641835,677960
+2026-07-25,Tampa Bay Rays,Cleveland Guardians,3,0,822948,Nick Martinez,Tanner Bibee,607259,676440
+2026-07-25,Pittsburgh Pirates,Chicago Cubs,0,11,823355,Paul Skenes,Shota Imanaga,694973,684007
+2026-07-25,Baltimore Orioles,Atlanta Braves,3,2,824811,Brandon Young,Bryce Elder,687064,693821
+2026-07-25,Minnesota Twins,Athletics,2,0,823679,Kendry Rojas,Brady Basso,696070,669620
+2026-07-25,Chicago White Sox,Houston Astros,1,4,824571,Sean Burke,Hunter Brown,680732,686613
+2026-07-25,Milwaukee Brewers,Colorado Rockies,8,5,823758,Robert Gasser,Ryan Feltner,688107,663372
+2026-07-25,New York Mets,Los Angeles Dodgers,3,4,823600,Nolan McLean,Yoshinobu Yamamoto,690997,808967
+2026-07-25,St. Louis Cardinals,Cincinnati Reds,7,0,823027,Andre Pallante,Hunter Greene,669467,668881
+2026-07-25,Texas Rangers,Seattle Mariners,7,1,822869,Nathan Eovaldi,Bryan Woo,543135,693433
+2026-07-26,Tampa Bay Rays,Cleveland Guardians,1,0,822950,Drew Rasmussen,Parker Messick,656876,800048
+2026-07-26,Washington Nationals,Arizona Diamondbacks,10,7,822706,Miles Mikolas,Kohl Drake,571945,684442
+2026-07-26,Pittsburgh Pirates,Chicago Cubs,8,7,823354,Braxton Ashcraft,Jameson Taillon,677952,592791
+2026-07-26,Boston Red Sox,Toronto Blue Jays,6,1,824730,Ranger Suarez,Kevin Gausman,624133,592332
+2026-07-26,Baltimore Orioles,Atlanta Braves,2,3,824810,Shane Baz,Reynaldo López,669358,625643
+2026-07-26,Detroit Tigers,Kansas City Royals,4,5,824246,Framber Valdez,Luinder Avila,664285,679883
+2026-07-26,New York Mets,Los Angeles Dodgers,8,3,823599,Freddy Peralta,Emmet Sheehan,642547,686218
+2026-07-26,Miami Marlins,San Diego Padres,3,5,823840,Janson Junk,Walker Buehler,676083,621111
+2026-07-26,Minnesota Twins,Athletics,11,8,823678,Connor Prielipp,Jeffrey Springs,687570,605488
+2026-07-26,Chicago White Sox,Houston Astros,12,3,824572,Erick Fedde,Ronel Blanco,607200,669854
+2026-07-26,Milwaukee Brewers,Colorado Rockies,11,2,823755,Jacob Misiorowski,Kyle Freeland,694819,607536
+2026-07-26,St. Louis Cardinals,Cincinnati Reds,3,5,823028,Kyle Leahy,Andrew Abbott,681517,671096
+2026-07-26,Texas Rangers,Seattle Mariners,4,6,822870,Jacob deGrom,Logan Gilbert,594798,669302
+2026-07-26,San Francisco Giants,Los Angeles Angels,3,4,823194,Carson Whisenhunt,José Soriano,687931,667755
+2026-07-26,Philadelphia Phillies,New York Yankees,11,4,823433,Cristopher Sánchez,Will Warren,650911,701542
+2026-07-27,Texas Rangers,Seattle Mariners,7,3,822868,Kumar Rocker,George Kirby,677958,669923
+2026-07-27,Detroit Tigers,Baltimore Orioles,5,8,824245,Keider Montero,Kyle Bradish,672456,680694
+2026-07-27,Pittsburgh Pirates,Arizona Diamondbacks,3,2,823353,Mitch Keller,Merrill Kelly,656605,518876
+2026-07-27,Miami Marlins,Philadelphia Phillies,8,7,823839,Tyler Phillips,Zack Wheeler,663969,554430
+2026-07-27,Washington Nationals,Toronto Blue Jays,2,3,822705,Eddy Yean,Max Scherzer,678868,453286
+2026-07-27,New York Mets,Atlanta Braves,14,3,823597,Zac Thornton,Martín Pérez,804267,527048
+2026-07-27,Chicago White Sox,New York Yankees,5,9,824570,Noah Schultz,Max Fried,702273,608331
+2026-07-27,St. Louis Cardinals,Chicago Cubs,3,7,823025,Matthew Liberatore,David Peterson,669461,656849
+2026-07-27,Los Angeles Angels,Houston Astros,4,6,824001,Walbert Ureña,Tatsuya Imai,700712,837227
+2026-07-27,Athletics,Boston Red Sox,2,4,824977,Jack Perkins,Payton Tolle,678022,801139
+2026-07-27,San Francisco Giants,Milwaukee Brewers,3,0,823195,Tyler Mahle,Brandon Sproat,641816,687075
+2026-07-28,Cincinnati Reds,Cleveland Guardians,5,6,824490,Chase Burns,Slade Cecconi,695505,677944
+2026-07-28,Cincinnati Reds,Cleveland Guardians,2,0,824489,Caleb Ferguson,Gavin Williams,657571,668909
+2026-07-28,Detroit Tigers,Baltimore Orioles,14,0,824243,Troy Melton,Dean Kremer,675512,665152
+2026-07-28,Pittsburgh Pirates,Arizona Diamondbacks,7,8,823350,Bubba Chandler,Brandon Pfaadt,696149,694297
+2026-07-28,Tampa Bay Rays,Texas Rangers,1,4,822949,Griffin Jax,Cal Quantrill,643377,615698
+2026-07-28,Miami Marlins,Philadelphia Phillies,1,0,823838,Sandy Alcantara,Aaron Nola,645261,605400
+2026-07-28,Washington Nationals,Toronto Blue Jays,8,6,822703,Cade Cavalli,Shane Bieber,676917,669456
+2026-07-28,Minnesota Twins,Kansas City Royals,3,2,823676,Taj Bradley,Seth Lugo,671737,607625
+2026-07-28,Chicago White Sox,New York Yankees,2,3,824569,Anthony Kay,Gerrit Cole,641743,543037
+2026-07-28,St. Louis Cardinals,Chicago Cubs,2,10,823026,Michael McGreevy,Colin Rea,700241,607067
+2026-07-28,Los Angeles Angels,Houston Astros,2,3,824003,Reid Detmers,Peter Lambert,672282,663567
+2026-07-28,Athletics,Boston Red Sox,4,3,824976,Gage Jump,Jake Bennett,695611,687562
+2026-07-28,San Diego Padres,Colorado Rockies,8,7,823275,Michael King,Michael Lorenzen,650633,547179
+2026-07-28,San Francisco Giants,Milwaukee Brewers,2,8,823193,Landen Roupp,Logan Henderson,694738,701656
+2026-07-28,Los Angeles Dodgers,Seattle Mariners,6,7,823923,Justin Wrobleski,Luis Castillo,680736,622491
+2026-07-29,Miami Marlins,Philadelphia Phillies,8,6,823837,Ryan Gusto,Jesús Luzardo,687473,666200
+2026-07-29,Pittsburgh Pirates,Arizona Diamondbacks,0,3,823351,Jared Jones,Eduardo Rodriguez,683003,593958
+2026-07-29,Washington Nationals,Toronto Blue Jays,2,5,822702,Zack Littell,Trey Yesavage,641793,702056
+2026-07-29,Detroit Tigers,Baltimore Orioles,9,10,824242,Tarik Skubal,Trevor Rogers,669373,669432
+2026-07-29,New York Mets,Atlanta Braves,3,2,823596,Sean Manaea,AJ Smith-Shawver,640455,700363
+2026-07-29,New York Mets,Atlanta Braves,0,1,823598,Christian Scott,Chris Sale,681035,519242
+2026-07-29,San Francisco Giants,Milwaukee Brewers,16,3,823192,Logan Webb,Thomas Pannone,657277,623381
+2026-07-29,San Diego Padres,Colorado Rockies,3,1,823273,Kyle Hart,Gabriel Hughes,606996,687312
+2026-07-29,Tampa Bay Rays,Texas Rangers,3,0,822947,Casey Legumina,MacKenzie Gore,668984,669022
+2026-07-29,Cincinnati Reds,Cleveland Guardians,1,6,824487,Brady Singer,Joey Cantillo,663903,676282
+2026-07-29,Minnesota Twins,Kansas City Royals,0,4,823677,Joe Ryan,Randy Dobnak,657746,677976
+2026-07-29,Chicago White Sox,New York Yankees,6,5,824567,Davis Martin,Cam Schlittler,663436,693645
+2026-07-29,St. Louis Cardinals,Chicago Cubs,3,2,823022,Dustin May,Matthew Boyd,669160,571510
+2026-07-29,Los Angeles Angels,Houston Astros,4,7,824002,Grayson Rodriguez,Hayden Wesneski,680570,669713
+2026-07-29,Athletics,Boston Red Sox,2,4,824973,Jacob Lopez,Patrick Sandoval,682052,663776
+2026-07-29,Los Angeles Dodgers,Seattle Mariners,4,2,823924,Eric Lauer,Emerson Hancock,641778,676106
+2026-07-30,Tampa Bay Rays,Texas Rangers,3,2,822946,Shane McClanahan,Cole Winn,663556,668390
+2026-07-30,Minnesota Twins,Kansas City Royals,4,3,823674,Bailey Ober,Noah Cameron,641927,702070
+2026-07-30,Chicago White Sox,New York Yankees,2,1,824568,Sean Burke,Ryan Weathers,680732,677960
+2026-07-30,St. Louis Cardinals,Chicago Cubs,2,4,823023,Andre Pallante,Javier Assad,669467,665871
+2026-07-30,Cincinnati Reds,Pittsburgh Pirates,3,2,824488,Rhett Lowder,Yohan Ramírez,695076,670990
+2026-07-30,New York Mets,Miami Marlins,4,2,823595,Nolan McLean,Eury Pérez,690997,691587
+2026-07-30,Atlanta Braves,Washington Nationals,5,4,824894,Grant Holmes,Jake Irvin,656550,663623
+2026-07-30,Athletics,Boston Red Sox,4,5,824974,Mason Barnett,Sonny Gray,686930,543243
+2026-07-30,San Diego Padres,San Francisco Giants,1,4,823271,JP Sears,Robbie Ray,676664,592662
+2026-07-30,Los Angeles Dodgers,Seattle Mariners,6,2,823921,Roki Sasaki,Bryan Woo,808963,693433
+2026-07-31,Chicago Cubs,New York Yankees,0,2,824651,Shota Imanaga,Will Warren,684007,701542
+2026-07-31,Cincinnati Reds,Pittsburgh Pirates,8,7,824486,Hunter Greene,Paul Skenes,668881,694973
+2026-07-31,Baltimore Orioles,Philadelphia Phillies,6,4,824809,Brandon Young,Andrew Painter,687064,691725
+2026-07-31,Toronto Blue Jays,St. Louis Cardinals,3,1,822782,Dylan Cease,Kyle Leahy,656302,681517
+2026-07-31,Cleveland Guardians,Arizona Diamondbacks,1,4,824407,Tanner Bibee,Mitch Bratt,676440,683352
+2026-07-31,Tampa Bay Rays,Chicago White Sox,1,6,822945,Nick Martinez,Erick Fedde,607259,607200
+2026-07-31,New York Mets,Miami Marlins,2,5,823593,Kodai Senga,Janson Junk,673540,676083
+2026-07-31,Atlanta Braves,Washington Nationals,6,2,824892,Bryce Elder,Foster Griffin,693821,656492
+2026-07-31,Houston Astros,Texas Rangers,11,2,824164,Hunter Brown,Nathan Eovaldi,686613,543135
+2026-07-31,Colorado Rockies,Kansas City Royals,3,1,824325,Tomoyuki Sugano,Michael Wacha,608372,608379
+2026-07-31,Los Angeles Angels,Milwaukee Brewers,2,6,823999,Ryan Johnson,Shane Drohan,696270,675660
+2026-07-31,Athletics,Detroit Tigers,1,13,824975,Jeffrey Springs,Tyler Holton,605488,663947
+2026-07-31,San Diego Padres,San Francisco Giants,7,0,823272,Bradgley Rodriguez,Carson Whisenhunt,699134,687931
+2026-07-31,Los Angeles Dodgers,Boston Red Sox,4,9,823922,Edgardo Henriquez,Ranger Suarez,683618,624133
+2026-07-31,Seattle Mariners,Minnesota Twins,3,5,823111,Bryce Miller,Zebby Matthews,682243,805673
+2026-08-01,Toronto Blue Jays,St. Louis Cardinals,5,1,822781,Kevin Gausman,Quinn Mathews,592332,687273
+2026-08-01,Seattle Mariners,Minnesota Twins,4,3,823109,Logan Gilbert,Connor Prielipp,669302,687570
+2026-08-01,Tampa Bay Rays,Chicago White Sox,1,0,822944,Drew Rasmussen,Jordan Hicks,656876,663855
+2026-08-01,New York Mets,Miami Marlins,2,6,823594,Zac Thornton,Tyler Phillips,804267,663969
+2026-08-01,Cincinnati Reds,Pittsburgh Pirates,1,4,824485,Andrew Abbott,Braxton Ashcraft,671096,677952
+2026-08-01,Baltimore Orioles,Philadelphia Phillies,0,5,824808,Shane Baz,Cristopher Sánchez,669358,650911
+2026-08-01,Houston Astros,Texas Rangers,5,4,824162,Ronel Blanco,Jacob deGrom,669854,594798
+2026-08-01,Cleveland Guardians,Arizona Diamondbacks,8,12,824405,Parker Messick,Kohl Drake,800048,684442
+2026-08-01,Atlanta Braves,Washington Nationals,8,3,824890,Martín Pérez,Miles Mikolas,527048,571945
+2026-08-01,Chicago Cubs,New York Yankees,5,2,824649,David Peterson,Max Fried,656849,608331
+2026-08-01,Colorado Rockies,Kansas City Royals,12,6,824326,Ryan Feltner,Luinder Avila,663372,679883
+2026-08-01,San Diego Padres,San Francisco Giants,6,5,823269,Walker Buehler,Tyler Mahle,621111,641816
+2026-08-01,Los Angeles Dodgers,Boston Red Sox,2,3,823920,Yoshinobu Yamamoto,Payton Tolle,808967,801139
+2026-08-01,Los Angeles Angels,Milwaukee Brewers,1,3,824000,Brent Suter,Robert Gasser,608718,688107
+2026-08-01,Athletics,Detroit Tigers,6,8,824972,Jack Perkins,Framber Valdez,678022,664285
+2026-08-02,Baltimore Orioles,Philadelphia Phillies,0,8,824807,Kyle Bradish,Zack Wheeler,680694,554430
+2026-08-02,Atlanta Braves,Washington Nationals,4,2,824891,JR Ritchie,Cade Cavalli,702275,676917
+2026-08-02,Toronto Blue Jays,St. Louis Cardinals,1,5,822783,Max Scherzer,Matthew Liberatore,453286,669461
+2026-08-02,Cleveland Guardians,Arizona Diamondbacks,5,0,824404,Gavin Williams,Merrill Kelly,668909,518876
+2026-08-02,Cincinnati Reds,Pittsburgh Pirates,10,2,824483,Chase Burns,Mitch Keller,695505,656605
+2026-08-02,Tampa Bay Rays,Chicago White Sox,1,9,822943,Griffin Jax,Anthony Kay,643377,641743
+2026-08-02,New York Mets,Miami Marlins,0,2,823592,Robert Stock,Sandy Alcantara,476594,645261
+2026-08-02,Houston Astros,Texas Rangers,7,3,824163,Peter Lambert,Kumar Rocker,663567,677958
+2026-08-02,Chicago Cubs,New York Yankees,1,2,824648,Colin Rea,Gerrit Cole,607067,543037
+2026-08-02,Colorado Rockies,Kansas City Royals,8,1,824323,Kyle Freeland,Seth Lugo,607536,607625
+2026-08-02,Los Angeles Angels,Milwaukee Brewers,3,0,823996,Walbert Ureña,Jacob Misiorowski,700712,694819
+2026-08-02,Athletics,Detroit Tigers,0,11,824971,Gage Jump,Keider Montero,695611,672456
+2026-08-02,San Diego Padres,San Francisco Giants,5,4,823270,Kyle Hart,Landen Roupp,606996,694738
+2026-08-02,Seattle Mariners,Minnesota Twins,7,6,823107,George Kirby,Taj Bradley,669923,671737
+2026-08-02,Los Angeles Dodgers,Boston Red Sox,4,8,823919,Emmet Sheehan,Jake Bennett,686218,687562
