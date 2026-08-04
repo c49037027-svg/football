@@ -384,7 +384,6 @@ id,name,team,ip,runs,gs,so,bb,hr
 689254,Mason Fluharty,Toronto Blue Jays,43.666666666666664,21,3,51,19,6
 694738,Landen Roupp,San Francisco Giants,118.33333333333333,61,22,120,52,9
 678906,Kai-Wei Teng,Houston Astros,68.33333333333333,37,10,67,30,10
-663903,Brady Singer,Cincinnati Reds,107.66666666666667,61,21,91,36,21
 621074,Michael Rucker,Seattle Mariners,20.666666666666668,12,0,24,6,3
 670036,Matt Festa,Cleveland Guardians,45.333333333333336,25,0,50,14,6
 669160,Dustin May,St. Louis Cardinals,109.0,56,21,106,35,7
@@ -444,6 +443,7 @@ id,name,team,ip,runs,gs,so,bb,hr
 664849,Danny Young,Atlanta Braves,9.666666666666666,5,1,8,9,1
 686753,Drey Jameson,Arizona Diamondbacks,17.333333333333332,9,0,13,9,1
 608566,Germán Márquez,San Diego Padres,52.0,28,10,36,23,12
+663903,Brady Singer,Cincinnati Reds,107.66666666666667,61,21,91,36,21
 660761,José Suarez,Athletics,57.666666666666664,33,2,59,24,6
 676664,JP Sears,San Diego Padres,32.666666666666664,19,6,25,11,6
 682445,Domingo Gonzalez,Seattle Mariners,7.666666666666667,4,0,5,5,1
