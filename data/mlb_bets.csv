@@ -1327,3 +1327,6 @@ date,match_num,home,away,market,selection,line,odds,edge,source,close_odds,resul
 2026-08-07,823191,San Francisco Giants,Detroit Tigers,1X2,away,,1.75,-0.0497,market,1.75,pending,
 2026-08-07,823191,San Francisco Giants,Detroit Tigers,OU,小,8.5,1.8,-0.0017,market,1.8,pending,
 2026-08-07,823191,San Francisco Giants,Detroit Tigers,AH,主,1.5,1.6,-0.0356,market,1.6,pending,
+2026-08-07,822699,Washington Nationals,Cincinnati Reds,OU,大,8.5,1.75,-0.02,market,1.75,pending,
+2026-08-07,822699,Washington Nationals,Cincinnati Reds,AH,主,1.5,1.53,-0.0268,market,1.53,pending,
+2026-08-07,823266,San Diego Padres,Houston Astros,OU,小,8.5,1.85,0.0118,market,1.85,pending,

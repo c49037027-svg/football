@@ -311,6 +311,7 @@ id,name,team,ip,runs,gs,so,bb,hr
 657571,Caleb Ferguson,St. Louis Cardinals,26.333333333333332,11,1,23,11,3
 680916,Franco Aleman,Cleveland Guardians,14.333333333333334,6,0,17,5,2
 683409,Angel Chivilli,New York Yankees,16.666666666666668,9,0,16,7,4
+552640,Andrew Kittredge,Baltimore Orioles,33.333333333333336,24,0,29,10,5
 680694,Kyle Bradish,Baltimore Orioles,121.0,57,22,117,54,13
 677960,Ryan Weathers,New York Yankees,121.0,57,22,132,34,17
 656222,Jalen Beeks,Texas Rangers,26.0,11,0,21,8,6
@@ -354,7 +355,6 @@ id,name,team,ip,runs,gs,so,bb,hr
 683003,Jared Jones,Pittsburgh Pirates,56.0,26,12,62,16,9
 641745,Brad Keller,Philadelphia Phillies,31.333333333333332,15,0,32,13,4
 544150,Albert Suárez,Baltimore Orioles,47.0,26,0,32,18,7
-552640,Andrew Kittredge,Baltimore Orioles,33.333333333333336,24,0,29,10,5
 702566,Owen Murphy,Atlanta Braves,6.666666666666667,5,1,6,2,1
 677952,Braxton Ashcraft,Pittsburgh Pirates,132.33333333333334,65,23,145,32,19
 677958,Kumar Rocker,Texas Rangers,108.0,50,19,98,40,14
