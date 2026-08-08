@@ -3,3 +3,4 @@ date,match_num,home,away,market,selection,line,odds,edge,source,close_odds,resul
 2026-07-23,824247,Detroit Tigers,Kansas City Royals,1X2,away,,2.85,0.061,market,2.85,loss,-1.0
 2026-08-02,824808,Baltimore Orioles,Philadelphia Phillies,1X2,home,,3.65,0.0799,market,3.65,loss,-1.0
 2026-08-03,823919,Los Angeles Dodgers,Boston Red Sox,1X2,away,,2.25,0.0683,market,2.25,win,1.25
+2026-08-08,824726,Boston Red Sox,Athletics,1X2,away,,2.88,0.0819,market,2.88,pending,
