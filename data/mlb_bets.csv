@@ -1370,3 +1370,5 @@ date,match_num,home,away,market,selection,line,odds,edge,source,close_odds,resul
 2026-08-08,825049,Arizona Diamondbacks,Los Angeles Dodgers,AH,主,1.5,1.93,0.0172,market,1.93,pending,
 2026-08-08,823102,Seattle Mariners,Tampa Bay Rays,1X2,away,,2.01,-0.0028,market,2.01,pending,
 2026-08-08,823102,Seattle Mariners,Tampa Bay Rays,AH,客,-1.5,1.45,-0.0359,market,1.45,pending,
+2026-08-08,823348,Pittsburgh Pirates,New York Mets,OU,小,9.0,1.91,-0.0197,market,1.91,pending,
+2026-08-08,822701,Washington Nationals,Cincinnati Reds,OU,大,8.5,1.85,-0.035,market,1.85,pending,
