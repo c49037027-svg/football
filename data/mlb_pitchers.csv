@@ -309,6 +309,7 @@ id,name,team,ip,runs,gs,so,bb,hr
 669199,Lake Bachar,Pittsburgh Pirates,62.666666666666664,28,4,67,22,10
 657277,Logan Webb,San Francisco Giants,125.0,55,20,101,31,9
 690925,Clayton Beeter,Washington Nationals,36.0,16,0,37,23,6
+695418,Brad Lord,Washington Nationals,60.0,26,2,55,21,7
 671737,Taj Bradley,Minnesota Twins,131.66666666666666,55,23,148,55,17
 665622,Luis Medina,Athletics,52.666666666666664,27,1,63,26,6
 669358,Shane Baz,Baltimore Orioles,136.33333333333334,67,23,120,46,10
@@ -321,7 +322,6 @@ id,name,team,ip,runs,gs,so,bb,hr
 662253,Andrés Muñoz,Seattle Mariners,42.666666666666664,19,0,67,17,5
 621074,Michael Rucker,Seattle Mariners,23.666666666666668,14,0,28,8,3
 656222,Jalen Beeks,Texas Rangers,26.0,11,0,21,8,6
-695418,Brad Lord,Washington Nationals,59.0,26,1,52,21,7
 682120,Tim Herrin,Cleveland Guardians,37.666666666666664,17,0,31,23,4
 669947,Jesse Scholtens,Tampa Bay Rays,37.666666666666664,18,2,30,11,8
 676440,Tanner Bibee,Cleveland Guardians,138.0,62,24,110,38,23
