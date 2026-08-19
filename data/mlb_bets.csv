@@ -1786,3 +1786,6 @@ date,match_num,home,away,market,selection,line,odds,edge,source,close_odds,resul
 2026-08-19,824318,Colorado Rockies,Los Angeles Dodgers,1X2,away,,1.55,-0.005,market,1.55,pending,
 2026-08-19,824318,Colorado Rockies,Los Angeles Dodgers,OU,小,11.5,1.89,-0.0202,market,1.89,pending,
 2026-08-19,824318,Colorado Rockies,Los Angeles Dodgers,AH,客,1.5,1.77,-0.0448,market,1.77,pending,
+2026-08-19,823424,Philadelphia Phillies,Miami Marlins,OU,小,9.0,1.89,-0.0315,market,1.89,pending,
+2026-08-19,822937,Tampa Bay Rays,Toronto Blue Jays,OU,大,7.5,2.05,0.0311,market,2.05,pending,
+2026-08-19,822860,Texas Rangers,Washington Nationals,AH,客,-1.5,1.5,-0.0329,market,1.5,pending,
