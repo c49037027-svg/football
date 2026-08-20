@@ -23,6 +23,6 @@ date,match_num,home,away,market,selection,line,odds,edge,source,close_odds,resul
 2026-08-17,823427,Philadelphia Phillies,Miami Marlins,1X2,away,,3.23,0.0652,market,3.23,loss,-1.0
 2026-08-18,824475,Cincinnati Reds,St. Louis Cardinals,1X2,away,,1.9,0.0836,market,1.9,win,0.9
 2026-08-19,824394,Cleveland Guardians,San Francisco Giants,1X2,away,,2.7,0.0527,market,2.7,win,1.7
-2026-08-20,824395,Cleveland Guardians,San Francisco Giants,1X2,away,,7.5,0.1,market,7.5,pending,
-2026-08-20,822934,Tampa Bay Rays,Toronto Blue Jays,1X2,away,,2.2,0.0772,market,2.2,pending,
+2026-08-20,824395,Cleveland Guardians,San Francisco Giants,1X2,away,,7.5,0.1,market,7.5,loss,-1.0
+2026-08-20,822934,Tampa Bay Rays,Toronto Blue Jays,1X2,away,,2.2,0.0772,market,2.2,win,1.2
 2026-08-20,824589,Chicago White Sox,Atlanta Braves,1X2,away,,1.68,0.0693,market,1.68,pending,
