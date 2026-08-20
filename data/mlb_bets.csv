@@ -1811,3 +1811,5 @@ date,match_num,home,away,market,selection,line,odds,edge,source,close_odds,resul
 2026-08-20,822861,Texas Rangers,Washington Nationals,AH,客,-1.5,1.65,0.0152,market,1.65,pending,
 2026-08-20,824153,Houston Astros,Los Angeles Angels,1X2,home,,1.54,-0.0135,market,1.54,pending,
 2026-08-20,824153,Houston Astros,Los Angeles Angels,AH,主,-1.5,2.2,0.0324,market,2.2,pending,
+2026-08-20,822934,Tampa Bay Rays,Toronto Blue Jays,OU,大,7.0,1.85,0.05,market,1.85,pending,
+2026-08-20,824802,Baltimore Orioles,New York Yankees,OU,大,7.5,1.89,0.0062,market,1.89,pending,
