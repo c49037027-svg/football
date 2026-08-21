@@ -1850,3 +1850,7 @@ date,match_num,home,away,market,selection,line,odds,edge,source,close_odds,resul
 2026-08-21,823911,Los Angeles Dodgers,Pittsburgh Pirates,AH,客,-1.5,1.87,-0.0467,market,1.87,pending,
 2026-08-21,823101,Seattle Mariners,Chicago Cubs,1X2,away,,1.95,0.0172,market,1.95,pending,
 2026-08-21,823101,Seattle Mariners,Chicago Cubs,AH,客,-1.5,1.47,-0.0054,market,1.47,pending,
+2026-08-21,823746,Milwaukee Brewers,Atlanta Braves,OU,大,5.5,1.8,0.0265,market,1.8,pending,
+2026-08-21,824800,Baltimore Orioles,Tampa Bay Rays,OU,大,7.5,1.85,0.0206,market,1.85,pending,
+2026-08-21,823262,San Diego Padres,Minnesota Twins,OU,小,8.5,1.8,-0.0454,market,1.8,pending,
+2026-08-21,823262,San Diego Padres,Minnesota Twins,AH,主,1.5,1.47,-0.0002,market,1.47,pending,
