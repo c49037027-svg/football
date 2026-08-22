@@ -1379,3 +1379,6 @@ date,match_num,home,away,market,selection,line,odds,edge,source,close_odds,resul
 2026-08-22,823261,San Diego Padres,Minnesota Twins,1X2,home,,1.62,,market,1.62,pending,
 2026-08-22,823261,San Diego Padres,Minnesota Twins,OU,小,8.0,1.95,,market,1.95,pending,
 2026-08-22,823261,San Diego Padres,Minnesota Twins,AH,客,-1.5,1.62,,market,1.62,pending,
+2026-08-22,823509,New York Yankees,Toronto Blue Jays,OU,大,6.5,1.89,,market,1.89,pending,
+2026-08-22,823509,New York Yankees,Toronto Blue Jays,AH,主,1.5,1.53,,market,1.53,pending,
+2026-08-22,823910,Los Angeles Dodgers,Pittsburgh Pirates,OU,大,7.5,1.91,,market,1.91,pending,
