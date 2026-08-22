@@ -28,3 +28,4 @@ date,match_num,home,away,market,selection,line,odds,edge,source,close_odds,resul
 2026-08-20,824589,Chicago White Sox,Atlanta Braves,1X2,away,,1.68,0.0693,market,1.68,win,0.68
 2026-08-21,823420,Philadelphia Phillies,St. Louis Cardinals,1X2,away,,1.88,0.0767,market,1.88,loss,-1.0
 2026-08-21,823510,New York Yankees,Toronto Blue Jays,1X2,away,,5.25,0.0885,market,5.25,loss,-1.0
+2026-08-22,823509,New York Yankees,Toronto Blue Jays,1X2,home,,10.5,0.0784,market,10.5,pending,
