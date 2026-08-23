@@ -31,4 +31,4 @@ date,match_num,home,away,market,selection,line,odds,edge,source,close_odds,resul
 2026-08-22,823509,New York Yankees,Toronto Blue Jays,1X2,home,,10.5,0.0784,market,10.5,loss,-1.0
 2026-08-22,823831,Miami Marlins,Washington Nationals,1X2,away,,9.8,0.0774,market,9.8,loss,-1.0
 2026-08-22,823422,Philadelphia Phillies,St. Louis Cardinals,1X2,away,,5.75,0.0854,market,5.75,loss,-1.0
-2026-08-22,824151,Houston Astros,Athletics,1X2,away,,3.13,0.0935,market,3.13,pending,
+2026-08-22,824151,Houston Astros,Athletics,1X2,away,,3.13,0.0935,market,3.13,win,2.13
