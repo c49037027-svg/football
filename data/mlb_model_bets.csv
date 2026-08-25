@@ -1489,3 +1489,5 @@ date,match_num,home,away,market,selection,line,odds,edge,source,close_odds,resul
 2026-08-25,823098,Seattle Mariners,Philadelphia Phillies,AH,客,-1.5,1.48,,market,1.48,pending,
 2026-08-25,823181,San Francisco Giants,Cincinnati Reds,1X2,home,,1.93,,market,1.93,pending,
 2026-08-25,823181,San Francisco Giants,Cincinnati Reds,AH,客,-1.5,1.45,,market,1.45,pending,
+2026-08-25,824962,Athletics,Minnesota Twins,OU,小,10.0,1.88,,market,1.88,pending,
+2026-08-25,823181,San Francisco Giants,Cincinnati Reds,OU,小,8.0,1.91,,market,1.91,pending,
