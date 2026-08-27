@@ -37,4 +37,4 @@ date,match_num,home,away,market,selection,line,odds,edge,source,close_odds,resul
 2026-08-23,824720,Boston Red Sox,San Francisco Giants,1X2,away,,2.25,0.0939,market,2.25,loss,-1.0
 2026-08-25,823585,New York Mets,Milwaukee Brewers,1X2,home,,2.42,0.0685,market,2.42,win,1.42
 2026-08-26,823989,Los Angeles Angels,Cleveland Guardians,1X2,home,,2.12,0.0661,market,2.12,loss,-1.0
-2026-08-27,822692,Washington Nationals,Colorado Rockies,1X2,home,,5.25,0.0865,market,5.25,pending,
+2026-08-27,822692,Washington Nationals,Colorado Rockies,1X2,home,,5.25,0.0865,market,5.25,loss,-1.0
