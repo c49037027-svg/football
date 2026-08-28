@@ -2054,22 +2054,60 @@ date,match_num,home,away,market,selection,line,odds,edge,source,close_odds,resul
 2026-08-27,823014,St. Louis Cardinals,Baltimore Orioles,1X2,home,,2.1,0.0004,market,2.1,win,1.1
 2026-08-27,823014,St. Louis Cardinals,Baltimore Orioles,OU,小,8.5,1.75,-0.0557,market,1.75,loss,-1.0
 2026-08-27,823014,St. Louis Cardinals,Baltimore Orioles,AH,主,1.5,1.65,0.012,market,1.65,win,0.65
-2026-08-27,823503,New York Yankees,Houston Astros,1X2,home,,1.6,-0.0715,market,1.6,pending,
-2026-08-27,823503,New York Yankees,Houston Astros,AH,客,-1.5,1.65,-0.0436,market,1.65,pending,
-2026-08-27,822771,Toronto Blue Jays,Kansas City Royals,1X2,home,,1.91,-0.026,market,1.91,pending,
-2026-08-27,822771,Toronto Blue Jays,Kansas City Royals,OU,小,8.5,1.8,-0.0455,market,1.8,pending,
-2026-08-27,822771,Toronto Blue Jays,Kansas City Royals,AH,主,1.5,1.57,-0.0022,market,1.57,pending,
-2026-08-27,823581,New York Mets,Milwaukee Brewers,1X2,away,,1.47,-0.0562,market,1.47,pending,
-2026-08-27,823581,New York Mets,Milwaukee Brewers,AH,主,1.5,1.85,-0.0549,market,1.85,pending,
-2026-08-27,824879,Atlanta Braves,Los Angeles Dodgers,1X2,away,,2.1,0.014,market,2.1,pending,
-2026-08-27,824879,Atlanta Braves,Los Angeles Dodgers,OU,大,6.5,1.91,0.0312,market,1.91,pending,
-2026-08-27,824879,Atlanta Braves,Los Angeles Dodgers,AH,客,-1.5,1.49,-0.0238,market,1.49,pending,
-2026-08-27,823179,San Francisco Giants,Arizona Diamondbacks,1X2,away,,1.94,-0.0146,market,1.94,pending,
-2026-08-27,823179,San Francisco Giants,Arizona Diamondbacks,AH,主,1.5,1.54,-0.0388,market,1.54,pending,
-2026-08-27,822694,Washington Nationals,Colorado Rockies,OU,小,12.5,,,model,,pending,
-2026-08-27,823014,St. Louis Cardinals,Baltimore Orioles,AH,客,-1.5,,,model,,pending,
-2026-08-27,823503,New York Yankees,Houston Astros,OU,大,3.5,1.73,0.2339,market,1.73,pending,
-2026-08-27,823503,New York Yankees,Houston Astros,AH,主,1.5,1.36,-0.0626,market,1.36,pending,
-2026-08-27,822771,Toronto Blue Jays,Kansas City Royals,OU,大,6.5,1.61,-0.0092,market,1.61,pending,
-2026-08-27,823581,New York Mets,Milwaukee Brewers,OU,小,9.5,1.85,0.0667,market,1.85,pending,
-2026-08-27,824879,Atlanta Braves,Los Angeles Dodgers,1X2,home,,1.22,-0.2328,market,1.22,pending,
+2026-08-27,823503,New York Yankees,Houston Astros,1X2,home,,1.6,-0.0715,market,1.6,loss,-1.0
+2026-08-27,823503,New York Yankees,Houston Astros,AH,客,-1.5,1.65,-0.0436,market,1.65,win,0.65
+2026-08-27,822771,Toronto Blue Jays,Kansas City Royals,1X2,home,,1.91,-0.026,market,1.91,loss,-1.0
+2026-08-27,822771,Toronto Blue Jays,Kansas City Royals,OU,小,8.5,1.8,-0.0455,market,1.8,loss,-1.0
+2026-08-27,822771,Toronto Blue Jays,Kansas City Royals,AH,主,1.5,1.57,-0.0022,market,1.57,loss,-1.0
+2026-08-27,823581,New York Mets,Milwaukee Brewers,1X2,away,,1.47,-0.0562,market,1.47,win,0.47
+2026-08-27,823581,New York Mets,Milwaukee Brewers,AH,主,1.5,1.85,-0.0549,market,1.85,loss,-1.0
+2026-08-27,824879,Atlanta Braves,Los Angeles Dodgers,1X2,away,,2.1,0.014,market,2.1,loss,-1.0
+2026-08-27,824879,Atlanta Braves,Los Angeles Dodgers,OU,大,6.5,1.91,0.0312,market,1.91,loss,-1.0
+2026-08-27,824879,Atlanta Braves,Los Angeles Dodgers,AH,客,-1.5,1.49,-0.0238,market,1.49,win,0.49
+2026-08-27,823179,San Francisco Giants,Arizona Diamondbacks,1X2,away,,1.94,-0.0146,market,1.94,loss,-1.0
+2026-08-27,823179,San Francisco Giants,Arizona Diamondbacks,AH,主,1.5,1.54,-0.0388,market,1.54,win,0.54
+2026-08-27,822694,Washington Nationals,Colorado Rockies,OU,小,12.5,,,model,,win,
+2026-08-27,823014,St. Louis Cardinals,Baltimore Orioles,AH,客,-1.5,,,model,,loss,
+2026-08-27,823503,New York Yankees,Houston Astros,OU,大,3.5,1.73,0.2339,market,1.73,win,0.73
+2026-08-27,823503,New York Yankees,Houston Astros,AH,主,1.5,1.36,-0.0626,market,1.36,loss,-1.0
+2026-08-27,822771,Toronto Blue Jays,Kansas City Royals,OU,大,6.5,1.61,-0.0092,market,1.61,win,0.61
+2026-08-27,823581,New York Mets,Milwaukee Brewers,OU,小,9.5,1.85,0.0667,market,1.85,loss,-1.0
+2026-08-27,824879,Atlanta Braves,Los Angeles Dodgers,1X2,home,,1.22,-0.2328,market,1.22,win,0.22
+2026-08-28,824638,Chicago Cubs,Cincinnati Reds,1X2,home,,1.51,-0.0716,market,1.51,pending,
+2026-08-28,824638,Chicago Cubs,Cincinnati Reds,OU,大,8.5,1.83,-0.0307,market,1.83,pending,
+2026-08-28,824638,Chicago Cubs,Cincinnati Reds,AH,客,-1.5,1.83,-0.0138,market,1.83,pending,
+2026-08-28,824231,Detroit Tigers,Los Angeles Dodgers,1X2,away,,1.55,-0.0509,market,1.55,pending,
+2026-08-28,824231,Detroit Tigers,Los Angeles Dodgers,OU,大,7.5,2.0,0.0129,market,2.0,pending,
+2026-08-28,824231,Detroit Tigers,Los Angeles Dodgers,AH,主,1.5,1.87,0.0001,market,1.87,pending,
+2026-08-28,822691,Washington Nationals,Miami Marlins,1X2,away,,1.68,-0.0636,market,1.68,pending,
+2026-08-28,822691,Washington Nationals,Miami Marlins,OU,大,8.5,2.0,0.0584,market,2.0,pending,
+2026-08-28,822691,Washington Nationals,Miami Marlins,AH,主,1.5,1.77,0.0117,market,1.77,pending,
+2026-08-28,824396,Cleveland Guardians,Kansas City Royals,1X2,home,,1.71,-0.09,market,1.71,pending,
+2026-08-28,824396,Cleveland Guardians,Kansas City Royals,OU,小,7.5,1.8,-0.0482,market,1.8,pending,
+2026-08-28,824396,Cleveland Guardians,Kansas City Royals,AH,客,-1.5,1.5,-0.0367,market,1.5,pending,
+2026-08-28,823583,New York Mets,Houston Astros,1X2,home,,1.91,-0.0182,market,1.91,pending,
+2026-08-28,823583,New York Mets,Houston Astros,AH,主,1.5,1.53,-0.0066,market,1.53,pending,
+2026-08-28,822935,Tampa Bay Rays,San Diego Padres,1X2,away,,2.18,0.0461,market,2.18,pending,
+2026-08-28,822935,Tampa Bay Rays,San Diego Padres,OU,小,7.5,1.85,-0.0017,market,1.85,pending,
+2026-08-28,822935,Tampa Bay Rays,San Diego Padres,AH,客,-1.5,1.53,0.0018,market,1.53,pending,
+2026-08-28,822769,Toronto Blue Jays,Seattle Mariners,1X2,home,,1.71,-0.0047,market,1.71,pending,
+2026-08-28,822769,Toronto Blue Jays,Seattle Mariners,OU,大,6.5,1.75,-0.0289,market,1.75,pending,
+2026-08-28,822769,Toronto Blue Jays,Seattle Mariners,AH,客,-1.5,1.57,-0.0699,market,1.57,pending,
+2026-08-28,824877,Atlanta Braves,Colorado Rockies,1X2,home,,1.4,-0.0797,market,1.4,pending,
+2026-08-28,824877,Atlanta Braves,Colorado Rockies,OU,大,8.5,1.75,0.0009,market,1.75,pending,
+2026-08-28,824877,Atlanta Braves,Colorado Rockies,AH,主,-1.5,1.91,-0.0376,market,1.91,pending,
+2026-08-28,823504,New York Yankees,Boston Red Sox,1X2,home,,1.68,-0.0158,market,1.68,pending,
+2026-08-28,823504,New York Yankees,Boston Red Sox,AH,客,-1.5,1.62,-0.0601,market,1.62,pending,
+2026-08-28,823744,Milwaukee Brewers,Texas Rangers,1X2,home,,1.49,-0.0578,market,1.49,pending,
+2026-08-28,823744,Milwaukee Brewers,Texas Rangers,AH,客,-1.5,1.83,-0.0154,market,1.83,pending,
+2026-08-28,823666,Minnesota Twins,Chicago White Sox,1X2,home,,1.79,-0.0484,market,1.79,pending,
+2026-08-28,823666,Minnesota Twins,Chicago White Sox,AH,客,-1.5,1.54,-0.0439,market,1.54,pending,
+2026-08-28,823013,St. Louis Cardinals,Pittsburgh Pirates,1X2,home,,2.04,0.0035,market,2.04,pending,
+2026-08-28,823013,St. Louis Cardinals,Pittsburgh Pirates,OU,大,7.5,1.95,0.0387,market,1.95,pending,
+2026-08-28,823013,St. Louis Cardinals,Pittsburgh Pirates,AH,主,1.5,1.59,0.0023,market,1.59,pending,
+2026-08-28,823985,Los Angeles Angels,Philadelphia Phillies,1X2,away,,1.8,-0.0396,market,1.8,pending,
+2026-08-28,823985,Los Angeles Angels,Philadelphia Phillies,AH,主,1.5,1.67,-0.0003,market,1.67,pending,
+2026-08-28,824960,Athletics,Baltimore Orioles,1X2,away,,1.95,0.0577,market,1.95,pending,
+2026-08-28,824960,Athletics,Baltimore Orioles,AH,主,1.5,1.62,-0.0744,market,1.62,pending,
+2026-08-28,823178,San Francisco Giants,Arizona Diamondbacks,1X2,away,,1.9,-0.0173,market,1.9,pending,
+2026-08-28,823178,San Francisco Giants,Arizona Diamondbacks,AH,主,1.5,1.6,-0.0154,market,1.6,pending,
