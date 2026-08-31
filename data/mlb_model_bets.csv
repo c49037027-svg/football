@@ -1736,3 +1736,6 @@ date,match_num,home,away,market,selection,line,odds,edge,source,close_odds,resul
 2026-08-31,825040,Arizona Diamondbacks,Philadelphia Phillies,1X2,home,,2.0,,market,2.0,pending,
 2026-08-31,825040,Arizona Diamondbacks,Philadelphia Phillies,OU,大,8.5,2.0,,market,2.0,pending,
 2026-08-31,825040,Arizona Diamondbacks,Philadelphia Phillies,AH,主,1.5,1.6,,market,1.6,pending,
+2026-08-31,822932,Tampa Bay Rays,New York Mets,OU,大,7.5,1.85,,market,1.85,pending,
+2026-08-31,824719,Boston Red Sox,Seattle Mariners,OU,大,7.5,1.87,,market,1.87,pending,
+2026-08-31,823663,Minnesota Twins,Detroit Tigers,OU,小,9.0,1.91,,market,1.91,pending,
