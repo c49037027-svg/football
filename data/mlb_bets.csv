@@ -2364,3 +2364,7 @@ date,match_num,home,away,market,selection,line,odds,edge,source,close_odds,resul
 2026-09-03,823907,Los Angeles Dodgers,St. Louis Cardinals,1X2,home,,1.34,-0.0918,market,1.34,pending,
 2026-09-03,823907,Los Angeles Dodgers,St. Louis Cardinals,OU,大,7.5,1.83,-0.009,market,1.83,pending,
 2026-09-03,823907,Los Angeles Dodgers,St. Louis Cardinals,AH,客,-1.5,2.15,0.042,market,2.15,pending,
+2026-09-03,823337,Pittsburgh Pirates,San Francisco Giants,OU,大,6.5,1.73,0.0422,market,1.73,pending,
+2026-09-03,824388,Cleveland Guardians,Toronto Blue Jays,AH,主,4.5,2.05,0.3261,market,2.05,pending,
+2026-09-03,824144,Houston Astros,Chicago White Sox,OU,小,11.0,1.9,0.1277,market,1.9,pending,
+2026-09-03,824144,Houston Astros,Chicago White Sox,AH,主,1.5,1.45,-0.0111,market,1.45,pending,
