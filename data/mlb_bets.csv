@@ -2499,9 +2499,9 @@ date,match_num,home,away,market,selection,line,odds,edge,source,close_odds,resul
 2026-09-06,823336,Pittsburgh Pirates,Los Angeles Angels,OU,大,6.5,2.01,0.0781,market,2.01,loss,-1.0
 2026-09-06,824142,Houston Astros,Arizona Diamondbacks,OU,小,8.0,1.89,-0.0246,market,1.89,win,0.89
 2026-09-06,823253,San Diego Padres,New York Yankees,AH,客,-1.5,1.48,-0.0142,market,1.48,win,0.48
-2026-09-07,823415,Philadelphia Phillies,Atlanta Braves,1X2,home,,1.62,-0.0725,market,1.62,pending,
-2026-09-07,823415,Philadelphia Phillies,Atlanta Braves,OU,小,8.0,1.91,-0.0204,market,1.91,pending,
-2026-09-07,823415,Philadelphia Phillies,Atlanta Braves,AH,客,-1.5,1.67,-0.0049,market,1.67,pending,
+2026-09-07,823415,Philadelphia Phillies,Atlanta Braves,1X2,home,,1.62,-0.0725,market,1.62,win,0.62
+2026-09-07,823415,Philadelphia Phillies,Atlanta Braves,OU,小,8.0,1.91,-0.0204,market,1.91,win,0.91
+2026-09-07,823415,Philadelphia Phillies,Atlanta Braves,AH,客,-1.5,1.67,-0.0049,market,1.67,win,0.67
 2026-09-07,823820,Miami Marlins,New York Mets,1X2,away,,2.06,0.0234,market,2.06,pending,
 2026-09-07,823820,Miami Marlins,New York Mets,OU,大,7.5,1.8,-0.0232,market,1.8,pending,
 2026-09-07,823820,Miami Marlins,New York Mets,AH,客,-1.5,1.5,-0.0144,market,1.5,pending,
@@ -2527,3 +2527,15 @@ date,match_num,home,away,market,selection,line,odds,edge,source,close_odds,resul
 2026-09-07,823902,Los Angeles Dodgers,Cincinnati Reds,AH,客,-1.5,1.57,-0.0605,market,1.57,pending,
 2026-09-07,824958,Athletics,Toronto Blue Jays,1X2,away,,1.5,-0.0191,market,1.5,pending,
 2026-09-07,824958,Athletics,Toronto Blue Jays,AH,客,1.5,1.83,-0.049,market,1.83,pending,
+2026-09-07,823820,Miami Marlins,New York Mets,OU,小,15.5,1.8,0.2834,market,1.8,pending,
+2026-09-07,823820,Miami Marlins,New York Mets,AH,主,5.5,1.67,0.2023,market,1.67,pending,
+2026-09-07,824715,Boston Red Sox,Los Angeles Angels,OU,大,8.5,1.67,-0.0774,market,1.67,pending,
+2026-09-07,824715,Boston Red Sox,Los Angeles Angels,AH,客,-4.5,1.53,0.0362,market,1.53,pending,
+2026-09-07,824793,Baltimore Orioles,Cleveland Guardians,OU,大,6.5,1.95,0.0756,market,1.95,pending,
+2026-09-07,824793,Baltimore Orioles,Cleveland Guardians,AH,客,-4.5,1.6,0.1414,market,1.6,pending,
+2026-09-07,824062,Kansas City Royals,Arizona Diamondbacks,OU,大,4.0,1.77,0.2546,market,1.77,pending,
+2026-09-07,824062,Kansas City Royals,Arizona Diamondbacks,AH,客,-1.5,1.3,-0.0911,market,1.3,pending,
+2026-09-07,823742,Milwaukee Brewers,Chicago Cubs,OU,大,5.5,1.73,0.112,market,1.73,pending,
+2026-09-07,823742,Milwaukee Brewers,Chicago Cubs,AH,客,-1.5,1.36,-0.1064,market,1.36,pending,
+2026-09-07,824229,Detroit Tigers,Minnesota Twins,AH,客,-1.5,1.5,-0.085,market,1.5,pending,
+2026-09-07,823254,San Diego Padres,Washington Nationals,OU,大,7.5,1.75,-0.0173,market,1.75,pending,
