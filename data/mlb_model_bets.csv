@@ -2062,3 +2062,5 @@ date,match_num,home,away,market,selection,line,odds,edge,source,close_odds,resul
 2026-09-08,823174,San Francisco Giants,St. Louis Cardinals,AH,主,1.5,1.55,,market,1.55,pending,
 2026-09-08,823901,Los Angeles Dodgers,Cincinnati Reds,1X2,home,,1.32,,market,1.32,pending,
 2026-09-08,823901,Los Angeles Dodgers,Cincinnati Reds,AH,主,-1.5,1.68,,market,1.68,pending,
+2026-09-08,824714,Boston Red Sox,Los Angeles Angels,OU,大,7.5,1.9,,market,1.9,pending,
+2026-09-08,823174,San Francisco Giants,St. Louis Cardinals,OU,大,7.5,1.85,,market,1.85,pending,
