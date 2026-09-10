@@ -2622,9 +2622,9 @@ date,match_num,home,away,market,selection,line,odds,edge,source,close_odds,resul
 2026-09-09,824226,Detroit Tigers,Minnesota Twins,AH,客,-1.5,1.52,-0.0871,market,1.52,loss,-1.0
 2026-09-09,823416,Philadelphia Phillies,Houston Astros,OU,大,7.5,1.75,-0.0628,market,1.75,win,0.75
 2026-09-09,824871,Atlanta Braves,Tampa Bay Rays,AH,客,-1.5,1.5,-0.0686,market,1.5,win,0.5
-2026-09-10,824872,Atlanta Braves,Tampa Bay Rays,1X2,home,,1.82,-0.0714,market,1.82,pending,
-2026-09-10,824872,Atlanta Braves,Tampa Bay Rays,OU,小,8.5,1.87,0.0305,market,1.87,pending,
-2026-09-10,824872,Atlanta Braves,Tampa Bay Rays,AH,客,-1.5,1.5,-0.0242,market,1.5,pending,
+2026-09-10,824872,Atlanta Braves,Tampa Bay Rays,1X2,home,,1.82,-0.0714,market,1.82,win,0.82
+2026-09-10,824872,Atlanta Braves,Tampa Bay Rays,OU,小,8.5,1.87,0.0305,market,1.87,win,0.87
+2026-09-10,824872,Atlanta Braves,Tampa Bay Rays,AH,客,-1.5,1.5,-0.0242,market,1.5,loss,-1.0
 2026-09-10,823413,Philadelphia Phillies,Houston Astros,1X2,home,,1.5,-0.0901,market,1.5,pending,
 2026-09-10,823413,Philadelphia Phillies,Houston Astros,AH,客,-1.5,1.71,-0.0434,market,1.71,pending,
 2026-09-10,823088,Seattle Mariners,Texas Rangers,1X2,away,,2.05,-0.0124,market,2.05,pending,
@@ -2636,3 +2636,5 @@ date,match_num,home,away,market,selection,line,odds,edge,source,close_odds,resul
 2026-09-10,824550,Chicago White Sox,Pittsburgh Pirates,1X2,home,,1.89,-0.0428,market,1.89,pending,
 2026-09-10,824550,Chicago White Sox,Pittsburgh Pirates,OU,大,7.5,1.8,-0.0487,market,1.8,pending,
 2026-09-10,824550,Chicago White Sox,Pittsburgh Pirates,AH,主,1.5,1.5,-0.0295,market,1.5,pending,
+2026-09-10,823413,Philadelphia Phillies,Houston Astros,OU,大,4.5,1.61,0.1378,market,1.61,pending,
+2026-09-10,823413,Philadelphia Phillies,Houston Astros,AH,主,1.5,1.25,-0.0902,market,1.25,pending,
