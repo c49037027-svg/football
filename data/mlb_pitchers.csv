@@ -339,8 +339,8 @@ id,name,team,ip,runs,gs,so,bb,hr
 702021,Will Dion,Washington Nationals,39.333333333333336,21,1,45,12,7
 660825,Eduard Bazardo,Seattle Mariners,62.333333333333336,30,0,64,22,11
 680694,Kyle Bradish,Baltimore Orioles,152.0,78,28,140,68,18
-684007,Shota Imanaga,Chicago Cubs,156.33333333333334,70,28,152,35,33
 700241,Michael McGreevy,St. Louis Cardinals,154.0,72,28,106,42,20
+684007,Shota Imanaga,Chicago Cubs,158.33333333333334,71,29,153,36,33
 682608,Peyton Gray,Texas Rangers,55.0,29,0,58,16,9
 641941,Emilio Pagán,Cincinnati Reds,36.666666666666664,16,0,37,10,7
 702070,Noah Cameron,Kansas City Royals,160.33333333333334,75,27,145,51,16
@@ -419,6 +419,7 @@ id,name,team,ip,runs,gs,so,bb,hr
 687473,Ryan Gusto,Miami Marlins,72.33333333333333,37,15,62,22,9
 696149,Bubba Chandler,Pittsburgh Pirates,142.0,77,27,129,71,13
 660853,Enyel De Los Santos,Houston Astros,67.33333333333333,36,0,62,18,8
+696062,Wilber Dotel,Pittsburgh Pirates,33.666666666666664,18,1,35,14,2
 643410,Mark Leiter Jr.,Athletics,33.666666666666664,16,0,38,11,2
 650644,Aaron Civale,Chicago Cubs,103.0,52,15,87,31,17
 641927,Bailey Ober,Minnesota Twins,117.66666666666667,60,22,85,34,18
@@ -435,7 +436,6 @@ id,name,team,ip,runs,gs,so,bb,hr
 694795,Josh Ekness,Miami Marlins,22.666666666666668,14,0,16,16,2
 808825,Andrew Sears,Detroit Tigers,12.333333333333334,6,1,8,3,1
 694680,Trevor Martin,Los Angeles Angels,14.333333333333334,11,0,8,6,4
-696062,Wilber Dotel,Pittsburgh Pirates,32.666666666666664,18,0,34,14,2
 592773,Ryne Stanek,St. Louis Cardinals,57.0,30,0,60,29,9
 683742,Jose Franco,Cincinnati Reds,20.333333333333332,11,0,15,16,3
 657044,Ryan Thompson,Arizona Diamondbacks,40.666666666666664,23,0,29,13,3
