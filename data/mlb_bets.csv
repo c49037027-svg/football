@@ -2890,9 +2890,9 @@ date,match_num,home,away,market,selection,line,odds,edge,source,close_odds,resul
 2026-09-16,825031,Arizona Diamondbacks,Miami Marlins,OU,大,8.5,1.83,-0.0206,market,1.83,loss,-1.0
 2026-09-17,823334,Pittsburgh Pirates,Milwaukee Brewers,1X2,away,,1.71,-0.0231,market,1.71,pending,
 2026-09-17,823334,Pittsburgh Pirates,Milwaukee Brewers,AH,主,1.5,1.71,-0.0447,market,1.71,pending,
-2026-09-17,824464,Cincinnati Reds,Los Angeles Dodgers,1X2,away,,1.57,-0.0413,market,1.57,pending,
-2026-09-17,824464,Cincinnati Reds,Los Angeles Dodgers,OU,小,9.5,2.0,0.0199,market,2.0,pending,
-2026-09-17,824464,Cincinnati Reds,Los Angeles Dodgers,AH,主,1.5,1.85,-0.0467,market,1.85,pending,
+2026-09-17,824464,Cincinnati Reds,Los Angeles Dodgers,1X2,away,,1.57,-0.0413,market,1.57,win,0.57
+2026-09-17,824464,Cincinnati Reds,Los Angeles Dodgers,OU,小,9.5,2.0,0.0199,market,2.0,loss,-1.0
+2026-09-17,824464,Cincinnati Reds,Los Angeles Dodgers,AH,主,1.5,1.85,-0.0467,market,1.85,loss,-1.0
 2026-09-17,822924,Tampa Bay Rays,Athletics,1X2,home,,1.37,-0.0427,market,1.37,pending,
 2026-09-17,822924,Tampa Bay Rays,Athletics,OU,大,7.5,1.82,0.025,market,1.82,pending,
 2026-09-17,822924,Tampa Bay Rays,Athletics,AH,主,-1.5,1.83,-0.0171,market,1.83,pending,
@@ -2914,3 +2914,8 @@ date,match_num,home,away,market,selection,line,odds,edge,source,close_odds,resul
 2026-09-17,823978,Los Angeles Angels,Minnesota Twins,1X2,away,,1.73,-0.0781,market,1.73,pending,
 2026-09-17,823978,Los Angeles Angels,Minnesota Twins,OU,大,7.5,1.85,-0.0181,market,1.85,pending,
 2026-09-17,823978,Los Angeles Angels,Minnesota Twins,AH,主,1.5,1.65,-0.0024,market,1.65,pending,
+2026-09-17,823334,Pittsburgh Pirates,Milwaukee Brewers,OU,小,11.5,1.57,0.0359,market,1.57,pending,
+2026-09-17,823334,Pittsburgh Pirates,Milwaukee Brewers,AH,客,-2.5,3.75,0.9455,market,3.75,pending,
+2026-09-17,822924,Tampa Bay Rays,Athletics,OU,小,9.5,1.93,0.0222,market,1.93,pending,
+2026-09-17,822924,Tampa Bay Rays,Athletics,AH,客,-6.5,3.0,0.6909,market,3.0,pending,
+2026-09-17,824548,Chicago White Sox,Detroit Tigers,AH,主,1.5,1.5,-0.0839,market,1.5,pending,
