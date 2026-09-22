@@ -2541,9 +2541,9 @@ date,match_num,home,away,market,selection,line,odds,edge,source,close_odds,resul
 2026-09-21,824221,Detroit Tigers,Washington Nationals,AH,客,-1.5,1.62,,market,1.62,loss,-1.0
 2026-09-21,823169,San Francisco Giants,Minnesota Twins,1X2,home,,1.86,,market,1.86,win,0.86
 2026-09-21,823169,San Francisco Giants,Minnesota Twins,AH,主,1.5,1.57,,market,1.57,win,0.57
-2026-09-22,823543,New York Yankees,Tampa Bay Rays,1X2,home,,1.8,,market,1.8,pending,
-2026-09-22,823543,New York Yankees,Tampa Bay Rays,OU,大,6.5,1.7,,market,1.7,pending,
-2026-09-22,823543,New York Yankees,Tampa Bay Rays,AH,客,-1.5,1.5,,market,1.5,pending,
+2026-09-22,823543,New York Yankees,Tampa Bay Rays,1X2,home,,1.8,,market,1.8,win,0.8
+2026-09-22,823543,New York Yankees,Tampa Bay Rays,OU,大,6.5,1.7,,market,1.7,loss,-1.0
+2026-09-22,823543,New York Yankees,Tampa Bay Rays,AH,客,-1.5,1.5,,market,1.5,loss,-1.0
 2026-09-22,823494,New York Yankees,Tampa Bay Rays,1X2,home,,1.8,,market,1.8,pending,
 2026-09-22,823494,New York Yankees,Tampa Bay Rays,OU,大,6.5,1.7,,market,1.7,pending,
 2026-09-22,823494,New York Yankees,Tampa Bay Rays,AH,客,-1.5,1.5,,market,1.5,pending,
@@ -2582,3 +2582,6 @@ date,match_num,home,away,market,selection,line,odds,edge,source,close_odds,resul
 2026-09-22,823897,Los Angeles Dodgers,San Diego Padres,1X2,home,,1.8,,market,1.8,pending,
 2026-09-22,823897,Los Angeles Dodgers,San Diego Padres,OU,小,8.5,1.8,,market,1.8,pending,
 2026-09-22,823897,Los Angeles Dodgers,San Diego Padres,AH,主,1.5,1.47,,market,1.47,pending,
+2026-09-22,824061,Kansas City Royals,Chicago White Sox,OU,大,7.5,1.75,,market,1.75,pending,
+2026-09-22,824785,Baltimore Orioles,Toronto Blue Jays,OU,小,9.5,,,model,,pending,
+2026-09-22,824785,Baltimore Orioles,Toronto Blue Jays,AH,客,-1.5,,,model,,pending,
