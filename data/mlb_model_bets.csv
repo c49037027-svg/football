@@ -2631,8 +2631,8 @@ date,match_num,home,away,market,selection,line,odds,edge,source,close_odds,resul
 2026-09-23,823327,Pittsburgh Pirates,St. Louis Cardinals,AH,客,-1.5,1.53,,market,1.53,win,0.53
 2026-09-23,824710,Boston Red Sox,Cleveland Guardians,OU,大,6.5,1.87,,market,1.87,loss,-1.0
 2026-09-23,822841,Texas Rangers,New York Mets,OU,小,8.0,1.85,,market,1.85,loss,-1.0
-2026-09-24,823326,Pittsburgh Pirates,St. Louis Cardinals,1X2,away,,2.33,,market,2.33,pending,
-2026-09-24,823326,Pittsburgh Pirates,St. Louis Cardinals,AH,客,-1.5,1.58,,market,1.58,pending,
+2026-09-24,823326,Pittsburgh Pirates,St. Louis Cardinals,1X2,away,,2.33,,market,2.33,loss,-1.0
+2026-09-24,823326,Pittsburgh Pirates,St. Louis Cardinals,AH,客,-1.5,1.58,,market,1.58,win,0.58
 2026-09-24,824059,Kansas City Royals,Chicago White Sox,1X2,home,,2.0,,market,2.0,pending,
 2026-09-24,824059,Kansas City Royals,Chicago White Sox,AH,主,1.5,1.62,,market,1.62,pending,
 2026-09-24,824623,Chicago Cubs,Miami Marlins,1X2,home,,1.47,,market,1.47,pending,
@@ -2663,3 +2663,12 @@ date,match_num,home,away,market,selection,line,odds,edge,source,close_odds,resul
 2026-09-24,823087,Seattle Mariners,Los Angeles Angels,AH,客,-1.5,1.73,,market,1.73,pending,
 2026-09-24,823895,Los Angeles Dodgers,San Diego Padres,1X2,home,,1.6,,market,1.6,pending,
 2026-09-24,823895,Los Angeles Dodgers,San Diego Padres,AH,客,-1.5,1.68,,market,1.68,pending,
+2026-09-24,823326,Pittsburgh Pirates,St. Louis Cardinals,1X2,home,,,,model,,pending,
+2026-09-24,824059,Kansas City Royals,Chicago White Sox,OU,小,15.0,1.8,,market,1.8,pending,
+2026-09-24,824623,Chicago Cubs,Miami Marlins,AH,主,1.5,1.29,,market,1.29,pending,
+2026-09-24,822842,Texas Rangers,New York Mets,AH,客,-1.5,1.8,,market,1.8,pending,
+2026-09-24,824298,Colorado Rockies,Arizona Diamondbacks,AH,主,7.5,1.85,,market,1.85,pending,
+2026-09-24,823411,Philadelphia Phillies,Milwaukee Brewers,OU,大,7.5,1.8,,market,1.8,pending,
+2026-09-24,823411,Philadelphia Phillies,Milwaukee Brewers,AH,客,-1.5,1.5,,market,1.5,pending,
+2026-09-24,824707,Boston Red Sox,Cleveland Guardians,OU,大,6.5,1.8,,market,1.8,pending,
+2026-09-24,823895,Los Angeles Dodgers,San Diego Padres,OU,小,8.0,1.83,,market,1.83,pending,
