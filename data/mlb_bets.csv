@@ -3236,3 +3236,7 @@ date,match_num,home,away,market,selection,line,odds,edge,source,close_odds,resul
 2026-09-25,823085,Seattle Mariners,Los Angeles Angels,AH,客,-1.5,1.51,-0.0249,market,1.51,pending,
 2026-09-25,823167,San Francisco Giants,Los Angeles Dodgers,1X2,away,,1.25,-0.1221,market,1.25,pending,
 2026-09-25,823167,San Francisco Giants,Los Angeles Dodgers,AH,主,2.5,2.0,0.0838,market,2.0,pending,
+2026-09-25,824703,Boston Red Sox,Chicago Cubs,AH,客,-1.5,1.12,-0.1482,market,1.12,pending,
+2026-09-25,824706,Boston Red Sox,Chicago Cubs,AH,客,-1.5,1.12,-0.1559,market,1.12,pending,
+2026-09-25,823816,Miami Marlins,Atlanta Braves,OU,大,7.5,1.75,-0.0539,market,1.75,pending,
+2026-09-25,823085,Seattle Mariners,Los Angeles Angels,OU,大,6.5,1.83,0.0209,market,1.83,pending,
