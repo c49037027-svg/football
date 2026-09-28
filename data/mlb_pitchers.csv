@@ -265,6 +265,7 @@ id,name,team,ip,runs,gs,so,bb,hr
 683363,Matt Wilkinson,San Francisco Giants,27.666666666666668,14,6,20,5,5
 664141,JT Brubaker,San Francisco Giants,60.333333333333336,27,1,39,26,5
 592662,Robbie Ray,San Diego Padres,165.66666666666666,74,30,140,84,22
+677865,Justin Bruihl,St. Louis Cardinals,77.66666666666667,41,0,53,28,4
 656492,Foster Griffin,Cleveland Guardians,172.66666666666666,76,31,158,45,23
 592288,Kent Emanuel,Cincinnati Reds,5.0,2,1,4,3,0
 676510,Nolan Hoffman,Kansas City Royals,15.0,6,0,12,6,0
@@ -304,7 +305,6 @@ id,name,team,ip,runs,gs,so,bb,hr
 642232,Ryan Yarbrough,New York Yankees,63.333333333333336,33,2,49,23,3
 641302,Tyler Alexander,Texas Rangers,73.0,34,5,60,23,3
 681892,Kody Funderburk,Minnesota Twins,51.0,21,0,49,27,3
-677865,Justin Bruihl,St. Louis Cardinals,77.66666666666667,41,0,53,28,4
 669372,J.T. Ginn,Athletics,138.33333333333334,63,24,121,57,17
 683003,Jared Jones,Pittsburgh Pirates,101.66666666666667,43,21,123,31,12
 669302,Logan Gilbert,Seattle Mariners,186.0,77,32,205,49,29
