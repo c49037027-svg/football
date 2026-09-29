@@ -2811,3 +2811,13 @@ date,match_num,home,away,market,selection,line,odds,edge,source,close_odds,resul
 2026-09-27,823650,Minnesota Twins,Texas Rangers,AH,客,-1.5,1.61,,market,1.61,loss,-1.0
 2026-09-27,823814,Miami Marlins,Atlanta Braves,OU,大,6.5,1.81,,market,1.81,win,0.81
 2026-09-27,823814,Miami Marlins,Atlanta Braves,AH,客,-1.5,1.5,,market,1.5,loss,-1.0
+2026-09-29,849845,Atlanta Braves,Philadelphia Phillies,1X2,home,,1.44,,market,1.44,pending,
+2026-09-29,849845,Atlanta Braves,Philadelphia Phillies,AH,客,-1.5,1.73,,market,1.73,pending,
+2026-09-29,849849,Houston Astros,Chicago White Sox,1X2,home,,1.79,,market,1.79,pending,
+2026-09-29,849849,Houston Astros,Chicago White Sox,OU,小,8.5,1.83,,market,1.83,pending,
+2026-09-29,849849,Houston Astros,Chicago White Sox,AH,客,-1.5,1.49,,market,1.49,pending,
+2026-09-29,849851,New York Yankees,Boston Red Sox,1X2,home,,1.71,,market,1.71,pending,
+2026-09-29,849851,New York Yankees,Boston Red Sox,OU,大,6.5,2.0,,market,2.0,pending,
+2026-09-29,849851,New York Yankees,Boston Red Sox,AH,客,-1.5,1.5,,market,1.5,pending,
+2026-09-29,849843,San Diego Padres,Chicago Cubs,1X2,away,,2.05,,market,2.05,pending,
+2026-09-29,849843,San Diego Padres,Chicago Cubs,AH,客,-1.5,1.47,,market,1.47,pending,
