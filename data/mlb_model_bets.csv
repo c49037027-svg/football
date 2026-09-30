@@ -2832,3 +2832,5 @@ date,match_num,home,away,market,selection,line,odds,edge,source,close_odds,resul
 2026-09-30,849848,New York Yankees,Boston Red Sox,AH,客,-1.5,1.47,,market,1.47,pending,
 2026-09-30,849842,San Diego Padres,Chicago Cubs,1X2,home,,1.73,,market,1.73,pending,
 2026-09-30,849842,San Diego Padres,Chicago Cubs,AH,客,-1.5,1.53,,market,1.53,pending,
+2026-09-30,849841,Atlanta Braves,Philadelphia Phillies,OU,大,4.5,1.8,,market,1.8,pending,
+2026-09-30,849841,Atlanta Braves,Philadelphia Phillies,AH,客,-1.5,3.0,,market,3.0,pending,
