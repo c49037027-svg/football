@@ -3365,3 +3365,5 @@ date,match_num,home,away,market,selection,line,odds,edge,source,close_odds,resul
 2026-10-03,849830,Milwaukee Brewers,San Diego Padres,1X2,home,,1.55,-0.0248,market,1.55,pending,
 2026-10-03,849830,Milwaukee Brewers,San Diego Padres,OU,大,6.5,1.78,-0.0192,market,1.78,pending,
 2026-10-03,849830,Milwaukee Brewers,San Diego Padres,AH,客,-1.5,1.73,-0.041,market,1.73,pending,
+2026-10-03,849829,Cleveland Guardians,Chicago White Sox,OU,大,5.5,2.05,0.0878,market,2.05,pending,
+2026-10-03,849829,Cleveland Guardians,Chicago White Sox,AH,主,2.5,1.65,0.1313,market,1.65,pending,
