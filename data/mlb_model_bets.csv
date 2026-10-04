@@ -2837,17 +2837,23 @@ date,match_num,home,away,market,selection,line,odds,edge,source,close_odds,resul
 2026-10-01,849844,Atlanta Braves,Philadelphia Phillies,1X2,home,,1.98,,market,1.98,win,0.98
 2026-10-01,849844,Atlanta Braves,Philadelphia Phillies,OU,大,7.5,2.0,,market,2.0,win,1.0
 2026-10-01,849844,Atlanta Braves,Philadelphia Phillies,AH,主,1.5,1.54,,market,1.54,win,0.54
-2026-10-03,849829,Cleveland Guardians,Chicago White Sox,1X2,home,,1.64,,market,1.64,pending,
-2026-10-03,849829,Cleveland Guardians,Chicago White Sox,OU,小,7.0,1.82,,market,1.82,pending,
-2026-10-03,849829,Cleveland Guardians,Chicago White Sox,AH,客,-1.5,1.57,,market,1.57,pending,
-2026-10-03,849828,Los Angeles Dodgers,Atlanta Braves,1X2,home,,1.37,,market,1.37,pending,
-2026-10-03,849828,Los Angeles Dodgers,Atlanta Braves,OU,小,8.5,1.8,,market,1.8,pending,
-2026-10-03,849828,Los Angeles Dodgers,Atlanta Braves,AH,客,-1.5,1.91,,market,1.91,pending,
-2026-10-03,849835,Tampa Bay Rays,New York Yankees,1X2,home,,1.73,,market,1.73,pending,
-2026-10-03,849835,Tampa Bay Rays,New York Yankees,OU,大,6.5,1.73,,market,1.73,pending,
-2026-10-03,849835,Tampa Bay Rays,New York Yankees,AH,客,-1.5,1.5,,market,1.5,pending,
-2026-10-03,849830,Milwaukee Brewers,San Diego Padres,1X2,home,,1.55,,market,1.55,pending,
-2026-10-03,849830,Milwaukee Brewers,San Diego Padres,OU,大,6.5,1.78,,market,1.78,pending,
-2026-10-03,849830,Milwaukee Brewers,San Diego Padres,AH,客,-1.5,1.73,,market,1.73,pending,
-2026-10-03,849829,Cleveland Guardians,Chicago White Sox,OU,大,5.5,2.05,,market,2.05,pending,
-2026-10-03,849829,Cleveland Guardians,Chicago White Sox,AH,主,2.5,1.65,,market,1.65,pending,
+2026-10-03,849829,Cleveland Guardians,Chicago White Sox,1X2,home,,1.64,,market,1.64,loss,-1.0
+2026-10-03,849829,Cleveland Guardians,Chicago White Sox,OU,小,7.0,1.82,,market,1.82,win,0.82
+2026-10-03,849829,Cleveland Guardians,Chicago White Sox,AH,客,-1.5,1.57,,market,1.57,win,0.57
+2026-10-03,849828,Los Angeles Dodgers,Atlanta Braves,1X2,home,,1.37,,market,1.37,win,0.37
+2026-10-03,849828,Los Angeles Dodgers,Atlanta Braves,OU,小,8.5,1.8,,market,1.8,win,0.8
+2026-10-03,849828,Los Angeles Dodgers,Atlanta Braves,AH,客,-1.5,1.91,,market,1.91,loss,-1.0
+2026-10-03,849835,Tampa Bay Rays,New York Yankees,1X2,home,,1.73,,market,1.73,win,0.73
+2026-10-03,849835,Tampa Bay Rays,New York Yankees,OU,大,6.5,1.73,,market,1.73,loss,-1.0
+2026-10-03,849835,Tampa Bay Rays,New York Yankees,AH,客,-1.5,1.5,,market,1.5,win,0.5
+2026-10-03,849830,Milwaukee Brewers,San Diego Padres,1X2,home,,1.55,,market,1.55,win,0.55
+2026-10-03,849830,Milwaukee Brewers,San Diego Padres,OU,大,6.5,1.78,,market,1.78,loss,-1.0
+2026-10-03,849830,Milwaukee Brewers,San Diego Padres,AH,客,-1.5,1.73,,market,1.73,win,0.73
+2026-10-03,849829,Cleveland Guardians,Chicago White Sox,OU,大,5.5,2.05,,market,2.05,loss,-1.0
+2026-10-03,849829,Cleveland Guardians,Chicago White Sox,AH,主,2.5,1.65,,market,1.65,loss,-1.0
+2026-10-04,849825,Milwaukee Brewers,San Diego Padres,1X2,home,,1.68,,market,1.68,pending,
+2026-10-04,849825,Milwaukee Brewers,San Diego Padres,OU,小,7.0,1.92,,market,1.92,pending,
+2026-10-04,849825,Milwaukee Brewers,San Diego Padres,AH,客,-1.5,1.54,,market,1.54,pending,
+2026-10-04,849823,Los Angeles Dodgers,Atlanta Braves,1X2,home,,1.64,,market,1.64,pending,
+2026-10-04,849823,Los Angeles Dodgers,Atlanta Braves,OU,大,7.0,1.89,,market,1.89,pending,
+2026-10-04,849823,Los Angeles Dodgers,Atlanta Braves,AH,客,-1.5,1.57,,market,1.57,pending,
