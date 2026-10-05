@@ -3367,9 +3367,15 @@ date,match_num,home,away,market,selection,line,odds,edge,source,close_odds,resul
 2026-10-03,849830,Milwaukee Brewers,San Diego Padres,AH,客,-1.5,1.73,-0.041,market,1.73,win,0.73
 2026-10-03,849829,Cleveland Guardians,Chicago White Sox,OU,大,5.5,2.05,0.0878,market,2.05,loss,-1.0
 2026-10-03,849829,Cleveland Guardians,Chicago White Sox,AH,主,2.5,1.65,0.1313,market,1.65,loss,-1.0
-2026-10-04,849825,Milwaukee Brewers,San Diego Padres,1X2,home,,1.68,-0.0563,market,1.68,pending,
-2026-10-04,849825,Milwaukee Brewers,San Diego Padres,OU,小,7.0,1.92,-0.0421,market,1.92,pending,
-2026-10-04,849825,Milwaukee Brewers,San Diego Padres,AH,客,-1.5,1.54,-0.0538,market,1.54,pending,
-2026-10-04,849823,Los Angeles Dodgers,Atlanta Braves,1X2,home,,1.64,-0.0493,market,1.64,pending,
-2026-10-04,849823,Los Angeles Dodgers,Atlanta Braves,OU,大,7.0,1.89,0.0491,market,1.89,pending,
-2026-10-04,849823,Los Angeles Dodgers,Atlanta Braves,AH,客,-1.5,1.57,-0.0744,market,1.57,pending,
+2026-10-04,849825,Milwaukee Brewers,San Diego Padres,1X2,home,,1.68,-0.0563,market,1.68,win,0.68
+2026-10-04,849825,Milwaukee Brewers,San Diego Padres,OU,小,7.0,1.92,-0.0421,market,1.92,push,0.0
+2026-10-04,849825,Milwaukee Brewers,San Diego Padres,AH,客,-1.5,1.54,-0.0538,market,1.54,win,0.54
+2026-10-04,849823,Los Angeles Dodgers,Atlanta Braves,1X2,home,,1.64,-0.0493,market,1.64,loss,-1.0
+2026-10-04,849823,Los Angeles Dodgers,Atlanta Braves,OU,大,7.0,1.89,0.0491,market,1.89,loss,-1.0
+2026-10-04,849823,Los Angeles Dodgers,Atlanta Braves,AH,客,-1.5,1.57,-0.0744,market,1.57,win,0.57
+2026-10-05,849834,Cleveland Guardians,Chicago White Sox,1X2,home,,1.62,-0.079,market,1.62,pending,
+2026-10-05,849834,Cleveland Guardians,Chicago White Sox,OU,大,6.5,1.87,0.007,market,1.87,pending,
+2026-10-05,849834,Cleveland Guardians,Chicago White Sox,AH,客,-1.5,1.56,-0.0438,market,1.56,pending,
+2026-10-05,849839,Tampa Bay Rays,New York Yankees,1X2,away,,1.76,0.0024,market,1.76,pending,
+2026-10-05,849839,Tampa Bay Rays,New York Yankees,OU,大,6.5,1.85,0.0246,market,1.85,pending,
+2026-10-05,849839,Tampa Bay Rays,New York Yankees,AH,主,1.5,1.58,-0.0784,market,1.58,pending,
