@@ -2857,9 +2857,14 @@ date,match_num,home,away,market,selection,line,odds,edge,source,close_odds,resul
 2026-10-04,849823,Los Angeles Dodgers,Atlanta Braves,1X2,home,,1.64,,market,1.64,loss,-1.0
 2026-10-04,849823,Los Angeles Dodgers,Atlanta Braves,OU,大,7.0,1.89,,market,1.89,loss,-1.0
 2026-10-04,849823,Los Angeles Dodgers,Atlanta Braves,AH,客,-1.5,1.57,,market,1.57,win,0.57
-2026-10-05,849834,Cleveland Guardians,Chicago White Sox,1X2,home,,1.62,,market,1.62,pending,
-2026-10-05,849834,Cleveland Guardians,Chicago White Sox,OU,大,6.5,1.87,,market,1.87,pending,
-2026-10-05,849834,Cleveland Guardians,Chicago White Sox,AH,客,-1.5,1.56,,market,1.56,pending,
-2026-10-05,849839,Tampa Bay Rays,New York Yankees,1X2,away,,1.76,,market,1.76,pending,
-2026-10-05,849839,Tampa Bay Rays,New York Yankees,OU,大,6.5,1.85,,market,1.85,pending,
-2026-10-05,849839,Tampa Bay Rays,New York Yankees,AH,主,1.5,1.58,,market,1.58,pending,
+2026-10-05,849834,Cleveland Guardians,Chicago White Sox,1X2,home,,1.62,,market,1.62,loss,-1.0
+2026-10-05,849834,Cleveland Guardians,Chicago White Sox,OU,大,6.5,1.87,,market,1.87,win,0.87
+2026-10-05,849834,Cleveland Guardians,Chicago White Sox,AH,客,-1.5,1.56,,market,1.56,win,0.56
+2026-10-05,849839,Tampa Bay Rays,New York Yankees,1X2,away,,1.76,,market,1.76,loss,-1.0
+2026-10-05,849839,Tampa Bay Rays,New York Yankees,OU,大,6.5,1.85,,market,1.85,win,0.85
+2026-10-05,849839,Tampa Bay Rays,New York Yankees,AH,主,1.5,1.58,,market,1.58,win,0.58
+2026-10-06,849819,Atlanta Braves,Los Angeles Dodgers,1X2,home,,1.91,,market,1.91,pending,
+2026-10-06,849819,Atlanta Braves,Los Angeles Dodgers,OU,大,6.5,2.0,,market,2.0,pending,
+2026-10-06,849819,Atlanta Braves,Los Angeles Dodgers,AH,主,1.5,1.5,,market,1.5,pending,
+2026-10-06,849826,San Diego Padres,Milwaukee Brewers,1X2,away,,1.91,,market,1.91,pending,
+2026-10-06,849826,San Diego Padres,Milwaukee Brewers,AH,客,-1.5,1.53,,market,1.53,pending,
