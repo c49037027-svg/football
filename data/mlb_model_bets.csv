@@ -2863,8 +2863,18 @@ date,match_num,home,away,market,selection,line,odds,edge,source,close_odds,resul
 2026-10-05,849839,Tampa Bay Rays,New York Yankees,1X2,away,,1.76,,market,1.76,loss,-1.0
 2026-10-05,849839,Tampa Bay Rays,New York Yankees,OU,大,6.5,1.85,,market,1.85,win,0.85
 2026-10-05,849839,Tampa Bay Rays,New York Yankees,AH,主,1.5,1.58,,market,1.58,win,0.58
-2026-10-06,849819,Atlanta Braves,Los Angeles Dodgers,1X2,home,,1.91,,market,1.91,pending,
-2026-10-06,849819,Atlanta Braves,Los Angeles Dodgers,OU,大,6.5,2.0,,market,2.0,pending,
-2026-10-06,849819,Atlanta Braves,Los Angeles Dodgers,AH,主,1.5,1.5,,market,1.5,pending,
-2026-10-06,849826,San Diego Padres,Milwaukee Brewers,1X2,away,,1.91,,market,1.91,pending,
-2026-10-06,849826,San Diego Padres,Milwaukee Brewers,AH,客,-1.5,1.53,,market,1.53,pending,
+2026-10-06,849819,Atlanta Braves,Los Angeles Dodgers,1X2,home,,1.91,,market,1.91,loss,-1.0
+2026-10-06,849819,Atlanta Braves,Los Angeles Dodgers,OU,大,6.5,2.0,,market,2.0,loss,-1.0
+2026-10-06,849819,Atlanta Braves,Los Angeles Dodgers,AH,主,1.5,1.5,,market,1.5,loss,-1.0
+2026-10-06,849826,San Diego Padres,Milwaukee Brewers,1X2,away,,1.91,,market,1.91,loss,-1.0
+2026-10-06,849826,San Diego Padres,Milwaukee Brewers,AH,客,-1.5,1.53,,market,1.53,win,0.53
+2026-10-07,849833,Chicago White Sox,Cleveland Guardians,1X2,home,,1.82,,market,1.82,pending,
+2026-10-07,849833,Chicago White Sox,Cleveland Guardians,OU,小,8.0,1.85,,market,1.85,pending,
+2026-10-07,849833,Chicago White Sox,Cleveland Guardians,AH,客,-1.5,1.5,,market,1.5,pending,
+2026-10-07,849822,Atlanta Braves,Los Angeles Dodgers,1X2,away,,1.68,,market,1.68,pending,
+2026-10-07,849822,Atlanta Braves,Los Angeles Dodgers,OU,大,7.5,1.96,,market,1.96,pending,
+2026-10-07,849822,Atlanta Braves,Los Angeles Dodgers,AH,主,1.5,1.66,,market,1.66,pending,
+2026-10-07,849838,New York Yankees,Tampa Bay Rays,1X2,home,,1.6,,market,1.6,pending,
+2026-10-07,849838,New York Yankees,Tampa Bay Rays,AH,客,-1.5,1.6,,market,1.6,pending,
+2026-10-07,849827,San Diego Padres,Milwaukee Brewers,1X2,away,,1.78,,market,1.78,pending,
+2026-10-07,849827,San Diego Padres,Milwaukee Brewers,AH,主,1.5,1.5,,market,1.5,pending,
