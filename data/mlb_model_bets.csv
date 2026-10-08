@@ -2868,14 +2868,17 @@ date,match_num,home,away,market,selection,line,odds,edge,source,close_odds,resul
 2026-10-06,849819,Atlanta Braves,Los Angeles Dodgers,AH,主,1.5,1.5,,market,1.5,loss,-1.0
 2026-10-06,849826,San Diego Padres,Milwaukee Brewers,1X2,away,,1.91,,market,1.91,loss,-1.0
 2026-10-06,849826,San Diego Padres,Milwaukee Brewers,AH,客,-1.5,1.53,,market,1.53,win,0.53
-2026-10-07,849833,Chicago White Sox,Cleveland Guardians,1X2,home,,1.82,,market,1.82,pending,
-2026-10-07,849833,Chicago White Sox,Cleveland Guardians,OU,小,8.0,1.85,,market,1.85,pending,
-2026-10-07,849833,Chicago White Sox,Cleveland Guardians,AH,客,-1.5,1.5,,market,1.5,pending,
-2026-10-07,849822,Atlanta Braves,Los Angeles Dodgers,1X2,away,,1.68,,market,1.68,pending,
-2026-10-07,849822,Atlanta Braves,Los Angeles Dodgers,OU,大,7.5,1.96,,market,1.96,pending,
-2026-10-07,849822,Atlanta Braves,Los Angeles Dodgers,AH,主,1.5,1.66,,market,1.66,pending,
-2026-10-07,849838,New York Yankees,Tampa Bay Rays,1X2,home,,1.6,,market,1.6,pending,
-2026-10-07,849838,New York Yankees,Tampa Bay Rays,AH,客,-1.5,1.6,,market,1.6,pending,
-2026-10-07,849827,San Diego Padres,Milwaukee Brewers,1X2,away,,1.78,,market,1.78,pending,
-2026-10-07,849827,San Diego Padres,Milwaukee Brewers,AH,主,1.5,1.5,,market,1.5,pending,
-2026-10-07,849833,Chicago White Sox,Cleveland Guardians,AH,主,1.5,1.55,,market,1.55,pending,
+2026-10-07,849833,Chicago White Sox,Cleveland Guardians,1X2,home,,1.82,,market,1.82,loss,-1.0
+2026-10-07,849833,Chicago White Sox,Cleveland Guardians,OU,小,8.0,1.85,,market,1.85,loss,-1.0
+2026-10-07,849833,Chicago White Sox,Cleveland Guardians,AH,客,-1.5,1.5,,market,1.5,win,0.5
+2026-10-07,849822,Atlanta Braves,Los Angeles Dodgers,1X2,away,,1.68,,market,1.68,win,0.68
+2026-10-07,849822,Atlanta Braves,Los Angeles Dodgers,OU,大,7.5,1.96,,market,1.96,loss,-1.0
+2026-10-07,849822,Atlanta Braves,Los Angeles Dodgers,AH,主,1.5,1.66,,market,1.66,loss,-1.0
+2026-10-07,849838,New York Yankees,Tampa Bay Rays,1X2,home,,1.6,,market,1.6,loss,-1.0
+2026-10-07,849838,New York Yankees,Tampa Bay Rays,AH,客,-1.5,1.6,,market,1.6,win,0.6
+2026-10-07,849827,San Diego Padres,Milwaukee Brewers,1X2,away,,1.78,,market,1.78,win,0.78
+2026-10-07,849827,San Diego Padres,Milwaukee Brewers,AH,主,1.5,1.5,,market,1.5,loss,-1.0
+2026-10-07,849833,Chicago White Sox,Cleveland Guardians,AH,主,1.5,1.55,,market,1.55,loss,-1.0
+2026-10-08,849832,Chicago White Sox,Cleveland Guardians,1X2,away,,1.86,,market,1.86,pending,
+2026-10-08,849832,Chicago White Sox,Cleveland Guardians,OU,小,7.0,2.01,,market,2.01,pending,
+2026-10-08,849832,Chicago White Sox,Cleveland Guardians,AH,主,1.5,1.55,,market,1.55,pending,
