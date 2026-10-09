@@ -2879,6 +2879,6 @@ date,match_num,home,away,market,selection,line,odds,edge,source,close_odds,resul
 2026-10-07,849827,San Diego Padres,Milwaukee Brewers,1X2,away,,1.78,,market,1.78,win,0.78
 2026-10-07,849827,San Diego Padres,Milwaukee Brewers,AH,主,1.5,1.5,,market,1.5,loss,-1.0
 2026-10-07,849833,Chicago White Sox,Cleveland Guardians,AH,主,1.5,1.55,,market,1.55,loss,-1.0
-2026-10-08,849832,Chicago White Sox,Cleveland Guardians,1X2,away,,1.86,,market,1.86,pending,
-2026-10-08,849832,Chicago White Sox,Cleveland Guardians,OU,小,7.0,2.01,,market,2.01,pending,
-2026-10-08,849832,Chicago White Sox,Cleveland Guardians,AH,主,1.5,1.55,,market,1.55,pending,
+2026-10-08,849832,Chicago White Sox,Cleveland Guardians,1X2,away,,1.86,,market,1.86,win,0.86
+2026-10-08,849832,Chicago White Sox,Cleveland Guardians,OU,小,7.0,2.01,,market,2.01,loss,-1.0
+2026-10-08,849832,Chicago White Sox,Cleveland Guardians,AH,主,1.5,1.55,,market,1.55,loss,-1.0
