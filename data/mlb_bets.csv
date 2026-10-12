@@ -3406,3 +3406,5 @@ date,match_num,home,away,market,selection,line,odds,edge,source,close_odds,resul
 2026-10-12,849812,Milwaukee Brewers,Los Angeles Dodgers,AH,主,1.5,1.62,0.012,market,1.62,pending,
 2026-10-12,849820,Tampa Bay Rays,Cleveland Guardians,1X2,home,,1.49,-0.1301,market,1.49,pending,
 2026-10-12,849820,Tampa Bay Rays,Cleveland Guardians,AH,客,-1.5,1.62,-0.0415,market,1.62,pending,
+2026-10-12,849812,Milwaukee Brewers,Los Angeles Dodgers,OU,小,9.0,1.75,0.0516,market,1.75,pending,
+2026-10-12,849812,Milwaukee Brewers,Los Angeles Dodgers,AH,客,-1.5,1.57,-0.009,market,1.57,pending,
