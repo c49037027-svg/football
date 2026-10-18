@@ -2908,6 +2908,6 @@ date,match_num,home,away,market,selection,line,odds,edge,source,close_odds,resul
 2026-10-15,849818,Cleveland Guardians,Tampa Bay Rays,AH,主,1.5,1.04,,market,1.04,win,0.04
 2026-10-16,849817,Cleveland Guardians,Tampa Bay Rays,1X2,away,,1.73,,market,1.73,pending,
 2026-10-16,849817,Cleveland Guardians,Tampa Bay Rays,AH,主,1.5,1.5,,market,1.5,pending,
-2026-10-17,849816,Cleveland Guardians,Tampa Bay Rays,1X2,away,,1.84,,market,1.84,pending,
-2026-10-17,849816,Cleveland Guardians,Tampa Bay Rays,OU,大,6.5,1.91,,market,1.91,pending,
-2026-10-17,849816,Cleveland Guardians,Tampa Bay Rays,AH,主,1.5,1.5,,market,1.5,pending,
+2026-10-17,849816,Cleveland Guardians,Tampa Bay Rays,1X2,away,,1.84,,market,1.84,win,0.84
+2026-10-17,849816,Cleveland Guardians,Tampa Bay Rays,OU,大,6.5,1.91,,market,1.91,win,0.91
+2026-10-17,849816,Cleveland Guardians,Tampa Bay Rays,AH,主,1.5,1.5,,market,1.5,loss,-1.0
