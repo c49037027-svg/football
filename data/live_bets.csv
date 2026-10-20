@@ -49,4 +49,4 @@ date,match_num,home,away,market,selection,line,odds,edge,source,close_odds,resul
 2026-09-16,823004,St. Louis Cardinals,San Francisco Giants,1X2,away,,2.4,0.0644,market,2.4,win,1.4
 2026-09-23,822840,Texas Rangers,New York Mets,1X2,away,,2.95,0.0514,market,2.95,win,1.95
 2026-09-25,823816,Miami Marlins,Atlanta Braves,1X2,away,,2.1,0.0639,market,2.1,loss,-1.0
-2026-10-20,849815,Tampa Bay Rays,Cleveland Guardians,1X2,away,,4.95,0.0793,market,4.95,pending,
+2026-10-20,849815,Tampa Bay Rays,Cleveland Guardians,1X2,away,,4.95,0.0793,market,4.95,loss,-1.0
